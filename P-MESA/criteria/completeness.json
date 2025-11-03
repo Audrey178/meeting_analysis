@@ -1,0 +1,24 @@
+{
+    "name": "completeness",
+    "definition": "Evaluates whether the summary includes all critical information required by the target persona. The prompt instructs to 'check if the summary omits any facts relevant to the target user—especially those essential for the user’s responsibilities.' This means confirming that all key details such as deadlines, budget constraints, and approvals are present (Indicator 1) and verifying that no salient fact or figure from the source has been omitted (Indicator 2).",
+    "scoring_guide": {
+      "5": "Severe omissions that make the summary unusable or highly misleading.",
+      "4": "Multiple important points missing, impairing decision-making.",
+      "3": "Some relevant info is missing, causing partial gaps in understanding.",
+      "2": "Minor omissions that do not significantly hinder the persona’s tasks.",
+      "1": "No meaningful omissions; everything necessary is included."
+    },
+    "example": {
+      "transcript": "PM: We must finalize the design by Friday. The budget is $10K. John must approve the new layout. The client expects a prototype within two weeks.\nDesigner: I’ll send an initial draft tomorrow.\nPM: Make sure to incorporate all feedback from QA before John signs off.",
+      "high_score": {
+        "persona": "Designer",
+        "summary": "Design finalization is due by Friday with a $10K budget. John’s approval is required after QA feedback, and the client expects a prototype within two weeks.",
+        "explanation": "The summary includes every critical detail, satisfying both indicators by covering deadlines, budget, approval, and prototype timeline."
+      },
+      "low_score": {
+        "persona": "Designer",
+        "summary": "We have a tight deadline soon, and the client wants a prototype. Someone needs to sign off first.",
+        "explanation": "Key details like the specific deadline (Friday), the exact budget ($10K), and the fact that John is the approver are missing, failing both indicators and causing confusion."
+      }
+    }
+  }

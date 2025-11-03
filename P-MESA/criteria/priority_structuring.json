@@ -1,0 +1,24 @@
+{
+  "name": "priority_structuring",
+  "definition": "Evaluates the order and emphasis of information to determine if the summary highlights the most urgent or important points first. The prompt specifies to 'evaluate whether the ordering and emphasis (what is placed first, what is highlighted or repeated) align with the persona’s immediate priorities.' This means the summary should present the most pressing items upfront (Indicator 1) and the layout should help the user quickly identify urgent or actionable items (Indicator 2).",
+  "scoring_guide": {
+    "5": "A complete mismatch in ordering; critical information is buried or missing emphasis.",
+    "4": "Priorities are largely jumbled, causing vital points to be overshadowed.",
+    "3": "There is some confusion about the hierarchy of importance.",
+    "2": "The summary is mostly well-ordered, with only minor suboptimal emphasis.",
+    "1": "The summary is perfectly structured to highlight top priorities first; it is easy to skim for key items."
+  },
+  "example": {
+    "transcript": "Team Lead: The bug fix is urgent and must be deployed by noon. The design update can wait until the end of the day.",
+    "high_score": {
+      "persona": "Developer",
+      "summary": "The bug fix is urgent and needs deployment by noon; the design update is scheduled for later today.",
+      "explanation": "The summary places the urgent bug fix at the forefront and satisfies both indicators by clearly differentiating urgent tasks from less critical ones."
+    },
+    "low_score": {
+      "persona": "Developer",
+      "summary": "There are multiple updates: a bug fix and a design update. The bug fix is mentioned later.",
+      "explanation": "The critical bug fix is not emphasized at the beginning, failing Indicator 1, and the overall ordering does not help the reader quickly find urgent items, violating Indicator 2."
+    }
+  }
+}

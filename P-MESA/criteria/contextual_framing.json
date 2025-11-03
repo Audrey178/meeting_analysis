@@ -1,0 +1,24 @@
+{
+  "name": "contextual_framing",
+  "definition": "Assesses whether the summary provides the necessary background context so that the reader can fully understand the situation. The prompt instructs to 'check if the summary provides necessary background (historical decisions, cross-departmental factors, prior events),' meaning that past decisions or external factors must be briefly explained (Indicator 1) and any dependencies or references to others’ work should be clarified (Indicator 2).",
+  "scoring_guide": {
+    "5": "No context provided; the user is left in the dark about important references or history.",
+    "4": "Sparse background; the user struggles to understand references to prior events.",
+    "3": "Partial context is provided, but gaps remain that hamper full comprehension.",
+    "2": "Mostly thorough background is given, with only minor omissions.",
+    "1": "Comprehensive context; all relevant historical or external references are included and clearly explained."
+  },
+  "example": {
+    "transcript": "Project Manager: Last quarter, due to supply chain issues, we delayed the product launch. This quarter, the market conditions have improved, allowing us to resume our original timeline.",
+    "high_score": {
+      "persona": "Project Manager",
+      "summary": "Following a delay last quarter due to supply chain issues, the improved market conditions this quarter now allow us to adhere to the original product launch timeline.",
+      "explanation": "The summary effectively incorporates historical context and clarifies the reasons behind the current timeline, satisfying both indicators."
+    },
+    "low_score": {
+      "persona": "Project Manager",
+      "summary": "The product launch is scheduled as planned this quarter.",
+      "explanation": "The summary omits the crucial context regarding previous delays and their impact, failing to meet both indicators for comprehensive understanding."
+    }
+  }
+}
