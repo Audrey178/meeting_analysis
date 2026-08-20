@@ -14,111 +14,93 @@ class Agents:
         
     def expert_agent(self, summary_input: Dict, outline: List[str], feedback_prompt: str = "") -> str:
         """
-        Generate summary following outline structure and using matched facts with context.
+        Generate the "II. NỘI DUNG" section of a formal "Thông báo kết luận"
+        document: one numbered item per outline title, drafted in formal
+        administrative Vietnamese from the chair's ([CHAIR]-sourced) facts.
         """
         system_prompt = f"""
-        You are an expert summarization agent tasked with creating a structured meeting summary.
-        Your primary goal is to follow the outline exactly while using matched facts and their contexts 
-        to provide detailed information for each outline point.
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
 
-        CRITICAL CONSTRAINTS:
-        - DO NOT add any information that is not present in the provided contexts
-        - DO NOT hallucinate or infer information
-        - ONLY use facts and contexts explicitly provided
-        - Summary MUST be between 150-200 words
-        - Follow outline structure exactly
+        Bạn là chuyên viên Văn phòng soạn phần "II. NỘI DUNG" của một văn bản
+        "Thông báo kết luận" (thể loại văn bản hành chính Đảng/Nhà nước) từ
+        ý kiến kết luận, chỉ đạo của người chủ trì cuộc họp.
+        
+        Đây KHÔNG PHẢI là bản tóm tắt hội thoại tự do và KHÔNG PHẢI là bản
+        tổng hợp toàn bộ nội dung Presenter đã trình bày. Đây là văn bản hành
+        chính thể hiện các ý kiến kết luận/chỉ đạo của người chủ trì.
 
-        Key Requirements:
-        1. Outline Adherence:
-        - STRICTLY follow the provided outline structure
-        - Each outline point must be addressed in order
-        - Maintain the outline's hierarchical organization
-        - Ensure all major sections are covered
-        - Use ONLY provided facts and contexts
-        
-        2. Using Enhanced Context:
-        For each outline point:
-        a. Find relevant matched facts where:
-            - Fact's category/type matches the outline point
-            - Fact has supporting context
-            - Fact's importance score is appropriate
-        
-        b. Use the matched fact's context effectively:
-            - Use ONLY provided fact content and context
-            - No additional interpretation or assumptions
-            - Stay strictly within provided information
-        
-        3. Content Organization:
-        For each outline section:
-        a. Begin with high-importance matched facts (scores 8-10)
-            - Include relevant context as provided
-            - No additional inferences
-        
-        b. Support with medium-importance facts (scores 6-7)
-            - Use only provided context
-            - Keep within word limit
-        
-        c. Add context from lower-importance facts if needed
-            - Only if space permits within word limit
-            - No speculative connections
+        NGUYÊN TẮC:
+- CHỈ nội dung [CHAIR] mới được xem là ý kiến kết luận, quyết định,
+  chỉ đạo hoặc yêu cầu của người chủ trì.
+- [PRESENTER] chỉ được dùng làm thông tin nền/bổ sung cho kết luận
+  [CHAIR], KHÔNG được tự tạo kết luận từ nội dung Presenter.
+- Không suy luận Chair đồng ý, thống nhất, phê duyệt hoặc yêu cầu điều
+  gì chỉ vì Presenter đã đề xuất/nêu nội dung đó.
+- Không thêm thông tin, số liệu, ngày tháng, tên đơn vị hoặc nhiệm vụ
+  không có trong context.
+- Không biến OBJECTIVE thành ACTION hoặc STATUS thành DECISION.
 
-        4. Integration Guidelines:
-        - Use ONLY provided facts and contexts
-        - Make connections ONLY when explicitly supported
-        - Skip outline points with no matching facts rather than speculate
-        - Maintain word limit of 150-200 words
+ƯU TIÊN:
+- ACTION/DECISION của [CHAIR]: nội dung kết luận chính.
+- STATUS của [CHAIR]: giữ đúng trạng thái hiện tại nếu quan trọng.
+- OBJECTIVE/INSIGHT/CONTEXT của [CHAIR]: chỉ dùng khi liên quan trực
+  tiếp hoặc làm rõ kết luận.
+- [PRESENTER]&#58; chỉ làm bối cảnh, không tạo mục kết luận độc lập.
 
-        5. Special Cases:
-        a. If an outline point has no direct fact matches:
-            - Skip if no relevant information available
-            - DO NOT make assumptions or add information
-            - Move to next outline point
-        
-        b. If multiple facts match an outline point:
-            - Prioritize by importance_score
-            - Stay within word limit
-            - Use only provided connections
+CÁCH VIẾT:
+- DECISION → "Thống nhất...", "Ghi nhận..."
+- ACTION → "Đề nghị...", "Giao...", "Rà soát..."
+- OBJECTIVE → "Mục tiêu...", "Dự kiến...", "Theo kế hoạch..."
+- STATUS → giữ nguyên trạng thái "chưa...", "đang...", "chờ..."
+- INSIGHT/CONTEXT → trình bày như nhận định/thông tin nền.
+- Chỉ dùng động từ chỉ đạo khi fact thực sự là ACTION/DECISION của Chair.
 
-        Remember:
-        - NEVER add information not in provided context
-        - Skip points without supporting facts
-        - Use only explicit connections
-        - Keep summary between 150-200 words
-        - Format as cohesive paragraphs that flow naturally
-        - DO NOT use bullet points, headers, or numbered lists
-        - Present as a smooth narrative that covers key points from the outline
-
+CẤU TRÚC:
+- Phải tạo đúng số mục bằng số outline item, đúng thứ tự.
+- Mỗi mục đánh số 1., 2., 3....
+- Có thể dùng gạch đầu dòng con nếu cần.
+- Nếu thiếu dữ liệu cụ thể → "[CẦN BỔ SUNG]".
+- Nếu outline item không có fact hỗ trợ → "[CẦN BỔ SUNG NỘI DUNG]".
+- Không giới hạn số từ cứng.
         """
 
         user_prompt = f"""
-        Generate a 150-200 word meeting summary that follows this outline exactly:
-        {outline}
+Viết phần "II. NỘI DUNG" theo đúng outline:
 
-        Use ONLY these matched facts and their contexts to support each outline point:
-        {summary_input['matched_information']}
+{outline}
 
-        Consider these unmatched features ONLY where explicitly relevant:
-        {summary_input['unmatched_features']}
+MATCHED INFORMATION:
+{summary_input['matched_information']}
 
-        Previous Feedback (if any):
-        {feedback_prompt}
+UNMATCHED FEATURES:
+{summary_input['unmatched_features']}
 
-        IMPORTANT:
-        - Use ONLY provided information
-        - NO hallucination or inference
-        - Stay within 150-200 words    
-        - Format as cohesive paragraphs that flow naturally
-        - DO NOT use bullet points, headers, or numbered lists
-        - Present as a smooth narrative that covers key points from the outline and Skip outline points without supporting facts
+PREVIOUS FEEDBACK:
+{feedback_prompt}
 
-        """
-        
+IMPORTANT:
+- CHỈ [CHAIR] là nguồn của ý kiến kết luận.
+- [PRESENTER] chỉ làm nền/bổ sung, không tạo kết luận mới.
+- Chỉ dùng thông tin được cung cấp, không hallucinate/inference.
+- Đúng số mục và đúng thứ tự outline.
+- Thiếu dữ liệu → "[CẦN BỔ SUNG]", không bịa.
+- Không giới hạn số từ.
+"""
+
         message = ModelHandler.build_message(system_prompt, user_prompt)
         response = ModelHandler.call_model_with_retry(
-            self.client, message, self.model, "Summary Generation",    
-            category="Summary Generation", 
-            log_base_path=self.log_base_path
-            )            
+            self.client, message, self.model, "Summary Generation",
+            category="Summary Generation",
+            log_base_path=self.log_base_path,
+            # This drafts the full "II. NỘI DUNG" (all outline items, no hard
+            # word limit per the prompt above) in one shot. The default
+            # max_tokens=1000 was silently cutting it off mid-sentence once
+            # the outline had more than a handful of items — bump it in line
+            # with every other heavy-generation call in this pipeline
+            # (checker_agent, atomic_facts, hallucination_validator all use
+            # 8000).
+            max_tokens=8000
+            )
         return response
 
     def checker_agent(self, summary_input: Dict, outline: List[str], generated_summary: str):
@@ -128,76 +110,109 @@ class Agents:
             "feedback": "Summary follows outline and uses provided facts correctly."
         }
         
-        system_prompt = f"""
-        You are a checker agent evaluating a meeting summary. Verify:
+        system_prompt = """
+NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
 
-        1. Outline Adherence (40 points)
-        - Each outline point is addressed in order
-        - No points are skipped unless no matching facts exist
-        - Information appears under correct outline sections
-        - Maintains outline's hierarchical structure
+Bạn là checker agent đánh giá phần "II. NỘI DUNG" của văn bản
+"Thông báo kết luận".
 
-        2. Content Accuracy (30 points)
-        - Uses ONLY provided facts and contexts
-        - No hallucinated or inferred information
-        - Facts appear under relevant outline points
-        - Matches maintain their original context
+KIỂM TRA:
 
-        3. Information Coverage (20 points)
-        - High importance facts (8-10) are included
-        - Critical decisions and actions covered
-        - Essential context is preserved
-        - No important information is missing
+1. Outline Adherence
+- Mỗi outline item tương ứng đúng 1 mục, đúng thứ tự.
+- Đánh số liên tục 1., 2., 3....
+- Không bỏ mục; mục thiếu dữ liệu phải giữ lại với
+  "[CẦN BỔ SUNG NỘI DUNG]".
 
-        4. Format Requirements (10 points)
-        - Length is between 150-200 words
-        - Professional tone maintained
-        - Clear and concise writing
-        - Logical flow between points
+2. Source & Content Accuracy — QUAN TRỌNG NHẤT
+- CHỈ [CHAIR] mới được dùng làm nguồn của ý kiến kết luận,
+  quyết định, chỉ đạo hoặc yêu cầu.
+- [PRESENTER] chỉ được dùng làm thông tin nền/bổ sung cho kết luận
+  [CHAIR], không được tự biến thành kết luận.
+- Không được suy luận Chair đồng ý, thống nhất, phê duyệt hoặc yêu cầu
+  điều gì chỉ vì Presenter đã đề xuất/nêu nội dung đó.
+- Chỉ sử dụng thông tin có trong facts/context; không hallucinate.
+- Không bịa số hiệu văn bản, ngày tháng, số liệu, tên đơn vị,
+  thời hạn hoặc nhiệm vụ.
 
-        Scoring Deductions:
-        - Missing outline point with available facts (-10)
-        - Wrong information placement (-8)
-        - Hallucinated content (-15)
-        - Missing high-importance fact (-10)
-        - Incorrect context usage (-8)
-        - Outside word limit (-10)
+3. Feature Type Accuracy
+- OBJECTIVE → phải giữ là mục tiêu/kế hoạch/dự kiến; không được biến
+  thành "Đề nghị..." hoặc chỉ đạo giả.
+- STATUS → phải giữ đúng trạng thái "chưa...", "đang...", "chờ...";
+  không được biến thành quyết định đã hoàn tất.
+- DECISION → có thể thể hiện "Thống nhất...", "Ghi nhận...".
+- ACTION → có thể thể hiện "Đề nghị...", "Giao...", "Rà soát..."
+  nếu ACTION thực sự thuộc [CHAIR].
+- INSIGHT/CONTEXT → chỉ trình bày như nhận định/thông tin nền.
 
-        Output: JSON with:
-        - confidence_score (0-100)
-        - feedback (specific issues and suggestions)
-        """
-        
+4. Information Coverage
+- Các feature quan trọng của [CHAIR] phải được phản ánh.
+- Không làm mất hoặc làm sai chủ đề kết luận.
+- Không yêu cầu đưa [PRESENTER] vào như một kết luận nếu Chair không
+  có kết luận tương ứng.
+
+5. Format
+- Văn phong hành chính, trang trọng, khách quan.
+- Các mục rõ ràng, không lẫn nội dung giữa các mục.
+
+TRỪ ĐIỂM:
+- Bỏ mục outline: -15
+- Sai/nhảy số: -10
+- Sai nguồn kết luận ([PRESENTER] bị viết thành kết luận Chair): -20
+- Hallucination/bịa thông tin: -20
+- OBJECTIVE bị biến thành ACTION: -20
+- STATUS bị đảo ngược ý nghĩa: -15
+- Thiếu feature quan trọng của CHAIR: -10
+- Thiếu placeholder khi dữ liệu cụ thể không có: -10
+
+OUTPUT:
+Trả về JSON hợp lệ với đúng 2 trường:
+{
+  "confidence_score": 0-100,
+  "feedback": "Các lỗi cụ thể và cách sửa"
+}
+"""
+
         user_prompt = f"""
-        Evaluate this summary against outline and requirements:
+Đánh giá phần "II. NỘI DUNG" dưới đây:
 
-        Outline to Follow:
-        {outline}
+OUTLINE:
+{outline}
 
-        Available Facts and Contexts:
-        {summary_input['matched_information']}
+MATCHED FACTS / CONTEXTS:
+{summary_input['matched_information']}
 
-        Unmatched Features:
-        {summary_input['unmatched_features']}
+UNMATCHED FEATURES:
+{summary_input['unmatched_features']}
 
-        Generated Summary:
-        {generated_summary}
+GENERATED DRAFT:
+{generated_summary}
 
-        Check for:
-        1. Outline adherence
-        2. Fact accuracy
-        3. Important information coverage
-        4. Word limit (150-200)
+Kiểm tra:
+1. Đúng số mục, đúng thứ tự outline.
+2. CHỈ [CHAIR] được dùng làm nguồn kết luận.
+3. [PRESENTER] không bị biến thành kết luận của Chair.
+4. Đúng feature_type, đặc biệt OBJECTIVE/STATUS.
+5. Không hallucinate hoặc suy luận.
+6. Các thông tin quan trọng của CHAIR được phản ánh.
+7. Đúng văn phong hành chính.
 
-        Provide detailed feedback on any issues found.
-        """
-
+Nêu cụ thể từng lỗi nếu có và đề xuất cách sửa.
+"""
         message = ModelHandler.build_message(system_prompt, user_prompt)
-        response = ModelHandler.call_model_with_retry(
-            self.client, message, self.model, "Sumamry Checker Agent", category="Sumamry Checker Agent", 
-            log_base_path=self.log_base_path,
-            max_tokens=4000
-        )
+        try:
+            response = ModelHandler.call_model_with_retry(
+                self.client, message, self.model, "Sumamry Checker Agent", category="Sumamry Checker Agent",
+                log_base_path=self.log_base_path,
+                max_tokens=8000
+            )
+        except Exception as e:
+            # Unlike every other agent in this pipeline, this call wasn't guarded:
+            # a model failure (rate limit exhaustion, context-length error, ...)
+            # used to propagate all the way up and crash run_pipeline.py instead
+            # of degrading gracefully like atomic_facts/hallucination_validator do.
+            logging.error(f"Checker agent call failed: {str(e)}")
+            return output_format
 
         enriched_template = _clean_response(response)
 
@@ -218,7 +233,7 @@ class Agents:
         best_summary = ""
         best_score = 0
         
-        for attempt in range(3):
+        for attempt in range(1):
             summary = self.expert_agent(summary_input, outline, feedback_prompt)
             check_result = self.checker_agent(summary_input, outline, summary)
             

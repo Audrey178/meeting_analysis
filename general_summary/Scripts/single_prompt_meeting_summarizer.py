@@ -42,6 +42,8 @@ class SinglePromptMeetingSummarizer:
 
         # ——— SYSTEM PROMPT ————————————————————————————————————————————————————
         system_prompt = f"""
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
+
 You are an advanced assistant skilled in summarizing meeting transcripts accurately and concisely.
 
 Your task is to analyze the provided transcript and, within this single response, internally apply the following process:

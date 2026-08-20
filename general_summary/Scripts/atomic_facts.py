@@ -109,93 +109,118 @@ class AtomicFacts:
         Returns new atomic facts.
         """
         system_prompt = """
-        You are an expert at breaking down meeting transcripts into atomic facts.
-        Your task is to regenerate facts while fixing specific issues.
-
-        IMPORTANT RULES:
-        1. Output must be a valid JSON list of objects
-        2. NEVER add information not in the transcript
-        3. Skip unclear or ambiguous content
-        4. Each fact must be atomic (single piece of information)
-        5. NO hallucination or inference
-        6. ONLY include information explicitly stated
-        7. Address ALL provided feedback points
-        8. Must fix previously identified issues
-
-        CONTENT GUIDELINES - STRICTLY FOLLOW:
-        1. INCLUDE only:
-           - Clear, explicit statements
-           - Complete, meaningful information
-           - Actionable items or decisions
-           - Important discussion points
-           - Concrete facts or outcomes
-
-        2. EXCLUDE completely:
-           - Filler statements (e.g., "OK", "Right", "Mm-hmm")
-           - General acknowledgments
-           - Incomplete or unclear statements
-           - Transcription artifacts
-           - Side conversations
-           - Redundant information
-           - Ambiguous statements
-           - Previously flagged hallucinations
-
-        3. For each fact, provide:
-           - "fact": Single, atomic piece of information
-           - "context": Current chunk's context
-           - "verbose_context": Historical context
-           ALL must be explicitly supported by source text
-
-        Output Format:
-        Must return a JSON list of objects, each with exactly these fields:
-        [
-            {
-                "fact": "Clear atomic statement",
-                "context": "Immediate context and implications",
-                "verbose_context": "Comprehensive context with history"
-            }
-        ]
-        """
+                Bạn là chuyên gia bóc tách nội dung cuộc họp hành chính thành các đơn vị thông tin nguyên tử. Đầu ra của bạn sẽ được dùng để soạn Thông báo kết luận cuộc họp, nên tiêu chí cao nhất là KHÔNG BỎ SÓT chỉ đạo, không phải cô đọng nội dung.
+                
+                QUY TẮC QUAN TRỌNG:
+                1. Đầu ra phải là một danh sách JSON hợp lệ gồm nhiều object.
+                2. TUYỆT ĐỐI KHÔNG thêm thông tin không có trong biên bản.
+                3. Bỏ qua các nội dung không rõ ràng hoặc mơ hồ.
+                4. Mỗi “fact” phải là thông tin nguyên tử (chỉ chứa MỘT sự kiện hoặc ý đơn lẻ).
+                5. TUYỆT ĐỐI KHÔNG tự suy luận hoặc đoán thêm.
+        
+                HƯỚNG DẪN NỘI DUNG – TUÂN THỦ NGHIÊM NGẶT:
+                1. CHỈ BAO GỒM:
+                    - Phát biểu rõ ràng, cụ thể.
+                    - Các thông tin đầy đủ và có ý nghĩa.
+                    - Các đầu việc cần làm hoặc quyết định đã được đưa ra.
+                    - Các điểm thảo luận quan trọng.
+                    - Sự kiện hoặc kết quả cụ thể.
+        
+                2. HOÀN TOÀN BỎ QUA:
+                   - Các câu đệm, câu xã giao (“OK”, “Đúng rồi”, “Vâng”...)
+                   - Các câu xác nhận chung chung.
+                   - Câu nói chưa trọn ý hoặc mơ hồ.
+                   - Các ký hiệu, lỗi biên bản như {"disfmarker"} hoặc {"vocalsound"}
+                   - Các cuộc hội thoại bên lề.
+                   - Các thông tin lặp lại.
+                   - Phát biểu không đủ rõ ràng.
+        
+        
+                3. Mỗi sự kiện (“fact”) được chọn cần:
+                   - "fact": Một phát biểu đơn nhất, nguyên tử.
+                   - "context": Phần ngữ cảnh hiện tại liên quan, BẮT BUỘC phải đưa tiền tố tag vai trò [CHAIR] hoặc [PRESENTER] chính xác như trong biên bản gốc vào đầu chuỗi này; không thêm tag khi nguồn gốc không rõ ràng/đan xen.
+                   - "verbose_context": Bối cảnh rộng hơn, có lịch sử trước đó nếu cần thiết.
+        
+                4. YÊU CẦU TAG VAI TRÒ (RẤT QUAN TRỌNG – TUYỆT ĐỐI KHÔNG ĐƯỢC LÀM MẤT):
+                   - Các dòng biên bản đầu vào luôn có sẵn tag [CHAIR] hoặc [PRESENTER] ở đầu mỗi lượt nói.
+                   - Mỗi “fact” trích xuất, ở trường “context” PHẢI giữ đúng tag vai trò đó đầu chuỗi (thí dụ: “[CHAIR] ...”, “[PRESENTER] ...”).
+                   - KHÔNG đưa tag này vào trường “fact” hay “verbose_context”.
+                   - KHÔNG dịch, viết lại, hoặc tự chế ra tag nếu không xác định được nguồn (bỏ trống tag ở những trường hợp này).
+        
+                Định dạng đầu ra:
+                Trả lại một danh sách JSON với mỗi object gồm chính xác 3 trường:
+                [
+                    {
+                        "fact": "Phát biểu sự thật nguyên tử, rõ ràng",
+                        "context": "[CHAIR] Ngữ cảnh trực tiếp và tác động",
+                        "verbose_context": "Bối cảnh tổng thể, bao gồm lịch sử trước đó nếu cần"
+                    },
+                    ...
+                ]
+        
+                Ví dụ đầu ra hợp lệ:
+                [
+                    {
+                        "fact": "Nhóm đã đồng ý ra mắt sản phẩm vào quý 3",
+                        "context": "[CHAIR] Thảo luận về các ràng buộc thời gian và điều kiện thị trường",
+                        "verbose_context": "Sau nhiều lần trì hoãn và phân tích thị trường, quý 3 được chọn để đạt hiệu quả cao nhất"
+                    }
+                ]
+        
+                Ví dụ đầu ra KHÔNG hợp lệ, CẤM sử dụng:
+                    - Dùng từ đệm: {"fact": "OK, chúng ta sẽ làm vậy"}
+                    - Phát biểu không rõ ý: {"fact": "Có lẽ chúng ta nên..."}
+                    - Lỗi/ký hiệu biên bản: {"fact": "Speaker1 {disfmarker}"}
+                    - Phát biểu đa ý, không nguyên tử: {"fact": "Nhóm đã thảo luận về thời gian, ngân sách và nguồn lực"}
+        
+                YÊU CẦU ĐẦU RA:
+                    - JSON LIST, KHÔNG bọc trong code block.
+                    - Nội dung câu trả lời viết hoàn toàn bằng tiếng Việt.
+                    - Mỗi object chỉ chứa đúng ba trường: fact, context, verbose_context.
+                    - Luôn giữ chính xác tag vai trò (nếu có) ở đầu trường "context".
+        
+                NHẮC LẠI: Dịch hoàn toàn yêu cầu sang tiếng Việt và TUÂN THỦ chặt chẽ cấu trúc, quy tắc trên khi xử lý bất kỳ đầu vào nào.
+                """
 
         user_prompt = f"""
-        REGENERATE ATOMIC FACTS FOR THIS TEXT:
+        TẠO LẠI CÁC FACT NGUYÊN TỬ CHO ĐOẠN VĂN NÀY:
 
         {previous_chunk_context}
 
 
-        SOURCE TEXT:
+        VĂN BẢN NGUỒN:
         {chunk}
 
 
-        PREVIOUS FEEDBACK TO ADDRESS:
+        PHẢN HỒI TRƯỚC ĐÓ CẦN ĐƯỢC KHẮC PHỤC:
         {feedback}
 
-        REQUIREMENTS:
-        1. Fix ALL issues mentioned in feedback
-        2. Follow ALL rules from original extraction:
-           - Only explicit information from source
-           - Break into atomic facts
-           - Provide accurate context
-           - No inferences or assumptions
-           - Skip unclear content
-           - Proper JSON format
-           - Include all required fields
+        YÊU CẦU:
+        1. Khắc phục TẤT CẢ các vấn đề được đề cập trong phản hồi
+        2. Tuân thủ TẤT CẢ các quy tắc của quá trình trích xuất ban đầu:
+           - Chỉ sử dụng thông tin được nêu rõ trong nguồn
+           - Chia nhỏ thành các fact nguyên tử
+           - Cung cấp ngữ cảnh chính xác
+           - Không suy luận hoặc giả định
+           - Bỏ qua nội dung không rõ ràng
+           - Đảm bảo định dạng JSON hợp lệ
+           - Bao gồm tất cả các trường bắt buộc
 
-        3. Additional regeneration requirements:
-           - Address each feedback point specifically
-           - Remove any previously identified hallucinations
-           - Double-check context accuracy
-           - Ensure no new issues are introduced
-           - Maintain completeness while fixing issues
+        3. Yêu cầu bổ sung khi tạo lại:
+           - Xử lý cụ thể từng điểm được nêu trong phản hồi
+           - Loại bỏ tất cả các hallucination đã được xác định trước đó
+           - Kiểm tra lại kỹ tính chính xác của ngữ cảnh
+           - Đảm bảo không phát sinh thêm vấn đề mới
+           - Duy trì tính đầy đủ trong khi khắc phục các vấn đề
 
-        4. Verification steps for each fact:
-           - Is it explicitly stated in source?
-           - Is context accurate and supported?
-           - Are all elements verifiable?
-           - Have previous issues been fixed?
-           - Is it properly atomic?
+        4. Các bước xác minh đối với từng fact:
+           - Fact này có được nêu rõ trong nguồn hay không?
+           - Ngữ cảnh có chính xác và được nguồn hỗ trợ hay không?
+           - Tất cả các thành phần của fact có thể được kiểm chứng hay không?
+           - Các vấn đề trước đó đã được khắc phục hay chưa?
+           - Fact này đã đủ tính nguyên tử hay chưa?
 
-        Generate complete, corrected set of atomic facts."""
+        Tạo ra tập hợp đầy đủ và đã được hiệu chỉnh của các fact nguyên tử."""
 
         try:
             message = ModelHandler.build_message(system_prompt, user_prompt)
@@ -203,7 +228,7 @@ class AtomicFacts:
                 self.client, message, self.model, "regeneration",    
                 category="Fact Regenration", 
                  log_base_path=self.log_base_path,
-                verbose=True, max_tokens=4000
+                verbose=True, max_tokens=8000
             )
 
             enriched_template = _clean_response(response)
@@ -220,7 +245,7 @@ class AtomicFacts:
 
     def Break_into_atomic_facts(self, chunk,log_base_path):
         """
-        Break chunk into atomic facts with context.
+        Break a chunk into atomic facts with context.
         Returns a list of dictionaries, each containing fact, context, and verbose_context.
         """
         default_template = [{
@@ -230,62 +255,77 @@ class AtomicFacts:
         }]
 
         system_prompt = """
-        You are an expert at breaking down meeting transcripts into atomic facts. Your task is to extract clear, factual statements with proper context.
+        Bạn là chuyên gia bóc tách nội dung cuộc họp hành chính thành các đơn vị thông tin nguyên tử. Đầu ra của bạn sẽ được dùng để soạn Thông báo kết luận cuộc họp, nên tiêu chí cao nhất là KHÔNG BỎ SÓT chỉ đạo, không phải cô đọng nội dung.
+        
+        QUY TẮC QUAN TRỌNG:
+        1. Đầu ra phải là một danh sách JSON hợp lệ gồm nhiều object.
+        2. TUYỆT ĐỐI KHÔNG thêm thông tin không có trong biên bản.
+        3. Bỏ qua các nội dung không rõ ràng hoặc mơ hồ.
+        4. Mỗi “fact” phải là thông tin nguyên tử (chỉ chứa MỘT sự kiện hoặc ý đơn lẻ).
+        5. TUYỆT ĐỐI KHÔNG tự suy luận hoặc đoán thêm.
 
-        IMPORTANT RULES:
-        1. Output must be a valid JSON list of objects
-        2. NEVER add information not in the transcript
-        3. Skip unclear or ambiguous content
-        4. Each fact must be atomic (single piece of information)
-        5. NO hallucination or inference
+        HƯỚNG DẪN NỘI DUNG – TUÂN THỦ NGHIÊM NGẶT:
+        1. CHỈ BAO GỒM:
+            - Phát biểu rõ ràng, cụ thể.
+            - Các thông tin đầy đủ và có ý nghĩa.
+            - Các đầu việc cần làm hoặc quyết định đã được đưa ra.
+            - Các điểm thảo luận quan trọng.
+            - Sự kiện hoặc kết quả cụ thể.
 
-        CONTENT GUIDELINES - STRICTLY FOLLOW:
-        1. INCLUDE only:
-           - Clear, explicit statements
-           - Complete, meaningful information
-           - Actionable items or decisions
-           - Important discussion points
-           - Concrete facts or outcomes
+        2. HOÀN TOÀN BỎ QUA:
+           - Các câu đệm, câu xã giao (“OK”, “Đúng rồi”, “Vâng”...)
+           - Các câu xác nhận chung chung.
+           - Câu nói chưa trọn ý hoặc mơ hồ.
+           - Các ký hiệu, lỗi biên bản như {"disfmarker"} hoặc {"vocalsound"}
+           - Các cuộc hội thoại bên lề.
+           - Các thông tin lặp lại.
+           - Phát biểu không đủ rõ ràng.
 
-        2. EXCLUDE completely:
-           - Filler statements (e.g., "OK", "Right", "Mm-hmm")
-           - General acknowledgments
-           - Incomplete or unclear statements
-           - Transcription artifacts like {"disfmarker"} or {"vocalsound"}
-           - Side conversations
-           - Redundant information
-           - Ambiguous statements
 
-        3. For each included fact, provide:
-           - "fact": Single, atomic piece of information
-           - "context": Current chunk's context
-           - "verbose_context": Historical context
+        3. Mỗi sự kiện (“fact”) được chọn cần:
+           - "fact": Một phát biểu đơn nhất, nguyên tử.
+           - "context": Phần ngữ cảnh hiện tại liên quan, BẮT BUỘC phải đưa tiền tố tag vai trò [CHAIR] hoặc [PRESENTER] chính xác như trong biên bản gốc vào đầu chuỗi này; không thêm tag khi nguồn gốc không rõ ràng/đan xen.
+           - "verbose_context": Bối cảnh rộng hơn, có lịch sử trước đó nếu cần thiết.
 
-        Output Format:
-        Must return a JSON list of objects, each with exactly these fields:
+        4. YÊU CẦU TAG VAI TRÒ (RẤT QUAN TRỌNG – TUYỆT ĐỐI KHÔNG ĐƯỢC LÀM MẤT):
+           - Các dòng biên bản đầu vào luôn có sẵn tag [CHAIR] hoặc [PRESENTER] ở đầu mỗi lượt nói.
+           - Mỗi “fact” trích xuất, ở trường “context” PHẢI giữ đúng tag vai trò đó đầu chuỗi (thí dụ: “[CHAIR] ...”, “[PRESENTER] ...”).
+           - KHÔNG đưa tag này vào trường “fact” hay “verbose_context”.
+           - KHÔNG dịch, viết lại, hoặc tự chế ra tag nếu không xác định được nguồn (bỏ trống tag ở những trường hợp này).
+
+        Định dạng đầu ra:
+        Trả lại một danh sách JSON với mỗi object gồm chính xác 3 trường:
         [
             {
-                "fact": "Clear atomic statement",
-                "context": "Immediate context and implications",
-                "verbose_context": "Comprehensive context with history"
+                "fact": "Phát biểu sự thật nguyên tử, rõ ràng",
+                "context": "[CHAIR] Ngữ cảnh trực tiếp và tác động",
+                "verbose_context": "Bối cảnh tổng thể, bao gồm lịch sử trước đó nếu cần"
             },
             ...
         ]
 
-        Example valid output:
+        Ví dụ đầu ra hợp lệ:
         [
             {
-                "fact": "Team agreed to launch product in Q3",
-                "context": "Discussion about timeline constraints and market conditions",
-                "verbose_context": "Following previous delays and market analysis, Q3 was chosen for optimal impact"
+                "fact": "Nhóm đã đồng ý ra mắt sản phẩm vào quý 3",
+                "context": "[CHAIR] Thảo luận về các ràng buộc thời gian và điều kiện thị trường",
+                "verbose_context": "Sau nhiều lần trì hoãn và phân tích thị trường, quý 3 được chọn để đạt hiệu quả cao nhất"
             }
         ]
 
-        Invalid examples to avoid:
-        - Facts containing filler words: {"fact": "OK, we'll do that"}
-        - Unclear statements: {"fact": "Maybe we should..."}
-        - Transcription artifacts: {"fact": "Speaker1 {disfmarker}"}
-        - Compound facts: {"fact": "Team discussed timeline and budget and resources"}
+        Ví dụ đầu ra KHÔNG hợp lệ, CẤM sử dụng:
+            - Dùng từ đệm: {"fact": "OK, chúng ta sẽ làm vậy"}
+            - Phát biểu không rõ ý: {"fact": "Có lẽ chúng ta nên..."}
+            - Lỗi/ký hiệu biên bản: {"fact": "Speaker1 {disfmarker}"}
+            - Phát biểu đa ý, không nguyên tử: {"fact": "Nhóm đã thảo luận về thời gian, ngân sách và nguồn lực"}
+
+        YÊU CẦU ĐẦU RA:
+            - JSON LIST, KHÔNG bọc trong code block.
+            - Nội dung câu trả lời viết hoàn toàn bằng tiếng Việt.
+            - Mỗi object chỉ chứa đúng ba trường: fact, context, verbose_context.
+            - Luôn giữ chính xác tag vai trò (nếu có) ở đầu trường "context".
+
+        NHẮC LẠI: Dịch hoàn toàn yêu cầu sang tiếng Việt và TUÂN THỦ chặt chẽ cấu trúc, quy tắc trên khi xử lý bất kỳ đầu vào nào.
         """
         
         previous_chunk_context = ""
@@ -293,20 +333,27 @@ class AtomicFacts:
             previous_chunk_context = f"\nPrevious chunk for context:\n{self.previous_chunk}\n"
 
         user_prompt = f"""
-        Break down this transcript chunk into atomic facts with context.
-        Remember:
-        - Must return a valid JSON list
-        - Each fact needs all three fields
-        - Only include clear, explicit information
-        - Skip all filler words, acknowledgments, and artifacts
-        - Break compound statements into atomic facts
-        - Exclude unclear or ambiguous content
+        Hãy phân tích đoạn transcript sau thành các sự kiện (fact) nhỏ gọn với đầy đủ ngữ cảnh.
+        - PHẢI trả về danh sách JSON hợp lệ.
+        - Mỗi sự kiện ("fact") bắt buộc phải có đủ ba trường: "fact", "context", "verbose_context".
+        - Chỉ bao gồm thông tin rõ ràng, cụ thể, đã được phát biểu trực tiếp trong đoạn transcript.
+        - Loại bỏ tất cả từ đệm, lời xác nhận, nội dung không liên quan, hoặc những câu thoại không mang thông tin (filler words, acknowledgments, artifacts).
+        - Nếu một câu phát biểu có nhiều sự kiện, hãy tách thành nhiều fact riêng biệt (atomic facts).
+        - Bỏ qua mọi nội dung không rõ ràng hoặc mơ hồ.
+        - GIỮ NGUYÊN TAG VAI TRÒ NGƯỜI NÓI ("[CHAIR]", "[PRESENTER]", v.v.) Ở ĐẦU trường "context" của mỗi fact, theo quy tắc SPEAKER ROLE TAG.
+        - (Nếu có ngữ cảnh từ đoạn trước, chèn vào đúng vị trí {previous_chunk_context})
 
+        Ngữ cảnh từ các đoạn trước (nếu có):  
         {previous_chunk_context}
-        Current chunk:
+
+        Đoạn transcript hiện tại:  
         {chunk}
 
-        Provide output as a JSON list where each object has "fact", "context", and "verbose_context".
+        YÊU CẦU:  
+        Trả về một danh sách JSON, mỗi phần tử là một object có 3 trường:  
+        - "fact" (thông tin sự kiện gốc, đúng nguyên văn, loại bỏ những phần không cần thiết)  
+        - "context" (câu gốc hoặc đoạn gốc chứa fact, bắt đầu bằng SPEAKER ROLE TAG)  
+        - "verbose_context" (ngữ cảnh mở rộng hoặc giải thích nếu cần, có thể giữ nguyên cả đoạn lời nói của speaker, cũng bắt đầu bằng SPEAKER ROLE TAG)
         """
         try:
             message = ModelHandler.build_message(system_prompt, user_prompt)
@@ -314,7 +361,7 @@ class AtomicFacts:
                 self.client, message, self.model, "regeneration",    
                 category="Fact Extraction", 
                 log_base_path=self.log_base_path,
-                verbose=True, max_tokens=4000
+                verbose=True, max_tokens=8000
             )
 
             logging.info(f'Output = {response}')

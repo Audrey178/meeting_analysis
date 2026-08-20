@@ -13,56 +13,58 @@ class HallucinationValidator:
 
     def validate_atomic_facts(self, atomic_facts: List[Dict], previous_chunk_context,chunk: str) -> Dict:
         """
+        Đánh giá tổng thể các facts của 1 chunk so với văn bản gốc (chunk) và ngữ cảnh trước đó (previous_chunk_context).
         Validate atomic facts against original chunk using LLM.
         Returns dict with overall_score, feedback list, and summary.
         """
         system_prompt = """
-        You are an expert at detecting hallucinations in extracted information. Your task is to validate facts against source text.
+        Bạn là chuyên gia phát hiện thông tin suy diễn (hallucination) trong dữ liệu trích xuất. Nhiệm vụ của bạn là xác minh tính xác thực của từng fact (sự kiện/nhận định) so với văn bản gốc.
 
-        Process each fact and its context carefully:
-        1. Compare each fact with the source text
-        2. Check if the context provided is accurate
-        3. Verify if verbose_context contains unsupported information
-        4. Flag any information not explicitly present in source
+        Thực hiện đánh giá cho từng fact theo các bước sau:
+        1. So sánh mỗi fact với văn bản nguồn (SOURCE TEXT).
+        2. Kiểm tra ngữ cảnh cung cấp (context) có chính xác và xuất hiện trong văn bản gốc không.
+        3. Xác định liệu verbose_context có chứa thông tin không được hỗ trợ từ văn bản gốc hay không.
+        4. Đánh dấu tất cả thông tin không được đề cập rõ ràng trong nguồn.
 
-        For each fact, verify:
-        - Is the main fact supported by source text?
-        - Is the context accurate and present in source?
-        - Does verbose_context contain only information from source?
-        - Are there any unsupported assumptions or inferences?
+        Đối với mỗi fact, hãy xác thực:
+        - Fact chính có được văn bản nguồn xác nhận không?
+        - Ngữ cảnh (context) có chính xác và xuất hiện trong nguồn không?
+        - Verbose_context chỉ chứa thông tin trích từ nguồn không?
+        - Có giả định, suy diễn hoặc thổi phồng thông tin nào không có trong nguồn không?
 
-        IMPORTANT:
-        - Process each fact individually
-        - Be specific about hallucinated information
-        - Flag ANY information not in source text
-        - Check both fact and context fields
+        YÊU CẦU QUAN TRỌNG:
+        - Đánh giá TỪNG FACT một cách riêng biệt.
+        - Chỉ rõ các thông tin bị suy diễn/hallucinated.
+        - Đánh dấu BẤT KỲ thông tin nào không thấy trong nguồn.
+        - Kiểm tra kỹ cả trường fact và context.
 
-        Return a JSON object with:
+        Cuối cùng, trả về kết quả dưới dạng một đối tượng JSON với cấu trúc sau (tất cả nội dung bằng tiếng Việt):
+
         {
-            "overall_score": float (0-100, lower means less hallucination) like 0 mean no hehallucination and 100 means facts are completly irrelevant to the chunk ,
-            "feedback": [specific points about hallucinated information],
-            "summary": "Brief summary of validation findings"
+          "overall_score": float (0-100, điểm càng thấp càng ít suy diễn; 0 nghĩa là hoàn toàn đúng, 100 nghĩa là fact hoàn toàn không liên quan nguồn),
+          "feedback": [liệt kê cụ thể các điểm bị suy diễn/hallucinated],
+          "summary": "Tóm tắt ngắn gọn về kết quả xác thực"
         }
         """
 
         user_prompt = f"""
-        ANALYZE THESE ATOMIC FACTS AGAINST SOURCE:
+        Phân tích các dữ kiện nguyên tử bên dưới so với NGUỒN:
 
         {previous_chunk_context}
 
-        SOURCE TEXT:
+        NGUỒN:
         {chunk}
 
-        ATOMIC FACTS TO VALIDATE:
+        DỮ KIỆN NGUYÊN TỬ CẦN XÁC THỰC:
         {json.dumps(atomic_facts, indent=2)}
 
-        Process each fact, context, and verbose_context carefully.
-        - Flag ANY information not present in source
-        - Identify specific hallucinated details
-        - Note unsupported context or background info
-        - Look for exaggerations or assumptions
+        Hãy xử lý cẩn thận từng dữ kiện, từng ngữ cảnh, và verbose_context.
+        - Đánh dấu BẤT KỲ thông tin nào không xuất hiện trong nguồn
+        - Xác định chi tiết bịa đặt/hư cấu/hallucinated cụ thể
+        - Nêu rõ ngữ cảnh hoặc thông tin nền không được nguồn hỗ trợ
+        - Tìm các trường hợp phóng đại hoặc suy đoán
 
-        Return overall evaluation focusing on hallucination detection.
+        Trả về bản đánh giá tổng thể tập trung vào việc phát hiện thông tin bịa đặt/hallucination.
         """
 
         try:
@@ -72,7 +74,7 @@ class HallucinationValidator:
                 category="Fact Verification", 
                 log_base_path=self.log_base_path,
                 verbose=True,
-                max_tokens=4000
+                max_tokens=8000
                 )
 
             enriched_template = _clean_response(response)

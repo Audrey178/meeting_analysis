@@ -87,6 +87,8 @@ class FeatureGenerator:
         }]
 
         system_prompt = """
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
+
         You are an AI tasked with identifying and ranking the most salient features from document facts. Your goal is to extract and prioritize key information based on importance for the final summary.
 
         Instructions:
@@ -168,6 +170,8 @@ class FeatureGenerator:
         Returns a list of outline strings.
         """
         system_prompt = """
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
+
         Create an outline that will guide the creation of a document summary.
 
         The document features are marked with:

@@ -69,6 +69,8 @@ class AtomicFacts:
         Returns new atomic facts.
         """
         system_prompt = """
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
+
         You are an expert at breaking down documents into atomic facts.
         Your task is to regenerate facts while fixing specific issues.
 
@@ -157,7 +159,7 @@ class AtomicFacts:
             message = ModelHandler.build_message(system_prompt, user_prompt)
             response = ModelHandler.call_model_with_retry(
                 self.client, message, self.model, "regeneration", 
-                verbose=True, max_tokens=4000
+                verbose=True, max_tokens=8000
             )
 
             enriched_template = _clean_response(response)
@@ -184,6 +186,8 @@ class AtomicFacts:
         }]
 
         system_prompt = """
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
+
         You are an expert at breaking down documents into atomic facts. Your task is to extract clear, factual statements with proper context.
 
         IMPORTANT RULES:
@@ -264,7 +268,7 @@ class AtomicFacts:
             message = ModelHandler.build_message(system_prompt, user_prompt)
             response = ModelHandler.call_model_with_retry(
                 self.client, message, self.model, "general", 
-                verbose=True, max_tokens=4000
+                verbose=True, max_tokens=8000
             )
 
             enriched_template = _clean_response(response)

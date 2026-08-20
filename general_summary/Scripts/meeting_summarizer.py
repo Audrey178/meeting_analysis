@@ -1,3 +1,4 @@
+
 import logging
 from typing import List, Dict, Tuple
 import pandas as pd
@@ -19,6 +20,7 @@ class MeetingSummarizer:
     def __init__(self, client,model,log_base_path, storage_dir="data_store"):
         self.client = client
         self.model = model
+        self.log_base_path = log_base_path
         self.chunk_processor = ChunkProcessor()
         self.atomic_facts = AtomicFacts(client, model,log_base_path)
         self.feature_generator = FeatureGenerator(client, model,log_base_path)
@@ -30,16 +32,21 @@ class MeetingSummarizer:
         """Generate a unique meeting ID based on transcript content."""
         return hashlib.md5(transcript.encode()).hexdigest()
     
-    def reduce_chunk_size(self, current_token_limit: int, all_chunks_processed: bool) -> Tuple[int, bool]:
-        """Handle chunk size reduction logic."""
-        if current_token_limit > self.chunk_processor.MIN_CHUNK_SIZE:
-            current_token_limit = current_token_limit - self.chunk_processor.STEP_SIZE
-            logging.info(f"Reducing chunk size to {current_token_limit}")
-        else:
-            all_chunks_processed = False
-            raise Exception("Failed to get complete processing even at minimum size")
-        
-        return current_token_limit, all_chunks_processed
+    # Chunking is now turn-based (one chunk = one full speaker turn, see
+    # ChunkProcessor.chunk_transcript), so there is no "size" left to shrink
+    # on retry. MAX_RETRIES_PER_CHUNK instead bounds how many times we retry
+    # the *same* turn before giving up on it — a single unprocessable/garbled
+    # turn (e.g. bad ASR output that keeps failing hallucination validation)
+    # should not stop the entire run.
+    MAX_RETRIES_PER_CHUNK = 3
+
+    def should_skip_chunk(self, retry_count: int) -> bool:
+        """True once a chunk has exhausted its retry budget."""
+        if retry_count >= self.MAX_RETRIES_PER_CHUNK:
+            logging.info(f"Chunk failed {retry_count} times, giving up on it")
+            return True
+        logging.info(f"Retrying chunk (attempt {retry_count + 1}/{self.MAX_RETRIES_PER_CHUNK})")
+        return False
 
     def prepare_enhanced_context(self, unique_features: List[Dict], detailed_contexts: Dict) -> Dict:
         """Prepare enhanced context for summary generation with focus on matched facts."""
@@ -157,51 +164,65 @@ class MeetingSummarizer:
         # If we get here, we need to extract atomic facts
         logging.info("Extracting new atomic facts from transcript...")
         all_atomic_facts = []
-        current_token_limit = self.chunk_processor.INITIAL_CHUNK_SIZE
+        retry_count = 0
         all_chunks_processed = True
-        
+
         # Reset for new transcript
         self.reset_initial_variables()
-        
+
         while True:
-            chunk_text, tokens_used = self.chunk_processor.chunk_transcript(
-                transcript, current_token_limit
-            )
-            
+            # One chunk = one full speaker turn (see ChunkProcessor.chunk_transcript).
+            chunk_text, tokens_used = self.chunk_processor.chunk_transcript(transcript)
+
             if not chunk_text:
                 break
-                
-            logging.info(f"Processing chunk with size: {current_token_limit} tokens for atomic facts extraction")
-            
+
+            logging.info(f"Processing chunk (1 turn, {tokens_used} tokens) for atomic facts extraction")
+
             try:
-                atomic_facts, is_valid_facts = self.atomic_facts.Break_into_atomic_facts(chunk_text)
-                
+                atomic_facts, is_valid_facts = self.atomic_facts.Break_into_atomic_facts(chunk_text, self.log_base_path)
+                logging.info(f"Extracted {len(atomic_facts)} atomic facts from chunk", extra={"atomic_facts": atomic_facts})
                 if is_valid_facts:
                     # Store the atomic facts
                     all_atomic_facts.extend(atomic_facts)
                     self.chunk_processor.advance_position(chunk_text)
-                    
-                    if current_token_limit < self.chunk_processor.MAX_CHUNK_SIZE:
-                        current_token_limit += self.chunk_processor.STEP_SIZE
-                        logging.info(f"Increasing chunk size to {current_token_limit}")
-                    
+                    retry_count = 0
+
                     # Store current chunk as previous for next iteration
                     if self.atomic_facts.previous_chunk != chunk_text:
                         self.atomic_facts.previous_chunk = chunk_text
-                    
+
                 else:
-                    current_token_limit, all_chunks_processed = self.reduce_chunk_size(
-                        current_token_limit, all_chunks_processed
-                    )
+                    retry_count += 1
+                    if self.should_skip_chunk(retry_count):
+                        logging.warning(
+                            f"Skipping unprocessable chunk after repeated hallucination/"
+                            f"format failures, advancing past it: {chunk_text!r}"
+                        )
+                        all_chunks_processed = False
+                        self.chunk_processor.advance_position(chunk_text)
+                        retry_count = 0
                     continue
-                    
+
             except Exception as e:
                 logging.error(f"Error processing chunk for atomic facts: {str(e)}")
-                current_token_limit, all_chunks_processed = self.reduce_chunk_size(
-                    current_token_limit, all_chunks_processed
-                )
+                retry_count += 1
+                if self.should_skip_chunk(retry_count):
+                    logging.warning(
+                        f"Skipping unprocessable chunk after repeated errors, "
+                        f"advancing past it: {chunk_text!r}"
+                    )
+                    all_chunks_processed = False
+                    self.chunk_processor.advance_position(chunk_text)
+                    retry_count = 0
                 continue
-        
+
+        if not all_chunks_processed:
+            logging.warning(
+                "One or more chunks were skipped due to persistent hallucination/"
+                "format failures; extracted atomic facts may be incomplete."
+            )
+
         return all_atomic_facts
 
     def store_facts_relevance_logs(self, transcript: str,atomic_facts_dir):
@@ -266,7 +287,7 @@ class MeetingSummarizer:
             logging.error(f"Error saving regeneration logs for {meeting_id}: {str(e)}")
         
         # Phase 2: Process atomic facts in smaller batches for ranking
-        initial_batch_size = 10  # Start with 8 atomic facts at a time
+        initial_batch_size = 5  # Start with 6 atomic facts at a time
         min_batch_size = 3     # Minimum batch size to try
         all_ranked_features = []
         
@@ -323,7 +344,7 @@ class MeetingSummarizer:
         outline = self.feature_generator.generate_outline(outline_features)
         logging.info(f"Generated outline with {len(outline)} sections")
 
-        logging.info(f'Ranked Features = {ranked_features}')
+        logging.info(f'Ranked Features = {all_ranked_features}')
         logging.info(f"Generated outline = {outline}")
 
         
@@ -364,7 +385,6 @@ class MeetingSummarizer:
         
         # Load the meetings data
         df = pd.read_csv(input_file_path)
-        df = df[26:27]
         logging.info(f"total meetings =  {len(df)}")
         # Process each meeting
         for i, row in df.iterrows():

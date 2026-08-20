@@ -4,14 +4,33 @@ def _clean_response(response):
     # Remove any markdown code block indicators
     response = re.sub(r'```(?:json)?\s*', '', response)
     response = re.sub(r'\s*```\s*', '', response)
-    
+
     # Remove any leading/trailing whitespace
     response = response.strip()
-    
+
     # If the response starts with a single quote and ends with a single quote, remove them
     if response.startswith("'") and response.endswith("'"):
         response = response[1:-1]
-    
+
+    # Some backends (e.g. reasoning models) prepend free-form commentary/thinking
+    # before the actual JSON payload. If the string isn't already bare JSON,
+    # fall back to slicing out the outermost {...} or [...] block, whichever
+    # opens first.
+    stripped = response.strip()
+    if not (stripped.startswith('[') or stripped.startswith('{')):
+        best = None
+        for opener, closer in (('[', ']'), ('{', '}')):
+            start = response.find(opener)
+            if start == -1:
+                continue
+            if best is None or start < best[0]:
+                best = (start, closer)
+        if best is not None:
+            start, closer = best
+            end = response.rfind(closer)
+            if end > start:
+                response = response[start:end + 1]
+
     return response
 
 def _clean_response_relevant_facts(response):

@@ -7,67 +7,55 @@ class PostProcessor:
         self.log_base_path = log_base_path
 
     def post_process_summary(self, combined_summary):
-        
+
         system_prompt = f"""
-        You are an expert editor tasked with refining a document summary. Your goal is to create a polished final summary between 100-150 words that flows naturally and maintains a coherent narrative throughout.
+        NGÔN NGỮ: Phải trả lời bằng tiếng Việt.
 
-        CRITICAL REFINEMENT GUIDELINES:
-        1. FOCUS ON NARRATIVE FLOW:
-           - Create smooth, logical transitions between different points
-           - Establish clear relationships between facts
-           - Connect ideas with appropriate discourse markers
-           - Ensure each sentence builds naturally on the previous one
-           - Avoid abrupt jumps between topics
+        Bạn là chuyên viên Văn phòng biên tập lần cuối phần "II. NỘI DUNG"
+        của một văn bản "Thông báo kết luận" (văn bản hành chính Đảng/Nhà
+        nước) trước khi trình ký. Đây KHÔNG PHẢI bước nén/rút gọn thành một
+        đoạn văn ngắn — đây là bước CHUẨN HÓA VĂN PHONG, giữ nguyên cấu trúc
+        mục đánh số đã có.
 
-        2. MAINTAIN TOPICAL COHERENCE:
-           - Group related information together
-           - Follow a logical progression of ideas
-           - Create a narrative thread that binds the content
-           - Use topic sentences to introduce new conceptual areas
-           - Ensure proper context for each point
+        CRITICAL GUIDELINES:
+        1. GIỮ NGUYÊN CẤU TRÚC:
+           - KHÔNG được gộp các mục lại thành đoạn văn liền mạch
+           - KHÔNG được xoá/gộp/tách lại số thứ tự các mục đã có
+           - Giữ nguyên số lượng mục và thứ tự đánh số
 
-        3. CONCISENESS AND LENGTH:
-           - Aim for exactly 100-150 words total
-           - Prioritize the most important information
-           - Eliminate redundancies and repetitive elements
-           - Remove unnecessary qualifiers and wordiness
-           - Preserve key details while condensing expression
+        2. CHUẨN HÓA VĂN PHONG HÀNH CHÍNH:
+           - Thống nhất cách xưng hô ("đồng chí", thể văn tường thuật)
+           - Câu văn trang trọng, khách quan, đúng văn phong chỉ đạo/kết luận
+           - Sửa lỗi diễn đạt, loại bỏ lặp từ/lặp ý trong CÙNG một mục
+           - Không đổi ý nghĩa, không thêm thông tin mới ngoài bản gốc
 
-        4. STYLE AND CLARITY:
-           - Use consistent tense and perspective
-           - Maintain a professional, objective tone
-           - Ensure precision and clarity in expression
-           - Remove any introductory phrases like "The summary is..."
-           - Create a cohesive document that reads as a single, unified piece
+        3. BẢO TOÀN PLACEHOLDER:
+           - Mọi chuỗi "[CẦN BỔ SUNG]" hoặc "[CẦN BỔ SUNG ...]" PHẢI được
+             giữ nguyên y hệt, không được tự ý điền, đoán, hay xoá bỏ
 
-        OUTPUT GUIDELINES:
-        - Present as 1-2 well-structured paragraphs
-        - Provide exactly 100-150 words (strict requirement)
-        - Ensure the summary reads as a coherent whole
-        - Maintain factual accuracy from the original content
-        - Focus on creating a smooth, natural reading experience
+        4. KHÔNG GIỚI HẠN SỐ TỪ:
+           - Độ dài mỗi mục giữ theo nội dung gốc, không cắt bớt để "cho
+             gọn", không thêm chữ để "cho đủ"
 
         WHAT TO AVOID:
-        - Abrupt transitions between topics
-        - Disconnected factual statements without logical flow
-        - Introducing new information not in the original
-        - Excessive detail on one topic at the expense of others
-        - Uneven or inconsistent coverage of the material
+        - Biến văn bản có mục đánh số thành 1-2 đoạn văn xuôi
+        - Xoá hoặc tự điền bất kỳ placeholder "[CẦN BỔ SUNG]" nào
+        - Thêm thông tin không có trong bản gốc (số liệu, ngày tháng, tên...)
+        - Đổi thứ tự hoặc gộp các mục khác chủ đề với nhau
         """
 
         user_prompt = f"""
-        Here is a document summary that needs refinement:
+        Đây là bản nháp phần "II. NỘI DUNG" cần chuẩn hóa văn phong:
 
         {combined_summary}
 
-        Please create a polished final summary that:
-        1. Maintains all the key information
-        2. Flows naturally with smooth transitions
-        3. Presents a coherent narrative
-        4. Contains exactly 100-150 words
-        5. Reads as a single, unified piece
+        Hãy tạo bản hoàn thiện mà:
+        1. Giữ nguyên toàn bộ số mục, thứ tự mục, và mọi placeholder "[CẦN BỔ SUNG...]"
+        2. Chuẩn hóa văn phong hành chính, trang trọng, nhất quán
+        3. Không gộp các mục thành đoạn văn xuôi, không giới hạn số từ
+        4. Không thêm thông tin mới ngoài bản gốc
 
-        Focus especially on improving the narrative flow and eliminating any "jumpiness" between different points.
+        Chỉ sửa văn phong/diễn đạt — KHÔNG thay đổi cấu trúc mục hay nội dung thực chất.
         """
 
 
@@ -79,8 +67,14 @@ class PostProcessor:
             message,
             self.model,
             "general",
-            category="Summary Refinement", 
-            log_base_path=self.log_base_path
+            category="Summary Refinement",
+            log_base_path=self.log_base_path,
+            # Same fix as expert_agent in agent_processor.py: this rewrites
+            # the whole numbered "II. NỘI DUNG" section (explicitly "KHÔNG
+            # GIỚI HẠN SỐ TỪ" per the prompt above), so the default
+            # max_tokens=1000 was truncating it mid-item. Match the 8000
+            # used elsewhere in the pipeline for full-section generation.
+            max_tokens=8000
         )
         print(refined_summary)
         return refined_summary
