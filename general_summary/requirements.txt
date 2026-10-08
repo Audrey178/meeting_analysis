@@ -1,7 +1,0 @@
-python-dotenv
-openai
-pandas
-datasets
-transformers
-requests
-python-docx

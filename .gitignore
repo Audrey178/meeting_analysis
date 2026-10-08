@@ -125,7 +125,16 @@ ipython_config.py
 # pdm.toml
 .pdm-python
 .pdm-build/
-
+AMI-Topic-Segmentation-Processor/
+inputs/
+outputs/
+private_test/
+eval/
+model/
+model_vn2/
+model_vn3/
+008_ami_vi/
+007_dialtreeseg/
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 # pixi.lock
