@@ -1,0 +1,60 @@
+{
+  "meeting_id": "MTG-DEMO-001",
+  "revision_id": "rev-002",
+  "items": [
+    {
+      "id": "i001",
+      "text": "Tôi xin báo cáo Tờ trình 1374 về đề án phát triển Cảng Cái Mép thành cảng trung chuyển quốc tế.",
+      "speaker": "Nguyễn Cường",
+      "speaker_role": "presenter",
+      "start_ms": 1296,
+      "end_ms": 10324
+    },
+    {
+      "id": "i002",
+      "text": "Mục tiêu là tăng năng lực tiếp nhận tàu lớn. Về nguôn vốn, đề án dự kiến kết hợp ngân sách và vốn doanh nghiệp.",
+      "speaker": "Nguyễn Cường",
+      "speaker_role": "presenter",
+      "start_ms": 10898,
+      "end_ms": 20810,
+      "review": {
+        "text": "Mục tiêu là tăng năng lực tiếp nhận tàu lớn. Về nguồn vốn, đề án dự kiến kết hợp ngân sách và vốn doanh nghiệp."
+      }
+    },
+    {
+      "id": "i003",
+      "text": "Tôi xin hỏi mốc hoàn thành báo cáo đánh giá tác động môi trường là khi nào?",
+      "speaker": "Trần Bình",
+      "speaker_role": "delegate",
+      "start_ms": 22500,
+      "end_ms": 28400
+    },
+    {
+      "id": "i004",
+      "text": "Theo kế hoạch hiện tại, báo cáo sẽ được trình trước ngày 30 tháng 9 năm 2026.",
+      "speaker": "Nguyễn Cường",
+      "speaker_role": "presenter",
+      "start_ms": 29100,
+      "end_ms": 35400
+    },
+    {
+      "id": "i005",
+      "text": "Tôi đề nghị bổ sung phương án huy động vốn tư nhân và công khai tiêu chí lựa chọn nhà đầu tư.",
+      "speaker": "Lê M.",
+      "speaker_role": "delegate",
+      "start_ms": 36800,
+      "end_ms": 44100,
+      "review": {
+        "speaker": "Lê Mai"
+      }
+    },
+    {
+      "id": "i006",
+      "text": "Tôi giao Sở Giao thông chủ trì hoàn thiện báo cáo đánh giá tác động môi trường trước ngày 30 tháng 9 năm 2026 và gửi lại ban thư ký.",
+      "speaker": "Phạm An",
+      "speaker_role": "chair",
+      "start_ms": 45500,
+      "end_ms": 54800
+    }
+  ]
+}

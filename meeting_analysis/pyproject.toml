@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meeting-analysis"
+version = "0.2.0"
+description = "Evidence-grounded meeting analysis pipeline contracts and MVP scaffold"
+requires-python = ">=3.11"
+dependencies = [
+    # TIP-004: stages/segmentation.py Gram-matrix/prefix-sum DP engine. The
+    # only new dependency introduced across all 5 Stage 5/6 redesign TIPs.
+    "numpy>=1.26",
+    # src/agentic/graph.py: Send()-based fan-out (2 parallel agents/segment)
+    # + fan-in (Conclusion agent) orchestration.
+    # Pinned to a version confirmed installed/tested, not a guess.
+    "langgraph>=1.2.11",
+]
+
+[project.optional-dependencies]
+# be/main.py: HTTP backend for the pipeline. Kept out of core `dependencies`
+# -- the CLI scripts and stage library don't need a web framework, same
+# reasoning as keeping `openai` import-lazy in
+# _build_llm_adapter/_build_embedding_adapter.
+api = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+]
+
+# src/utils/local_embeddings.py: open-source embedding backend
+# (EMBEDDING_BACKEND=local). Optional for the same reason as `api`/`openai`:
+# torch is heavy and only needed when that backend is chosen.
+local-embeddings = [
+    "sentence-transformers>=3.0",
+    "torch",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,73 @@
+{
+  "turn_builder": {
+    "max_gap_ms": 5000,
+    "merge_when_timestamp_missing": false,
+    "merge_unknown_speakers": false
+  },
+  "atom_builder": {
+    "min_chars": 40,
+    "target_chars": 280,
+    "soft_cap_chars": 600,
+    "candidate_sources": [
+      "item_boundary",
+      "sentence_punct",
+      "weak_punct",
+      "discourse_marker",
+      "model"
+    ],
+    "item_boundary_prior": 0.3,
+    "scorer": "lexical_coherence",
+    "llm_tiebreak": false
+  },
+  "feature_builder": {
+    "emit_features": true,
+    "emit_top_k_terms": 10,
+    "top_k_keyphrases": 5
+  },
+  "topic_segmenter": {
+    "strategy": "hybrid_bm25_semantic_v2",
+    "max_tokens": 2048,
+    "similarity_threshold": 0.0,
+    "respect_turn_boundaries": true
+  },
+  "topic_labeler": {
+    "mode": "llm",
+    "allow_extract_fallback": false,
+    "max_title_chars": 1024
+  },
+  "topic_recurrence": {
+    "semantic_threshold": 0.5,
+    "semantic_high_confidence": 0.9,
+    "join_policy": "consensus",
+    "max_candidate_pairs": 200
+  },
+  "input_domain": {
+    "enabled": true,
+    "broadcast_signal_threshold": 2,
+    "max_known_speaker_fraction": 0.25,
+    "min_named_speakers": 2
+  },
+  "window_builder": {
+    "core_max_chars": 2400,
+    "context_atoms": 2
+  },
+  "event_extractor": {
+    "mode": "rule"
+  },
+  "event_guard": {
+    "max_rounds": 3
+  },
+  "publish_policy": {
+    "allow_unknown_actor": false
+  },
+  "segmentation": {
+    "beta_dense": 0.5,
+    "beta_syllable": 0.3,
+    "beta_char": 0.2,
+    "gamma": 0.85,
+    "lam": 0.8,
+    "min_len": 35,
+    "max_len": 150,
+    "k_mode": "penalty"
+  }
+}
