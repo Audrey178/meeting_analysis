@@ -10,7 +10,14 @@ from __future__ import annotations
 import threading
 import time
 
-from src.agentic_v3 import MeetingAnalyzerV3, V3Config, plan_meeting
+from src.agentic_v3 import (
+    MeetingAnalyzerV3,
+    V3Config,
+    build_speaker_registry,
+    plan_meeting,
+)
+from src.agentic_v3.nodes import prompts
+from src.agentic_v3.nodes.verifier import VERIFIER_SCHEMA
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.agentic_v3.schemas import SpeakerRegistry
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
@@ -69,7 +76,7 @@ class FakeLLM:
         self.proposer_script = list(proposer_script or [])
         self.fail_action_once = fail_action_once
         self.calls: list[str] = []
-        self.prompts: list[tuple[str, str]] = []
+        self.prompts: list[tuple[str, str, str]] = []  # (vai, system prompt, user prompt)
         self.in_flight = 0
         self.max_in_flight = 0
         self.segments_in_flight: set[str] = set()
@@ -81,7 +88,7 @@ class FakeLLM:
         segment = next((s.segment_id for s in SEGMENTS if any(f"[{t}|" in user_prompt for t in s.atom_ids)), "?")
         with self._lock:
             self.calls.append(kind)
-            self.prompts.append((kind, user_prompt))
+            self.prompts.append((kind, system_prompt, user_prompt))
             self.in_flight += 1
             self.max_in_flight = max(self.max_in_flight, self.in_flight)
             self.segments_in_flight.add(segment)
@@ -151,8 +158,8 @@ class FakeLabeler:
         )
 
 
-def _verifier_step(action: str, argument: str | None) -> dict:
-    return {"thought": "tra", "action": action, "argument": argument, "verdict": None,
+def _verifier_step(action: str, argument: str | None, thought: str = "tra") -> dict:
+    return {"thought": thought, "action": action, "argument": argument, "verdict": None,
             "deciding_turn_id": None, "revised_actor": None, "reasoning": None}
 
 
@@ -336,7 +343,7 @@ def test_accept_that_cites_a_turn_is_treated_as_defend():
         ("drop", "defend", "T4"), ("keep", "", None),
     ]
     assert record.decided_by == "consensus" and record.verdict == "keep"
-    second_verifier_prompt = [p for kind, p in llm.prompts if kind == "verifier"][1]
+    second_verifier_prompt = [user for kind, _, user in llm.prompts if kind == "verifier"][1]
     assert "giữ nguyên, phản biện, lượt T4" in second_verifier_prompt
 
 
@@ -354,7 +361,7 @@ def test_filter_reasons_are_presented_as_hints_not_evidence():
     llm = FakeLLM(verifier_script=[_verifier_final("drop")])
     _start(_analyzer(llm))
 
-    verifier_prompt = next(p for kind, p in llm.prompts if kind == "verifier")
+    verifier_prompt = next(user for kind, _, user in llm.prompts if kind == "verifier")
     assert "Cờ của bộ lọc tự động (chỉ là gợi ý, có thể sai, KHÔNG phải bằng chứng)" in verifier_prompt
     assert "Lý do bị đánh dấu chưa chắc chắn" not in verifier_prompt
 
@@ -388,3 +395,50 @@ def test_search_snippet_is_cut_around_the_match():
 
     line = tools.run("search_meeting", "chuẩn bị lại tờ trình")
     assert line.startswith("[L1|Anh Sơn] …") and "chuẩn bị lại tờ trình" in line
+
+
+def test_chair_is_matched_to_speaker_and_shown_to_extractors_and_verifier():
+    llm = FakeLLM(verifier_script=[_verifier_final("drop")])
+    _analyzer(llm).analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS, chair="Tuấn")
+
+    action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
+    verifier_prompt = next(user for kind, _, user in llm.prompts if kind == "verifier")
+    assert action_prompt.startswith("Người chủ trì: Anh Tuấn\n")
+    assert verifier_prompt.startswith("Người chủ trì: Anh Tuấn\n")
+
+
+def test_chair_who_never_speaks_is_kept_as_given():
+    assert build_speaker_registry(TURNS, "Chị Lan").chair == "Chị Lan"
+    assert build_speaker_registry(TURNS, "  ").chair is None
+
+
+def test_extractors_run_with_v3_prompts():
+    llm = FakeLLM(verifier_script=[_verifier_final("drop")])
+    _start(_analyzer(llm))
+
+    systems = {kind: system for kind, system, _ in llm.prompts}
+    assert systems["content"] == prompts.CONTENT_SYSTEM_PROMPT
+    assert systems["action"] == prompts.ACTION_SYSTEM_PROMPT
+    assert systems["decision"] == prompts.DECISION_SYSTEM_PROMPT
+    assert prompts.CHAIR_ASSIGNMENT_RULE in systems["action"]
+    assert prompts.CHAIR_ASSIGNMENT_RULE in systems["verifier"]
+    action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
+    assert action_prompt.startswith("Người chủ trì: (phiên họp không cung cấp)\n")
+
+
+def test_shared_rules_appear_once_per_extractor_prompt():
+    for system in (prompts.CONTENT_SYSTEM_PROMPT, prompts.ACTION_SYSTEM_PROMPT, prompts.DECISION_SYSTEM_PROMPT):
+        assert system.count(prompts.TURN_ID_RULE) == 1
+        assert system.count(prompts.THIRD_PERSON_RULE) == 1
+        assert all(line == line.rstrip() for line in system.splitlines())
+
+
+def test_verifier_history_keeps_thoughts_and_turn_comes_before_verdict():
+    llm = FakeLLM(verifier_script=[_verifier_step("search_meeting", "mở lại phản ánh", thought="tìm lượt chốt"),
+                                   _verifier_final("drop")])
+    _start(_analyzer(llm))
+
+    second_verifier_prompt = [user for kind, _, user in llm.prompts if kind == "verifier"][1]
+    assert "Suy nghĩ: tìm lượt chốt\nHành động: search_meeting(mở lại phản ánh)" in second_verifier_prompt
+    fields = list(VERIFIER_SCHEMA["properties"])
+    assert fields.index("deciding_turn_id") < fields.index("verdict")

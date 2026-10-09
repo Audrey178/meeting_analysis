@@ -3,7 +3,8 @@
 Báo cáo kiến trúc pipeline agentic v3: phân tích biên bản họp (Diễn biến họp, Giao việc,
 Kết luận họp) sau khi transcript đã được tách lượt nói và cắt chủ đề.
 
-Cập nhật: 2026-10-08 (đã bỏ bước duyệt người, thay bằng vòng đồng thuận Verifier ⇄ agent trích xuất).
+Cập nhật: 2026-10-09 (prompt trích xuất riêng của v3, thông tin người chủ trì, sửa Verifier
+và `search_meeting`).
 
 ---
 
@@ -15,6 +16,7 @@ Cập nhật: 2026-10-08 (đã bỏ bước duyệt người, thay bằng vòng 
 | Ngữ cảnh giữa chủ đề | `known_names`/`known_assignments` chạy dồn | `SpeakerRegistry` của cả cuộc họp, dựng 1 lần trước |
 | Gán nhãn chủ đề | Chạy hết stage07 trước | Ngay trong subgraph, chủ đề nào có nhãn thì trích xuất luôn |
 | Chọn agent | Luôn chạy đủ 3 agent | **Planner** (luật, 0 token) bỏ Action/Decision khi không có cue |
+| Prompt agent trích xuất | Prompt v1 | Prompt riêng của v3 (`nodes/prompts.py`), kèm người chủ trì |
 | Kiểm chứng candidate nghi ngờ | Debate + Judge (3 lời gọi, chỉ đọc đoạn hiện tại) | **Verifier ReAct** có tool tra **cả cuộc họp** |
 | Khi chưa chắc | Giữ theo luật an toàn | **Vòng đồng thuận** Verifier ⇄ agent trích xuất |
 | Thử lại lỗi LLM | Sau chủ đề cuối (`retry_failed_topics`) | Ngay trong chủ đề (`extract_attempts`) |
@@ -24,8 +26,9 @@ Lý do chính: nút thắt thời gian của v1 là vòng lặp tuần tự theo
 mang `known_names` sang chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ dựng sẵn nên các
 chủ đề độc lập với nhau, và tổng thời gian không còn tăng tuyến tính theo số chủ đề.
 
-v3 dùng lại nguyên các agent trích xuất, rubric và luật hậu kiểm của v1 (import từ
-`src.agentic`), **không sửa gì ở v1**.
+v3 dùng lại các node trích xuất (phần làm sạch output), rubric và luật hậu kiểm của v1
+(import từ `src.agentic`), **không sửa gì ở v1**. Prompt của ba agent trích xuất là bản
+riêng của v3 (mục 4.2).
 
 ---
 
@@ -163,8 +166,14 @@ hỗ trợ tool calling**. Mỗi lượt model trả:
  "revised_actor_type": "person|organization|unknown", "actor_reason", "reasoning"}
 ```
 
-Code chạy tool rồi đưa observation vào prompt lượt sau. Tối đa
-`verifier_max_tool_calls + 1` lời gọi mỗi vòng; lượt cuối bắt buộc `action="final"`.
+`deciding_turn_id` đứng trước `verdict` để model chỉ ra lượt giao/chốt trước khi kết luận.
+Code chạy tool rồi đưa suy nghĩ, hành động và observation của mọi bước vào prompt lượt
+sau. Tối đa `verifier_max_tool_calls + 1` lời gọi mỗi vòng; lượt cuối bắt buộc
+`action="final"`. Tra lại y hệt một lần đã tra thì không chạy tool, chỉ báo lặp.
+
+User prompt mở đầu bằng dòng người chủ trì; lý do candidate bị đánh dấu được ghi là
+"cờ của bộ lọc tự động" (gợi ý, không phải bằng chứng). Tiêu chí là `VERIFY_RUBRICS`:
+rubric v1 cộng `CHAIR_ASSIGNMENT_RULE`.
 
 Tool (chỉ đọc, lỗi được trả thành observation để Verifier tự sửa, không raise):
 
@@ -231,6 +240,9 @@ Verifier (ReAct) ──► verdict + feedback
 - Agent trích xuất thấy feedback và các bằng chứng Verifier đã tra (observation).
 - Phần sửa của agent chỉ được nhận khi hợp lệ: `confirm_turn_id` phải là lượt nói thật,
   actor phải định danh được.
+- `PROPOSER_SCHEMA` đặt `confirm_turn_id` trước `stance`. Khi Verifier không đề nghị
+  sửa, `accept` mà vẫn chỉ ra lượt nói thật là tự mâu thuẫn (chọn nhãn trước rồi lập
+  luận ngược lại) và được coi là `defend`.
 
 **Kết thúc khi chưa đồng thuận** (hết `consensus_max_rounds`):
 
@@ -245,7 +257,7 @@ Nguyên tắc an toàn kế thừa từ v1: lỗi hạ tầng không được xo
 tự sửa mà Verifier chưa xét lại **không** được vào kết quả.
 
 Mọi vòng được lưu trong `VerificationRecord.rounds` (`ConsensusRound`: candidate đã xét,
-bước tra cứu, verdict, feedback, lượt chốt, lập trường và lập luận của agent) để audit;
+bước tra cứu, verdict, feedback, lượt chốt, lập trường, lập luận và lượt agent chỉ ra) để audit;
 `VerificationRecord.steps` là mọi bước tra cứu nối qua các vòng.
 
 ### 4.5. `finalize` (`graph/meeting.py`)
@@ -264,8 +276,8 @@ Các chủ đề cộng dồn kết quả theo thứ tự **hoàn thành** (khô
 
 ### 5.1. State
 
-- **`MeetingStateV3`** (graph cha): đầu vào (`meeting_id`, `revision_id`, `segments`,
-  `turns_by_id`), kết quả Planner (`registry`, `plans`), các khoá cộng dồn của
+- **`MeetingStateV3`** (graph cha): đầu vào (`meeting_id`, `revision_id`, `meeting_date`,
+  `chair`, `segments`, `turns_by_id`), kết quả Planner (`registry`, `plans`), các khoá cộng dồn của
   `TopicOutput`, và `report`.
 - **`TopicInput`** (gói `Send`): `segment`, `turns` của chủ đề, `meeting_turns` của cả
   cuộc họp (cho tool Verifier), `registry`, `plan`.
@@ -352,7 +364,8 @@ thắng biến cũ còn export trong shell.
 ## 8. Tích hợp
 
 - **Điểm vào**: `MeetingAnalyzerV3(content_llm, action_llm, decision_llm, verifier_llm,
-  labeler, …).analyze(meeting_id, revision_id, turns, segments) -> MeetingReport`.
+  labeler, …).analyze(meeting_id, revision_id, meeting_date, chair, turns, segments) -> MeetingReport`.
+  `chair` (tùy chọn) là tên người chủ trì.
   Graph compile một lần, dùng cho mọi cuộc họp; analyzer sống suốt vòng đời ứng dụng
   để mọi request dùng chung một gate.
 - **API**: `POST /v3/meetings/analyze` (`be/routers/meetings_v3.py`) → `AnalyzeV3Result`
@@ -371,7 +384,8 @@ Planner bỏ agent đúng chỗ; tool đọc cả cuộc họp và trả lỗi t
 song song nhưng không vượt gate; Verifier tra tool rồi kết luận; luật hạ `keep` không có
 lượt chốt thành `drop`; agent `amend` rồi Verifier đồng ý; agent `accept` thì bỏ; hết vòng
 thì theo Verifier; vẫn `unresolved` thì giữ fallback; lỗi LLM giữ bản gốc; thử lại agent
-tại chỗ; kết quả sắp theo thứ tự chủ đề.
+tại chỗ; agent trích xuất chạy với prompt v3; người chủ trì được quy về người nói và có
+trong prompt; kết quả sắp theo thứ tự chủ đề.
 
 `be/test_api_v3.py` (2 test): wiring HTTP end-to-end, gồm luồng đồng thuận trong một request.
 
@@ -388,7 +402,7 @@ tại chỗ; kết quả sắp theo thứ tự chủ đề.
 2. **Agent trả lời feedback chạy trên gemma**, từng gặp lỗi JSON: trích nguyên văn bằng
    `"`, và sinh khoảng trắng vô tận khi trường văn bản tự do không đứng cuối schema.
    Đã giảm bằng prompt (≤ 2 câu, không dùng dấu nháy kép) và đặt `argument` cuối
-   `PROPOSER_SCHEMA`. Phương án dự phòng: cho bước này chạy trên `gpt-4o-mini`, đổi lại
+   `PROPOSER_SCHEMA` (`confirm_turn_id` đứng đầu, là mã ngắn nên không gây lỗi này). Phương án dự phòng: cho bước này chạy trên `gpt-4o-mini`, đổi lại
    agent trả lời không còn là chính model đã trích ra candidate.
 3. **Chi phí**: vòng đồng thuận có thể tăng số lời gọi lên tới 15 mỗi candidate nghi ngờ;
    cần đo phân bố số vòng thực tế.

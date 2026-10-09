@@ -2,13 +2,17 @@
 
 Thay Debate+Judge 3 vai của v1 (support -> oppose -> judge, 3 lời gọi NỐI TIẾP chỉ
 đọc lại đúng đoạn hiện tại). Verifier tự tra bằng chứng trong CẢ cuộc họp qua tool
-chỉ đọc (``tools.MeetingTools``), thường kết luận sau 1-2 lời gọi; tối đa
+chỉ đọc (``verifier_tools.MeetingTools``), thường kết luận sau 1-2 lời gọi; tối đa
 ``verifier_max_tool_calls + 1`` lời gọi mỗi vòng.
 
 ReAct dựng trên ``LLMAdapter.generate_json`` (một lượt hỏi-đáp JSON), không cần
 provider hỗ trợ tool calling: mỗi lượt model trả ``{thought, action, argument, ...}``,
-code chạy tool rồi đưa observation vào prompt lượt sau. Lượt cuối bắt buộc
-``action="final"``.
+code chạy tool rồi đưa cả suy nghĩ, hành động và observation vào prompt lượt sau. Lượt
+cuối bắt buộc ``action="final"``.
+
+Tiêu chí của Verifier là rubric v1 cộng câu "chủ trì đề nghị + người/đơn vị + việc là
+giao việc" mà Action agent v3 cũng dùng (``prompts.VERIFY_RUBRICS``), để hai bên chấm
+cùng một chuẩn.
 
 Kết luận đi qua đúng luật hậu kiểm của v1 (``_resolve_verdict``): giữ/sửa mà không
 chỉ ra được lượt nói giao/chốt thì hạ thành bỏ. Khác v1: lượt đó được phép nằm ở
@@ -49,7 +53,6 @@ from ...agentic._shared import (
 )
 from ...agentic.nodes.debate_judge_agent import (
     _KIND_LABELS,
-    _RUBRICS,
     _candidate_text,
     _resolve_verdict,
 )
@@ -58,21 +61,25 @@ from ...utils.ports import LLMAdapter, LLMUpstreamError
 from ..actors.resolution import apply_verifier_actor_choice
 from ..config import V3Config
 from ..schemas import ConsensusRound, VerificationRecord, VerifierStep, VerifyTask
+from .prompts import CHAIR_HINT, VERIFY_RUBRICS, format_chair_line
 from .verifier_tools import TOOL_DESCRIPTIONS, TOOL_NAMES, MeetingTools
 
 logger = logging.getLogger(__name__)
 
 VERIFIER_SYSTEM_PROMPT = """
-Bạn là KIỂM CHỨNG VIÊN cho một candidate {kind_label} trích từ MỘT đoạn chủ đề
-của cuộc họp, bị kiểm tra bằng luật đánh dấu CHƯA CHẮC CHẮN.
+Bạn là KIỂM CHỨNG VIÊN cho một candidate {kind_label} trích từ MỘT đoạn chủ đề của cuộc
+họp, bị bộ lọc tự động đánh dấu CHƯA CHẮC CHẮN.
 
 Tiêu chí:
 {rubric}
+{chair_hint}
 
 Bạn có các tool CHỈ ĐỌC để tra bằng chứng trong CẢ cuộc họp:
 {tools}
 
-Mỗi lượt trả về đúng MỘT JSON:
+Mỗi lượt trả về đúng MỘT JSON, các trường theo thứ tự:
+- thought: 1-2 câu: đã biết gì từ bản ghi và các bước trước, còn thiếu gì, vì sao tra
+  tiếp hoặc vì sao đã đủ căn cứ.
 - Muốn tra thêm: action là tên tool, argument là tham số; các trường kết luận để null.
 - Đủ căn cứ: action = "final", argument = null, và điền verdict:
   "keep" | "revise" | "drop" | "unresolved" (chỉ khi bằng chứng thật sự mâu thuẫn
@@ -100,22 +107,23 @@ thẩm quyền trong đoạn, nhất là các lượt cuối đoạn (tổng k�
 thì keep/revise với deciding_turn_id là lượt đó.
 
 reasoning là FEEDBACK gửi lại agent trích xuất khi bạn không giữ: nêu cụ thể điểm
-sai/thiếu và lượt nói làm căn cứ, để agent sửa hoặc phản biện. Nếu đã có các vòng
-trao đổi trước, xét lập luận của agent trích xuất trên bản ghi, không nhượng bộ chỉ
-vì agent phản biện.
+sai/thiếu và lượt nói làm căn cứ, để agent sửa hoặc phản biện. Đã có các vòng trao đổi
+trước thì xét lập luận của agent trên bản ghi, không nhượng bộ chỉ vì agent phản biện.
 
-Chỉ dựa vào bằng chứng có thật trong bản ghi. "Nội dung có nhắc trong bản ghi" CHƯA
-đủ để giữ. Không lặp lại một lần tra đã làm. Tra ít nhất có thể.
+Chỉ dựa vào bằng chứng có thật trong bản ghi. "Nội dung có nhắc trong bản ghi" CHƯA đủ
+để giữ. Tra ít nhất có thể.
 """.strip()
 
+# ``deciding_turn_id`` đứng TRƯỚC ``verdict``: model phải chỉ ra lượt giao/chốt trước khi
+# chọn kết luận, không chọn "keep"/"drop" rồi mới tìm lượt nói cho khớp.
 VERIFIER_SCHEMA: dict = {
     "type": "object",
     "properties": {
         "thought": {"type": "string"},
         "action": {"type": "string", "enum": [*TOOL_NAMES, "final"]},
         "argument": {"type": ["string", "null"]},
-        "verdict": {"type": ["string", "null"], "enum": ["keep", "revise", "drop", "unresolved", None]},
         "deciding_turn_id": {"type": ["string", "null"]},
+        "verdict": {"type": ["string", "null"], "enum": ["keep", "revise", "drop", "unresolved", None]},
         "revised_actor": {"type": ["string", "null"]},
         "revised_actor_type": {"type": ["string", "null"], "enum": ["person", "organization", "unknown", None]},
         "actor_reason": {"type": ["string", "null"]},
@@ -147,6 +155,7 @@ cùng chiều với lập trường đã chọn.
 
 Tiêu chí:
 {rubric}
+{chair_hint}
 
 TUYỆT ĐỐI KHÔNG bịa nội dung không có trong bản ghi. Không tìm được lượt giao/nhận/chốt
 thì chọn "accept". Trường không dùng để null.
@@ -175,7 +184,8 @@ _STANCE_LABELS = {"accept": "đồng ý", "amend": "đã sửa candidate", "defe
 
 
 def _build_candidate_prompt(task: VerifyTask, candidate) -> str:
-    """Phần đầu prompt chung cho Verifier và agent trích xuất: candidate, cờ nghi ngờ, bản ghi.
+    """Phần đầu prompt chung cho Verifier và agent trích xuất: người chủ trì, candidate, cờ
+    nghi ngờ, bản ghi.
 
     Khác ``_build_debate_user_prompt`` của v1: lý do bị đánh dấu được ghi rõ là cờ của
     bộ lọc tự động (gợi ý, có thể sai) để model không lấy nó làm căn cứ bỏ candidate.
@@ -186,6 +196,7 @@ def _build_candidate_prompt(task: VerifyTask, candidate) -> str:
 
     reasons = "; ".join(task["reasons"]) or "(không có lý do cụ thể)"
     return (
+        f"{format_chair_line(task['registry'].chair)}\n"
         f"Candidate: {_candidate_text(candidate, task['kind'])}\n"
         f"Agent trích xuất tự khai: trạng thái '{candidate.status}', "
         f"lượt chốt {candidate.confirm_turn_id or '(không nêu)'}, "
@@ -214,10 +225,14 @@ def _build_step_prompt(base_prompt: str, steps: list[VerifierStep], is_last: boo
 
 
 def _format_steps(steps: list[VerifierStep] | tuple[VerifierStep, ...]) -> str:
-    """Các bước tra cứu dạng ``Bước i: action(argument)`` kèm kết quả."""
+    """Các bước tra cứu theo kiểu ReAct: suy nghĩ, hành động ``action(argument)``, kết quả.
+
+    Giữ cả suy nghĩ để lượt sau thấy vì sao bước trước đã tra như vậy.
+    """
 
     return "\n\n".join(
-        f"Bước {i}: {step.action}({step.argument})\nKết quả:\n{step.observation}"
+        f"Bước {i}\nSuy nghĩ: {step.thought or '(không ghi)'}\n"
+        f"Hành động: {step.action}({step.argument})\nKết quả:\n{step.observation}"
         for i, step in enumerate(steps, 1)
     )
 
@@ -369,7 +384,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
             is_self_committed=getattr(candidate, "status", None) == "self_committed",
         )
         system_prompt = VERIFIER_SYSTEM_PROMPT.format(
-            kind_label=_KIND_LABELS[kind], rubric=_RUBRICS[kind], tools=TOOL_DESCRIPTIONS
+            kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT, tools=TOOL_DESCRIPTIONS
         )
         base_prompt = _build_candidate_prompt(task, candidate)
         if rounds:
@@ -435,7 +450,9 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         with llm_call("verifier_feedback", segment_id=task["segment_id"], prompt_chars=len(user_prompt)):
             return dict(
                 proposer_llms[kind].generate_json(
-                    system_prompt=PROPOSER_SYSTEM_PROMPT.format(kind_label=_KIND_LABELS[kind], rubric=_RUBRICS[kind]),
+                    system_prompt=PROPOSER_SYSTEM_PROMPT.format(
+                        kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT
+                    ),
                     user_prompt=user_prompt,
                     schema=PROPOSER_SCHEMA,
                 )

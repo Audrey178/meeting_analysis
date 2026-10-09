@@ -73,6 +73,7 @@ class MeetingAnalyzerV3:
         meeting_id: str,
         revision_id: str = "",
         meeting_date: str | None = None,
+        chair: str | None = None,
         turns: Sequence[SpeakerTurn],
         segments: Sequence[TopicSegment],
         attendee_roster: AttendeeRoster | None = None,
@@ -84,6 +85,8 @@ class MeetingAnalyzerV3:
             revision_id: mã phiên bản transcript.
             meeting_date: ngày họp ISO "YYYY-MM-DD" (tùy chọn) để quy hạn chót ("tuần sau")
                 về ngày; None thì việc giao vẫn có ``deadline_kind`` nhưng ít khi có ``deadline_date``.
+            chair: tên người chủ trì (tùy chọn). Agent trích xuất và Verifier dựa vào đây để
+                nhận ra lời giao việc/kết luận; None thì model tự suy ra từ bản ghi.
             turns: lượt nói (stage03), theo thứ tự.
             segments: ranh giới chủ đề phủ kín ``turns`` (CHƯA cần nhãn).
             attendee_roster: danh sách người/đơn vị tham dự (``attendees.load_attendee_roster``
@@ -95,6 +98,7 @@ class MeetingAnalyzerV3:
             "meeting_id": meeting_id,
             "revision_id": revision_id,
             "meeting_date": meeting_date,
+            "chair": chair,
             "segments": tuple(segments),
             "turns_by_id": {turn.turn_id: turn for turn in turns},
             "attendee_roster": attendee_roster,

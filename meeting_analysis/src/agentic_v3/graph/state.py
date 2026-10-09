@@ -82,6 +82,7 @@ class MeetingStateV3(TopicOutput):
     meeting_id: str
     revision_id: str
     meeting_date: str | None
+    chair: str | None  # người chủ trì phiên họp cung cấp; Planner đưa vào ``registry``
     segments: tuple[TopicSegment, ...]
     turns_by_id: dict[str, SpeakerTurn]
     attendee_roster: AttendeeRoster | None

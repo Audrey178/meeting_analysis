@@ -1,7 +1,7 @@
 """Graph cha của pipeline agentic v3: Planner -> mọi chủ đề song song -> tổng hợp.
 
     START -> plan_meeting -> Send("topic", chủ đề i) cho MỌI i cùng lúc
-                                     │  (subgraph ``topic_graph``: nhãn -> trích xuất
+                                     │  (subgraph ``topic.py``: nhãn -> trích xuất
                                      │   -> evidence-check -> Verifier ReAct <-> agent
                                      │   trích xuất tới khi đồng thuận)
                                      ▼

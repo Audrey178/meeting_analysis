@@ -239,7 +239,6 @@ class ConsensusRoundOut(BaseModel):
     deciding_turn_id: str | None = None
     stance: str = ""
     response: str = ""
-    confirm_turn_id: str | None = None
 
 
 class VerificationRecordOut(BaseModel):

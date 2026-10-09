@@ -13,10 +13,11 @@
 Gán nhãn nằm TRONG subgraph (không chạy hết stage07 trước như v1): chủ đề nào có nhãn
 thì trích xuất ngay, không chờ nhãn của chủ đề chậm nhất.
 
-Ba agent trích xuất dùng lại nguyên các node của v1 (cùng prompt, cùng luật làm sạch
-output); ``previous_context`` của Action agent được thay bằng danh bạ người nói của cả
-cuộc họp (``planner.format_registry_context``). Lỗi LLM được thử lại ngay trong chủ
-đề (``extract_attempts``) thay vì đợi tới sau chủ đề cuối như v1.
+Ba agent trích xuất dùng lại các node của v1 (cùng luật làm sạch output) nhưng chạy
+với prompt của v3 và dòng người chủ trì (``nodes/extractors.py``); ``previous_context``
+của Action agent được thay bằng danh bạ người nói của cả cuộc họp
+(``planner.format_registry_context``). Lỗi LLM được thử lại ngay trong chủ đề
+(``extract_attempts``) thay vì đợi tới sau chủ đề cuối như v1.
 
 Vì sao ba nhánh nối thẳng vào ``evidence_check`` (không dùng ``add_edge([...], ...)``
 chờ đủ ba): số nhánh thay đổi theo ``TopicPlan``; mọi nhánh cách điểm phân nhánh
@@ -34,7 +35,6 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
 from ...agentic._shared import check_action_evidence, check_decision_evidence
-from ...agentic.nodes import make_action_agent, make_content_agent, make_decision_agent
 from ...agentic.schemas import SegmentTask
 from ...agentic.turn_act import TurnActJudge
 from ...stages.stage07_topic_labeling import label_topics
@@ -42,6 +42,7 @@ from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
 from ..actors.resolution import list_known_actor_names, resolve_actor, split_item_mentions
 from ..config import V3Config
+from ..nodes.extractors import make_extractor
 from ..nodes.planner import format_registry_context
 from ..schemas import SkippedAgent, VerifyTask
 from .state import TopicInput, TopicOutput, TopicState
@@ -56,14 +57,14 @@ _EXTRACTORS = {
 
 
 def _wrap_extractor(
-    name: str, agent: Callable[[SegmentTask], dict], attempts: int
+    name: str, agent: Callable[[SegmentTask, SpeakerRegistry], dict], attempts: int
 ) -> Callable[[TopicState], dict]:
-    """Bọc một node trích xuất của v1 thành node của subgraph, kèm thử lại tại chỗ.
+    """Bọc một agent trích xuất thành node của subgraph, kèm thử lại tại chỗ.
 
-    Node v1 trả kết quả rỗng + ``TopicFailure`` khi LLM lỗi (không raise); wrapper gọi
+    Agent trả kết quả rỗng + ``TopicFailure`` khi LLM lỗi (không raise); wrapper gọi
     lại tối đa ``attempts`` lần và chỉ ghi lỗi của lần cuối.
 
-    Đầu vào: name - tên node; agent - node v1; attempts - số lần gọi tối đa.
+    Đầu vào: name - tên node; agent - ``extractors.make_extractor``; attempts - số lần gọi tối đa.
     Đầu ra: hàm node đọc ``task`` trong TopicState.
     """
 
@@ -72,7 +73,7 @@ def _wrap_extractor(
     def extractor(state: TopicState) -> dict:
         result: dict = {}
         for _ in range(attempts):
-            result = agent(state["task"])
+            result = agent(state["task"], state["registry"])
             if not result.get("topic_failures"):
                 break
         update: dict = {target_key: list(result.get(source_key, []))}

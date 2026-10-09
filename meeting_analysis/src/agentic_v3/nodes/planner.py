@@ -18,7 +18,11 @@ import re
 import unicodedata
 from collections.abc import Sequence
 
-from ...agentic._shared import get_turns_of_segment, list_distinct_speaker_names
+from ...agentic._shared import (
+    get_turns_of_segment,
+    list_distinct_speaker_names,
+    match_claimed_name_to_real_speaker,
+)
 from ...utils.contracts import SpeakerTurn, TopicSegment
 from ..actors.attendees import AttendeeRoster
 from ..schemas import SpeakerRegistry, TopicPlan
