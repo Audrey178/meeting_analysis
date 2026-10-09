@@ -39,9 +39,9 @@ from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
 from ..config import V3Config
 from ..nodes.planner import format_registry_context
+from ..nodes.verifier import make_verifier
 from ..schemas import SkippedAgent, VerifyTask
 from .state import TopicInput, TopicOutput, TopicState
-from ..nodes.verifier import make_verifier
 
 # Tên node agent trích xuất -> (khoá kết quả của node v1, khoá trong TopicState).
 _EXTRACTORS = {

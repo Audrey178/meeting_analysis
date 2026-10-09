@@ -21,7 +21,8 @@ luận khác (revise/drop/unresolved) được gửi lại làm feedback cho age
     accept -> đồng thuận theo Verifier (revise: giữ bản sửa; drop/unresolved: bỏ).
     amend  -> agent sửa candidate theo bản ghi; vòng sau Verifier xét bản đã sửa.
     defend -> agent giữ nguyên, chỉ ra lượt giao/chốt; vòng sau Verifier xét lại
-              kèm lập luận đó.
+              kèm lập luận đó. "accept" mà vẫn chỉ ra lượt giao/chốt (khi Verifier
+              không đề nghị sửa) là tự mâu thuẫn và được coi là defend.
 
 Lặp tới khi đồng thuận hoặc hết ``consensus_max_rounds`` vòng. Hết vòng: lấy kết luận
 cuối của Verifier (``decided_by="verifier"``); kết luận đó vẫn là "unresolved" thì giữ
@@ -35,11 +36,15 @@ import logging
 from collections.abc import Mapping
 from dataclasses import replace
 
-from ...agentic._shared import is_non_identifying_actor, read_confirm_turn_id, read_stripped_text
+from ...agentic._shared import (
+    format_turns_as_transcript,
+    is_non_identifying_actor,
+    read_confirm_turn_id,
+    read_stripped_text,
+)
 from ...agentic.nodes.debate_judge_agent import (
     _KIND_LABELS,
     _RUBRICS,
-    _build_debate_user_prompt,
     _candidate_text,
     _resolve_verdict,
 )
@@ -68,6 +73,14 @@ Mỗi lượt trả về đúng MỘT JSON:
   hoặc thiếu), deciding_turn_id (BẮT BUỘC khi keep/revise: turn_id của lượt nói
   GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT, có thể ở chủ đề khác), revised_actor (chỉ
   khi revise, đúng nguyên văn bản ghi), reasoning (1-2 câu).
+
+"Cờ của bộ lọc tự động" chỉ cho biết vì sao candidate bị gửi kiểm tra: bộ lọc chỉ
+chấm MỘT lượt nói mà agent trích xuất khai và hay sai, nên cờ đó KHÔNG phải bằng
+chứng và KHÔNG được dùng làm lý do bỏ. Lượt GIAO/CHỐT thật có thể khác lượt agent
+khai. Trước khi kết luận drop/unresolved, đọc các lượt nói của người chủ trì/cấp có
+thẩm quyền trong đoạn, nhất là các lượt cuối đoạn (tổng kết, "đề nghị các đồng chí
+...", "giao ...", "chuẩn bị lại ..."); thấy lượt giao/chốt đúng nội dung candidate
+thì keep/revise với deciding_turn_id là lượt đó.
 
 reasoning là FEEDBACK gửi lại agent trích xuất khi bạn không giữ: nêu cụ thể điểm
 sai/thiếu và lượt nói làm căn cứ, để agent sửa hoặc phản biện. Nếu đã có các vòng
@@ -107,6 +120,11 @@ feedback với bản ghi rồi chọn đúng MỘT lập trường:
   confirm_turn_id là lượt nói GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT.
 - "defend": giữ nguyên candidate, chỉ ra confirm_turn_id mà kiểm chứng viên bỏ sót.
 
+Điền confirm_turn_id TRƯỚC khi chọn lập trường: lượt nói GIAO/NHẬN việc hoặc KẾT LUẬN/
+THỐNG NHẤT trong bản ghi làm căn cứ cho candidate, null nếu không có. Đã chỉ ra được
+lượt đó thì lập trường là "amend" hoặc "defend", KHÔNG phải "accept"; argument phải
+cùng chiều với lập trường đã chọn.
+
 Tiêu chí:
 {rubric}
 
@@ -117,21 +135,44 @@ argument: TỐI ĐA 2 câu ngắn (dưới 300 ký tự), dẫn chứng bằng t
 nguyên văn lượt nói và KHÔNG dùng dấu nháy kép (") trong bất kỳ trường nào.
 """.strip()
 
+# ``confirm_turn_id`` đứng TRƯỚC ``stance``: model sinh JSON theo thứ tự trường, nếu
+# chọn lập trường trước thì sẽ "accept" rồi mới viết lập luận phản biện ngược lại.
 # ``argument`` (văn bản tự do) đứng CUỐI: gemma viết xong lập luận thì muốn đóng JSON;
 # nếu sau nó còn trường bắt buộc, model sinh khoảng trắng vô tận thay vì dấu phẩy.
 PROPOSER_SCHEMA: dict = {
     "type": "object",
     "properties": {
-        "stance": {"type": "string", "enum": ["accept", "amend", "defend"]},
         "confirm_turn_id": {"type": ["string", "null"]},
+        "stance": {"type": "string", "enum": ["accept", "amend", "defend"]},
         "revised_text": {"type": ["string", "null"]},
         "revised_actor": {"type": ["string", "null"]},
         "argument": {"type": "string"},
     },
-    "required": ["stance", "confirm_turn_id", "revised_text", "revised_actor", "argument"],
+    "required": ["confirm_turn_id", "stance", "revised_text", "revised_actor", "argument"],
 }
 
 _STANCE_LABELS = {"accept": "đồng ý", "amend": "đã sửa candidate", "defend": "giữ nguyên, phản biện"}
+
+
+def _build_candidate_prompt(task: VerifyTask, candidate) -> str:
+    """Phần đầu prompt chung cho Verifier và agent trích xuất: candidate, cờ nghi ngờ, bản ghi.
+
+    Khác ``_build_debate_user_prompt`` của v1: lý do bị đánh dấu được ghi rõ là cờ của
+    bộ lọc tự động (gợi ý, có thể sai) để model không lấy nó làm căn cứ bỏ candidate.
+
+    Đầu vào: task - VerifyTask; candidate - bản đang xét.
+    Đầu ra: str.
+    """
+
+    reasons = "; ".join(task["reasons"]) or "(không có lý do cụ thể)"
+    return (
+        f"Candidate: {_candidate_text(candidate, task['kind'])}\n"
+        f"Agent trích xuất tự khai: trạng thái '{candidate.status}', "
+        f"lượt chốt {candidate.confirm_turn_id or '(không nêu)'}, "
+        f"bằng chứng {', '.join(candidate.evidence_ids)}\n"
+        f"Cờ của bộ lọc tự động (chỉ là gợi ý, có thể sai, KHÔNG phải bằng chứng): {reasons}\n\n"
+        f"Bản ghi của đoạn:\n{format_turns_as_transcript(task['turns'])}"
+    )
 
 
 def _build_step_prompt(base_prompt: str, steps: list[VerifierStep], is_last: bool) -> str:
@@ -161,6 +202,23 @@ def _format_steps(steps: list[VerifierStep] | tuple[VerifierStep, ...]) -> str:
     )
 
 
+def _repeat_notice(steps: list[VerifierStep], action: str, argument: str) -> str | None:
+    """Thông báo khi Verifier tra lại đúng một lần tra đã làm ở vòng này (tốn bước vô ích).
+
+    Đầu vào: steps - các bước đã làm; action, argument - lần tra mới.
+    Đầu ra: observation báo lặp, hoặc None nếu là lần tra mới.
+    """
+
+    key = " ".join(argument.casefold().split())
+    for index, step in enumerate(steps, 1):
+        if step.action == action and " ".join(step.argument.casefold().split()) == key:
+            return (
+                f"LỖI: đã tra {action}({argument}) ở Bước {index}, kết quả như trên. "
+                "Đọc kỹ bản ghi của đoạn, tra cách khác hoặc kết luận."
+            )
+    return None
+
+
 def _format_rounds(rounds: list[ConsensusRound]) -> str:
     """Các vòng trao đổi trước, để Verifier xét lại lập luận của agent trích xuất.
 
@@ -174,9 +232,33 @@ def _format_rounds(rounds: list[ConsensusRound]) -> str:
             f"Vòng {index} - candidate: {round_.candidate_text}\n"
             f"  Kiểm chứng viên: {round_.verdict}"
             f"{f' (lượt {round_.deciding_turn_id})' if round_.deciding_turn_id else ''}: {round_.feedback}\n"
-            f"  Agent trích xuất ({_STANCE_LABELS.get(round_.stance, round_.stance)}): {round_.response}"
+            f"  Agent trích xuất ({_STANCE_LABELS.get(round_.stance, round_.stance)}"
+            f"{f', lượt {round_.confirm_turn_id}' if round_.confirm_turn_id else ''}): {round_.response}"
         )
     return "\n".join(lines)
+
+
+def _read_stance(response: dict, verdict: str, meeting_turns) -> tuple[str, str | None, str]:
+    """Đọc lập trường của agent trích xuất, sửa trường hợp "accept" tự mâu thuẫn.
+
+    "accept" khi Verifier không giữ nghĩa là BỎ candidate. Nếu agent vẫn chỉ ra một lượt
+    nói thật làm căn cứ thì đó là phản biện chứ không phải đồng ý (model chọn nhãn trước
+    rồi viết lập luận ngược lại), nên coi là "defend" để Verifier xét lại lượt đó.
+    Với "revise", "accept" kèm lượt nói là đồng ý bản sửa, giữ nguyên.
+
+    Đầu vào: response - JSON agent trả; verdict - kết luận Verifier vòng này;
+        meeting_turns - lượt nói cả cuộc họp.
+    Đầu ra: (stance hợp lệ hoặc "", confirm_turn_id hợp lệ hoặc None, argument).
+    """
+
+    stance = response.get("stance")
+    stance = stance if stance in _STANCE_LABELS else ""
+    confirm_turn_id = read_confirm_turn_id(meeting_turns, response.get("confirm_turn_id"))
+    argument = read_stripped_text(response.get("argument"))
+    if stance == "accept" and verdict != "revise" and confirm_turn_id:
+        stance = "defend"
+        argument = f"(Đổi accept thành defend vì agent chỉ ra lượt {confirm_turn_id}.) {argument}".strip()
+    return stance, confirm_turn_id, argument
 
 
 def _apply_proposal(candidate, kind: str, response: dict, meeting_turns):
@@ -256,7 +338,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         system_prompt = VERIFIER_SYSTEM_PROMPT.format(
             kind_label=_KIND_LABELS[kind], rubric=_RUBRICS[kind], tools=TOOL_DESCRIPTIONS
         )
-        base_prompt = _build_debate_user_prompt({**task, "candidate": candidate}, _candidate_text(candidate, kind))
+        base_prompt = _build_candidate_prompt(task, candidate)
         if rounds:
             base_prompt += f"\n\nCác vòng trao đổi trước:\n{_format_rounds(rounds)}"
         steps: list[VerifierStep] = []
@@ -276,7 +358,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                     thought=read_stripped_text(result.get("thought")),
                     action=action,
                     argument=argument,
-                    observation=tools.run(action, argument),
+                    observation=_repeat_notice(steps, action, argument) or tools.run(action, argument),
                 )
             )
         return {}, steps
@@ -310,7 +392,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         """
 
         kind = task["kind"]
-        parts = [_build_debate_user_prompt({**task, "candidate": candidate}, _candidate_text(candidate, kind))]
+        parts = [_build_candidate_prompt(task, candidate)]
         if rounds:
             parts.append(f"Các vòng trao đổi trước:\n{_format_rounds(rounds)}")
         parts.append(f"Kiểm chứng viên kết luận: {verdict}\nFeedback: {feedback}")
@@ -359,12 +441,11 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                 return _settle(task, task["candidate"], rounds, verdict="unresolved",
                                reasoning=f"(Agent trích xuất lỗi LLM khi trả lời feedback: {exc})",
                                deciding_turn_id=None, decided_by="fallback")
-            stance = response.get("stance")
+            stance, confirm_turn_id, argument = _read_stance(response, verdict, task["meeting_turns"])
             rounds.append(
                 ConsensusRound(
                     candidate_text, tuple(steps), verdict, feedback, deciding_turn_id,
-                    stance=stance if stance in _STANCE_LABELS else "",
-                    response=read_stripped_text(response.get("argument")),
+                    stance=stance, response=argument, confirm_turn_id=confirm_turn_id,
                 )
             )
             if stance == "accept":

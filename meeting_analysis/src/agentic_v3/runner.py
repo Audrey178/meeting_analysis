@@ -16,8 +16,8 @@ from ..utils.contracts import SpeakerTurn, TopicSegment
 from ..utils.ports import LLMAdapter, TopicLabelAdapter
 from .config import V3Config
 from .graph.meeting import build_graph_v3
-from .schemas import MeetingReport
 from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
+from .schemas import MeetingReport
 
 
 class MeetingAnalyzerV3:

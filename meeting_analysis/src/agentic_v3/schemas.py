@@ -87,6 +87,7 @@ class ConsensusRound:
         stance: phản hồi của agent trích xuất (accept/amend/defend); rỗng khi Verifier
             đã giữ (keep) nên không cần hỏi lại.
         response: lập luận của agent trích xuất.
+        confirm_turn_id: lượt giao/chốt agent trích xuất chỉ ra (nếu có).
     """
 
     candidate_text: str
@@ -96,6 +97,7 @@ class ConsensusRound:
     deciding_turn_id: str | None = None
     stance: str = ""
     response: str = ""
+    confirm_turn_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

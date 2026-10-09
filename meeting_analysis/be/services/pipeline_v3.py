@@ -155,6 +155,7 @@ def _serialize_verification_record(record) -> dict:
                 "deciding_turn_id": r.deciding_turn_id,
                 "stance": r.stance,
                 "response": r.response,
+                "confirm_turn_id": r.confirm_turn_id,
             }
             for r in record.rounds
         ],

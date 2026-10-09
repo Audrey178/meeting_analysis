@@ -43,6 +43,7 @@ from ..schemas import MeetingReport, VerificationRecord
 from .state import MeetingStateV3
 from .topic import build_topic_graph
 
+
 def make_plan_node(config: V3Config):
     """Tạo node ``plan_meeting`` (luật, 0 token).
 
