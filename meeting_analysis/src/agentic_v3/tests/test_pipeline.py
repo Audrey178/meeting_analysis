@@ -11,6 +11,7 @@ import threading
 import time
 
 from src.agentic_v3 import MeetingAnalyzerV3, V3Config, plan_meeting
+from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.agentic_v3.schemas import SpeakerRegistry
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
@@ -68,6 +69,7 @@ class FakeLLM:
         self.proposer_script = list(proposer_script or [])
         self.fail_action_once = fail_action_once
         self.calls: list[str] = []
+        self.prompts: list[tuple[str, str]] = []
         self.in_flight = 0
         self.max_in_flight = 0
         self.segments_in_flight: set[str] = set()
@@ -79,6 +81,7 @@ class FakeLLM:
         segment = next((s.segment_id for s in SEGMENTS if any(f"[{t}|" in user_prompt for t in s.atom_ids)), "?")
         with self._lock:
             self.calls.append(kind)
+            self.prompts.append((kind, user_prompt))
             self.in_flight += 1
             self.max_in_flight = max(self.max_in_flight, self.in_flight)
             self.segments_in_flight.add(segment)
@@ -319,3 +322,69 @@ def test_assignment_deadline_without_meeting_date_keeps_kind_only():
     (assignment,) = _start(_analyzer(llm)).assignments
 
     assert (assignment.deadline_date, assignment.deadline_kind) == (None, "before")
+
+
+def test_accept_that_cites_a_turn_is_treated_as_defend():
+    llm = FakeLLM(
+        verifier_script=[_verifier_final("drop", reasoning="chỉ là đề xuất"), _verifier_final("keep", "T4")],
+        proposer_script=[_proposer("accept", "T4")],
+    )
+    report = _start(_analyzer(llm))
+
+    (record,) = report.verification_records
+    assert [(r.verdict, r.stance, r.confirm_turn_id) for r in record.rounds] == [
+        ("drop", "defend", "T4"), ("keep", "", None),
+    ]
+    assert record.decided_by == "consensus" and record.verdict == "keep"
+    second_verifier_prompt = [p for kind, p in llm.prompts if kind == "verifier"][1]
+    assert "giữ nguyên, phản biện, lượt T4" in second_verifier_prompt
+
+
+def test_accept_of_a_revision_with_a_turn_stays_accept():
+    llm = FakeLLM(verifier_script=[{**_verifier_final("revise", "T4"), "revised_actor": "Anh Tuấn"}],
+                  proposer_script=[_proposer("accept", "T4")])
+    report = _start(_analyzer(llm))
+
+    (record,) = report.verification_records
+    assert record.rounds[0].stance == "accept" and record.verdict == "revise"
+    assert [a.actor for a in report.assignments if a.text == PROPOSAL_TEXT] == ["Anh Tuấn"]
+
+
+def test_filter_reasons_are_presented_as_hints_not_evidence():
+    llm = FakeLLM(verifier_script=[_verifier_final("drop")])
+    _start(_analyzer(llm))
+
+    verifier_prompt = next(p for kind, p in llm.prompts if kind == "verifier")
+    assert "Cờ của bộ lọc tự động (chỉ là gợi ý, có thể sai, KHÔNG phải bằng chứng)" in verifier_prompt
+    assert "Lý do bị đánh dấu chưa chắc chắn" not in verifier_prompt
+
+
+def test_repeated_tool_call_is_not_run_again():
+    llm = FakeLLM(verifier_script=[_verifier_step("search_meeting", "mở lại phản ánh"),
+                                   _verifier_step("search_meeting", "  Mở lại  phản ánh "), _verifier_final("drop")])
+    report = _start(_analyzer(llm))
+
+    first, second = report.verification_records[0].steps
+    assert "[T3|" in first.observation
+    assert second.observation.startswith("LỖI: đã tra search_meeting") and "Bước 1" in second.observation
+
+
+def test_search_prefers_short_on_topic_turn_over_long_rambling_turn():
+    filler = "Báo cáo tình hình đề án cảng biển, hạ tầng, nguồn hàng và quy hoạch vùng. " * 30
+    turns = (
+        _turn("L1", "Anh Sinh", filler + "Đảng ủy ban xây dựng lại tờ trình rồi."),
+        _turn("L2", "Anh Sinh", filler),
+        _turn("L3", "Anh Sơn", "Đề nghị Đảng ủy ban xây dựng lại tờ trình rồi báo cáo thường vụ."),
+    )
+    tools = MeetingTools(turns, SpeakerRegistry(("Anh Sinh", "Anh Sơn")), search_top_k=1)
+
+    assert tools.run("search_meeting", "Đảng ủy ban xây dựng lại tờ trình").startswith("[L3|")
+
+
+def test_search_snippet_is_cut_around_the_match():
+    filler = "Báo cáo tình hình chung của cảng biển. " * 40
+    turns = (_turn("L1", "Anh Sơn", filler + "Giao Đảng ủy ban chuẩn bị lại tờ trình."),)
+    tools = MeetingTools(turns, SpeakerRegistry(("Anh Sơn",)))
+
+    line = tools.run("search_meeting", "chuẩn bị lại tờ trình")
+    assert line.startswith("[L1|Anh Sơn] …") and "chuẩn bị lại tờ trình" in line

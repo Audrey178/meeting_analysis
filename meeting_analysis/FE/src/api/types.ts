@@ -143,6 +143,8 @@ export interface ConsensusRoundOut {
   /** "accept" | "amend" | "defend"; empty when the Verifier kept the candidate. */
   stance: string;
   response: string;
+  /** Turn the extractor agent cites as the assignment/conclusion, if any. */
+  confirm_turn_id?: string | null;
 }
 
 export interface VerificationRecordOut {
