@@ -138,8 +138,7 @@ export function VerifierRecordsBlock({ records, topicIndexById, selectedPointKey
                         {round.stance && (
                           <div className="mt-1 text-neutral-700">
                             <span className="font-heading font-extrabold">
-                              Agent trích xuất ({STANCE_LABEL[round.stance] ?? round.stance}
-                              {round.confirm_turn_id ? `, lượt ${round.confirm_turn_id}` : ""}):
+                              Agent trích xuất ({STANCE_LABEL[round.stance] ?? round.stance}):
                             </span>{" "}
                             {round.response}
                           </div>
