@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 import heapq
 
 import numpy as np
-from utils.contracts import AnalysisAtom, SpeakerTurn, TopicSegment
+from src.utils.contracts import AnalysisAtom, SpeakerTurn, TopicSegment
 
 EmbedFn = Callable[[str], Sequence[float]]
 

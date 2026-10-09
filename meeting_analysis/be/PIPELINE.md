@@ -402,36 +402,3 @@ tra việc nối dây end-to-end, không đánh giá chất lượng đầu ra c
 | `src/stages/stage01..03_*.py`, `stage07_topic_labeling.py` | Các stage tiền xử lý và gán nhãn |
 | `src/agentic/graph.py`, `state.py`, `nodes/*` | Graph agent LangGraph |
 | `experiments/006_dialstart`, `007_dialtreeseg`, `treeseg_turn_level` | Các bộ cắt chủ đề |
-
----
-
-## 7. Pipeline MA-MRG (`src/agentic_v2`) — job chạy nền
-
-Song song với `POST /meetings/analyze` (pipeline agentic cũ), API phơi pipeline MA-MRG
-(SPEC: `src/agentic_v2/spec.md`). MA-MRG gọi LLM nhiều lần (4 role agent × số đoạn, tối đa
-3 vòng trao đổi, Reviewer, realizer) nên chạy dạng **job nền + polling**:
-
-```
-POST /meetings/mrg/jobs            body = AnalyzeRequest + meeting_date (bắt buộc) + chair? + participants? + options?
-  │  routers/mrg.py   (đọc thử transcript -> 422 sớm; tạo job; trả 202 + job_id)
-  ▼
-services/mrg.py: run_mrg_analysis  (chạy trong MrgJobStore, ThreadPoolExecutor)
-  ├─ services/pipeline.py: prepare_meeting   stage01-03 + cắt chủ đề + stage07 (DÙNG CHUNG với pipeline cũ)
-  ├─ build_meeting_input                     -> mrg.state0.MeetingInput (turn_id = TURN_xxxxxx của stage03)
-  └─ mrg.pipeline.MeetingPipeline.run        Stage 0–4, báo tiến độ qua callback -> job.stage / job.progress
-GET /meetings/mrg/jobs/{job_id}    -> {status, stage, stage_label, progress, elapsed_s, error, result?}
-```
-
-`result` = Giao việc / Kết luận / Diễn biến theo SPEC MA-MRG mục 10 (mọi trường có `fold_trace`
-trỏ về `turn_id` + span), văn bản Thông báo kết luận (nếu bật realizer), cảnh báo (A1–A12, 10.4)
-và `report` (số liệu từng stage).
-
-| Biến môi trường | Mặc định | Ý nghĩa |
-|---|---|---|
-| `MODEL_NAME`, `OPENAI_BASE_URL`, `OPENAI_API_KEY` | — | gateway LLM của MA-MRG (`mrg.llm.client.OpenAIChatBackend`) |
-| `MRG_CACHE_DIR` | `outputs/mrg_cache` | cache LLM theo nội dung + log JSONL mỗi lời gọi |
-| `MRG_MAX_CONCURRENT_JOBS` | `1` | số job MA-MRG chạy song song |
-| `MRG_LLM_CONCURRENCY` | `16` | số lời gọi LLM song song trong một job (Stage 1, mỗi vòng Stage 2, realizer); đo trên gateway Gemma: Stage 1 pilot 61 s (4) → 20 s (16), 24 thì gateway quá tải |
-
-Giới hạn: job nằm trong bộ nhớ tiến trình (mất khi khởi động lại; 404 khi hỏi job cũ), chỉ đúng
-với một worker uvicorn. Test: `be/test_mrg_api.py` (LLM/embedding giả, không gọi mạng).

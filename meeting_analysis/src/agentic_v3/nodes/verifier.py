@@ -32,6 +32,11 @@ Lặp tới khi đồng thuận hoặc hết ``consensus_max_rounds`` vòng. H�
 cuối của Verifier (``decided_by="verifier"``); kết luận đó vẫn là "unresolved" thì giữ
 theo luật an toàn ``fallback`` như v1. Lỗi LLM ở bất kỳ bước nào cũng giữ ``fallback``
 (lỗi hạ tầng không được xoá nội dung đã trích).
+
+Định danh actor (chỉ việc giao): Verifier tra ``lookup_speaker`` rồi điền
+``revised_actor`` (đúng tên một ứng viên), ``revised_actor_type`` và ``actor_reason``.
+Lựa chọn chỉ được nhận khi tên nằm trong danh sách ứng viên và có lý do; ``unknown``
+thì giữ ứng viên và gắn cờ; còn lại dùng luật chấm điểm (``actors/resolution.py``).
 """
 
 from __future__ import annotations
@@ -53,6 +58,7 @@ from ...agentic.nodes.debate_judge_agent import (
 )
 from ...utils.llm_call_log import llm_call
 from ...utils.ports import LLMAdapter, LLMUpstreamError
+from ..actors.resolution import apply_verifier_actor_choice
 from ..config import V3Config
 from ..schemas import ConsensusRound, VerificationRecord, VerifierStep, VerifyTask
 from .prompts import CHAIR_HINT, VERIFY_RUBRICS, format_chair_line
@@ -75,19 +81,29 @@ Mỗi lượt trả về đúng MỘT JSON, các trường theo thứ tự:
 - thought: 1-2 câu: đã biết gì từ bản ghi và các bước trước, còn thiếu gì, vì sao tra
   tiếp hoặc vì sao đã đủ căn cứ.
 - Muốn tra thêm: action là tên tool, argument là tham số; các trường kết luận để null.
-- Đủ căn cứ: action = "final", argument = null, rồi điền:
-  deciding_turn_id: turn_id của lượt nói GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT (có
-    thể ở chủ đề khác); BẮT BUỘC khi keep/revise, null nếu không có.
-  verdict: "keep" | "revise" | "drop" | "unresolved" (chỉ khi bằng chứng thật sự mâu
-    thuẫn hoặc thiếu).
-  revised_actor: chỉ khi revise, đúng nguyên văn bản ghi.
-  reasoning: 1-2 câu (xem dưới).
+- Đủ căn cứ: action = "final", argument = null, và điền verdict:
+  "keep" | "revise" | "drop" | "unresolved" (chỉ khi bằng chứng thật sự mâu thuẫn
+  hoặc thiếu), deciding_turn_id (BẮT BUỘC khi keep/revise: turn_id của lượt nói
+  GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT, có thể ở chủ đề khác), reasoning (1-2 câu).
 
-"Cờ của bộ lọc tự động" chỉ cho biết vì sao candidate bị gửi kiểm tra: bộ lọc chỉ chấm
-MỘT lượt nói mà agent trích xuất khai và hay sai, nên cờ đó KHÔNG phải bằng chứng và
-KHÔNG được dùng làm lý do bỏ. Lượt GIAO/CHỐT thật có thể khác lượt agent khai: trước khi
-kết luận drop/unresolved, đọc các lượt nói của người chủ trì trong đoạn, nhất là các
-lượt cuối đoạn (tổng kết, chốt, giao việc); thấy lượt giao/chốt đúng nội dung candidate
+Với VIỆC GIAO, actor có thể là NGƯỜI hoặc ĐƠN VỊ ("giao Sở Tài chính chủ trì" là hợp lệ).
+Khi actor chỉ là tên gọi, có thể trùng người khác, hoặc bị nghi ngờ: gọi
+lookup_speaker("<cách gọi> @<turn_id lượt chốt>") rồi điền:
+  revised_actor: ĐÚNG tên một ứng viên tool trả về (không tự viết tên khác). Việc giao
+  cho nhiều bên thì nối bằng ", " và ghi vai trò trong ngoặc, vd
+  "Sở Tài chính (chủ trì), Sở Xây dựng (phối hợp)"; mỗi bên phải là một ứng viên;
+  revised_actor_type: "person" | "organization" | "unknown";
+  actor_reason: vì sao chọn ứng viên đó (ai nói gì ở lượt nào; chỉ dựa vào chức vị/đơn
+  vị khi bản ghi không phân định được).
+Không có ứng viên nào rõ ràng thì revised_actor_type = "unknown" (việc giao vẫn giữ).
+Với quyết định, ba trường này để null.
+
+"Cờ của bộ lọc tự động" chỉ cho biết vì sao candidate bị gửi kiểm tra: bộ lọc chỉ
+chấm MỘT lượt nói mà agent trích xuất khai và hay sai, nên cờ đó KHÔNG phải bằng
+chứng và KHÔNG được dùng làm lý do bỏ. Lượt GIAO/CHỐT thật có thể khác lượt agent
+khai. Trước khi kết luận drop/unresolved, đọc các lượt nói của người chủ trì/cấp có
+thẩm quyền trong đoạn, nhất là các lượt cuối đoạn (tổng kết, "đề nghị các đồng chí
+...", "giao ...", "chuẩn bị lại ..."); thấy lượt giao/chốt đúng nội dung candidate
 thì keep/revise với deciding_turn_id là lượt đó.
 
 reasoning là FEEDBACK gửi lại agent trích xuất khi bạn không giữ: nêu cụ thể điểm
@@ -109,10 +125,13 @@ VERIFIER_SCHEMA: dict = {
         "deciding_turn_id": {"type": ["string", "null"]},
         "verdict": {"type": ["string", "null"], "enum": ["keep", "revise", "drop", "unresolved", None]},
         "revised_actor": {"type": ["string", "null"]},
+        "revised_actor_type": {"type": ["string", "null"], "enum": ["person", "organization", "unknown", None]},
+        "actor_reason": {"type": ["string", "null"]},
         "reasoning": {"type": ["string", "null"]},
     },
     "required": [
-        "thought", "action", "argument", "deciding_turn_id", "verdict", "revised_actor", "reasoning",
+        "thought", "action", "argument", "verdict", "deciding_turn_id", "revised_actor",
+        "revised_actor_type", "actor_reason", "reasoning",
     ],
 }
 
@@ -312,14 +331,16 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
     Đầu ra: hàm node ``verifier(task: VerifyTask) -> dict`` (được ``Send`` mỗi candidate).
     """
 
-    def _settle(task, candidate, rounds, *, verdict, reasoning, deciding_turn_id, decided_by) -> dict:
+    def _settle(task, candidate, rounds, *, verdict, reasoning, deciding_turn_id, decided_by,
+                actor_choice: dict | None = None) -> dict:
         """Đóng gói kết quả cuối của MỘT candidate thành dict cập nhật state.
 
         Lỗi LLM/không kết luận được thì ``candidate`` là bản GỐC: bản agent tự sửa mà
         Verifier chưa xét lại không được vào kết quả.
 
         Đầu vào: task; candidate - bản cuối (bị bỏ nếu ``verdict == "drop"``); rounds -
-            các vòng trao đổi; verdict, reasoning, deciding_turn_id, decided_by - cho bản ghi.
+            các vòng trao đổi; verdict, reasoning, deciding_turn_id, decided_by - cho bản ghi;
+            actor_choice - JSON lượt cuối của Verifier (chọn actor), None nếu không có.
         Đầu ra: dict ``verification_records`` (+ ``verified_*`` nếu giữ).
         """
 
@@ -327,6 +348,11 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         kept = verdict != "drop"
         verification = {"consensus": "consensus", "verifier": "verifier"}.get(decided_by, "fallback")
         candidate = replace(candidate, verification=verification)
+        if kind == "action" and kept:
+            candidate = apply_verifier_actor_choice(
+                candidate, actor_choice or {}, task["registry"], task["meeting_turns"],
+                original_actor=task["candidate"].actor,
+            )
         record = VerificationRecord(
             item_key=task["item_key"], segment_id=task["segment_id"], kind=kind,
             candidate_text=_candidate_text(task["candidate"], kind), reasons=task["reasons"],
@@ -350,7 +376,13 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         """
 
         kind = task["kind"]
-        tools = MeetingTools(task["meeting_turns"], task["registry"], search_top_k=config.search_top_k)
+        tools = MeetingTools(
+            task["meeting_turns"],
+            task["registry"],
+            search_top_k=config.search_top_k,
+            task_text=candidate.text,
+            is_self_committed=getattr(candidate, "status", None) == "self_committed",
+        )
         system_prompt = VERIFIER_SYSTEM_PROMPT.format(
             kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT, tools=TOOL_DESCRIPTIONS
         )
@@ -438,6 +470,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
         candidate = task["candidate"]
         rounds: list[ConsensusRound] = []
         outcome = None
+        last_result: dict = {}
         for _ in range(config.consensus_max_rounds):
             try:
                 result, steps = _run_react(task, candidate, rounds)
@@ -447,11 +480,12 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                                deciding_turn_id=None, decided_by="fallback")
             verdict, deciding_turn_id, resolved, feedback = _judge(task, candidate, result)
             outcome = (verdict, deciding_turn_id, resolved, feedback)
+            last_result = result
             candidate_text = _candidate_text(candidate, task["kind"])
             if verdict == "keep":
                 rounds.append(ConsensusRound(candidate_text, tuple(steps), verdict, feedback, deciding_turn_id))
                 return _settle(task, resolved, rounds, verdict="keep", reasoning=feedback,
-                               deciding_turn_id=deciding_turn_id, decided_by="consensus")
+                               deciding_turn_id=deciding_turn_id, decided_by="consensus", actor_choice=result)
             try:
                 response = _ask_proposer(task, candidate, verdict, feedback, steps, rounds)
             except LLMUpstreamError as exc:
@@ -469,7 +503,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
             if stance == "accept":
                 final_verdict = "revise" if verdict == "revise" else "drop"
                 return _settle(task, resolved, rounds, verdict=final_verdict, reasoning=feedback,
-                               deciding_turn_id=deciding_turn_id, decided_by="consensus")
+                               deciding_turn_id=deciding_turn_id, decided_by="consensus", actor_choice=result)
             candidate = _apply_proposal(candidate, task["kind"], response, task["meeting_turns"])
 
         verdict, deciding_turn_id, resolved, feedback = outcome
@@ -479,7 +513,7 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                            deciding_turn_id=None, decided_by="fallback")
         return _settle(task, resolved, rounds, verdict=verdict,
                        reasoning=f"(Chưa đồng thuận sau {len(rounds)} vòng, theo kết luận của Verifier.) {feedback}",
-                       deciding_turn_id=deciding_turn_id, decided_by="verifier")
+                       deciding_turn_id=deciding_turn_id, decided_by="verifier", actor_choice=last_result)
 
     return verifier
 

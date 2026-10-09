@@ -278,7 +278,7 @@ def segment_meeting(
 ) -> SegmentedMeeting:
     """Đọc transcript -> stage01-03 dựng lượt nói -> cắt chủ đề (chưa gán nhãn).
 
-    Dùng chung cho ``prepare_meeting`` (v1, MA-MRG) và pipeline v3
+    Dùng chung cho ``prepare_meeting`` (v1) và pipeline v3
     (``services/pipeline_v3.py``, gán nhãn trong từng chủ đề) để mọi pipeline nhận
     CÙNG lượt nói và cùng ranh giới chủ đề.
 
@@ -338,8 +338,7 @@ def prepare_meeting(
 ) -> PreparedMeeting:
     """Đọc transcript -> stage01-03 dựng lượt nói -> cắt chủ đề -> stage07 gán nhãn.
 
-    Dùng chung cho pipeline agentic cũ (``run_meeting_analysis_pipeline``) và MA-MRG
-    (``services/mrg.py``) để hai pipeline nhận CÙNG lượt nói và cùng ranh giới chủ đề.
+    Dùng cho pipeline agentic cũ (``run_meeting_analysis_pipeline``).
 
     Đầu vào: như ``run_meeting_analysis_pipeline``.
     Đầu ra: ``PreparedMeeting``.

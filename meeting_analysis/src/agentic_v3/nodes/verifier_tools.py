@@ -12,13 +12,12 @@ import unicodedata
 from collections import Counter
 from collections.abc import Collection, Sequence
 
-from ...agentic._shared import match_claimed_name_to_real_speaker
 from ...stages._shared import VN_STOPWORDS, WORD_RE, word_tokens
 from ...utils.contracts import SpeakerTurn
-from ..schemas import SpeakerRegistry
+from ..actors.resolution import is_clear_choice, rank_actor_candidates
+from ..schemas import ActorCandidate, SpeakerRegistry
 
-# Cắt mỗi lượt nói trong kết quả search_meeting để prompt của Verifier không phình
-# theo số bước. get_turn trả nguyên văn dài hơn vì Verifier gọi nó có chủ đích.
+# Cắt mỗi lượt nói trong observation để prompt của Verifier không phình theo số bước.
 _MAX_TURN_CHARS = 600
 _MAX_GET_TURN_CHARS = 3000
 # Đoạn trích của search_meeting bắt đầu trước từ khớp đầu tiên chừng này ký tự.
@@ -34,12 +33,11 @@ _BIGRAM_WEIGHT = 2.0
 TOOL_DESCRIPTIONS = """
 - get_turn(argument = turn_id): nguyên văn MỘT lượt nói bất kỳ trong cả cuộc họp.
 - search_meeting(argument = vài từ khoá): các lượt nói khớp nhất trong CẢ cuộc họp (kể
-  cả chủ đề khác), để tìm lượt giao/nhận/chốt việc nằm ngoài đoạn hiện tại. Dùng từ
-  khoá ĐẶC TRƯNG của nội dung việc (vd. "tờ trình", "luồng tàu", "nhãn 12 lĩnh vực"),
-  không dùng từ chung như "giao", "việc", "đề nghị", "anh", "đồng chí": tìm kiếm chấm
-  điểm theo âm tiết (BM25) nên gần như bỏ qua từ xuất hiện ở hầu hết các lượt nói.
-- lookup_speaker(argument = tên hoặc cách gọi, vd "Sơn", "anh Phong"): người nói thật
-  trong danh bạ cuộc họp mà cách gọi đó chỉ tới.
+  cả chủ đề khác), để tìm lượt giao/nhận/chốt việc nằm ngoài đoạn hiện tại.
+- lookup_speaker(argument = cách gọi actor, tuỳ chọn kèm "@turn_id" của lượt chốt, vd
+  "Sơn @T12", "anh Phong", "Sở Tài chính"): các ứng viên NGƯỜI hoặc ĐƠN VỊ (người nói,
+  danh sách tham dự) kèm điểm và lý do, điểm giảm dần. Ngữ cảnh quanh lượt chốt được
+  xét trước, chức năng/đơn vị trong danh sách chỉ xét khi ngữ cảnh chưa phân định được.
 """.strip()
 
 TOOL_NAMES = ("get_turn", "search_meeting", "lookup_speaker")
@@ -116,8 +114,10 @@ class MeetingTools:
 
     Đầu vào khi tạo:
         meeting_turns: mọi lượt nói của cuộc họp, theo thứ tự.
-        registry: danh bạ người nói.
+        registry: danh bạ người nói + danh sách tham dự.
         search_top_k: số lượt nói tối đa ``search_meeting`` trả về.
+        task_text: nội dung việc đang kiểm (tín hiệu chức năng của ``lookup_speaker``).
+        is_self_committed: việc đang kiểm là tự nhận.
     """
 
     def __init__(
@@ -126,11 +126,15 @@ class MeetingTools:
         registry: SpeakerRegistry,
         *,
         search_top_k: int = 5,
+        task_text: str = "",
+        is_self_committed: bool = False,
     ) -> None:
         self._turns = tuple(meeting_turns)
         self._by_id = {turn.turn_id: turn for turn in self._turns}
         self._registry = registry
         self._top_k = search_top_k
+        self._task_text = task_text
+        self._is_self_committed = is_self_committed
         self._terms = [_content_terms(turn.text_exact) for turn in self._turns]
         self._lengths = [_term_length(terms) for terms in self._terms]
         self._avg_length = (sum(self._lengths) / len(self._lengths) or 1.0) if self._lengths else 1.0
@@ -215,25 +219,47 @@ class MeetingTools:
             score += weight * idf * tf * (_BM25_K1 + 1) / (tf + norm)
         return score
 
-    def lookup_speaker(self, alias: str) -> str:
-        """Quy một cách gọi về người nói thật trong danh bạ.
+    def lookup_speaker(self, argument: str) -> str:
+        """Liệt kê ứng viên (người/đơn vị) cho một cách gọi actor, kèm điểm và lý do.
 
-        Đầu vào: alias - tên/cách gọi.
-        Đầu ra: tên người nói, danh sách ứng viên nếu mơ hồ, hoặc thông báo không tìm thấy.
+        Đầu vào: argument - cách gọi, tuỳ chọn kèm "@turn_id" của lượt chốt ("Sơn @T12").
+        Đầu ra: các dòng ``mã | tên | loại | điểm | lý do`` và dòng kết luận RÕ RÀNG/MƠ HỒ,
+            hoặc thông báo không có ứng viên.
         """
 
-        matched = match_claimed_name_to_real_speaker(alias, self._turns)
-        if matched is not None and matched in self._registry.names:
-            return f"'{alias}' là người nói: {matched}"
-        alias_tokens = set(word_tokens(alias))
-        candidates = [
-            name for name in self._registry.names if alias_tokens & set(word_tokens(name))
-        ]
-        if candidates:
-            return f"'{alias}' mơ hồ, có thể là: {', '.join(candidates)}"
-        return (
-            f"Không có người nói nào khớp '{alias}'. Danh bạ: {', '.join(self._registry.names) or '(rỗng)'}"
+        alias, _, turn_part = argument.partition("@")
+        alias = alias.strip()
+        context_turn_id = turn_part.strip().lstrip("[").split("|", 1)[0].rstrip("]").strip() or None
+        if not alias:
+            return "LỖI: thiếu cách gọi actor trước '@'."
+        if context_turn_id and context_turn_id not in self._by_id:
+            return f"LỖI: không có lượt nói '{context_turn_id}' trong cuộc họp."
+        candidates = rank_actor_candidates(
+            alias,
+            self._registry,
+            meeting_turns=self._turns,
+            context_turn_id=context_turn_id,
+            task_text=self._task_text,
+            is_self_committed=self._is_self_committed,
         )
+        if not candidates:
+            known = ", ".join(self._registry.names) or "(rỗng)"
+            return f"Không có người/đơn vị nào khớp '{alias}'. Người nói: {known}"
+        lines = [_format_candidate(candidate) for candidate in candidates]
+        if is_clear_choice(candidates):
+            lines.append(f"RÕ RÀNG: '{alias}' là {candidates[0].name} ({candidates[0].actor_type}).")
+        else:
+            lines.append(f"MƠ HỒ: chưa ứng viên nào đủ rõ cho '{alias}'; chọn theo bằng chứng hoặc để unknown.")
+        return "\n".join(lines)
+
+
+def _format_candidate(candidate: ActorCandidate) -> str:
+    """Một dòng ứng viên trong observation của ``lookup_speaker``."""
+
+    return (
+        f"{candidate.ref_id or '-'} | {candidate.name} | {candidate.actor_type} | "
+        f"{candidate.score:.2f} | {candidate.reason}"
+    )
 
 
 __all__ = ["MeetingTools", "TOOL_DESCRIPTIONS", "TOOL_NAMES", "format_turn_line"]

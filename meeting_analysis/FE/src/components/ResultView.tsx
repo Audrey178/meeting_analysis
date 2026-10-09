@@ -1,6 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react";
 import type { AnalyzeResponse } from "../api/types";
-import { formatDurationMs, groupActionItemsByActor } from "../lib/format";
+import { formatDurationMs, groupActionItemsByAssignee } from "../lib/format";
 import { DecisionBlock } from "./DecisionBlock";
 import { TaskAssignmentBlock } from "./TaskAssignmentBlock";
 import { TopicBlock } from "./TopicBlock";
@@ -71,7 +71,7 @@ export function ResultView({
     (sum, topic) => sum + topic.speakers.reduce((inner, speaker) => inner + speaker.points.length, 0),
     0,
   );
-  const people = groupActionItemsByActor(data.verified_assignments).length;
+  const people = groupActionItemsByAssignee(data.verified_assignments).length;
   const dropped = debates.filter((record) => (record.verdict ?? (record.kept ? "keep" : "drop")) === "drop").length;
 
   const tabs: [ResultTab, string][] = [

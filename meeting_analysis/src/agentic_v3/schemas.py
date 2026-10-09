@@ -20,9 +20,12 @@ from ..agentic.schemas import (
     TopicFailure,
 )
 from ..utils.contracts import SpeakerTurn, TopicLabel
+from .actors.attendees import AttendeeRoster
 
 VerifierVerdict = Literal["keep", "revise", "drop", "unresolved"]
 ProposerStance = Literal["accept", "amend", "defend"]
+ActorType = Literal["person", "organization", "unknown"]
+AssigneeRole = Literal["lead", "support", "joint"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,13 +37,79 @@ class SpeakerRegistry:
 
     Các trường:
         names: tên người nói không trùng, theo thứ tự xuất hiện đầu tiên.
-        chair: người chủ trì do phiên họp cung cấp (đã quy về tên người nói nếu khớp
-            duy nhất một người), None nếu không có. Agent trích xuất và Verifier đều
-            thấy dòng này ở đầu prompt.
+        roster: danh sách người/đơn vị tham dự (file ``*.attendees.json``); rỗng nếu
+            cuộc họp không có file đi kèm.
     """
 
     names: tuple[str, ...]
-    chair: str | None = None
+    roster: AttendeeRoster = AttendeeRoster()
+
+
+@dataclass(frozen=True, slots=True)
+class ActorCandidate:
+    """Một ứng viên cho actor của việc giao, do ``lookup_speaker``/luật chấm điểm.
+
+    Các trường:
+        name: tên chuẩn (họ tên trong danh sách, tên người nói, hoặc tên đơn vị).
+        actor_type: "person" hoặc "organization".
+        score: điểm trong [0, 1]; càng cao càng khớp.
+        reason: các tín hiệu đã cộng điểm (để Verifier và người đọc kiểm tra).
+        ref_id: mã trong file danh sách (P1, O3...), None nếu chỉ là người nói trong bản ghi.
+    """
+
+    name: str
+    actor_type: ActorType
+    score: float
+    reason: str
+    ref_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ActorAssignee:
+    """MỘT người/đơn vị nhận việc trong một việc giao (việc có thể giao cho nhiều bên).
+
+    Các trường:
+        mention: cách gọi nguyên văn trong actor ("anh Sơn", "Sở Xây dựng").
+        role: "lead" (chủ trì / người nhận chính), "support" (phối hợp), "joint" (cùng
+            thực hiện, không phân chủ trì).
+        name: tên chuẩn sau khi định danh; None nếu chưa xác định.
+        actor_type: người, đơn vị hay chưa xác định.
+        candidates: các ứng viên đã xét, điểm giảm dần.
+        flag: "ambiguous" khi không có ứng viên đủ rõ.
+        reason: lý do chọn (Verifier hoặc luật chấm điểm).
+        ref_id: mã trong file danh sách (P1, O3...) nếu có.
+    """
+
+    mention: str
+    role: AssigneeRole
+    name: str | None
+    actor_type: ActorType
+    candidates: tuple[ActorCandidate, ...] = ()
+    flag: str | None = None
+    reason: str = ""
+    ref_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ActionItemV3(ActionItemCandidate):
+    """Việc giao của v3: ``ActionItemCandidate`` của v1 cộng phần định danh actor.
+
+    Là lớp con nên mọi chỗ của v1 nhận ``ActionItemCandidate`` (gộp trùng, serialize)
+    vẫn dùng được; v1 không cần sửa.
+
+    Các trường thêm (tóm tắt theo bên nhận việc CHÍNH = assignee đầu tiên, chủ trì trước):
+        actor_type: actor chính là người, đơn vị hay chưa xác định.
+        actor_candidates: các ứng viên của actor chính, điểm giảm dần (giữ để audit).
+        actor_flag: "ambiguous" khi CÓ một bên nhận việc chưa đủ rõ.
+        actor_reason: lý do chọn actor chính (của Verifier, hoặc luật chấm điểm).
+        assignees: mọi bên nhận việc kèm vai trò (chủ trì/phối hợp/cùng thực hiện).
+    """
+
+    actor_type: ActorType = "unknown"
+    actor_candidates: tuple[ActorCandidate, ...] = ()
+    actor_flag: str | None = None
+    actor_reason: str = ""
+    assignees: tuple[ActorAssignee, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -177,6 +246,11 @@ class MeetingReport:
 
 
 __all__ = [
+    "ActionItemV3",
+    "ActorAssignee",
+    "ActorCandidate",
+    "ActorType",
+    "AssigneeRole",
     "ConsensusRound",
     "MeetingReport",
     "ProposerStance",

@@ -31,9 +31,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import health, meetings, meetings_v3, mrg
+from routers import health, meetings, meetings_v3
 from services.dependencies import build_embedding_adapter, build_topic_segmenter
-from services.mrg import MrgJobStore
 
 # override=True: .env là nguồn cấu hình chuẩn, thắng các biến cũ còn export trong shell
 # (đã gặp: VERIFIER_* của DeepSeek trong shell đè cấu hình gpt-4o-mini mới trong .env).
@@ -66,13 +65,11 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Chạy một lần khi ứng dụng khởi động: dựng adapter embedding và bộ cắt chủ đề dùng chung.
 
     Đầu vào: app - ứng dụng FastAPI; lưu ở ``app.state.embedding_adapter`` và
-        ``app.state.topic_segmenter`` (None nếu ``TOPIC_SEGMENTER=treeseg``; xem ``build_topic_segmenter``),
-        ``app.state.mrg_jobs`` (kho job MA-MRG; ``MRG_MAX_CONCURRENT_JOBS`` job chạy song song, mặc định 1).
+        ``app.state.topic_segmenter`` (None nếu ``TOPIC_SEGMENTER=treeseg``; xem ``build_topic_segmenter``).
     """
 
     app.state.embedding_adapter = build_embedding_adapter()
     app.state.topic_segmenter = build_topic_segmenter()
-    app.state.mrg_jobs = MrgJobStore(max_workers=int(os.environ.get("MRG_MAX_CONCURRENT_JOBS", "1")))
     yield
 
 
@@ -89,4 +86,3 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(meetings.router)
 app.include_router(meetings_v3.router)
-app.include_router(mrg.router)

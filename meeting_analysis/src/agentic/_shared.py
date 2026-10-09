@@ -24,6 +24,7 @@ Nhóm hàm trong file:
 
 from __future__ import annotations
 
+import logging
 import re
 import unicodedata
 from collections.abc import Sequence
@@ -31,6 +32,9 @@ from dataclasses import replace
 
 from ..utils.contracts import SpeakerTurn, TopicSegment
 from .schemas import ActionItemCandidate, DecisionCandidate, EvidenceFlag, SpeakerSection
+from .turn_act import COMMIT_CLEAR_MIN, COMMIT_REJECT_MAX, TurnActJudge
+
+logger = logging.getLogger(__name__)
 
 # Các từ xưng hô đứng đầu tên, bị bỏ khi so khớp người phụ trách ("anh Sơn" -> "sơn").
 _HONORIFIC_PREFIXES = ("anh", "chị", "em", "bạn", "cô", "chú", "bác", "ông", "bà")
@@ -292,19 +296,36 @@ def _find_cues(text: str, cues: Sequence[str]) -> tuple[str, ...]:
     return tuple(cue for cue in cues if re.search(rf"(?<!\w){re.escape(cue)}(?!\w)", text))
 
 
-def _confirm_turn_reasons(confirm_turn: SpeakerTurn | None) -> list[str]:
+def _confirm_turn_reasons(
+    confirm_turn: SpeakerTurn | None,
+    turns: tuple[SpeakerTurn, ...] = (),
+    judge: TurnActJudge | None = None,
+) -> list[str]:
     """Lý do nghi ngờ rút ra từ NGUYÊN VĂN lượt nói chốt (không từ câu agent viết lại).
 
-    Lượt chốt chỉ được coi là đã chốt khi có từ chốt/giao/nhận việc
-    (``_COMMIT_CUES``); từ đề xuất tìm thấy (nếu có) được nêu kèm để debate có
-    đầu mối.
+    Có ``judge``: phân loại lượt chốt theo nghĩa (xem ``turn_act``), ba vùng theo
+    p_commit: >= ``COMMIT_CLEAR_MIN`` thì không có lý do; giữa hai ngưỡng thì gắn cờ
+    "chưa rõ" kèm phân bố xác suất; < ``COMMIT_REJECT_MAX`` thì gắn cờ "không phải lời
+    chốt". Judge lỗi thì quay về luật từ khoá.
 
-    Đầu vào: confirm_turn - lượt nói agent chỉ ra là lượt chốt, None nếu không có.
-    Đầu ra: list lý do (rỗng nếu lượt nói có từ chốt/giao/nhận việc).
+    Không có ``judge`` (luật từ khoá): lượt chốt chỉ được coi là đã chốt khi có từ
+    chốt/giao/nhận việc (``_COMMIT_CUES``); từ đề xuất tìm thấy (nếu có) được nêu kèm
+    để debate có đầu mối.
+
+    Đầu vào:
+        confirm_turn: lượt nói agent chỉ ra là lượt chốt, None nếu không có.
+        turns: các lượt nói của đoạn (lấy các lượt đứng trước làm ngữ cảnh cho judge).
+        judge: bộ phân loại lượt nói; None thì dùng luật từ khoá.
+    Đầu ra: list lý do (rỗng nếu lượt nói được coi là đã chốt/giao/nhận việc).
     """
 
     if confirm_turn is None:
         return ["Agent không chỉ ra được lượt nói chốt/giao việc thuộc đoạn này."]
+    if judge is not None:
+        try:
+            return _judged_confirm_turn_reasons(confirm_turn, turns, judge)
+        except Exception as exc:  # noqa: BLE001 -- lỗi mạng/API bất kỳ: quay về luật từ khoá
+            logger.warning("turn_act judge lỗi ở %s, dùng luật từ khoá: %s", confirm_turn.turn_id, exc)
     text = _normalize_for_match(confirm_turn.text_exact)
     if _find_cues(text, _COMMIT_CUES):
         return []
@@ -315,6 +336,27 @@ def _confirm_turn_reasons(confirm_turn: SpeakerTurn | None) -> list[str]:
     elif text.rstrip(" .…").endswith("?"):
         reason += ", và là câu hỏi"
     return [reason + "."]
+
+
+def _judged_confirm_turn_reasons(
+    confirm_turn: SpeakerTurn, turns: tuple[SpeakerTurn, ...], judge: TurnActJudge
+) -> list[str]:
+    """Nhánh có judge của ``_confirm_turn_reasons`` (ném lỗi của judge ra ngoài)."""
+
+    index = next((i for i, turn in enumerate(turns) if turn.turn_id == confirm_turn.turn_id), len(turns))
+    judgement = judge.judge(confirm_turn, turns[:index])
+    p_commit = judgement.p_commit
+    if p_commit >= COMMIT_CLEAR_MIN:
+        return []
+    if p_commit < COMMIT_REJECT_MAX:
+        return [
+            f"Lượt chốt {confirm_turn.turn_id} không phải lời chốt/giao/nhận việc: "
+            f"phân loại là '{judgement.label}' (p_chốt={p_commit:.2f}; {judgement.describe()})."
+        ]
+    return [
+        f"Lượt chốt {confirm_turn.turn_id} chưa rõ là chốt/giao/nhận việc "
+        f"(p_chốt={p_commit:.2f}; {judgement.describe()}); cần đọc lại lượt này và ngữ cảnh."
+    ]
 
 
 def _turn_by_id(turns: tuple[SpeakerTurn, ...], turn_id: str | None) -> SpeakerTurn | None:
@@ -363,6 +405,7 @@ def check_action_evidence(
     item: ActionItemCandidate,
     turns: tuple[SpeakerTurn, ...],
     known_names: Sequence[str] = (),
+    judge: TurnActJudge | None = None,
 ) -> EvidenceFlag:
     """Evidence-check (luật, 0 token) cho một ``ActionItemCandidate``.
 
@@ -374,14 +417,15 @@ def check_action_evidence(
     1. WHO: actor None / không định danh được (như trước).
     2. WHO có căn cứ: actor phải xuất hiện trong đoạn (``_actor_is_grounded``).
     3. Agent tự khai ``status`` không phải "assigned"/"self_committed".
-    4. Lượt chốt (``confirm_turn_id``) thiếu, hoặc nguyên văn của nó không có
-       từ chốt/giao/nhận việc nào (``_confirm_turn_reasons``).
+    4. Lượt chốt (``confirm_turn_id``) thiếu, hoặc không phải lời chốt/giao/nhận
+       việc (``_confirm_turn_reasons``: theo ``judge`` nếu có, không thì theo từ khoá).
     5. Tự nhận việc (``self_committed``) nhưng người nói lượt chốt khác actor.
 
     Đầu vào:
         item: candidate cần kiểm.
         turns: các lượt nói của đoạn chứa candidate.
         known_names: tên đã biết từ các chủ đề trước.
+        judge: bộ phân loại lượt chốt theo nghĩa; None thì dùng luật từ khoá.
     Đầu ra: EvidenceFlag; ``reasons`` gom MỌI lý do khớp (để debate có đủ đầu mối).
     """
 
@@ -395,7 +439,7 @@ def check_action_evidence(
     if item.status not in _ACTION_STATUSES_CLEAR:
         reasons.append(f"Agent tự đánh giá trạng thái là '{item.status}', chưa phải việc được giao/nhận.")
     confirm_turn = _turn_by_id(turns, item.confirm_turn_id)
-    reasons.extend(_confirm_turn_reasons(confirm_turn))
+    reasons.extend(_confirm_turn_reasons(confirm_turn, turns, judge))
     if (
         item.status == "self_committed"
         and item.actor
@@ -410,7 +454,11 @@ def check_action_evidence(
     return EvidenceFlag("uncertain", tuple(reasons)) if reasons else EvidenceFlag("clear")
 
 
-def check_decision_evidence(item: DecisionCandidate, turns: tuple[SpeakerTurn, ...]) -> EvidenceFlag:
+def check_decision_evidence(
+    item: DecisionCandidate,
+    turns: tuple[SpeakerTurn, ...],
+    judge: TurnActJudge | None = None,
+) -> EvidenceFlag:
     """Evidence-check (luật, 0 token) cho một ``DecisionCandidate``: đã thực sự chốt chưa.
 
     Bản trước chỉ tìm từ đề xuất trong ``text`` -- nhưng decision agent luôn
@@ -419,20 +467,24 @@ def check_decision_evidence(item: DecisionCandidate, turns: tuple[SpeakerTurn, .
     gắn cờ). Giờ gắn cờ ``"uncertain"`` khi:
 
     1. Agent tự khai ``status`` khác "agreed".
-    2. ``text`` có từ đề xuất (như trước).
-    3. Lượt chốt thiếu, hoặc nguyên văn không có từ chốt/giao/nhận việc nào.
+    2. ``text`` có từ đề xuất -- CHỈ khi không có ``judge``: khớp cụm không xét nghĩa
+       nên gắn cờ nhầm ("có thể sau này nâng cấp" trong một câu đã chốt); có judge thì
+       lượt chốt nguyên văn đã được xét theo nghĩa ở bước 3.
+    3. Lượt chốt thiếu, hoặc không phải lời chốt (theo ``judge`` nếu có, không thì từ khoá).
 
-    Đầu vào: item - candidate cần kiểm; turns - các lượt nói của đoạn.
+    Đầu vào: item - candidate cần kiểm; turns - các lượt nói của đoạn;
+        judge - bộ phân loại lượt chốt theo nghĩa (tuỳ chọn).
     Đầu ra: EvidenceFlag; ``reasons`` gom mọi lý do khớp.
     """
 
     reasons: list[str] = []
     if item.status not in _DECISION_STATUSES_CLEAR:
         reasons.append(f"Agent tự đánh giá trạng thái là '{item.status}', chưa phải kết luận đã chốt.")
-    matched = _find_cues(_normalize_for_match(item.text), _HEDGE_CUES)
-    if matched:
-        reasons.append(f"Câu chữ có dấu hiệu chưa chốt: {', '.join(matched)}.")
-    reasons.extend(_confirm_turn_reasons(_turn_by_id(turns, item.confirm_turn_id)))
+    if judge is None:
+        matched = _find_cues(_normalize_for_match(item.text), _HEDGE_CUES)
+        if matched:
+            reasons.append(f"Câu chữ có dấu hiệu chưa chốt: {', '.join(matched)}.")
+    reasons.extend(_confirm_turn_reasons(_turn_by_id(turns, item.confirm_turn_id), turns, judge))
     return EvidenceFlag("uncertain", tuple(reasons)) if reasons else EvidenceFlag("clear")
 
 

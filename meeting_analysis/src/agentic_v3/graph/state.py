@@ -21,6 +21,7 @@ from ...agentic.schemas import (
     TopicFailure,
 )
 from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
+from ..actors.attendees import AttendeeRoster
 from ..schemas import (
     MeetingReport,
     SkippedAgent,
@@ -71,8 +72,8 @@ class TopicState(TopicInput, TopicOutput):
 class MeetingStateV3(TopicOutput):
     """State của graph cha.
 
-    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``chair``, ``segments``,
-    ``turns_by_id``.
+    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``,
+    ``attendee_roster`` (danh sách tham dự, None nếu không có).
     Nhóm Planner: ``registry``, ``plans``.
     Nhóm kết quả cộng dồn từ các chủ đề: các khoá của ``TopicOutput``.
     Kết quả cuối: ``report``.
@@ -84,6 +85,7 @@ class MeetingStateV3(TopicOutput):
     chair: str | None  # người chủ trì phiên họp cung cấp; Planner đưa vào ``registry``
     segments: tuple[TopicSegment, ...]
     turns_by_id: dict[str, SpeakerTurn]
+    attendee_roster: AttendeeRoster | None
     registry: SpeakerRegistry
     plans: dict[str, TopicPlan]
     report: MeetingReport | None
