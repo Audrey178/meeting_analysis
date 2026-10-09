@@ -43,7 +43,13 @@ export default function App() {
     };
   }, [status]);
 
-  function handleStart(transcript: Transcript, kind: PipelineKind, meetingDate: string, settings: MrgSettings | null) {
+  function handleStart(
+    transcript: Transcript,
+    kind: PipelineKind,
+    meetingDate: string,
+    chair: string,
+    settings: MrgSettings | null,
+  ) {
     setSelected(null);
     setPendingItems(transcript.items);
     setPipeline(kind);
@@ -54,7 +60,7 @@ export default function App() {
     }
     const request = meetingDate ? { ...base, meeting_date: meetingDate } : base;
     if (kind === "v3") {
-      void v3.run(request);
+      void v3.run(chair ? { ...request, chair } : request);
     } else {
       void agentic.run(request);
     }

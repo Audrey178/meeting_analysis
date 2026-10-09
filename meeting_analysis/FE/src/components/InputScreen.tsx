@@ -16,8 +16,17 @@ export interface MrgSettings {
 }
 
 interface InputScreenProps {
-  /** ``meetingDate`` is "" when left empty (only allowed for agentic/v3). */
-  onStart: (transcript: ParsedTranscript, pipeline: PipelineKind, meetingDate: string, mrg: MrgSettings | null) => void;
+  /**
+   * ``meetingDate`` is "" when left empty (only allowed for agentic/v3); ``chair`` is "" when
+   * left empty or when the pipeline does not use it (agentic v1).
+   */
+  onStart: (
+    transcript: ParsedTranscript,
+    pipeline: PipelineKind,
+    meetingDate: string,
+    chair: string,
+    mrg: MrgSettings | null,
+  ) => void;
   /** Called whenever the pasted JSON parses (or stops parsing), for the transcript preview. */
   onPreview?: (items: TranscriptItem[] | null) => void;
 }
@@ -112,22 +121,24 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
     [parsed],
   );
   const meetingDateValid = /^\d{4}-\d{2}-\d{2}$/.test(meetingDate);
+  const usesChair = pipeline === "mrg" || pipeline === "v3";
   const canStart =
     Boolean(parsed && parsed.items.length > 0) && (meetingDateValid || (pipeline !== "mrg" && meetingDate === ""));
 
   function start() {
     if (!parsed) return;
+    const chairName = usesChair ? chair.trim() : "";
     if (pipeline !== "mrg") {
-      onStart(parsed, pipeline, meetingDate, null);
+      onStart(parsed, pipeline, meetingDate, chairName, null);
       return;
     }
     const participants = participantsText
       .split(/[\n,;]/)
       .map((name) => name.trim())
       .filter(Boolean);
-    onStart(parsed, pipeline, meetingDate, {
+    onStart(parsed, pipeline, meetingDate, chairName, {
       meeting_date: meetingDate,
-      chair: chair.trim() || null,
+      chair: chairName || null,
       participants,
       options,
     });
@@ -280,9 +291,13 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
                     <span className="text-[12px] text-accent-700">MA-MRG cần ngày họp.</span>
                   )}
                 </div>
-                {pipeline === "mrg" && (
+                {usesChair && (
                   <div className="field">
-                    <label>Chủ trì · để trống nếu chưa rõ</label>
+                    <label>
+                      {pipeline === "mrg"
+                        ? "Chủ trì · để trống nếu chưa rõ"
+                        : "Chủ trì · tuỳ chọn, giúp nhận ra lời giao việc/kết luận"}
+                    </label>
                     <input
                       className="input"
                       list="speaker-names"

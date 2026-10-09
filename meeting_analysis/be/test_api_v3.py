@@ -34,9 +34,12 @@ class _RoleLLM:
     def __init__(self, action_status: str = "assigned") -> None:
         self.action_status = action_status
         self.verifier_calls = 0
+        self.user_prompts: list[str] = []
 
     def generate_json(self, *, system_prompt: str, user_prompt: str, schema: dict) -> dict:
-        role = next(iter(schema["properties"]))
+        # Agent trả lời feedback nhận qua "stance": khoá đầu schema của nó là confirm_turn_id.
+        role = "stance" if "stance" in schema["properties"] else next(iter(schema["properties"]))
+        self.user_prompts.append(user_prompt)
         turns = re.findall(r"^\[(TURN_\w+)\|[^\]]*\] (.*)$", user_prompt, re.MULTILINE)
         confirming = [tid for tid, text in turns if re.search(_CONFIRMING_TURN_PATTERN, text)]
         turn_id = (confirming or [tid for tid, _ in turns] or [None])[0]
@@ -110,5 +113,21 @@ def test_v3_verifier_feedback_reaches_consensus() -> None:
         assert record["decided_by"] == "consensus"
         assert [(r["verdict"], r["stance"]) for r in record["rounds"]] == [("unresolved", "amend"), ("keep", "")]
         assert client.get("/v3/meetings/threads/x/review").status_code == 404
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_v3_chair_reaches_every_prompt() -> None:
+    try:
+        llm = _RoleLLM(action_status="proposed")
+        client = _client_with(llm)
+        payload = _payload()
+        speaker = next(item.get("speaker") or item.get("speaker_name") for item in payload["items"])
+
+        response = client.post("/v3/meetings/analyze", json={**payload, "chair": f"  {speaker}  "})
+
+        assert response.status_code == 200, response.text
+        assert llm.user_prompts
+        assert all(prompt.startswith(f"Người chủ trì: {speaker}\n") for prompt in llm.user_prompts)
     finally:
         app.dependency_overrides.clear()

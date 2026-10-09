@@ -196,7 +196,8 @@ def start_meeting_analysis_v3(
     """Phân tích một cuộc họp bằng v3, chạy một mạch tới kết quả cuối.
 
     Đầu vào:
-        payload: transcript dạng dict (``AnalyzeRequest.model_dump()``).
+        payload: transcript dạng dict (``AnalyzeV3Request.model_dump()``); ``chair`` (tùy
+            chọn) là tên người chủ trì.
         analyzer: ``MeetingAnalyzerV3`` dùng chung của ứng dụng.
         embedding_adapter, topic_segmenter: như v1 (``run_meeting_analysis_pipeline``).
     Đầu ra: dict theo ``AnalyzeV3Result``.
@@ -208,6 +209,7 @@ def start_meeting_analysis_v3(
         meeting_id=meeting.meeting_id,
         revision_id=meeting.revision_id,
         meeting_date=read_meeting_date(payload),
+        chair=payload.get("chair"),
         turns=meeting.turns,
         segments=meeting.segments,
     )
