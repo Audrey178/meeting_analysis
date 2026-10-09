@@ -8,8 +8,8 @@ luật của ``src.agentic`` (v1), không sửa gì ở đó.
 """
 
 from .config import V3Config
-from .graph import build_graph_v3
-from .planner import build_speaker_registry, plan_meeting, plan_topic
+from .graph.meeting import build_graph_v3
+from .nodes.planner import build_speaker_registry, plan_meeting, plan_topic
 from .runner import MeetingAnalyzerV3
 from .schemas import (
     ConsensusRound,
@@ -20,7 +20,7 @@ from .schemas import (
     VerificationRecord,
     VerifierStep,
 )
-from .throttle import LLMConcurrencyGate
+from .infra.throttle import LLMConcurrencyGate
 
 __all__ = [
     "ConsensusRound",

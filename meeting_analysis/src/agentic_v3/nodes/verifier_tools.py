@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from ..agentic._shared import match_claimed_name_to_real_speaker
-from ..stages._shared import VN_STOPWORDS, word_tokens
-from ..utils.contracts import SpeakerTurn
-from .schemas import SpeakerRegistry
+from ...agentic._shared import match_claimed_name_to_real_speaker
+from ...stages._shared import VN_STOPWORDS, word_tokens
+from ...utils.contracts import SpeakerTurn
+from ..schemas import SpeakerRegistry
 
 # Cắt mỗi lượt nói trong observation để prompt của Verifier không phình theo số bước.
 _MAX_TURN_CHARS = 600

@@ -18,9 +18,9 @@ import re
 import unicodedata
 from collections.abc import Sequence
 
-from ..agentic._shared import get_turns_of_segment, list_distinct_speaker_names
-from ..utils.contracts import SpeakerTurn, TopicSegment
-from .schemas import SpeakerRegistry, TopicPlan
+from ...agentic._shared import get_turns_of_segment, list_distinct_speaker_names
+from ...utils.contracts import SpeakerTurn, TopicSegment
+from ..schemas import SpeakerRegistry, TopicPlan
 
 # Cụm cho thấy CÓ THỂ có việc được giao/nhận trong chủ đề.
 ACTION_CUES: tuple[str, ...] = (

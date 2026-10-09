@@ -11,7 +11,7 @@ from __future__ import annotations
 import threading
 from collections.abc import Mapping
 
-from ..utils.ports import LLMAdapter, TopicLabelAdapter
+from ...utils.ports import LLMAdapter, TopicLabelAdapter
 
 # Mặc định dưới max_connections của client OpenAI (OPENAI_MAX_CONNECTIONS, mặc định 10).
 DEFAULT_LLM_CONCURRENCY = 8

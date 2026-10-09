@@ -31,17 +31,17 @@ from collections.abc import Callable
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
-from ..agentic._shared import check_action_evidence, check_decision_evidence
-from ..agentic.nodes import make_action_agent, make_content_agent, make_decision_agent
-from ..agentic.schemas import SegmentTask
-from ..stages.stage07_topic_labeling import label_topics
-from ..utils.config import TopicLabelerConfig
-from ..utils.ports import LLMAdapter, TopicLabelAdapter
-from .config import V3Config
-from .planner import format_registry_context
-from .schemas import SkippedAgent, VerifyTask
+from ...agentic._shared import check_action_evidence, check_decision_evidence
+from ...agentic.nodes import make_action_agent, make_content_agent, make_decision_agent
+from ...agentic.schemas import SegmentTask
+from ...stages.stage07_topic_labeling import label_topics
+from ...utils.config import TopicLabelerConfig
+from ...utils.ports import LLMAdapter, TopicLabelAdapter
+from ..config import V3Config
+from ..nodes.planner import format_registry_context
+from ..schemas import SkippedAgent, VerifyTask
 from .state import TopicInput, TopicOutput, TopicState
-from .verifier import make_verifier
+from ..nodes.verifier import make_verifier
 
 # Tên node agent trích xuất -> (khoá kết quả của node v1, khoá trong TopicState).
 _EXTRACTORS = {

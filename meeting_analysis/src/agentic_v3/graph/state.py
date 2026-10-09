@@ -13,15 +13,15 @@ from __future__ import annotations
 import operator
 from typing import Annotated, TypedDict
 
-from ..agentic.schemas import (
+from ...agentic.schemas import (
     ActionItemCandidate,
     DecisionCandidate,
     SegmentTask,
     SpeakerSection,
     TopicFailure,
 )
-from ..utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
-from .schemas import (
+from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
+from ..schemas import (
     MeetingReport,
     SkippedAgent,
     SpeakerRegistry,

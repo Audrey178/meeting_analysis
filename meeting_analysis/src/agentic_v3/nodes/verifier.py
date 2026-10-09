@@ -35,19 +35,19 @@ import logging
 from collections.abc import Mapping
 from dataclasses import replace
 
-from ..agentic._shared import is_non_identifying_actor, read_confirm_turn_id, read_stripped_text
-from ..agentic.nodes.debate_judge_agent import (
+from ...agentic._shared import is_non_identifying_actor, read_confirm_turn_id, read_stripped_text
+from ...agentic.nodes.debate_judge_agent import (
     _KIND_LABELS,
     _RUBRICS,
     _build_debate_user_prompt,
     _candidate_text,
     _resolve_verdict,
 )
-from ..utils.llm_call_log import llm_call
-from ..utils.ports import LLMAdapter, LLMUpstreamError
-from .config import V3Config
-from .schemas import ConsensusRound, VerificationRecord, VerifierStep, VerifyTask
-from .tools import TOOL_DESCRIPTIONS, TOOL_NAMES, MeetingTools
+from ...utils.llm_call_log import llm_call
+from ...utils.ports import LLMAdapter, LLMUpstreamError
+from ..config import V3Config
+from ..schemas import ConsensusRound, VerificationRecord, VerifierStep, VerifyTask
+from .verifier_tools import TOOL_DESCRIPTIONS, TOOL_NAMES, MeetingTools
 
 logger = logging.getLogger(__name__)
 

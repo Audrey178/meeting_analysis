@@ -29,19 +29,19 @@ from dataclasses import replace
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
-from ..agentic._shared import (
+from ...agentic._shared import (
     get_turns_of_segment,
     match_claimed_name_to_real_speaker,
     merge_duplicate_assignments,
     merge_duplicate_decisions,
 )
-from ..utils.config import TopicLabelerConfig
-from ..utils.ports import LLMAdapter, TopicLabelAdapter
-from .config import V3Config
-from .planner import plan_meeting
-from .schemas import MeetingReport, VerificationRecord
+from ...utils.config import TopicLabelerConfig
+from ...utils.ports import LLMAdapter, TopicLabelAdapter
+from ..config import V3Config
+from ..nodes.planner import plan_meeting
+from ..schemas import MeetingReport, VerificationRecord
 from .state import MeetingStateV3
-from .topic_graph import build_topic_graph
+from .topic import build_topic_graph
 
 def make_plan_node(config: V3Config):
     """Tạo node ``plan_meeting`` (luật, 0 token).
