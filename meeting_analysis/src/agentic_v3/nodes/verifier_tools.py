@@ -7,9 +7,12 @@ observation để Verifier tự sửa ở bước sau, không raise ra ngoài.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+import math
+import unicodedata
+from collections import Counter
+from collections.abc import Collection, Sequence
 
-from ...stages._shared import VN_STOPWORDS, word_tokens
+from ...stages._shared import VN_STOPWORDS, WORD_RE, word_tokens
 from ...utils.contracts import SpeakerTurn
 from ..actors.resolution import is_clear_choice, rank_actor_candidates
 from ..schemas import ActorCandidate, SpeakerRegistry

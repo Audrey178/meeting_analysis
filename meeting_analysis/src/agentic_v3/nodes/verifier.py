@@ -41,7 +41,12 @@ import logging
 from collections.abc import Mapping
 from dataclasses import replace
 
-from ...agentic._shared import is_non_identifying_actor, read_confirm_turn_id, read_stripped_text
+from ...agentic._shared import (
+    format_turns_as_transcript,
+    is_non_identifying_actor,
+    read_confirm_turn_id,
+    read_stripped_text,
+)
 from ...agentic.nodes.debate_judge_agent import (
     _KIND_LABELS,
     _RUBRICS,
