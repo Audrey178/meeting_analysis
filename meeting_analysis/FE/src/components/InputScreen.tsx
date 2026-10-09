@@ -172,7 +172,7 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
       label: "Agentic v3",
       badge: "thử nghiệm",
       description:
-        "Mọi chủ đề chạy song song, Planner bỏ agent thừa, Verifier tra cả cuộc họp; mục chưa chắc dừng lại chờ bạn duyệt.",
+        "Mọi chủ đề chạy song song, Planner bỏ agent thừa, Verifier tra cả cuộc họp; mục chưa chắc được Verifier và agent trích xuất trao đổi tới khi đồng thuận. Một request đồng bộ.",
     },
   ];
 

@@ -37,7 +37,7 @@ export function V3ResultView({ data, elapsedMs, selectedPointKey, onSelectPoint 
       verification={{
         count: records.length,
         kept,
-        statLabel: "giữ sau Verifier/duyệt",
+        statLabel: "giữ sau Verifier",
         render: ({ topicIndexById }) => (
           <VerifierRecordsBlock
             records={records}
