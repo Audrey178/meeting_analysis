@@ -19,7 +19,7 @@ for _dir in (_BE_DIR, _TREESEG_DIR, _REPO_ROOT):
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from schemas import AnalyzeRequest, AnalyzeV3Result
+from schemas import AnalyzeV3Request, AnalyzeV3Result
 from services.dependencies import get_analyzer_v3, get_embedding_adapter, get_topic_segmenter
 from services.pipeline_v3 import start_meeting_analysis_v3
 from src.utils.ports import EmbeddingAdapter, LLMUpstreamError
@@ -29,14 +29,14 @@ router = APIRouter(prefix="/v3/meetings", tags=["meetings-v3"])
 
 @router.post("/analyze", response_model=AnalyzeV3Result)
 def analyze_meeting_v3(
-    request: AnalyzeRequest,
+    request: AnalyzeV3Request,
     analyzer=Depends(get_analyzer_v3),
     embedding_adapter: EmbeddingAdapter = Depends(get_embedding_adapter),
     topic_segmenter=Depends(get_topic_segmenter),
 ) -> dict:
     """Phân tích một cuộc họp bằng v3 (mọi chủ đề song song).
 
-    Đầu vào: request - transcript; các adapter được tiêm qua ``Depends``.
+    Đầu vào: request - transcript (+ người chủ trì nếu có); các adapter được tiêm qua ``Depends``.
     Đầu ra: ``AnalyzeV3Result``.
     Lỗi HTTP: 504/502 nếu bước embedding lỗi LLM, 422 nếu transcript không hợp lệ.
     """

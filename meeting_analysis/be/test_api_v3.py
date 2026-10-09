@@ -36,9 +36,12 @@ class _RoleLLM:
         self.action_status = action_status
         self.actor = actor
         self.verifier_calls = 0
+        self.user_prompts: list[str] = []
 
     def generate_json(self, *, system_prompt: str, user_prompt: str, schema: dict) -> dict:
-        role = next(iter(schema["properties"]))
+        # Agent trả lời feedback nhận qua "stance": khoá đầu schema của nó là confirm_turn_id.
+        role = "stance" if "stance" in schema["properties"] else next(iter(schema["properties"]))
+        self.user_prompts.append(user_prompt)
         turns = re.findall(r"^\[(TURN_\w+)\|[^\]]*\] (.*)$", user_prompt, re.MULTILINE)
         confirming = [tid for tid, text in turns if re.search(_CONFIRMING_TURN_PATTERN, text)]
         turn_id = (confirming or [tid for tid, _ in turns] or [None])[0]

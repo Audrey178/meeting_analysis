@@ -368,11 +368,12 @@ thắng biến cũ còn export trong shell.
   `chair` (tùy chọn) là tên người chủ trì.
   Graph compile một lần, dùng cho mọi cuộc họp; analyzer sống suốt vòng đời ứng dụng
   để mọi request dùng chung một gate.
-- **API**: `POST /v3/meetings/analyze` (`be/routers/meetings_v3.py`) → `AnalyzeV3Result`
+- **API**: `POST /v3/meetings/analyze` (`be/routers/meetings_v3.py`) nhận `AnalyzeV3Request`
+  (transcript + `meeting_date`, `chair` tùy chọn) → `AnalyzeV3Result`
   (`topics`, `verified_assignments`, `verified_decisions`, `turns`, `failed_topics`,
   `verification_records` kèm `rounds`, `skipped_agents`). Cắt chủ đề (stage01–03 +
   segmenter) dùng chung với v1 qua `segment_meeting`.
-- **FE**: `useV3Analysis` gọi một lần; `VerifierRecordsBlock` hiển thị chuỗi tra cứu và
+- **FE**: ô "Chủ trì" ở màn nhập (dùng chung với MA-MRG) gửi kèm `chair`; `useV3Analysis` gọi một lần; `VerifierRecordsBlock` hiển thị chuỗi tra cứu và
   các vòng feedback, có bộ lọc "Chưa đồng thuận".
 
 ---
@@ -387,7 +388,8 @@ thì theo Verifier; vẫn `unresolved` thì giữ fallback; lỗi LLM giữ bả
 tại chỗ; agent trích xuất chạy với prompt v3; người chủ trì được quy về người nói và có
 trong prompt; kết quả sắp theo thứ tự chủ đề.
 
-`be/test_api_v3.py` (2 test): wiring HTTP end-to-end, gồm luồng đồng thuận trong một request.
+`be/test_api_v3.py` (3 test): wiring HTTP end-to-end, gồm luồng đồng thuận trong một request
+và `chair` tới được mọi prompt.
 
 ---
 

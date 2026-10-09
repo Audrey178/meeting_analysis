@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from "react";
 import { ApiError, analyzeMeetingV3 } from "../api/client";
-import type { AnalyzeRequest, AnalyzeV3Result } from "../api/types";
+import type { AnalyzeV3Request, AnalyzeV3Result } from "../api/types";
 import type { AnalysisStatus } from "./useAnalysis";
 
 export interface V3AnalysisState {
   status: AnalysisStatus;
-  request: AnalyzeRequest | null;
+  request: AnalyzeV3Request | null;
   data: AnalyzeV3Result | null;
   error: string | null;
   elapsedMs: number;
@@ -35,7 +35,7 @@ export function useV3Analysis() {
   }, []);
 
   const run = useCallback(
-    async (request: AnalyzeRequest) => {
+    async (request: AnalyzeV3Request) => {
       stopTimer();
       const startedAt = Date.now();
       setState({ ...INITIAL_STATE, status: "running", request });

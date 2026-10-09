@@ -220,6 +220,18 @@ class AnalyzeResponse(BaseModel):
 # ----- Agentic v3 (src/agentic_v3) — chủ đề song song + Verifier đồng thuận với agent trích xuất -----
 
 
+class AnalyzeV3Request(AnalyzeRequest):
+    """Đầu vào của ``POST /v3/meetings/analyze``: transcript (như ``AnalyzeRequest``) + người chủ trì.
+
+    Các trường thêm:
+        chair: tên người chủ trì (tùy chọn). v3 quy tên này về đúng nhãn người nói nếu khớp
+            duy nhất một người và đưa vào prompt của agent trích xuất và Verifier, để nhận ra
+            lời giao việc/kết luận của chủ trì. None hoặc rỗng thì model tự suy ra từ bản ghi.
+    """
+
+    chair: str | None = None
+
+
 class VerifierStepOut(BaseModel):
     """Một bước tra cứu (ReAct) của Verifier."""
 

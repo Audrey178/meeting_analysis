@@ -125,7 +125,12 @@ export interface AnalyzeResponse {
 }
 
 // ----- Agentic v3 (src/agentic_v3): POST /v3/meetings/analyze -> AnalyzeV3Result -----
-// Mirrors be/schemas.py (AnalyzeV3Result & co). Keep in sync by hand.
+// Mirrors be/schemas.py (AnalyzeV3Request, AnalyzeV3Result & co). Keep in sync by hand.
+
+export interface AnalyzeV3Request extends AnalyzeRequest {
+  /** Người chủ trì (tuỳ chọn); v3 đưa vào prompt để nhận ra lời giao việc/kết luận của chủ trì. */
+  chair?: string | null;
+}
 
 export interface VerifierStepOut {
   thought: string;

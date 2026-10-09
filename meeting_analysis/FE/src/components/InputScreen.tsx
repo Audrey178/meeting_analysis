@@ -128,6 +128,7 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
     onPreview?.(parsed ? parsed.items : null);
   }, [parsed, onPreview]);
   const meetingDateValid = /^\d{4}-\d{2}-\d{2}$/.test(meetingDate);
+  const usesChair = pipeline === "mrg" || pipeline === "v3";
   const canStart =
     Boolean(parsed && parsed.items.length > 0) &&
     (meetingDateValid || meetingDate === "") &&

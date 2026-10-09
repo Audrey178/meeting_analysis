@@ -1,6 +1,7 @@
 import type {
   AnalyzeRequest,
   AnalyzeResponse,
+  AnalyzeV3Request,
   AnalyzeV3Result,
 } from "./types";
 
@@ -78,7 +79,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** Pipeline v3: chạy một mạch tới kết quả (Verifier và agent trích xuất tự đồng thuận, không duyệt người). */
-export function analyzeMeetingV3(payload: AnalyzeRequest): Promise<AnalyzeV3Result> {
+export function analyzeMeetingV3(payload: AnalyzeV3Request): Promise<AnalyzeV3Result> {
   return requestJson<AnalyzeV3Result>("/v3/meetings/analyze", {
     method: "POST",
     headers: { "content-type": "application/json" },
