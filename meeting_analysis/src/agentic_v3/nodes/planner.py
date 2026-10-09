@@ -18,9 +18,10 @@ import re
 import unicodedata
 from collections.abc import Sequence
 
-from ..agentic._shared import get_turns_of_segment, list_distinct_speaker_names
-from ..utils.contracts import SpeakerTurn, TopicSegment
-from .schemas import SpeakerRegistry, TopicPlan
+from ...agentic._shared import get_turns_of_segment, list_distinct_speaker_names
+from ...utils.contracts import SpeakerTurn, TopicSegment
+from ..actors.attendees import AttendeeRoster
+from ..schemas import SpeakerRegistry, TopicPlan
 
 # Cụm cho thấy CÓ THỂ có việc được giao/nhận trong chủ đề.
 ACTION_CUES: tuple[str, ...] = (
@@ -58,14 +59,16 @@ def find_cues(text: str, cues: Sequence[str]) -> tuple[str, ...]:
     return tuple(cue for cue in cues if re.search(rf"(?<!\w){re.escape(cue)}(?!\w)", text))
 
 
-def build_speaker_registry(turns: Sequence[SpeakerTurn]) -> SpeakerRegistry:
-    """Dựng danh bạ người nói từ toàn bộ lượt nói của cuộc họp.
+def build_speaker_registry(
+    turns: Sequence[SpeakerTurn], roster: AttendeeRoster | None = None
+) -> SpeakerRegistry:
+    """Dựng danh bạ người nói từ toàn bộ lượt nói của cuộc họp, kèm danh sách tham dự.
 
-    Đầu vào: turns - mọi lượt nói, theo thứ tự.
+    Đầu vào: turns - mọi lượt nói, theo thứ tự; roster - danh sách tham dự (None nếu không có).
     Đầu ra: SpeakerRegistry.
     """
 
-    return SpeakerRegistry(names=list_distinct_speaker_names(tuple(turns)))
+    return SpeakerRegistry(names=list_distinct_speaker_names(tuple(turns)), roster=roster or AttendeeRoster())
 
 
 def plan_topic(
@@ -97,6 +100,7 @@ def plan_meeting(
     turns_by_id: dict[str, SpeakerTurn],
     *,
     skip_without_cues: bool = True,
+    roster: AttendeeRoster | None = None,
 ) -> tuple[SpeakerRegistry, dict[str, TopicPlan]]:
     """Lập danh bạ người nói và kế hoạch agent cho mọi chủ đề.
 
@@ -104,10 +108,11 @@ def plan_meeting(
         segments: các chủ đề theo thứ tự.
         turns_by_id: turn_id -> SpeakerTurn của cả cuộc họp.
         skip_without_cues: xem ``plan_topic``.
+        roster: danh sách tham dự (None nếu không có).
     Đầu ra: (SpeakerRegistry, segment_id -> TopicPlan).
     """
 
-    registry = build_speaker_registry(tuple(turns_by_id.values()))
+    registry = build_speaker_registry(tuple(turns_by_id.values()), roster)
     plans = {
         segment.segment_id: plan_topic(
             segment.segment_id,
@@ -122,13 +127,33 @@ def plan_meeting(
 def format_registry_context(registry: SpeakerRegistry) -> str:
     """Biến danh bạ thành khối ngữ cảnh cho prompt Action agent (ô ``previous_context`` của v1).
 
-    Đầu vào: registry - danh bạ người nói.
+    Có danh sách tham dự thì thêm người (kèm chức vị, đơn vị) và đơn vị, để agent ghi
+    được actor là đơn vị ("Sở Tài chính") hoặc họ tên đầy đủ thay vì chỉ tên gọi.
+
+    Đầu vào: registry - danh bạ người nói + danh sách tham dự.
     Đầu ra: str cho prompt.
     """
 
-    if not registry.names:
+    roster = registry.roster
+    if not registry.names and not roster.people and not roster.organizations:
         return "(Không có danh sách người nói.)"
-    return "Người nói trong cả cuộc họp: " + ", ".join(registry.names) + "."
+    lines = []
+    if registry.names:
+        lines.append("Người nói trong cả cuộc họp: " + ", ".join(registry.names) + ".")
+    if roster.people:
+        people = []
+        for person in roster.people:
+            org = roster.find_organization(person.org_id)
+            details = ", ".join(part for part in (person.position, org.name if org else "") if part)
+            people.append(f"{person.full_name} ({details})" if details else person.full_name)
+        lines.append("Người tham dự: " + "; ".join(people) + ".")
+    if roster.organizations:
+        organizations = [
+            f"{org.name} (còn gọi: {', '.join(org.aliases)})" if org.aliases else org.name
+            for org in roster.organizations
+        ]
+        lines.append("Đơn vị tham dự (actor có thể là đơn vị): " + ", ".join(organizations) + ".")
+    return "\n".join(lines)
 
 
 __all__ = [

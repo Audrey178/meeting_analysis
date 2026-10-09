@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { MrgOptions, PipelineKind, TranscriptItem } from "../api/types";
+import type { AttendeesIn, PipelineKind, TranscriptItem } from "../api/types";
 import sampleTranscript from "../data/sample-transcript.json";
 
 interface ParsedTranscript {
@@ -8,26 +8,17 @@ interface ParsedTranscript {
   items: TranscriptItem[];
 }
 
-export interface MrgSettings {
-  meeting_date: string;
-  chair: string | null;
-  participants: string[];
-  options: MrgOptions;
-}
-
 interface InputScreenProps {
-  /** ``meetingDate`` is "" when left empty (only allowed for agentic/v3). */
-  onStart: (transcript: ParsedTranscript, pipeline: PipelineKind, meetingDate: string, mrg: MrgSettings | null) => void;
+  /** ``meetingDate`` is "" when left empty. ``attendees`` is v3-only. */
+  onStart: (
+    transcript: ParsedTranscript,
+    pipeline: PipelineKind,
+    meetingDate: string,
+    attendees: AttendeesIn | null,
+  ) => void;
   /** Called whenever the pasted JSON parses (or stops parsing), for the transcript preview. */
   onPreview?: (items: TranscriptItem[] | null) => void;
 }
-
-const DEFAULT_MRG_OPTIONS: MrgOptions = {
-  exchange: true,
-  reviewer: "feedback",
-  realizer: true,
-  acceptance_policy: "unconfirmed",
-};
 
 function todayIso(): string {
   const now = new Date();
@@ -75,6 +66,35 @@ function tryParse(text: string): {
   };
 }
 
+// Danh sách tham dự cho v3, cùng dạng file `<transcript>.attendees.json`.
+function parseAttendees(text: string): { attendees: AttendeesIn | null; error: string | null } {
+  if (!text.trim()) return { attendees: null, error: null };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch (err) {
+    return { attendees: null, error: err instanceof Error ? err.message : "JSON không hợp lệ." };
+  }
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return { attendees: null, error: "Phải là object { people, organizations }." };
+  }
+  const obj = raw as Record<string, unknown>;
+  const people = obj.people ?? [];
+  const organizations = obj.organizations ?? [];
+  if (!Array.isArray(people) || !Array.isArray(organizations)) {
+    return { attendees: null, error: "people và organizations phải là mảng." };
+  }
+  const badPerson = people.find((p) => typeof p?.id !== "string" || typeof p?.full_name !== "string");
+  if (badPerson) return { attendees: null, error: "Mỗi người cần id và full_name." };
+  const badOrg = organizations.find((o) => typeof o?.id !== "string" || typeof o?.name !== "string");
+  if (badOrg) return { attendees: null, error: "Mỗi đơn vị cần id và name." };
+  const badAliases = organizations.find(
+    (o) => o.aliases !== undefined && (!Array.isArray(o.aliases) || o.aliases.some((a: unknown) => typeof a !== "string")),
+  );
+  if (badAliases) return { attendees: null, error: `aliases của "${badAliases.name}" phải là mảng chuỗi.` };
+  return { attendees: { people, organizations } as AttendeesIn, error: null };
+}
+
 function computeStats(items: TranscriptItem[]) {
   const speakers = new Set(items.map(speakerOf).filter(Boolean));
   const starts = items
@@ -95,42 +115,27 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
     JSON.stringify(sampleTranscript, null, 2),
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attendeesFileRef = useRef<HTMLInputElement>(null);
+  const [attendeesText, setAttendeesText] = useState("");
+  const { attendees, error: attendeesError } = useMemo(() => parseAttendees(attendeesText), [attendeesText]);
 
-  const [pipeline, setPipeline] = useState<PipelineKind>("mrg");
+  const [pipeline, setPipeline] = useState<PipelineKind>("v3");
   const [meetingDate, setMeetingDate] = useState(todayIso);
-  const [chair, setChair] = useState("");
-  const [participantsText, setParticipantsText] = useState("");
-  const [options, setOptions] = useState<MrgOptions>(DEFAULT_MRG_OPTIONS);
 
   const { parsed, error } = useMemo(() => tryParse(text), [text]);
   const stats = parsed ? computeStats(parsed.items) : null;
   useEffect(() => {
     onPreview?.(parsed ? parsed.items : null);
   }, [parsed, onPreview]);
-  const speakerNames = useMemo(
-    () => (parsed ? [...new Set(parsed.items.map(speakerOf).filter((s): s is string => Boolean(s)))] : []),
-    [parsed],
-  );
   const meetingDateValid = /^\d{4}-\d{2}-\d{2}$/.test(meetingDate);
   const canStart =
-    Boolean(parsed && parsed.items.length > 0) && (meetingDateValid || (pipeline !== "mrg" && meetingDate === ""));
+    Boolean(parsed && parsed.items.length > 0) &&
+    (meetingDateValid || meetingDate === "") &&
+    !(pipeline === "v3" && attendeesError);
 
   function start() {
     if (!parsed) return;
-    if (pipeline !== "mrg") {
-      onStart(parsed, pipeline, meetingDate, null);
-      return;
-    }
-    const participants = participantsText
-      .split(/[\n,;]/)
-      .map((name) => name.trim())
-      .filter(Boolean);
-    onStart(parsed, pipeline, meetingDate, {
-      meeting_date: meetingDate,
-      chair: chair.trim() || null,
-      participants,
-      options,
-    });
+    onStart(parsed, pipeline, meetingDate, pipeline === "v3" ? attendees : null);
   }
 
   function loadSample() {
@@ -141,15 +146,9 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
     setText(await file.text());
   }
 
-  const PIPELINE_LABEL: Record<PipelineKind, string> = { mrg: "MA-MRG", agentic: "Agentic", v3: "Agentic v3" };
+  const PIPELINE_LABEL: Record<PipelineKind, string> = { agentic: "Agentic", v3: "Agentic v3" };
 
   const pipelines = [
-    {
-      value: "mrg" as const,
-      label: "MA-MRG",
-      badge: "khuyên dùng",
-      description: "4 agent theo vai trò + trao đổi + Reviewer. Giao việc/Kết luận suy bằng luật, mọi trường có truy vết.",
-    },
     {
       value: "agentic" as const,
       label: "Agentic",
@@ -159,9 +158,9 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
     {
       value: "v3" as const,
       label: "Agentic v3",
-      badge: "thử nghiệm",
+      badge: "khuyên dùng",
       description:
-        "Mọi chủ đề chạy song song, Planner bỏ agent thừa, Verifier tra cả cuộc họp; mục chưa chắc dừng lại chờ bạn duyệt.",
+        "Mọi chủ đề chạy song song, Planner bỏ agent thừa, Verifier tra cả cuộc họp và trao đổi với agent trích xuất tới khi đồng thuận; định danh actor là người/đơn vị theo danh sách tham dự.",
     },
   ];
 
@@ -265,105 +264,62 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div className="field">
                   <label>
-                    {pipeline === "mrg"
-                      ? "Ngày họp · bắt buộc, dùng để chuẩn hoá thời hạn"
-                      : "Ngày họp · tuỳ chọn, để quy thời hạn (“tuần sau”) ra ngày"}
+                    Ngày họp · tuỳ chọn, để quy thời hạn (“tuần sau”) ra ngày
                   </label>
                   <input
                     className="input"
                     type="date"
                     value={meetingDate}
-                    required={pipeline === "mrg"}
                     onChange={(event) => setMeetingDate(event.target.value)}
                   />
-                  {pipeline === "mrg" && !meetingDateValid && (
-                    <span className="text-[12px] text-accent-700">MA-MRG cần ngày họp.</span>
-                  )}
                 </div>
-                {pipeline === "mrg" && (
-                  <div className="field">
-                    <label>Chủ trì · để trống nếu chưa rõ</label>
-                    <input
-                      className="input"
-                      list="speaker-names"
-                      value={chair}
-                      placeholder={speakerNames[0] ? `vd ${speakerNames[0]}` : "vd Nguyễn Văn Hùng"}
-                      onChange={(event) => setChair(event.target.value)}
-                    />
-                    <datalist id="speaker-names">
-                      {speakerNames.map((name) => (
-                        <option key={name} value={name} />
-                      ))}
-                    </datalist>
-                  </div>
-                )}
               </div>
-              {pipeline === "mrg" && (
-                <>
-                  <div className="field">
-                    <label>Thành viên · mỗi dòng hoặc dấu phẩy một người; trống = lấy người nói từ ASR</label>
-                    <textarea
-                      className="input !min-h-[60px] !font-[inherit] !text-[13.5px]"
-                      rows={2}
-                      value={participantsText}
-                      placeholder={speakerNames.join(", ")}
-                      onChange={(event) => setParticipantsText(event.target.value)}
+              {pipeline === "v3" && (
+                <div className="field">
+                  <label>
+                    Danh sách tham dự · tuỳ chọn -- JSON <code>{"{ people, organizations }"}</code> (tệp{" "}
+                    <code>*.attendees.json</code>) để quy người giao việc về đúng người/đơn vị
+                  </label>
+                  <textarea
+                    className="input !min-h-[60px]"
+                    rows={4}
+                    value={attendeesText}
+                    placeholder='{"people": [{"id": "P1", "full_name": "...", "position": "...", "org_id": "O1"}], "organizations": [{"id": "O1", "name": "...", "aliases": ["..."], "functions": ["..."]}]}'
+                    onChange={(event) => setAttendeesText(event.target.value)}
+                    spellCheck={false}
+                  />
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <button type="button" className="btn btn-secondary" onClick={() => attendeesFileRef.current?.click()}>
+                      Chọn tệp danh sách
+                    </button>
+                    {attendeesText && (
+                      <button type="button" className="btn btn-ghost" onClick={() => setAttendeesText("")}>
+                        Bỏ danh sách
+                      </button>
+                    )}
+                    <input
+                      ref={attendeesFileRef}
+                      type="file"
+                      accept="application/json"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void file.text().then(setAttendeesText);
+                        event.target.value = "";
+                      }}
                     />
+                    {attendeesError && <span className="ml-auto text-[12.5px] text-accent-700">Lỗi: {attendeesError}</span>}
+                    {attendees && (
+                      <span className="ml-auto text-[12px] text-ok">
+                        ✓ {attendees.people.length} người · {attendees.organizations.length} đơn vị
+                        {(() => {
+                          const aliasCount = attendees.organizations.reduce((sum, o) => sum + (o.aliases?.length ?? 0), 0);
+                          return aliasCount > 0 ? ` · ${aliasCount} tên gọi tắt` : "";
+                        })()}
+                      </span>
+                    )}
                   </div>
-                  <details className="group border-t border-divider pt-3">
-                    <summary className="cursor-pointer font-heading text-[12px] font-extrabold tracking-[0.06em] text-neutral-700 uppercase select-none">
-                      Tuỳ chọn nâng cao
-                    </summary>
-                    <div className="mt-3 grid grid-cols-1 gap-3 text-[13px] sm:grid-cols-2">
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={options.exchange}
-                          onChange={(event) => setOptions({ ...options, exchange: event.target.checked })}
-                        />
-                        Stage 2: trao đổi giữa các agent
-                      </label>
-                      <label className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          checked={options.realizer}
-                          onChange={(event) => setOptions({ ...options, realizer: event.target.checked })}
-                        />
-                        Realizer (Diễn biến + Thông báo)
-                      </label>
-                      <div className="field">
-                        <label>Reviewer</label>
-                        <select
-                          className="input"
-                          value={options.reviewer}
-                          onChange={(event) =>
-                            setOptions({ ...options, reviewer: event.target.value as MrgOptions["reviewer"] })
-                          }
-                        >
-                          <option value="feedback">Phân xử + feedback</option>
-                          <option value="select">Chỉ phân xử</option>
-                          <option value="none">Tắt</option>
-                        </select>
-                      </div>
-                      <div className="field">
-                        <label>Chỉ đạo chưa có người đáp</label>
-                        <select
-                          className="input"
-                          value={options.acceptance_policy}
-                          onChange={(event) =>
-                            setOptions({
-                              ...options,
-                              acceptance_policy: event.target.value as MrgOptions["acceptance_policy"],
-                            })
-                          }
-                        >
-                          <option value="unconfirmed">Vẫn tính là giao (gắn cờ)</option>
-                          <option value="strict">Chưa tính là giao</option>
-                        </select>
-                      </div>
-                    </div>
-                  </details>
-                </>
+                </div>
               )}
             </div>
           </section>

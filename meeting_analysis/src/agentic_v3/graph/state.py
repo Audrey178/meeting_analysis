@@ -13,15 +13,16 @@ from __future__ import annotations
 import operator
 from typing import Annotated, TypedDict
 
-from ..agentic.schemas import (
+from ...agentic.schemas import (
     ActionItemCandidate,
     DecisionCandidate,
     SegmentTask,
     SpeakerSection,
     TopicFailure,
 )
-from ..utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
-from .schemas import (
+from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
+from ..actors.attendees import AttendeeRoster
+from ..schemas import (
     MeetingReport,
     SkippedAgent,
     SpeakerRegistry,
@@ -71,7 +72,8 @@ class TopicState(TopicInput, TopicOutput):
 class MeetingStateV3(TopicOutput):
     """State của graph cha.
 
-    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``.
+    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``,
+    ``attendee_roster`` (danh sách tham dự, None nếu không có).
     Nhóm Planner: ``registry``, ``plans``.
     Nhóm kết quả cộng dồn từ các chủ đề: các khoá của ``TopicOutput``.
     Kết quả cuối: ``report``.
@@ -82,6 +84,7 @@ class MeetingStateV3(TopicOutput):
     meeting_date: str | None
     segments: tuple[TopicSegment, ...]
     turns_by_id: dict[str, SpeakerTurn]
+    attendee_roster: AttendeeRoster | None
     registry: SpeakerRegistry
     plans: dict[str, TopicPlan]
     report: MeetingReport | None

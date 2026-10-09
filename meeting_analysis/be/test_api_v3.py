@@ -1,8 +1,9 @@
 """Wiring test cho endpoint v3 (``routers/meetings_v3.py``): transcript mẫu đi qua stage01-03
 -> TreeSeg -> ``MeetingAnalyzerV3`` -> HTTP, mọi adapter là đồ giả (không gọi mạng).
 
-Kiểm luồng không có candidate nghi ngờ, và luồng Verifier gửi feedback -> agent trích xuất
-sửa -> Verifier đồng ý, tất cả trong MỘT request.
+Kiểm luồng không có candidate nghi ngờ, luồng Verifier gửi feedback -> agent trích xuất
+sửa -> Verifier đồng ý, tất cả trong MỘT request, và danh sách tham dự gửi kèm request
+(tên gọi tắt của đơn vị quy về đúng đơn vị; danh sách sai dạng thì 422).
 """
 
 from __future__ import annotations
@@ -31,8 +32,9 @@ class _RoleLLM:
         xuất sửa actor theo feedback, Verifier lần sau giữ.
     """
 
-    def __init__(self, action_status: str = "assigned") -> None:
+    def __init__(self, action_status: str = "assigned", actor: str = "Nguyễn Cường") -> None:
         self.action_status = action_status
+        self.actor = actor
         self.verifier_calls = 0
 
     def generate_json(self, *, system_prompt: str, user_prompt: str, schema: dict) -> dict:
@@ -45,7 +47,7 @@ class _RoleLLM:
         if role == "action_items":
             return {"action_items": [{
                 "evidence_turn_ids": [turn_id], "confirm_turn_id": turn_id, "status": self.action_status,
-                "actor": "Nguyễn Cường", "text": "Hoàn thiện tờ trình.", "deadline": None,
+                "actor": self.actor, "text": "Hoàn thiện tờ trình.", "deadline": None,
             }]}
         if role == "decisions":
             return {"decisions": [{"evidence_turn_ids": [turn_id], "confirm_turn_id": turn_id, "status": "agreed", "text": "Chốt phương án."}]}
@@ -110,5 +112,43 @@ def test_v3_verifier_feedback_reaches_consensus() -> None:
         assert record["decided_by"] == "consensus"
         assert [(r["verdict"], r["stance"]) for r in record["rounds"]] == [("unresolved", "amend"), ("keep", "")]
         assert client.get("/v3/meetings/threads/x/review").status_code == 404
+    finally:
+        app.dependency_overrides.clear()
+
+
+_ATTENDEES = {
+    "people": [{"id": "P1", "full_name": "Nguyễn Cường", "position": "Chánh Văn phòng", "org_id": "O2"}],
+    "organizations": [
+        {"id": "O2", "name": "Đảng ủy UBND Thành phố", "aliases": ["Đảng ủy ban"], "functions": ["xây dựng tờ trình"]},
+    ],
+}
+
+
+def test_v3_attendee_alias_resolves_organization_actor() -> None:
+    try:
+        client = _client_with(_RoleLLM(action_status="assigned", actor="Đảng ủy ban"))
+
+        response = client.post("/v3/meetings/analyze", json={**_payload(), "attendees": _ATTENDEES})
+
+        assert response.status_code == 200, response.text
+        (assignment,) = response.json()["verified_assignments"]
+        assert (assignment["actor"], assignment["actor_type"], assignment["actor_flag"]) == (
+            "Đảng ủy UBND Thành phố", "organization", None,
+        )
+        (assignee,) = assignment["assignees"]
+        assert (assignee["mention"], assignee["ref_id"]) == ("Đảng ủy ban", "O2")
+        assert "tên gọi tắt" in assignee["reason"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_v3_malformed_attendees_is_rejected() -> None:
+    try:
+        client = _client_with(_RoleLLM())
+        bad = {"organizations": [{"id": "O2", "name": "Đảng ủy UBND Thành phố", "aliases": "Đảng ủy ban"}]}
+
+        response = client.post("/v3/meetings/analyze", json={**_payload(), "attendees": bad})
+
+        assert response.status_code == 422
     finally:
         app.dependency_overrides.clear()
