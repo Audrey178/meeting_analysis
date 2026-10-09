@@ -1,0 +1,28 @@
+# Phụ thuộc để chạy pipeline (src/), API (be/) và test.
+#   python -m venv ../.venv && ../.venv/bin/pip install -r requirements.txt
+# Cận dưới theo pyproject.toml; các gói không có trong pyproject lấy theo import trong code.
+
+# --- Lõi pipeline (src/) ---
+numpy>=1.26
+langgraph>=1.2.11
+openai>=1.40            # src/utils/openai_adapters.py (gateway OpenAI-compatible)
+httpx>=0.27             # src/utils/openai_adapters.py; cũng cần cho fastapi.testclient
+python-dotenv>=1.0      # be/main.py, src/utils/openai_adapters.py (đọc .env)
+
+# --- API (be/) ---
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.0
+
+# --- Cắt chủ đề + embedding cục bộ ---
+# be/services/pipeline_v3.py import experiments/dialstart ngay khi khởi động (torch + BertTokenizer);
+# sentence-transformers cho EMBEDDING_BACKEND=local (src/utils/local_embeddings.py).
+torch>=2.2
+transformers>=4.40
+sentence-transformers>=3.0
+
+# --- Test ---
+pytest>=8.0
+
+# Chỉ dùng cho script đánh giá/thí nghiệm, không cần để chạy API:
+#   python-docx (experiments/treeseg_turn_level/gt_parser.py), segeval, tqdm, keras (experiments/dialstart/test.py, eval_utils.py)

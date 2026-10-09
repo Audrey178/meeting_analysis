@@ -34,13 +34,12 @@ production deploy where the API lives elsewhere, set `VITE_API_BASE_URL`
 
 Màn nạp transcript cho chọn pipeline:
 
-- **MA-MRG (graph)** — mặc định. Cần ngày họp (chuẩn hóa hạn), chủ trì (tùy chọn) và thành viên
-  (tùy chọn). Gọi `POST /meetings/mrg/jobs` rồi poll `GET /meetings/mrg/jobs/{id}` mỗi 1,5 s
-  (`hooks/useMrgAnalysis.ts`), nên màn chạy hiện **tiến độ thật** theo stage. Kết quả
-  (`components/mrg/`): Giao việc theo người (trạng thái, vai trò, hạn chuẩn hóa + giá trị bị thay
-  thế), Kết luận theo trạng thái, Diễn biến theo thread, Thông báo, Cảnh báo, Audit, Raw JSON.
-  Bấm một mục / một trường để tô **đúng span** bằng chứng (`fold_trace`) trên transcript; turn bị
-  nghi gộp lời nhiều người có nhãn "nghi gộp".
+- **Agentic v3** — mặc định. `POST /v3/meetings/analyze` đồng bộ (`hooks/useV3Analysis.ts`).
+  Ngày họp tùy chọn (quy hạn "tuần sau" ra ngày). Có thể nạp kèm danh sách tham dự
+  (`*.attendees.json`: `people`, `organizations` với `aliases`/`functions` tùy chọn) để actor của
+  việc giao được quy về đúng người hoặc đơn vị. Giao việc hiện nhãn Cá nhân/Đơn vị, vai trò (chủ
+  trì/phối hợp), "từ “Đảng ủy ban”" khi actor được quy từ cách gọi khác, và ứng viên kèm điểm khi
+  actor còn mơ hồ.
 - **Agentic (cũ)** — `POST /meetings/analyze` đồng bộ như trước.
 
 ## Design system
@@ -54,8 +53,8 @@ under Tailwind v4's `@theme` so they're also real utilities
 
 ## Known gaps
 
-- The agentic pipeline (`/meetings/analyze`) still has no server-side
-  progress (single synchronous request), so its "running" screen shows a
-  spinner + elapsed timer. MA-MRG jobs report real per-stage progress.
+- Both pipelines (`/meetings/analyze`, `/v3/meetings/analyze`) have no
+  server-side progress (single synchronous request), so the "running" screen
+  shows a spinner + elapsed timer.
 - No docx export endpoint exists yet, so the design's "Tải .docx" /
   "Export .docx" action isn't wired up here.

@@ -3,7 +3,7 @@
 */data_store/
 */Vietnamese_datasets/
 */facts/
-# .venv/
+.venv/
 .claude/
 */__pycache__/
 # Byte-compiled / optimized / DLL files

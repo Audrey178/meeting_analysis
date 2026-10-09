@@ -3,9 +3,34 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Literal
 
 from pydantic import BaseModel
+
+
+class AttendeePersonIn(BaseModel):
+    """Một người tham dự (cùng dạng file ``<transcript>.attendees.json``)."""
+
+    id: str
+    full_name: str
+    position: str = ""
+    org_id: str | None = None
+
+
+class AttendeeOrganizationIn(BaseModel):
+    """Một đơn vị tham dự hoặc có thể được giao việc; ``functions`` là các mảng việc phụ trách,
+    ``aliases`` là các tên gọi tắt trong bản ghi ("Đảng ủy ban")."""
+
+    id: str
+    name: str
+    functions: list[str] = []
+    aliases: list[str] = []
+
+
+class AttendeesIn(BaseModel):
+    """Danh sách người/đơn vị tham dự phiên họp (chỉ pipeline v3 dùng để định danh actor)."""
+
+    people: list[AttendeePersonIn] = []
+    organizations: list[AttendeeOrganizationIn] = []
 
 
 class AnalyzeRequest(BaseModel):
@@ -34,12 +59,15 @@ class AnalyzeRequest(BaseModel):
         meeting_date: ngày họp (tùy chọn), neo để quy hạn chót của việc giao ("tuần sau")
             về ``deadline_date``; thiếu thì vẫn có ``deadline_kind``.
         items: danh sách các dòng transcript ở dạng dict.
+        attendees: danh sách người/đơn vị tham dự (tùy chọn, chỉ v3 dùng); thiếu thì actor
+            chỉ được quy về người nói trong bản ghi.
     """
 
     meeting_id: str | None = None
     revision_id: str | None = None
     meeting_date: date | None = None
     items: list[dict]
+    attendees: AttendeesIn | None = None
 
 
 class SpeakerPointOut(BaseModel):
@@ -239,6 +267,46 @@ class SkippedAgentOut(BaseModel):
     agent: str
 
 
+class ActorCandidateOut(BaseModel):
+    """Một ứng viên actor (người/đơn vị) kèm điểm, xem ``src/agentic_v3/actors/resolution.py``."""
+
+    name: str
+    actor_type: str
+    score: float
+    reason: str = ""
+    ref_id: str | None = None
+
+
+class ActorAssigneeOut(BaseModel):
+    """Một bên nhận việc: ``role`` = "lead" (chủ trì) | "support" (phối hợp) | "joint" (cùng
+    thực hiện); ``name`` None khi chưa xác định (``flag`` = "ambiguous")."""
+
+    mention: str
+    role: str
+    name: str | None = None
+    actor_type: str = "unknown"
+    flag: str | None = None
+    reason: str = ""
+    ref_id: str | None = None
+    candidates: list[ActorCandidateOut] = []
+
+
+class ActionItemV3Out(ActionItemOut):
+    """Việc giao của v3: ``ActionItemOut`` cộng phần định danh actor.
+
+    ``actor_type``: "person" | "organization" | "unknown". ``actor_flag``: "ambiguous"
+    (có ứng viên nhưng không ai đủ rõ) hoặc "missing" (không nêu actor). ``actor_candidates``
+    giữ mọi ứng viên của bên chính, điểm giảm dần. ``assignees``: mọi bên nhận việc kèm vai
+    trò (chủ trì trước); ``actor`` là tên các bên nối bằng ", ".
+    """
+
+    actor_type: str = "unknown"
+    actor_flag: str | None = None
+    actor_reason: str = ""
+    actor_candidates: list[ActorCandidateOut] = []
+    assignees: list[ActorAssigneeOut] = []
+
+
 class AnalyzeV3Result(BaseModel):
     """Kết quả cuối của v3: cùng ba phần output như ``AnalyzeResponse``, cộng bản ghi
     kiểm chứng và các agent đã bỏ qua."""
@@ -246,62 +314,9 @@ class AnalyzeV3Result(BaseModel):
     meeting_id: str
     revision_id: str
     topics: list[TopicOut]
-    verified_assignments: list[ActionItemOut]
+    verified_assignments: list[ActionItemV3Out]
     verified_decisions: list[DecisionOut]
     turns: list[TurnOut]
     failed_topics: list[FailedTopicOut] = []
     verification_records: list[VerificationRecordOut] = []
     skipped_agents: list[SkippedAgentOut] = []
-
-
-# ----- MA-MRG (src/agentic_v2) — job chạy nền -----
-
-
-class MrgOptions(BaseModel):
-    """Cấu hình một lần chạy MA-MRG (tập con cờ ablation của ``mrg.pipeline.PipelineConfig``).
-
-    Các trường:
-        exchange: có vòng trao đổi LLM ở Stage 2 (tắt = chỉ rule hòa giải khác role).
-        reviewer: "feedback" (phân xử + feedback 1 vòng) | "select" (chỉ phân xử) | "none".
-        realizer: LLM diễn đạt Diễn biến và sinh văn bản Thông báo kết luận (tắt = template, không có Thông báo).
-        acceptance_policy: "unconfirmed" (chỉ đạo chưa đáp vẫn vào Giao việc, gắn cờ) | "strict".
-    """
-
-    exchange: bool = True
-    reviewer: Literal["feedback", "select", "none"] = "feedback"
-    realizer: bool = True
-    acceptance_policy: Literal["unconfirmed", "strict"] = "unconfirmed"
-
-
-class MrgJobRequest(AnalyzeRequest):
-    """Đầu vào tạo job MA-MRG: transcript (như ``AnalyzeRequest``) + thông tin phiên họp.
-
-    Các trường thêm:
-        meeting_date: ngày họp "YYYY-MM-DD" — BẮT BUỘC vì Giao việc chuẩn hóa hạn ("thứ Sáu tuần này") theo ngày họp.
-        chair: chủ trì (canonical name); None thì KB dùng luật cue chỉ đạo để xác định chỉ đạo.
-        participants: danh sách thành viên (tên đầy đủ); rỗng thì lấy các người nói ASR.
-        options: ``MrgOptions``.
-    """
-
-    meeting_date: date
-    chair: str | None = None
-    participants: list[str] = []
-    options: MrgOptions = MrgOptions()
-
-
-class MrgJobStatus(BaseModel):
-    """Trạng thái một job MA-MRG; ``result`` chỉ có khi ``status == "succeeded"``.
-
-    ``result`` để dạng dict (không khai lại từng trường): nó là ``services.mrg.serialize_result`` — gồm
-    ``turns``, ``segments``, ``giao_viec``, ``ket_luan``, ``dien_bien``, ``thong_bao``, ``warnings``, ``report``,
-    đúng schema SPEC MA-MRG mục 10 (mọi trường có ``fold_trace`` trỏ về turn_id + span).
-    """
-
-    job_id: str
-    status: Literal["queued", "running", "succeeded", "failed"]
-    stage: str
-    stage_label: str
-    progress: dict
-    error: str | None = None
-    elapsed_s: float
-    result: dict | None = None

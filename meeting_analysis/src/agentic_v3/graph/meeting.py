@@ -10,39 +10,38 @@
 So với v1 (``src/agentic/graph.py``), thời gian không còn tăng theo số chủ đề: v1 chờ
 chủ đề N xong hẳn (kể cả debate) mới gửi chủ đề N+1, chỉ để mang ``known_names`` sang
 chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ người nói của cả cuộc họp do Planner
-dựng trước (``planner.py``), nên các chủ đề độc lập với nhau. Số lời gọi LLM đồng thời
-do ``LLMConcurrencyGate`` giới hạn (``throttle.py``).
+dựng trước (``nodes/planner.py``), nên các chủ đề độc lập với nhau. Số lời gọi LLM đồng thời
+do ``LLMConcurrencyGate`` giới hạn (``infra/throttle.py``).
 
 Không có bước duyệt người: candidate chưa chắc chắn được Verifier gửi feedback lại cho
-agent trích xuất tới khi hai bên đồng thuận (``verifier.py``), nên graph chạy một mạch
+agent trích xuất tới khi hai bên đồng thuận (``nodes/verifier.py``), nên graph chạy một mạch
 từ START tới END.
 
 ``finalize`` sắp lại kết quả theo thứ tự chủ đề (các chủ đề cộng dồn theo thứ tự hoàn
-thành, không xác định), quy actor về người nói thật trong danh bạ, rồi gộp mục trùng
+thành, không xác định), định danh actor (người/đơn vị/chưa xác định, xem
+``actors/resolution.py``) cho việc chưa qua Verifier, rồi gộp mục trùng
 giữa các chủ đề (thay cho việc v1 truyền ``known_assignments`` để agent tự tránh lặp).
 """
 
 from __future__ import annotations
-
-from dataclasses import replace
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
 from ...agentic._shared import (
     get_turns_of_segment,
-    match_claimed_name_to_real_speaker,
     merge_duplicate_assignments,
     merge_duplicate_decisions,
 )
+from ...agentic.turn_act import TurnActJudge
 from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
+from ..actors.resolution import resolve_actor
 from ..config import V3Config
 from ..nodes.planner import plan_meeting
-from ..schemas import MeetingReport, VerificationRecord
+from ..schemas import ActionItemV3, MeetingReport, VerificationRecord
 from .state import MeetingStateV3
 from .topic import build_topic_graph
-
 
 def make_plan_node(config: V3Config):
     """Tạo node ``plan_meeting`` (luật, 0 token).
@@ -53,7 +52,10 @@ def make_plan_node(config: V3Config):
 
     def plan_meeting_node(state: MeetingStateV3) -> dict:
         registry, plans = plan_meeting(
-            state["segments"], state["turns_by_id"], skip_without_cues=config.skip_agents_without_cues
+            state["segments"],
+            state["turns_by_id"],
+            skip_without_cues=config.skip_agents_without_cues,
+            roster=state.get("attendee_roster"),
         )
         return {"registry": registry, "plans": plans}
 
@@ -86,21 +88,18 @@ def dispatch_topics(state: MeetingStateV3) -> list[Send] | str:
     ]
 
 
-def _normalize_actor(item, meeting_turns):
-    """Quy actor về đúng tên người nói trong danh bạ nếu khớp DUY NHẤT một người.
+def _resolve_actor_once(item, registry, meeting_turns) -> ActionItemV3:
+    """Định danh actor bằng luật cho việc CHƯA được định danh (đi thẳng từ Evidence-Check).
 
-    Actor không khớp (đơn vị, nhiều người, tên không phát biểu) được giữ nguyên.
+    Việc đã qua Verifier là ``ActionItemV3`` (Verifier đã chọn kèm lý do) thì giữ nguyên.
 
-    Đầu vào: item - ActionItemCandidate; meeting_turns - lượt nói cả cuộc họp.
-    Đầu ra: ActionItemCandidate (có thể đã đổi actor).
+    Đầu vào: item - việc giao; registry - danh bạ; meeting_turns - lượt nói cả cuộc họp.
+    Đầu ra: ActionItemV3.
     """
 
-    if not item.actor:
+    if isinstance(item, ActionItemV3):
         return item
-    matched = match_claimed_name_to_real_speaker(item.actor, meeting_turns)
-    if matched and matched != item.actor:
-        return replace(item, actor=matched)
-    return item
+    return resolve_actor(item, registry, meeting_turns)
 
 
 def finalize(state: MeetingStateV3) -> dict:
@@ -116,7 +115,10 @@ def finalize(state: MeetingStateV3) -> dict:
         return sorted(items, key=lambda item: order.get(item.segment_id, len(order)))
 
     meeting_turns = tuple(state["turns_by_id"].values())
-    assignments = by_topic(_normalize_actor(item, meeting_turns) for item in state.get("verified_assignments", []))
+    registry = state["registry"]
+    assignments = by_topic(
+        _resolve_actor_once(item, registry, meeting_turns) for item in state.get("verified_assignments", [])
+    )
     decisions = by_topic(state.get("verified_decisions", []))
     records: list[VerificationRecord] = state.get("verification_records", [])
 
@@ -141,6 +143,7 @@ def build_graph_v3(
     labeler_config: TopicLabelerConfig,
     config: V3Config | None = None,
     *,
+    turn_judge: TurnActJudge | None = None,
     checkpointer=None,
 ):
     """Dựng và biên dịch graph cha v3.
@@ -153,13 +156,14 @@ def build_graph_v3(
             ``LLMConcurrencyGate``).
         labeler_config: cấu hình stage07.
         config: cấu hình v3; None thì dùng mặc định.
+        turn_judge: bộ phân loại lượt chốt cho evidence-check; None thì dùng luật từ khoá.
         checkpointer: tuỳ chọn (graph không dừng giữa chừng nên không bắt buộc).
     Đầu ra: graph đã compile.
     """
 
     config = config or V3Config()
     topic_graph = build_topic_graph(
-        content_llm, action_llm, decision_llm, verifier_llm, labeler, labeler_config, config
+        content_llm, action_llm, decision_llm, verifier_llm, labeler, labeler_config, config, turn_judge
     )
     graph = StateGraph(MeetingStateV3)
     graph.add_node("plan_meeting", make_plan_node(config))

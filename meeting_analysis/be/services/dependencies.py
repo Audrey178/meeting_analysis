@@ -122,23 +122,6 @@ def get_downstream_llm_adapters() -> tuple[LLMAdapter, LLMAdapter, LLMAdapter, L
     return llm, llm, llm, llm
 
 
-def get_mrg_llm():
-    """LLM cho MA-MRG (gateway OpenAI-compatible + cache đĩa); test ghi đè bằng ScriptedLLM.
-
-    Đầu ra: ``mrg.llm.cache.CachedLLM``.
-    """
-
-    from services.mrg import build_mrg_llm
-
-    return build_mrg_llm()
-
-
-def get_mrg_job_store(request: Request):
-    """Kho job MA-MRG dùng chung (dựng lúc khởi động, ``app.state.mrg_jobs``)."""
-
-    return request.app.state.mrg_jobs
-
-
 def get_analyzer_v3(request: Request):
     """Analyzer v3 dùng chung của ứng dụng, dựng lười ở request v3 đầu tiên.
 

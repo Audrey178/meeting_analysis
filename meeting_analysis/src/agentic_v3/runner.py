@@ -11,13 +11,16 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from ..agentic.turn_act import TurnActJudge
 from ..utils.config import TopicLabelerConfig
 from ..utils.contracts import SpeakerTurn, TopicSegment
 from ..utils.ports import LLMAdapter, TopicLabelAdapter
+from .actors.attendees import AttendeeRoster
 from .config import V3Config
 from .graph.meeting import build_graph_v3
 from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
 from .schemas import MeetingReport
+from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
 
 
 class MeetingAnalyzerV3:
@@ -32,6 +35,8 @@ class MeetingAnalyzerV3:
         llm_concurrency: số lời gọi LLM đồng thời tối đa.
         verifier_llm_concurrency: None thì Verifier dùng chung gate trên; đặt số thì
             Verifier có gate riêng (dùng khi ``verifier_llm`` trỏ tới backend khác).
+        turn_judge: bộ phân loại lượt chốt theo nghĩa cho evidence-check; None thì
+            dùng luật từ khoá (``_COMMIT_CUES``/``_HEDGE_CUES``).
     """
 
     def __init__(
@@ -46,6 +51,7 @@ class MeetingAnalyzerV3:
         config: V3Config | None = None,
         llm_concurrency: int = DEFAULT_LLM_CONCURRENCY,
         verifier_llm_concurrency: int | None = None,
+        turn_judge: TurnActJudge | None = None,
     ) -> None:
         self.config = config or V3Config()
         self.gate = LLMConcurrencyGate(llm_concurrency)
@@ -58,6 +64,7 @@ class MeetingAnalyzerV3:
             self.gate.wrap_topic_labeler(labeler),
             labeler_config or TopicLabelerConfig(),
             self.config,
+            turn_judge=turn_judge,
         )
 
     def analyze(
@@ -68,6 +75,7 @@ class MeetingAnalyzerV3:
         meeting_date: str | None = None,
         turns: Sequence[SpeakerTurn],
         segments: Sequence[TopicSegment],
+        attendee_roster: AttendeeRoster | None = None,
     ) -> MeetingReport:
         """Chạy pipeline cho một cuộc họp tới khi có kết quả cuối.
 
@@ -78,6 +86,8 @@ class MeetingAnalyzerV3:
                 về ngày; None thì việc giao vẫn có ``deadline_kind`` nhưng ít khi có ``deadline_date``.
             turns: lượt nói (stage03), theo thứ tự.
             segments: ranh giới chủ đề phủ kín ``turns`` (CHƯA cần nhãn).
+            attendee_roster: danh sách người/đơn vị tham dự (``attendees.load_attendee_roster``
+                theo quy ước đặt tên); None thì actor chỉ quy về người nói trong bản ghi.
         Đầu ra: MeetingReport.
         """
 
@@ -87,6 +97,7 @@ class MeetingAnalyzerV3:
             "meeting_date": meeting_date,
             "segments": tuple(segments),
             "turns_by_id": {turn.turn_id: turn for turn in turns},
+            "attendee_roster": attendee_roster,
             "labels": [],
             "meeting_development": [],
             "verified_assignments": [],

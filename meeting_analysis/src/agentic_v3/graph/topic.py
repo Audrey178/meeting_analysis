@@ -1,5 +1,5 @@
 """Subgraph xử lý MỘT chủ đề, từ gán nhãn đến kiểm chứng. Graph cha ``Send`` mọi chủ
-đề vào subgraph này cùng lúc (xem ``graph.py``).
+đề vào subgraph này cùng lúc (xem ``meeting.py``).
 
     START -> label_topic -> content_agent  ------------------\\
                          -> action_agent   (nếu plan cho phép) -> evidence_check
@@ -27,6 +27,8 @@ chờ đủ ba): số nhánh thay đổi theo ``TopicPlan``; mọi nhánh cách 
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
+from functools import partial
 
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
@@ -34,14 +36,16 @@ from langgraph.types import Send
 from ...agentic._shared import check_action_evidence, check_decision_evidence
 from ...agentic.nodes import make_action_agent, make_content_agent, make_decision_agent
 from ...agentic.schemas import SegmentTask
+from ...agentic.turn_act import TurnActJudge
 from ...stages.stage07_topic_labeling import label_topics
 from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
+from ..actors.resolution import list_known_actor_names, resolve_actor, split_item_mentions
 from ..config import V3Config
 from ..nodes.planner import format_registry_context
-from ..nodes.verifier import make_verifier
 from ..schemas import SkippedAgent, VerifyTask
 from .state import TopicInput, TopicOutput, TopicState
+from ..nodes.verifier import make_verifier
 
 # Tên node agent trích xuất -> (khoá kết quả của node v1, khoá trong TopicState).
 _EXTRACTORS = {
@@ -126,19 +130,60 @@ def _route_extractors(state: TopicState) -> list[str]:
     return targets
 
 
-def evidence_check(state: TopicState) -> dict:
+def _ambiguous_actor_reasons(item, state: TopicState) -> list[str]:
+    """Lý do gửi Verifier cho từng bên nhận việc khớp >= 2 ứng viên mà không ai đủ rõ.
+
+    Vd. "Sơn" khi cuộc họp có Phạm Hồng Sơn và Lê Văn Sơn: Verifier phải chọn và nêu
+    lý do. Bên không có ứng viên nào thì KHÔNG gửi (``finalize`` gắn cờ ``unknown``).
+
+    Đầu vào: item - ActionItemCandidate; state - state của chủ đề.
+    Đầu ra: list lý do (rỗng nếu không bên nào mơ hồ).
+    """
+
+    resolved = resolve_actor(item, state["registry"], state["meeting_turns"])
+    reasons = []
+    for assignee in resolved.assignees:
+        if assignee.flag and len(assignee.candidates) >= 2:
+            names = ", ".join(f"{c.name} ({c.score:.2f})" for c in assignee.candidates)
+            reasons.append(
+                f"Actor '{assignee.mention}' mơ hồ, có thể là: {names}. Cần chọn đúng một ứng viên kèm lý do."
+            )
+    return reasons
+
+
+def _strip_actor_roles(item, state: TopicState):
+    """Bỏ từ chỉ vai trò ("chủ trì", "phối hợp với") khỏi actor trước khi kiểm căn cứ của v1.
+
+    Luật v1 đòi mỗi phần của actor xuất hiện trong bản ghi/danh bạ; "phối hợp Sở Xây
+    dựng" không xuất hiện nguyên cụm nên sẽ bị gắn cờ nhầm.
+
+    Đầu vào: item - ActionItemCandidate; state - state của chủ đề.
+    Đầu ra: candidate với actor là các bên nối bằng ", " (không đổi nếu không có actor).
+    """
+
+    mentions = split_item_mentions(item, state["registry"])
+    if not mentions:
+        return item
+    return replace(item, actor=", ".join(mention.text for mention in mentions))
+
+
+def evidence_check(state: TopicState, turn_judge: TurnActJudge | None = None) -> dict:
     """Tách candidate thô của chủ đề thành CLEAR (vào kết quả) / UNCERTAIN (đi Verifier).
 
     Luật của v1 (0 token); tên đã biết lấy từ danh bạ cả cuộc họp thay vì ngữ cảnh
-    chạy dồn.
+    chạy dồn, cộng người và đơn vị trong danh sách tham dự (để "giao Sở Tài chính"
+    không bị coi là actor không có căn cứ). Việc mà luật v1 coi là CLEAR nhưng actor
+    mơ hồ giữa nhiều ứng viên vẫn đi Verifier. Có ``turn_judge`` thì lượt chốt được
+    xét theo nghĩa thay cho từ khoá (xem ``agentic/turn_act.py``).
 
-    Đầu vào: state - sau khi các agent trích xuất của chủ đề đã xong.
+    Đầu vào: state - sau khi các agent trích xuất của chủ đề đã xong;
+        turn_judge - bộ phân loại lượt chốt (tuỳ chọn).
     Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR) và ``pending_verify`` (ghi đè).
     """
 
     segment_id = state["segment"].segment_id
     turns = state["turns"]
-    known_names = state["registry"].names
+    known_names = list_known_actor_names(state["registry"])
     clear_actions, clear_decisions, pending = [], [], []
 
     def _verify_task(kind: str, index: int, item, reasons) -> VerifyTask:
@@ -154,13 +199,15 @@ def evidence_check(state: TopicState) -> dict:
         }
 
     for index, item in enumerate(state.get("action_candidates_raw", [])):
-        flag = check_action_evidence(item, turns, known_names)
-        if flag.verdict == "clear":
+        flag = check_action_evidence(_strip_actor_roles(item, state), turns, known_names, turn_judge)
+        ambiguity = _ambiguous_actor_reasons(item, state)
+        reasons = [*flag.reasons, *ambiguity]
+        if flag.verdict == "clear" and not ambiguity:
             clear_actions.append(item)
         else:
-            pending.append(_verify_task("action", index, item, flag.reasons))
+            pending.append(_verify_task("action", index, item, tuple(reasons)))
     for index, item in enumerate(state.get("decision_candidates_raw", [])):
-        flag = check_decision_evidence(item, turns)
+        flag = check_decision_evidence(item, turns, turn_judge)
         if flag.verdict == "clear":
             clear_decisions.append(item)
         else:
@@ -195,13 +242,14 @@ def build_topic_graph(
     labeler: TopicLabelAdapter,
     labeler_config: TopicLabelerConfig,
     config: V3Config,
+    turn_judge: TurnActJudge | None = None,
 ):
     """Dựng và biên dịch subgraph một chủ đề.
 
     Các adapter nên đã đi qua ``LLMConcurrencyGate`` (graph này không tự giới hạn).
 
     Đầu vào: bốn LLM (content/action/decision/verifier), adapter gán nhãn, cấu hình
-        stage07 và cấu hình v3.
+        stage07, cấu hình v3 và bộ phân loại lượt chốt (None thì dùng luật từ khoá).
     Đầu ra: subgraph đã compile; đầu vào ``TopicInput``, đầu ra ``TopicOutput``.
     """
 
@@ -211,7 +259,7 @@ def build_topic_graph(
     graph.add_node("content_agent", _wrap_extractor("content_agent", make_content_agent(content_llm), attempts))
     graph.add_node("action_agent", _wrap_extractor("action_agent", make_action_agent(action_llm), attempts))
     graph.add_node("decision_agent", _wrap_extractor("decision_agent", make_decision_agent(decision_llm), attempts))
-    graph.add_node("evidence_check", evidence_check)
+    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge))
     proposer_llms = {"action": action_llm, "decision": decision_llm}
     graph.add_node("verifier", make_verifier(verifier_llm, proposer_llms, config))
 

@@ -19,7 +19,7 @@ from treeseg import (
     segment_turns_with_treeseg,
     spans_to_boundary_indices,
 )
-from utils.contracts import SpeakerTurn
+from src.utils.contracts import SpeakerTurn
 
 
 def _brute_force_loss(embeddings: np.ndarray, lo: int, i: int, hi: int) -> float:

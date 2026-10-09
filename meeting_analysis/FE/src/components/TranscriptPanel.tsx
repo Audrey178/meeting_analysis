@@ -1,25 +1,19 @@
 import { useEffect, useMemo, useRef } from "react";
-import type { EvidenceRef, MrgTurn, TranscriptItem, TurnOut } from "../api/types";
+import type { EvidenceRef, TranscriptItem, TurnOut } from "../api/types";
 import { initialsOf, speakerColor, speakerName } from "../lib/format";
 import { Avatar } from "./agentic/primitives";
 
 interface TranscriptPanelProps {
-  turns: (TurnOut | MrgTurn)[] | null;
+  turns: TurnOut[] | null;
   items: TranscriptItem[] | null;
   /** Bằng chứng đang chọn: turn + (tùy chọn) span ký tự. Span null = tô cả turn (pipeline agentic). */
   selectedEvidence: EvidenceRef[] | null;
-  /** Tiêu đề đoạn chủ đề (MA-MRG) để chèn vạch phân đoạn giữa các turn. */
-  segmentTitles?: Record<string, string>;
 }
 
 // Dạng native có speaker; STT export có speaker_name.
 function itemSpeaker(item: TranscriptItem): string | null {
   const value = item.speaker ?? (typeof item.speaker_name === "string" ? item.speaker_name : null);
   return value && value.trim() ? value.trim() : null;
-}
-
-function isMrgTurn(turn: TurnOut | MrgTurn): turn is MrgTurn {
-  return "segment_id" in turn;
 }
 
 /** Cắt text thành các mảnh, đánh dấu mảnh nằm trong một span được chọn (span gộp nếu chồng nhau). */
@@ -43,7 +37,7 @@ function highlight(text: string, spans: [number, number][]) {
   return parts;
 }
 
-export function TranscriptPanel({ turns, items, selectedEvidence, segmentTitles }: TranscriptPanelProps) {
+export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPanelProps) {
   const tracing = turns !== null && selectedEvidence !== null;
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -99,19 +93,10 @@ export function TranscriptPanel({ turns, items, selectedEvidence, segmentTitles 
           turns.map((turn, index) => {
             const spans = evidenceByTurn.get(turn.turn_id);
             const hit = tracing && spans !== undefined;
-            const mrg = isMrgTurn(turn) ? turn : null;
             const previous = index > 0 ? turns[index - 1] : null;
-            const newSegment =
-              mrg && segmentTitles && (!previous || !isMrgTurn(previous) || previous.segment_id !== mrg.segment_id);
-            const sameSpeaker = previous?.speaker === turn.speaker && !newSegment;
+            const sameSpeaker = previous?.speaker === turn.speaker;
             return (
               <div key={turn.turn_id}>
-                {newSegment && (
-                  <div className="sticky top-0 z-10 border-b border-divider bg-neutral-200 px-4.5 py-1.5 font-heading text-[11px] font-extrabold text-neutral-800">
-                    <span className="font-mono text-accent">{mrg.segment_id}</span>{" "}
-                    {segmentTitles[mrg.segment_id] || ""}
-                  </div>
-                )}
                 <div
                   data-turn-id={turn.turn_id}
                   className={`flex gap-3 border-l-2 px-4 transition-opacity ${sameSpeaker ? "pt-0.5 pb-2.5" : "pt-3 pb-2.5"} ${
@@ -134,14 +119,6 @@ export function TranscriptPanel({ turns, items, selectedEvidence, segmentTitles 
                         <span className="truncate text-[12px] font-semibold" style={{ color: speakerColor(turn.speaker) }}>
                           {turn.speaker ? speakerName(turn.speaker) : "Không rõ người nói"}
                         </span>
-                        {mrg?.merged_suspect && (
-                          <span
-                            className="tag tag-neutral !px-1.5 !py-0 !text-[10px]"
-                            title="Turn bị nghi gộp lời nhiều người: nhãn ASR không dùng làm người nói"
-                          >
-                            nghi gộp
-                          </span>
-                        )}
                         <span className="ml-auto flex-none font-mono text-[10px] text-neutral-500">{turn.turn_id}</span>
                       </div>
                     )}

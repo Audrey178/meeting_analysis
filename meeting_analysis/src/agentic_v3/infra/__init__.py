@@ -1,1 +1,1 @@
-"""Gói con của ``src.agentic_v3``."""
+"""Hạ tầng chạy v3: giới hạn số lời gọi LLM đồng thời (``throttle.py``)."""
