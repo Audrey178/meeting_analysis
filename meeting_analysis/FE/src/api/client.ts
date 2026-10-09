@@ -3,8 +3,6 @@ import type {
   AnalyzeResponse,
   AnalyzeV3Request,
   AnalyzeV3Result,
-  MrgJobRequest,
-  MrgJobStatus,
 } from "./types";
 
 // Empty by default: dev uses the Vite proxy (vite.config.ts) for same-origin
@@ -78,20 +76,6 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(await parseErrorDetail(response), response.status);
   }
   return (await response.json()) as T;
-}
-
-/** Tạo job MA-MRG (chạy nền phía server); trả trạng thái ban đầu kèm job_id. */
-export function createMrgJob(payload: MrgJobRequest): Promise<MrgJobStatus> {
-  return requestJson<MrgJobStatus>("/meetings/mrg/jobs", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-}
-
-/** Hỏi trạng thái / tiến độ / kết quả một job MA-MRG. */
-export function getMrgJob(jobId: string): Promise<MrgJobStatus> {
-  return requestJson<MrgJobStatus>(`/meetings/mrg/jobs/${encodeURIComponent(jobId)}`);
 }
 
 /** Pipeline v3: chạy một mạch tới kết quả (Verifier và agent trích xuất tự đồng thuận, không duyệt người). */

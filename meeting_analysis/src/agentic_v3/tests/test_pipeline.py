@@ -20,6 +20,7 @@ from src.agentic_v3.nodes import prompts
 from src.agentic_v3.nodes.verifier import VERIFIER_SCHEMA
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.agentic_v3.schemas import SpeakerRegistry
+from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from src.utils.ports import LLMUpstreamError
 
