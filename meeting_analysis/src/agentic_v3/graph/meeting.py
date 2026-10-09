@@ -1,7 +1,7 @@
 """Graph cha của pipeline agentic v3: Planner -> mọi chủ đề song song -> tổng hợp.
 
     START -> plan_meeting -> Send("topic", chủ đề i) cho MỌI i cùng lúc
-                                     │  (subgraph ``topic_graph``: nhãn -> trích xuất
+                                     │  (subgraph ``topic.py``: nhãn -> trích xuất
                                      │   -> evidence-check -> Verifier ReAct <-> agent
                                      │   trích xuất tới khi đồng thuận)
                                      ▼
@@ -10,11 +10,11 @@
 So với v1 (``src/agentic/graph.py``), thời gian không còn tăng theo số chủ đề: v1 chờ
 chủ đề N xong hẳn (kể cả debate) mới gửi chủ đề N+1, chỉ để mang ``known_names`` sang
 chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ người nói của cả cuộc họp do Planner
-dựng trước (``planner.py``), nên các chủ đề độc lập với nhau. Số lời gọi LLM đồng thời
-do ``LLMConcurrencyGate`` giới hạn (``throttle.py``).
+dựng trước (``nodes/planner.py``), nên các chủ đề độc lập với nhau. Số lời gọi LLM
+đồng thời do ``LLMConcurrencyGate`` giới hạn (``infra/throttle.py``).
 
 Không có bước duyệt người: candidate chưa chắc chắn được Verifier gửi feedback lại cho
-agent trích xuất tới khi hai bên đồng thuận (``verifier.py``), nên graph chạy một mạch
+agent trích xuất tới khi hai bên đồng thuận (``nodes/verifier.py``), nên graph chạy một mạch
 từ START tới END.
 
 ``finalize`` sắp lại kết quả theo thứ tự chủ đề (các chủ đề cộng dồn theo thứ tự hoàn
@@ -53,7 +53,10 @@ def make_plan_node(config: V3Config):
 
     def plan_meeting_node(state: MeetingStateV3) -> dict:
         registry, plans = plan_meeting(
-            state["segments"], state["turns_by_id"], skip_without_cues=config.skip_agents_without_cues
+            state["segments"],
+            state["turns_by_id"],
+            skip_without_cues=config.skip_agents_without_cues,
+            chair=state.get("chair"),
         )
         return {"registry": registry, "plans": plans}
 

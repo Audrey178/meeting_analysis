@@ -34,7 +34,10 @@ _BIGRAM_WEIGHT = 2.0
 TOOL_DESCRIPTIONS = """
 - get_turn(argument = turn_id): nguyên văn MỘT lượt nói bất kỳ trong cả cuộc họp.
 - search_meeting(argument = vài từ khoá): các lượt nói khớp nhất trong CẢ cuộc họp (kể
-  cả chủ đề khác), để tìm lượt giao/nhận/chốt việc nằm ngoài đoạn hiện tại.
+  cả chủ đề khác), để tìm lượt giao/nhận/chốt việc nằm ngoài đoạn hiện tại. Dùng từ
+  khoá ĐẶC TRƯNG của nội dung việc (vd. "tờ trình", "luồng tàu", "nhãn 12 lĩnh vực"),
+  không dùng từ chung như "giao", "việc", "đề nghị", "anh", "đồng chí": tìm kiếm chấm
+  điểm theo âm tiết (BM25) nên gần như bỏ qua từ xuất hiện ở hầu hết các lượt nói.
 - lookup_speaker(argument = tên hoặc cách gọi, vd "Sơn", "anh Phong"): người nói thật
   trong danh bạ cuộc họp mà cách gọi đó chỉ tới.
 """.strip()

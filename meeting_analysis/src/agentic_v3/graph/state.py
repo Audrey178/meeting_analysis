@@ -71,7 +71,8 @@ class TopicState(TopicInput, TopicOutput):
 class MeetingStateV3(TopicOutput):
     """State của graph cha.
 
-    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``.
+    Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``chair``, ``segments``,
+    ``turns_by_id``.
     Nhóm Planner: ``registry``, ``plans``.
     Nhóm kết quả cộng dồn từ các chủ đề: các khoá của ``TopicOutput``.
     Kết quả cuối: ``report``.
@@ -80,6 +81,7 @@ class MeetingStateV3(TopicOutput):
     meeting_id: str
     revision_id: str
     meeting_date: str | None
+    chair: str | None  # người chủ trì phiên họp cung cấp; Planner đưa vào ``registry``
     segments: tuple[TopicSegment, ...]
     turns_by_id: dict[str, SpeakerTurn]
     registry: SpeakerRegistry

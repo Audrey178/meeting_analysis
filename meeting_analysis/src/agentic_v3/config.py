@@ -1,4 +1,4 @@
-"""Cấu hình của pipeline agentic v3 -- xem ``graph.py`` cho hình dạng graph."""
+"""Cấu hình của pipeline agentic v3 -- xem ``graph/meeting.py`` cho hình dạng graph."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ class V3Config:
             kết luận; tổng lời gọi LLM mỗi candidate <= giá trị này + 1.
         search_top_k: số lượt nói ``search_meeting`` trả về mỗi lần.
         consensus_max_rounds: số vòng tối đa Verifier gửi feedback lại cho agent trích
-            xuất để hai bên đồng thuận (xem ``verifier.py``). Hết vòng mà chưa đồng thuận
+            xuất để hai bên đồng thuận (xem ``nodes/verifier.py``). Hết vòng mà chưa đồng thuận
             thì lấy kết luận cuối của Verifier. Mỗi vòng tốn tối đa
             ``verifier_max_tool_calls + 2`` lời gọi LLM.
         max_concurrency: số task LangGraph chạy song song mỗi superstep (số chủ đề

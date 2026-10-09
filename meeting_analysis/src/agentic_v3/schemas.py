@@ -34,9 +34,13 @@ class SpeakerRegistry:
 
     Các trường:
         names: tên người nói không trùng, theo thứ tự xuất hiện đầu tiên.
+        chair: người chủ trì do phiên họp cung cấp (đã quy về tên người nói nếu khớp
+            duy nhất một người), None nếu không có. Agent trích xuất và Verifier đều
+            thấy dòng này ở đầu prompt.
     """
 
     names: tuple[str, ...]
+    chair: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

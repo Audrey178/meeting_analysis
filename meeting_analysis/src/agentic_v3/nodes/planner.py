@@ -18,7 +18,11 @@ import re
 import unicodedata
 from collections.abc import Sequence
 
-from ...agentic._shared import get_turns_of_segment, list_distinct_speaker_names
+from ...agentic._shared import (
+    get_turns_of_segment,
+    list_distinct_speaker_names,
+    match_claimed_name_to_real_speaker,
+)
 from ...utils.contracts import SpeakerTurn, TopicSegment
 from ..schemas import SpeakerRegistry, TopicPlan
 
@@ -58,14 +62,22 @@ def find_cues(text: str, cues: Sequence[str]) -> tuple[str, ...]:
     return tuple(cue for cue in cues if re.search(rf"(?<!\w){re.escape(cue)}(?!\w)", text))
 
 
-def build_speaker_registry(turns: Sequence[SpeakerTurn]) -> SpeakerRegistry:
+def build_speaker_registry(turns: Sequence[SpeakerTurn], chair: str | None = None) -> SpeakerRegistry:
     """Dựng danh bạ người nói từ toàn bộ lượt nói của cuộc họp.
 
-    Đầu vào: turns - mọi lượt nói, theo thứ tự.
+    Tên người chủ trì được quy về đúng nhãn người nói nếu khớp duy nhất một người
+    ("Phạm Hồng Sơn" -> "Phạm Hồng Sơn (HNI)"); không khớp thì giữ nguyên tên phiên họp
+    cung cấp (người chủ trì có thể không phát biểu).
+
+    Đầu vào: turns - mọi lượt nói, theo thứ tự; chair - người chủ trì hoặc None.
     Đầu ra: SpeakerRegistry.
     """
 
-    return SpeakerRegistry(names=list_distinct_speaker_names(tuple(turns)))
+    turns = tuple(turns)
+    chair = (chair or "").strip() or None
+    if chair:
+        chair = match_claimed_name_to_real_speaker(chair, turns) or chair
+    return SpeakerRegistry(names=list_distinct_speaker_names(turns), chair=chair)
 
 
 def plan_topic(
@@ -97,6 +109,7 @@ def plan_meeting(
     turns_by_id: dict[str, SpeakerTurn],
     *,
     skip_without_cues: bool = True,
+    chair: str | None = None,
 ) -> tuple[SpeakerRegistry, dict[str, TopicPlan]]:
     """Lập danh bạ người nói và kế hoạch agent cho mọi chủ đề.
 
@@ -104,10 +117,11 @@ def plan_meeting(
         segments: các chủ đề theo thứ tự.
         turns_by_id: turn_id -> SpeakerTurn của cả cuộc họp.
         skip_without_cues: xem ``plan_topic``.
+        chair: người chủ trì phiên họp cung cấp, hoặc None (xem ``build_speaker_registry``).
     Đầu ra: (SpeakerRegistry, segment_id -> TopicPlan).
     """
 
-    registry = build_speaker_registry(tuple(turns_by_id.values()))
+    registry = build_speaker_registry(tuple(turns_by_id.values()), chair)
     plans = {
         segment.segment_id: plan_topic(
             segment.segment_id,

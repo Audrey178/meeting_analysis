@@ -3,7 +3,8 @@
 Báo cáo kiến trúc pipeline agentic v3: phân tích biên bản họp (Diễn biến họp, Giao việc,
 Kết luận họp) sau khi transcript đã được tách lượt nói và cắt chủ đề.
 
-Cập nhật: 2026-10-08 (đã bỏ bước duyệt người, thay bằng vòng đồng thuận Verifier ⇄ agent trích xuất).
+Cập nhật: 2026-10-09 (prompt trích xuất riêng của v3, thông tin người chủ trì, sửa Verifier
+và `search_meeting`).
 
 ---
 
@@ -15,6 +16,7 @@ Cập nhật: 2026-10-08 (đã bỏ bước duyệt người, thay bằng vòng 
 | Ngữ cảnh giữa chủ đề | `known_names`/`known_assignments` chạy dồn | `SpeakerRegistry` của cả cuộc họp, dựng 1 lần trước |
 | Gán nhãn chủ đề | Chạy hết stage07 trước | Ngay trong subgraph, chủ đề nào có nhãn thì trích xuất luôn |
 | Chọn agent | Luôn chạy đủ 3 agent | **Planner** (luật, 0 token) bỏ Action/Decision khi không có cue |
+| Prompt agent trích xuất | Prompt v1 | Prompt riêng của v3 (`nodes/prompts.py`), kèm người chủ trì |
 | Kiểm chứng candidate nghi ngờ | Debate + Judge (3 lời gọi, chỉ đọc đoạn hiện tại) | **Verifier ReAct** có tool tra **cả cuộc họp** |
 | Khi chưa chắc | Giữ theo luật an toàn | **Vòng đồng thuận** Verifier ⇄ agent trích xuất |
 | Thử lại lỗi LLM | Sau chủ đề cuối (`retry_failed_topics`) | Ngay trong chủ đề (`extract_attempts`) |
@@ -24,20 +26,21 @@ Lý do chính: nút thắt thời gian của v1 là vòng lặp tuần tự theo
 mang `known_names` sang chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ dựng sẵn nên các
 chủ đề độc lập với nhau, và tổng thời gian không còn tăng tuyến tính theo số chủ đề.
 
-v3 dùng lại nguyên các agent trích xuất, rubric và luật hậu kiểm của v1 (import từ
-`src.agentic`), **không sửa gì ở v1**.
+v3 dùng lại các node trích xuất (phần làm sạch output), rubric và luật hậu kiểm của v1
+(import từ `src.agentic`), **không sửa gì ở v1**. Prompt của ba agent trích xuất là bản
+riêng của v3 (mục 4.2).
 
 ---
 
 ## 2. Sơ đồ tổng thể
 
 ```
-                     ┌──────────────────── graph cha (graph.py) ────────────────────┐
+                     ┌──────────────── graph cha (graph/meeting.py) ────────────────┐
                      │                                                              │
  turns + segments ──►│ START ─► plan_meeting ─► Send("topic", chủ đề i) cho MỌI i   │
                      │          (luật, 0 token)        │  │  │   (song song)        │
                      │                                 ▼  ▼  ▼                      │
-                     │                       ┌── subgraph topic (topic_graph.py) ─┐ │
+                     │                       ┌── subgraph topic (graph/topic.py) ─┐ │
                      │                       │ label_topic                        │ │
                      │                       │   ├─► content_agent ──────────┐    │ │
                      │                       │   ├─► action_agent   (nếu plan)├─► evidence_check
@@ -62,35 +65,40 @@ Graph chạy **một mạch** từ START tới END, không dừng chờ người
 |---|---|
 | `config.py` | `V3Config`: các núm chỉnh (bỏ agent theo cue, số lần thử, số bước Verifier, số vòng đồng thuận, độ song song). |
 | `schemas.py` | Kiểu dữ liệu riêng của v3: `SpeakerRegistry`, `TopicPlan`, `SkippedAgent`, `VerifierStep`, `ConsensusRound`, `VerificationRecord`, `VerifyTask`, `MeetingReport`. Candidate dùng lại kiểu của v1. |
-| `state.py` | State LangGraph: `MeetingStateV3` (graph cha), `TopicInput`/`TopicOutput`/`TopicState` (subgraph). Các khoá kết quả cộng dồn bằng `operator.add`. |
-| `planner.py` | Planner luật: dựng `SpeakerRegistry` và `TopicPlan` cho từng chủ đề. |
-| `topic_graph.py` | Subgraph MỘT chủ đề: gán nhãn → trích xuất → evidence-check → Verifier. |
-| `verifier.py` | Verifier ReAct + vòng đồng thuận với agent trích xuất. |
-| `tools.py` | Tool CHỈ ĐỌC cho Verifier: `get_turn`, `search_meeting`, `lookup_speaker`. |
-| `graph.py` | Graph cha: `plan_meeting` → dispatch song song → `finalize`. |
-| `throttle.py` | `LLMConcurrencyGate`: semaphore dùng chung bọc mọi adapter LLM. |
 | `runner.py` | `MeetingAnalyzerV3`: điểm vào cho tầng dịch vụ; `analyze()` trả `MeetingReport`. |
-| `tests/test_v3.py` | Test end-to-end với LLM giả (không gọi mạng). |
+| `graph/state.py` | State LangGraph: `MeetingStateV3` (graph cha), `TopicInput`/`TopicOutput`/`TopicState` (subgraph). Các khoá kết quả cộng dồn bằng `operator.add`. |
+| `graph/meeting.py` | Graph cha: `plan_meeting` → dispatch song song → `finalize`. |
+| `graph/topic.py` | Subgraph MỘT chủ đề: gán nhãn → trích xuất → evidence-check → Verifier. |
+| `nodes/planner.py` | Planner luật: dựng `SpeakerRegistry` (kèm người chủ trì) và `TopicPlan` cho từng chủ đề. |
+| `nodes/prompts.py` | Quy tắc prompt dùng chung và system prompt v3 của Content/Action/Decision; tiêu chí Verifier (`VERIFY_RUBRICS`). |
+| `nodes/extractors.py` | Chạy node trích xuất v1 với prompt v3 và dòng người chủ trì. |
+| `nodes/verifier.py` | Verifier ReAct + vòng đồng thuận với agent trích xuất. |
+| `nodes/verifier_tools.py` | Tool CHỈ ĐỌC cho Verifier: `get_turn`, `search_meeting`, `lookup_speaker`. |
+| `infra/throttle.py` | `LLMConcurrencyGate`: semaphore dùng chung bọc mọi adapter LLM. |
+| `tests/test_pipeline.py` | Test end-to-end với LLM giả (không gọi mạng). |
 
 ---
 
 ## 4. Luồng xử lý chi tiết
 
-### 4.1. Planner (`planner.py`) — luật, 0 token
+### 4.1. Planner (`nodes/planner.py`) — luật, 0 token
 
 Chạy **một lần** trước khi tách song song:
 
 1. **`SpeakerRegistry`**: danh sách tên người nói không trùng của cả cuộc họp, theo thứ
    tự xuất hiện. Đưa vào prompt Action agent (ô `previous_context` của v1) và dùng làm
    `known_names` cho evidence-check. Khác v1: thấy cả người chỉ xuất hiện ở chủ đề sau,
-   và tên do agent tự gán (có thể sai) không còn lan sang chủ đề sau.
+   và tên do agent tự gán (có thể sai) không còn lan sang chủ đề sau. Kèm
+   `chair`: người chủ trì do phiên họp cung cấp (`analyze(chair=...)`), quy về đúng nhãn
+   người nói nếu khớp duy nhất một người ("Phạm Hồng Sơn" → "Phạm Hồng Sơn (HNI)"),
+   không khớp thì giữ nguyên tên đã cho.
 2. **`TopicPlan`** cho từng chủ đề: chạy Action agent nếu có cụm trong `ACTION_CUES`
    ("giao", "phụ trách", "sẽ", "trước ngày"…), chạy Decision agent nếu có cụm trong
    `DECISION_CUES` ("chốt", "thống nhất", "kết luận"…). Cue cố ý **rộng**: bỏ nhầm làm
    giảm recall, còn chạy thừa chỉ tốn một lời gọi. Content agent không bao giờ bị bỏ.
    Tắt bằng `skip_agents_without_cues=False` (dùng cho ablation).
 
-### 4.2. Subgraph một chủ đề (`topic_graph.py`)
+### 4.2. Subgraph một chủ đề (`graph/topic.py`)
 
 1. **`label_topic`**: gán nhãn bằng stage07 (`label_topics`, có guard + fallback), dựng
    `SegmentTask` kiểu v1, ghi `SkippedAgent` cho agent bị Planner bỏ.
@@ -101,6 +109,17 @@ Chạy **một lần** trước khi tách song song:
 
    Mỗi agent được bọc `_wrap_extractor`: lỗi LLM thì gọi lại tối đa `extract_attempts` lần
    ngay tại chỗ; chỉ lỗi của lần cuối được ghi vào `topic_failures`.
+
+   Prompt (`nodes/prompts.py`, nối qua `nodes/extractors.py`): node v1 chạy trên một
+   adapter bọc, adapter này thay system prompt v1 bằng bản v3 và thêm dòng
+   `Người chủ trì: ...` vào đầu user prompt. Schema và phần đọc kết quả vẫn của v1.
+   Khác prompt v1:
+   - Các quy tắc chung (đọc turn_id, chọn bằng chứng trước, ngôi thứ ba) là hằng số,
+     mỗi prompt ghép đúng một bản.
+   - `proposed`/`reported` chỉ dùng khi không chắc. Chắc là đề xuất chưa ai nhận hoặc là
+     báo cáo thì không đưa vào, để khỏi tốn lời gọi Verifier.
+   - `CHAIR_ASSIGNMENT_RULE`: người chủ trì nói "đề nghị/yêu cầu + người/đơn vị + việc"
+     là giao việc (`assigned`). Verifier dùng chung câu này nên hai bên chấm cùng chuẩn.
 3. **`evidence_check`** (luật v1, 0 token): tách candidate thành **CLEAR** (vào kết quả
    ngay) và **UNCERTAIN** (gửi Verifier, kèm lý do bị gắn cờ).
 4. **`verifier`**: mỗi candidate UNCERTAIN được `Send` riêng, chạy song song.
@@ -109,25 +128,31 @@ Ba nhánh trích xuất nối thẳng vào `evidence_check` (không dùng join c
 thay đổi theo plan, nhưng mọi nhánh cách điểm phân nhánh đúng một bước nên LangGraph ghi
 kết quả trong cùng một superstep và `evidence_check` chạy đúng một lần.
 
-### 4.3. Verifier ReAct (`verifier.py`, `tools.py`)
+### 4.3. Verifier ReAct (`nodes/verifier.py`, `nodes/verifier_tools.py`)
 
 ReAct dựng trên `LLMAdapter.generate_json` (một lượt hỏi–đáp JSON), **không cần provider
 hỗ trợ tool calling**. Mỗi lượt model trả:
 
 ```json
 {"thought", "action": "get_turn|search_meeting|lookup_speaker|final", "argument",
- "verdict": "keep|revise|drop|unresolved", "deciding_turn_id", "revised_actor", "reasoning"}
+ "deciding_turn_id", "verdict": "keep|revise|drop|unresolved", "revised_actor", "reasoning"}
 ```
 
-Code chạy tool rồi đưa observation vào prompt lượt sau. Tối đa
-`verifier_max_tool_calls + 1` lời gọi mỗi vòng; lượt cuối bắt buộc `action="final"`.
+`deciding_turn_id` đứng trước `verdict` để model chỉ ra lượt giao/chốt trước khi kết luận.
+Code chạy tool rồi đưa suy nghĩ, hành động và observation của mọi bước vào prompt lượt
+sau. Tối đa `verifier_max_tool_calls + 1` lời gọi mỗi vòng; lượt cuối bắt buộc
+`action="final"`. Tra lại y hệt một lần đã tra thì không chạy tool, chỉ báo lặp.
+
+User prompt mở đầu bằng dòng người chủ trì; lý do candidate bị đánh dấu được ghi là
+"cờ của bộ lọc tự động" (gợi ý, không phải bằng chứng). Tiêu chí là `VERIFY_RUBRICS`:
+rubric v1 cộng `CHAIR_ASSIGNMENT_RULE`.
 
 Tool (chỉ đọc, lỗi được trả thành observation để Verifier tự sửa, không raise):
 
 | Tool | Chức năng |
 |---|---|
-| `get_turn(turn_id)` | Nguyên văn một lượt nói bất kỳ trong cả cuộc họp (cắt ở 600 ký tự). |
-| `search_meeting(từ khoá)` | Top-k lượt nói khớp nhất cả cuộc họp; điểm = âm tiết nội dung trùng + 2 × cặp âm tiết trùng. |
+| `get_turn(turn_id)` | Nguyên văn một lượt nói bất kỳ trong cả cuộc họp (cắt ở 3000 ký tự). |
+| `search_meeting(từ khoá)` | Top-k lượt nói khớp nhất cả cuộc họp, chấm BM25 trên âm tiết nội dung và cặp âm tiết (cặp nặng gấp 2), mỗi lượt cắt 600 ký tự quanh chỗ khớp. Mô tả tool nhắc dùng từ khoá đặc trưng của nội dung việc vì BM25 gần như bỏ qua từ chung ("giao", "việc", "anh"). |
 | `lookup_speaker(cách gọi)` | Quy "anh Phong", "Sơn"… về người nói thật trong danh bạ. |
 
 **Luật hậu kiểm** (`_resolve_verdict` của v1): `keep`/`revise` mà không chỉ ra được lượt
@@ -159,6 +184,9 @@ Verifier (ReAct) ──► verdict + feedback
 - Agent trích xuất thấy feedback và các bằng chứng Verifier đã tra (observation).
 - Phần sửa của agent chỉ được nhận khi hợp lệ: `confirm_turn_id` phải là lượt nói thật,
   actor phải định danh được.
+- `PROPOSER_SCHEMA` đặt `confirm_turn_id` trước `stance`. Khi Verifier không đề nghị
+  sửa, `accept` mà vẫn chỉ ra lượt nói thật là tự mâu thuẫn (chọn nhãn trước rồi lập
+  luận ngược lại) và được coi là `defend`.
 
 **Kết thúc khi chưa đồng thuận** (hết `consensus_max_rounds`):
 
@@ -173,10 +201,10 @@ Nguyên tắc an toàn kế thừa từ v1: lỗi hạ tầng không được xo
 tự sửa mà Verifier chưa xét lại **không** được vào kết quả.
 
 Mọi vòng được lưu trong `VerificationRecord.rounds` (`ConsensusRound`: candidate đã xét,
-bước tra cứu, verdict, feedback, lượt chốt, lập trường và lập luận của agent) để audit;
+bước tra cứu, verdict, feedback, lượt chốt, lập trường, lập luận và lượt agent chỉ ra) để audit;
 `VerificationRecord.steps` là mọi bước tra cứu nối qua các vòng.
 
-### 4.5. `finalize` (`graph.py`)
+### 4.5. `finalize` (`graph/meeting.py`)
 
 Các chủ đề cộng dồn kết quả theo thứ tự **hoàn thành** (không xác định), nên `finalize`:
 
@@ -192,8 +220,8 @@ Các chủ đề cộng dồn kết quả theo thứ tự **hoàn thành** (khô
 
 ### 5.1. State
 
-- **`MeetingStateV3`** (graph cha): đầu vào (`meeting_id`, `revision_id`, `segments`,
-  `turns_by_id`), kết quả Planner (`registry`, `plans`), các khoá cộng dồn của
+- **`MeetingStateV3`** (graph cha): đầu vào (`meeting_id`, `revision_id`, `meeting_date`,
+  `chair`, `segments`, `turns_by_id`), kết quả Planner (`registry`, `plans`), các khoá cộng dồn của
   `TopicOutput`, và `report`.
 - **`TopicInput`** (gói `Send`): `segment`, `turns` của chủ đề, `meeting_turns` của cả
   cuộc họp (cho tool Verifier), `registry`, `plan`.
@@ -226,7 +254,7 @@ Hai lớp giới hạn độc lập:
 
 1. **`V3Config.max_concurrency`** → `max_concurrency` của LangGraph: số task (chủ đề +
    verifier) chạy cùng lúc mỗi superstep.
-2. **`LLMConcurrencyGate`** (`throttle.py`): `BoundedSemaphore` dùng chung bọc **mọi**
+2. **`LLMConcurrencyGate`** (`infra/throttle.py`): `BoundedSemaphore` dùng chung bọc **mọi**
    adapter (gán nhãn, 3 agent, Verifier, trả lời feedback). Đây mới là giới hạn số lời gọi
    LLM thực sự. Verifier có thể có gate riêng (`verifier_llm_concurrency`) khi trỏ tới
    backend khác.
@@ -278,7 +306,8 @@ thắng biến cũ còn export trong shell.
 ## 8. Tích hợp
 
 - **Điểm vào**: `MeetingAnalyzerV3(content_llm, action_llm, decision_llm, verifier_llm,
-  labeler, …).analyze(meeting_id, revision_id, turns, segments) -> MeetingReport`.
+  labeler, …).analyze(meeting_id, revision_id, meeting_date, chair, turns, segments) -> MeetingReport`.
+  `chair` (tùy chọn) là tên người chủ trì.
   Graph compile một lần, dùng cho mọi cuộc họp; analyzer sống suốt vòng đời ứng dụng
   để mọi request dùng chung một gate.
 - **API**: `POST /v3/meetings/analyze` (`be/routers/meetings_v3.py`) → `AnalyzeV3Result`
@@ -292,12 +321,15 @@ thắng biến cũ còn export trong shell.
 
 ## 9. Kiểm thử
 
-`src/agentic_v3/tests/test_v3.py` (13 test, LLM giả nhận vai qua schema/system prompt):
-Planner bỏ agent đúng chỗ; tool đọc cả cuộc họp và trả lỗi thành observation; chủ đề chạy
-song song nhưng không vượt gate; Verifier tra tool rồi kết luận; luật hạ `keep` không có
-lượt chốt thành `drop`; agent `amend` rồi Verifier đồng ý; agent `accept` thì bỏ; hết vòng
+`src/agentic_v3/tests/test_pipeline.py` (26 test, LLM giả nhận vai qua schema/system
+prompt): Planner bỏ agent đúng chỗ; tool đọc cả cuộc họp và trả lỗi thành observation;
+`search_meeting` ưu tiên lượt ngắn đúng chủ đề và cắt quanh chỗ khớp; chủ đề chạy song song
+nhưng không vượt gate; Verifier tra tool rồi kết luận, giữ suy nghĩ trong lịch sử, không
+chạy lại lần tra trùng; luật hạ `keep` không có lượt chốt thành `drop`; agent `amend` rồi
+Verifier đồng ý; agent `accept` thì bỏ, `accept` kèm lượt nói thành `defend`; hết vòng
 thì theo Verifier; vẫn `unresolved` thì giữ fallback; lỗi LLM giữ bản gốc; thử lại agent
-tại chỗ; kết quả sắp theo thứ tự chủ đề.
+tại chỗ; agent trích xuất chạy với prompt v3; người chủ trì được quy về người nói và có
+trong prompt; kết quả sắp theo thứ tự chủ đề.
 
 `be/test_api_v3.py` (2 test): wiring HTTP end-to-end, gồm luồng đồng thuận trong một request.
 
@@ -314,7 +346,7 @@ tại chỗ; kết quả sắp theo thứ tự chủ đề.
 2. **Agent trả lời feedback chạy trên gemma**, từng gặp lỗi JSON: trích nguyên văn bằng
    `"`, và sinh khoảng trắng vô tận khi trường văn bản tự do không đứng cuối schema.
    Đã giảm bằng prompt (≤ 2 câu, không dùng dấu nháy kép) và đặt `argument` cuối
-   `PROPOSER_SCHEMA`. Phương án dự phòng: cho bước này chạy trên `gpt-4o-mini`, đổi lại
+   `PROPOSER_SCHEMA` (`confirm_turn_id` đứng đầu, là mã ngắn nên không gây lỗi này). Phương án dự phòng: cho bước này chạy trên `gpt-4o-mini`, đổi lại
    agent trả lời không còn là chính model đã trích ra candidate.
 3. **Chi phí**: vòng đồng thuận có thể tăng số lời gọi lên tới 15 mỗi candidate nghi ngờ;
    cần đo phân bố số vòng thực tế.

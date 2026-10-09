@@ -2,9 +2,10 @@
 không cần thiết, Verifier ReAct thay Debate+Judge và gửi feedback lại cho agent trích
 xuất tới khi đồng thuận (không có bước duyệt người).
 
-Hình dạng graph xem ``graph.py``/``topic_graph.py``; điểm vào cho tầng dịch vụ là
-``MeetingAnalyzerV3`` (``runner.py``). Package dùng lại các agent trích xuất, rubric và
-luật của ``src.agentic`` (v1), không sửa gì ở đó.
+Hình dạng graph xem ``graph/meeting.py``/``graph/topic.py``; điểm vào cho tầng dịch vụ là
+``MeetingAnalyzerV3`` (``runner.py``). Package dùng lại các node trích xuất (với prompt
+riêng của v3, ``nodes/prompts.py``), rubric và luật của ``src.agentic`` (v1), không sửa
+gì ở đó.
 """
 
 from .config import V3Config
