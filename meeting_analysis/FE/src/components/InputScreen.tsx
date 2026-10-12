@@ -238,7 +238,7 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
             <div className="bg-surface p-4">
               <div className="field">
                 <label>
-                  JSON gốc -- cùng cấu trúc <code>run_to_TreeSeg.py --input</code> (hoặc STT export)
+                  JSON gốc -- cùng cấu trúc <code>inputs/sample_transcript.json</code> (hoặc STT export)
                 </label>
                 <textarea
                   className="input"

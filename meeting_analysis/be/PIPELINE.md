@@ -19,8 +19,8 @@ services/pipeline.py: run_meeting_analysis_pipeline
   └─ Serialize                              MeetingState cuối -> dict theo AnalyzeResponse
 ```
 
-Không có stage04–06 và stage08 trong luồng API: cắt chủ đề chạy thẳng trên lượt nói
-(stage03), bỏ bước dựng atom để tiết kiệm chi phí. Đánh đổi: ranh giới chủ đề không
+Không có bước dựng atom (stage04–06, stage08 cũ đã bị xóa): cắt chủ đề chạy thẳng trên
+lượt nói (stage03) để tiết kiệm chi phí. Đánh đổi: ranh giới chủ đề không
 bao giờ rơi vào giữa một lượt nói dài.
 
 ---

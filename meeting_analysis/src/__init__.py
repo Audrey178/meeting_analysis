@@ -74,25 +74,6 @@ from .utils.ports import (
 __version__ = "0.2.0"
 
 
-def __getattr__(name: str):
-    """Nạp trễ ``build_atom_features`` (nhánh atoms, không nằm trên đường chạy chính).
-
-    Trước đây tên này được import sẵn ở đầu file, nên import bất cứ thứ gì trong ``src``
-    (kể cả ``src.stages.stage03_speaker_turns``) cũng kéo theo cả nhánh stage05.
-
-    Đầu vào: name - tên thuộc tính được truy cập trên package ``src``.
-    Đầu ra: hàm ``build_atom_features`` khi ``name`` khớp, lưu vào namespace cho lần sau.
-    Lỗi: AttributeError với mọi tên khác (hành vi chuẩn của Python).
-    """
-
-    if name == "build_atom_features":
-        from .stages.stage05_atom_features import build_atom_features
-
-        globals()[name] = build_atom_features
-        return build_atom_features
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 __all__ = [
     "ActionAdapter",
     "AnalysisAtom",
@@ -156,7 +137,6 @@ __all__ = [
     "VerifierAdapter",
     "WindowBuilderConfig",
     "WindowConfig",
-    "build_atom_features",
     "load_config",
     "to_jsonable",
 ]

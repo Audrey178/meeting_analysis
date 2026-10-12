@@ -36,9 +36,8 @@ class AttendeesIn(BaseModel):
 class AnalyzeRequest(BaseModel):
     """Dữ liệu đầu vào của API phân tích cuộc họp: một transcript.
 
-    Cùng dạng với JSON transcript gốc mà ``scripts/run_to_TreeSeg.py --input`` nhận
-    (``inputs/sample_transcript.json``) và được chuyển nguyên vẹn cho
-    ``parse_transcript_payload``. Vì vậy ``items`` cố ý để lỏng (``list[dict]``) thay vì
+    Cùng dạng với JSON transcript gốc (``inputs/sample_transcript.json``) và được chuyển
+    nguyên vẹn cho ``parse_transcript_payload``. Vì vậy ``items`` cố ý để lỏng (``list[dict]``) thay vì
     khai lại từng trường, tránh lệch so với parser.
 
     ``meeting_id``/``revision_id`` PHẢI được khai báo (khác ``items``) vì Pydantic âm

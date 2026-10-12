@@ -8,8 +8,8 @@ version = "0.2.0"
 description = "Evidence-grounded meeting analysis pipeline contracts and MVP scaffold"
 requires-python = ">=3.11"
 dependencies = [
-    # TIP-004: stages/segmentation.py Gram-matrix/prefix-sum DP engine. The
-    # only new dependency introduced across all 5 Stage 5/6 redesign TIPs.
+    # experiments/treeseg_turn_level/treeseg.py and experiments/dialstart:
+    # topic segmentation math.
     "numpy>=1.26",
     # src/agentic/graph.py: Send()-based fan-out (2 parallel agents/segment)
     # + fan-in (Conclusion agent) orchestration.
