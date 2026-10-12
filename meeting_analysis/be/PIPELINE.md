@@ -13,7 +13,7 @@ services/pipeline.py: run_meeting_analysis_pipeline
   ├─ stage01 resolve_effective_transcript   dòng thô -> dòng hiệu lực (chồng bản sửa của người duyệt)
   ├─ stage02 build_evidence_items           dòng hiệu lực -> EvidenceItem có mã ổn định
   ├─ stage03 build_speaker_turns            evidence -> SpeakerTurn (gộp dòng liên tiếp cùng người nói)
-  ├─ Cắt chủ đề trên SpeakerTurn            DialSTART | DialTreeSeg | TreeSeg -> TopicSegment[]
+  ├─ Cắt chủ đề trên SpeakerTurn            DialSTART | TreeSeg -> TopicSegment[]
   ├─ stage07 label_topics                   mỗi đoạn -> TopicLabel (title + summary), gọi LLM
   ├─ LangGraph (src/agentic/graph.py)       Content / Action / Decision / Evidence-Check / Debate+Judge
   └─ Serialize                              MeetingState cuối -> dict theo AnalyzeResponse
@@ -114,11 +114,10 @@ Chọn bộ cắt theo kiểu của `topic_segmenter` (do `TOPIC_SEGMENTER` quy�
 
 | `TOPIC_SEGMENTER` | Bộ cắt | Tín hiệu dùng | Code |
 |---|---|---|---|
-| `dialstart` (mặc định) | `DialStartSegmenter` | điểm mạch lạc từ model DialSTART đã train | `experiments/006_dialstart/dialstart_segmenter.py` |
-| `dialtreeseg` | `DialTreeSegSegmenter` | DialSTART (có tách không) + cây TreeSeg trên embedding (tách ở đâu) | `experiments/007_dialtreeseg/dialtreeseg_segmenter.py`, `methods.py` |
+| `dialstart` (mặc định) | `DialStartSegmenter` | điểm mạch lạc từ model DialSTART đã train | `experiments/dialstart/dialstart_segmenter.py` |
 | `treeseg` | `segment_turns_with_treeseg` | chỉ embedding (không cần train) | `experiments/treeseg_turn_level/treeseg.py` |
 
-**Quy ước chung cho cả ba:**
+**Quy ước chung cho cả hai:**
 
 - Đầu vào là dãy `n` lượt nói của stage03. Lượt nói là đơn vị nhỏ nhất, nên ranh giới
   không bao giờ nằm giữa một lượt.
@@ -130,13 +129,13 @@ Chọn bộ cắt theo kiểu của `topic_segmenter` (do `TOPIC_SEGMENTER` quy�
 - Kết quả cuối được đóng gói bằng `boundaries_to_topic_segments` thành `TopicSegment`
   với mã `TOPIC_SEG_000000`, `TOPIC_SEG_000001`, …; `text` là các dòng `"speaker: text"`;
   `start_ms`/`end_ms` thực chất là **chỉ số lượt** (nửa mở), không phải mili-giây.
-- Cả ba đều có **trần 35 000 ký tự/đoạn**, là ràng buộc cứng để không agent nào phía sau
+- Cả hai đều có **trần 35 000 ký tự/đoạn**, là ràng buộc cứng để không agent nào phía sau
   nhận prompt quá lớn. Nó chỉ không tách được khi một lượt nói đơn lẻ đã dài hơn trần.
 
 #### 3.5.1 DialSTART (`TOPIC_SEGMENTER=dialstart`, mặc định)
 
 Model `SegModel` có hai nhánh, cùng backbone `NlpHUST/vibert4news-base-cased`, checkpoint
-`experiments/006_dialstart/model_vn3/best.pt` (hoặc `DIALSTART_CHECKPOINT`). Model được
+`experiments/dialstart/model_vn3/best.pt` (hoặc `DIALSTART_CHECKPOINT`). Model được
 nạp một lần lúc khởi động (~1 GB), chạy trên GPU nếu có.
 
 ```
@@ -169,59 +168,13 @@ lượt nói ─► (1) chấm điểm khe ─► (2) làm mượt ─► (3) de
    | c | `_merge_similar_segments` | `merge_threshold=None` (tắt) | Lặp: gộp cặp đoạn kề có cosine (embedding chủ đề trung bình) cao nhất nếu ≥ ngưỡng **và** đoạn gộp không vượt trần ký tự. Chữa trường hợp một chủ đề bị cắt đôi bởi đoạn xen ngang (+0.025 F1 trên Quốc hội) |
    | d | `_split_long_segments` | `max_segment_chars=35000` | Đoạn > 35 000 ký tự được tách tại khe depth cao nhất bên trong (ưu tiên khe vẫn giữ ≥ 8 lượt mỗi bên), lặp đến khi vừa trần |
 
-Tham số tune chung trên gold thật đã duyệt (`experiments/007_dialtreeseg/gold`, 3 cuộc họp) và
+Tham số tune chung trên gold thật đã duyệt (3 cuộc họp) và
 `eval/synthetic` (30 transcript): thật 0.637, synth 0.686 (điểm = (F1@2k + F1@5k + 2 − 2·Pk) / 4; bộ
 cũ: 0.392 / 0.336). Synth tương quan yếu với thật (Spearman 0.56) nên ưu tiên gold thật. Muốn nhiều
 đoạn hơn thì tăng `_DIALSTART_MIN_SEGMENT_FRACTION` hoặc giảm `_DIALSTART_THRESHOLD_STD`.
 DialSTART **không** dùng `embedding_adapter` của backend.
 
-#### 3.5.2 DialTreeSeg (`TOPIC_SEGMENTER=dialtreeseg`)
-
-Kết hợp hai tín hiệu: **TreeSeg đề xuất tách ở đâu, DialSTART quyết định có tách hay
-không**. `DialTreeSegSegmenter` bọc chính instance `DialStartSegmenter` ở trên. Phương pháp
-và mọi tham số đọc từ `experiments/007_dialtreeseg/config.json`; muốn đổi thì sửa file đó
-rồi khởi động lại backend. Hiện `backend.method = "I3+I5"`.
-
-```
-lượt nói ─┬─► DialSTART: điểm khe ─► logit ─► depth ─► depth_z ─► ứng viên ranh giới
-          │                                                          │
-          └─► embedding backend (lượt + 5 lượt trước) ───────────────┤
-                                                                     ▼
-                                               cây chia dần TreeSeg, chỉ tách tại ứng viên,
-                                               dừng khi depth_z ≤ k_stop
-                                                                     ▼
-                                               tách tiếp đoạn > 35 000 ký tự
-```
-
-1. **Đặc trưng** (`predict_boundaries`):
-   - Gọi `dialstart.score_gaps_with_embeddings` để lấy điểm khe (bước 1 của 3.5.1).
-   - Đổi điểm sang thang **logit** (`dialstart_score_scale="logit"`, tránh bão hòa gần 1.0),
-     làm mượt với `dialstart_smooth_window=1` (tức không làm mượt), tính depth rồi
-     **chuẩn hóa z** trên toàn cuộc họp → `depth_z`.
-   - Embedding backend (`embedding_adapter`, dùng `embed_many` nếu có để gom batch) của
-     mỗi lượt kèm `bge_context_turns=5` lượt đứng trước.
-2. **Ứng viên ranh giới** (`candidate_boundaries`): khe là cực đại cục bộ của `depth_z` và
-   `depth_z > k_cand = 0.0`. Ngưỡng này cố tình thấp để lấy dư ứng viên; với dải bằng nhau
-   chỉ lấy khe cuối dải.
-3. **Cây chia dần có cổng** (`gated_divisive_split`), bắt đầu từ cả cuộc họp `[0, n)`:
-   - Trong nút `[lo, hi)`, xét các ứng viên nằm bên trong mà hai phía đều ≥ `min_chars = 2000` ký tự.
-   - TreeSeg chọn ứng viên có tổng bình phương sai trong cụm (SS) của embedding hai phía
-     nhỏ nhất (`shortlist=1`).
-   - Chỉ tách nếu `depth_z` tại điểm đó > `k_stop = 1.0`; nếu không, nút dừng lại thành một đoạn.
-   - Tách được thì đẩy hai nút con vào hàng đợi và lặp lại.
-4. **Tách đoạn quá dài** (`split_oversized_segments`, `backend.max_segment_chars = 35000`):
-   đoạn vượt trần được tách tại ứng viên DialSTART có SS hai phía nhỏ nhất. Hết ứng viên
-   hợp lệ thì xét mọi ranh giới lượt, hai phía vẫn phải ≥ 2000 ký tự.
-
-Trần ký tự ở đây do `DialTreeSegSegmenter` tự áp từ config; `be/services/pipeline.py` chỉ
-truyền `item_chars` và không truyền `_TREESEG_MAX_SEGMENT_CHARS`.
-
-Các phương pháp khác trong `methods.py` có thể chọn qua `backend.method`: `T` (TreeSeg
-riêng), `D` (DialSTART riêng theo `depth_z > k_stop`), `I7` (TreeSeg rồi dời ranh giới về
-đỉnh depth trong ±`snap_chars`), `I4` (như I3+I5 nhưng lá là các đơn vị cắt tại mọi ứng
-viên), `I3+SL` (như I3+I5 nhưng DialSTART chọn trong `shortlist` vị trí SS tốt nhất).
-
-#### 3.5.3 TreeSeg (`TOPIC_SEGMENTER=treeseg`)
+#### 3.5.2 TreeSeg (`TOPIC_SEGMENTER=treeseg`)
 
 Thuật toán không cần train (Gklezakos et al., 2024): phân cụm chia dần trên embedding,
 dựng cây phân hoạch nhị phân rồi cắt cây theo ngưỡng gain. Không nạp DialSTART.
@@ -249,20 +202,20 @@ lượt nói ─► (1) embedding kèm ngữ cảnh ─► (2) dựng cây đầ
 
 Tăng `_TREESEG_MIN_RELATIVE_GAIN` để có ít đoạn to hơn, giảm để có nhiều đoạn nhỏ hơn.
 
-#### 3.5.4 So sánh nhanh
+#### 3.5.3 So sánh nhanh
 
-| | DialSTART | DialTreeSeg (I3+I5) | TreeSeg |
-|---|---|---|---|
-| Cần model train | Có (checkpoint ~1 GB) | Có (dùng lại DialSTART) | Không |
-| Dùng `embedding_adapter` | Không | Có | Có |
-| Quyết định có ranh giới | depth > mean + 6·std | `depth_z` > 1.0 tại điểm TreeSeg chọn | gain ≥ 0.022·SS gốc |
-| Quyết định vị trí | khe depth cao | ứng viên DialSTART có SS hai phía nhỏ nhất | điểm có SS hai phía nhỏ nhất |
-| Kích thước tối thiểu | 8 lượt, rồi 10 000 ký tự | 2000 ký tự mỗi phía | 4 lượt |
-| Hậu xử lý | gộp đoạn kề cosine ≥ 0.65 | — | — |
-| Trần ký tự | 35 000 (`pipeline.py`) | 35 000 (`007/config.json`) | 35 000 (`pipeline.py`) |
-| Tham số nằm ở | hằng số `_DIALSTART_*` trong `pipeline.py` | `experiments/007_dialtreeseg/config.json` | hằng số `_TREESEG_*` + `width=5`, `min_size=4` trong `pipeline.py` |
+| | DialSTART | TreeSeg |
+|---|---|---|
+| Cần model train | Có (checkpoint ~1 GB) | Không |
+| Dùng `embedding_adapter` | Không | Có |
+| Quyết định có ranh giới | depth > mean + 6·std | gain ≥ 0.022·SS gốc |
+| Quyết định vị trí | khe depth cao | điểm có SS hai phía nhỏ nhất |
+| Kích thước tối thiểu | 8 lượt, rồi 10 000 ký tự | 4 lượt |
+| Hậu xử lý | gộp đoạn kề cosine ≥ 0.65 | — |
+| Trần ký tự | 35 000 (`pipeline.py`) | 35 000 (`pipeline.py`) |
+| Tham số nằm ở | hằng số `_DIALSTART_*` trong `pipeline.py` | hằng số `_TREESEG_*` + `width=5`, `min_size=4` trong `pipeline.py` |
 
-Lỗi gọi embedding (TreeSeg, DialTreeSeg) là bước **duy nhất** trong pipeline không có
+Lỗi gọi embedding (TreeSeg) là bước **duy nhất** trong pipeline không có
 dự phòng; nó nổi lên thành `LLMUpstreamError` và router trả 502/504.
 
 
@@ -372,8 +325,8 @@ chỉ lắp ráp dữ liệu (0 token):
 
 | Biến | Mặc định | Dùng ở |
 |---|---|---|
-| `TOPIC_SEGMENTER` | `dialstart` | chọn bộ cắt chủ đề (`dialstart` / `dialtreeseg` / `treeseg`) |
-| `DIALSTART_CHECKPOINT` | `experiments/006_dialstart/model_vn3/best.pt` | checkpoint DialSTART |
+| `TOPIC_SEGMENTER` | `dialstart` | chọn bộ cắt chủ đề (`dialstart` / `treeseg`) |
+| `DIALSTART_CHECKPOINT` | `experiments/dialstart/model_vn3/best.pt` | checkpoint DialSTART |
 | `EMBEDDING_BACKEND` | `local` | `local` (sentence-transformers) hoặc `openai` |
 | `EMBEDDING_MODEL` | `BAAI/bge-m3` / `text-embedding-3-small` | model embedding |
 | `EMBEDDING_DEVICE`, `EMBEDDING_MAX_SEQ_LENGTH`, `EMBEDDING_TEXT_PREFIX` | auto / 1024 / rỗng | chỉ backend `local` |
@@ -401,4 +354,4 @@ tra việc nối dây end-to-end, không đánh giá chất lượng đầu ra c
 | `src/utils/adapters.py` | Parse payload transcript |
 | `src/stages/stage01..03_*.py`, `stage07_topic_labeling.py` | Các stage tiền xử lý và gán nhãn |
 | `src/agentic/graph.py`, `state.py`, `nodes/*` | Graph agent LangGraph |
-| `experiments/006_dialstart`, `007_dialtreeseg`, `treeseg_turn_level` | Các bộ cắt chủ đề |
+| `experiments/dialstart`, `treeseg_turn_level` | Các bộ cắt chủ đề |

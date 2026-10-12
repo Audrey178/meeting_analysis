@@ -12,8 +12,6 @@ from pathlib import Path
 _BE_DIR = Path(__file__).resolve().parent.parent
 _REPO_ROOT = _BE_DIR.parent
 _TREESEG_DIR = _REPO_ROOT / "experiments" / "treeseg_turn_level"
-_DIALSTART_DIR = _REPO_ROOT / "experiments" / "006_dialstart"
-_DIALTREESEG_DIR = _REPO_ROOT / "experiments" / "007_dialtreeseg"
 for _dir in (_BE_DIR, _TREESEG_DIR, _REPO_ROOT):
     if str(_dir) not in sys.path:
         sys.path.insert(0, str(_dir))
@@ -52,44 +50,30 @@ def build_topic_segmenter():
 
     ``TOPIC_SEGMENTER``:
         - ``dialstart`` (mặc định) nạp checkpoint DialSTART;
-        - ``dialtreeseg`` bọc DialSTART (điểm khe, depth) trong ``DialTreeSegSegmenter``, ghép với
-          cây TreeSeg trên adapter embedding của backend; phương pháp và tham số lấy từ
-          ``experiments/007_dialtreeseg/config.json``;
         - ``treeseg`` trả về None để pipeline dùng TreeSeg + adapter embedding.
     ``DIALSTART_CHECKPOINT`` ghi đè đường dẫn checkpoint (mặc định
-    ``experiments/006_dialstart/model_vn3/best.pt``). Import trì hoãn để không bắt buộc cài
+    ``experiments/dialstart/model_vn3/best.pt``). Import trì hoãn để không bắt buộc cài
     torch/transformers khi dùng TreeSeg.
 
-    Đầu ra: ``DialStartSegmenter``, ``DialTreeSegSegmenter`` hoặc None.
+    Đầu ra: ``DialStartSegmenter`` hoặc None.
     """
 
     choice = os.environ.get("TOPIC_SEGMENTER", "dialstart").strip().lower()
     if choice == "treeseg":
         return None
-    if choice not in ("dialstart", "dialtreeseg"):
-        raise ValueError(
-            f"TOPIC_SEGMENTER không hợp lệ: {choice!r} (dialstart | dialtreeseg | treeseg)"
-        )
+    if choice != "dialstart":
+        raise ValueError(f"TOPIC_SEGMENTER không hợp lệ: {choice!r} (dialstart | treeseg)")
 
-    for _dir in (_DIALSTART_DIR, _DIALTREESEG_DIR):
-        if str(_dir) not in sys.path:
-            sys.path.insert(0, str(_dir))
-    from dialstart_segmenter import DEFAULT_CHECKPOINT_PATH, DialStartSegmenter
+    from experiments.dialstart import DEFAULT_CHECKPOINT_PATH, DialStartSegmenter
 
-    dialstart = DialStartSegmenter(os.environ.get("DIALSTART_CHECKPOINT") or DEFAULT_CHECKPOINT_PATH)
-    if choice == "dialstart":
-        return dialstart
-
-    from dialtreeseg_segmenter import DialTreeSegSegmenter
-
-    return DialTreeSegSegmenter(dialstart)
+    return DialStartSegmenter(os.environ.get("DIALSTART_CHECKPOINT") or DEFAULT_CHECKPOINT_PATH)
 
 
 def get_topic_segmenter(request: Request):
     """Lấy bộ cắt chủ đề dùng chung đã dựng lúc khởi động (``app.state``).
 
     Đầu vào: request - request hiện tại của FastAPI.
-    Đầu ra: ``DialStartSegmenter`` / ``DialTreeSegSegmenter``, hoặc None (dùng TreeSeg) nếu chưa dựng.
+    Đầu ra: ``DialStartSegmenter``, hoặc None (dùng TreeSeg) nếu chưa dựng.
     """
 
     return getattr(request.app.state, "topic_segmenter", None)

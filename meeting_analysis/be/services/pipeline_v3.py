@@ -391,7 +391,6 @@ _FINGERPRINT_SOURCES = (
     "be/schemas.py",
     "configs",
     "experiments/dialstart",
-    "experiments/007_dialtreeseg",
     "experiments/treeseg_turn_level",
 )
 # Biến môi trường quyết định kết quả: tên model, endpoint và cấu hình (không gồm khoá API).

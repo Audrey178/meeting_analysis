@@ -3,13 +3,10 @@
     stage01 resolve_effective_transcript   (dòng thô -> dòng hiệu lực)
     stage02 build_evidence_items           (dòng hiệu lực -> bằng chứng có mã ổn định)
     stage03 build_speaker_turns            (bằng chứng -> lượt nói)
-    cắt chủ đề trên các lượt nói, một trong ba bộ:
-        - DialSTART (experiments/006_dialstart, checkpoint model_vn3/best.pt) nếu
+    cắt chủ đề trên các lượt nói, một trong hai bộ:
+        - DialSTART (experiments/dialstart, checkpoint model_vn3/best.pt) nếu
           ``topic_segmenter`` là ``DialStartSegmenter`` -- mặc định khi chạy API
           (``TOPIC_SEGMENTER=dialstart``)
-        - DialTreeSeg (experiments/007_dialtreeseg) nếu ``topic_segmenter`` là
-          ``DialTreeSegSegmenter`` (``TOPIC_SEGMENTER=dialtreeseg``): phương pháp chọn trong
-          ``experiments/007_dialtreeseg/config.json`` (``backend.method``)
         - TreeSeg (experiments/treeseg_turn_level/treeseg.py) nếu ``topic_segmenter`` là None
     stage07 label_topics                   (đặt tiêu đề + tóm tắt cho từng chủ đề)
     Các agent LangGraph hướng-C (graph.py: Content / Action / Decision /
@@ -59,7 +56,7 @@ _TREESEG_MIN_RELATIVE_GAIN = 0.022
 # Tách thô nếu đoạn vượt quá số ký tự cho phép.
 _TREESEG_MAX_SEGMENT_CHARS = 35000
 
-# Cắt DialSTART (xem ``select_boundaries`` trong experiments/006_dialstart/dialstart_segmenter.py).
+# Cắt DialSTART (xem ``select_boundaries`` trong experiments/dialstart/dialstart_segmenter.py).
 # Checkpoint chỉ được eval với số ranh giới oracle, nên khi chạy thật tự chọn ranh giới:
 #   - làm mượt điểm khe (cửa sổ 5 lúc đo, nay 3): trên 12 cuộc họp Quốc hội có nhãn, bỏ bước này F1
 #     segeval giảm 0.418 -> 0.297 -- tác động lớn nhất;
@@ -310,13 +307,6 @@ def segment_meeting(
             item_chars=item_chars,
         )
         segments = boundaries_to_topic_segments(turns, boundaries)
-    elif topic_segmenter is not None:
-        # DialTreeSeg: tham số cắt nằm trong experiments/007_dialtreeseg/config.json, chỉ cần
-        # adapter embedding (bge) và độ dài từng lượt.
-        boundaries = topic_segmenter.predict_boundaries(
-            texts, embedding_adapter=embedding_adapter, item_chars=item_chars
-        )
-        segments = boundaries_to_topic_segments(turns, boundaries)
     else:
         segments = segment_turns_with_treeseg(
             turns,
@@ -369,18 +359,17 @@ def run_meeting_analysis_pipeline(
 
     Đầu vào:
         payload: transcript dạng dict (``AnalyzeRequest.model_dump()``).
-        embedding_adapter: adapter embedding cho TreeSeg và DialTreeSeg (không dùng với
-            DialSTART).
+        embedding_adapter: adapter embedding cho TreeSeg (không dùng với DialSTART).
         topic_label_adapter: bộ gán nhãn chủ đề (stage07).
         downstream_llm_adapters: bốn LLM cho (content, action, decision, debate_judge).
-        topic_segmenter: ``DialStartSegmenter`` hoặc ``DialTreeSegSegmenter`` đã nạp checkpoint;
+        topic_segmenter: ``DialStartSegmenter`` đã nạp checkpoint;
             None thì dùng TreeSeg.
 
     Đầu ra: dict với ``meeting_id``, ``revision_id``, ``topics`` (Diễn biến họp,
         theo chủ đề), ``verified_assignments`` (Giao việc, phẳng), ``verified_decisions``
         (Kết luận họp, phẳng), ``turns``, ``failed_topics``, ``debate_records``.
 
-    Lỗi: ``LLMUpstreamError`` nếu bước embedding của TreeSeg/DialTreeSeg lỗi (bước duy nhất không có
+    Lỗi: ``LLMUpstreamError`` nếu bước embedding của TreeSeg lỗi (bước duy nhất không có
         dự phòng; stage07 và các agent đã tự xử lý lỗi LLM); ``ValueError`` nếu transcript
         không hợp lệ. Router (``routers/meetings.py``) chuyển hai lỗi này thành mã HTTP.
     """
