@@ -1,814 +1,536 @@
-# DiVA: Cắt chủ đề hội thoại và đa tác tử có kiểm chứng đồng thuận để sinh biên bản họp tiếng Việt
+# DiVA: Sinh biên bản họp hành chính tiếng Việt có căn cứ bằng cắt chủ đề hội thoại và đa tác tử kiểm chứng
 
-**DiVA: Dialogue Segmentation and Verified Agents for Grounded Vietnamese Meeting Minutes**
+**DiVA: Grounded Minutes Generation for Vietnamese Administrative Meetings via Dialogue Segmentation and Verified Agents**
 
-*Bản thảo bài báo. Cập nhật: 12/10/2026.*
+*Bản thảo bài báo nghiên cứu, 10/2026.*
 
 ---
 
 ## Tóm tắt
 
-Biên bản họp hành chính phải nêu đúng **ai được giao việc gì, hạn khi nào, cuộc họp đã kết luận
-gì, và các việc cũ đang tiến triển ra sao**. Sai ở những chi tiết này đắt hơn nhiều so với một câu
-văn kém trôi chảy. Chúng tôi đề xuất **DiVA**, một hệ thống hai tầng sinh biên bản có căn cứ từ bản
-ghi nhận dạng giọng nói (ASR) tiếng Việt.
+Trong cơ quan hành chính, biên bản họp không chỉ là bản tóm tắt. Nó là căn cứ để giao trách nhiệm:
+ai phải làm gì, phối hợp với ai, hạn khi nào, và cuộc họp đã kết luận gì. Ở phiên họp sau, chính biên
+bản này được dùng để kiểm điểm tiến độ. Vì vậy, một hệ thống tự động soạn biên bản phải đúng về
+**trách nhiệm**, không chỉ trôi chảy về câu chữ. Hệ thống không được bịa ra một nhiệm vụ, nhầm đơn vị
+chủ trì, hay ghi một kiến nghị thành kết luận.
 
-- **Tầng một, DialSTART‑VN**: cắt cuộc họp thành các đoạn chủ đề dựa trên độ mạch lạc giữa các lượt
-  nói. Bộ chọn ranh giới mới không cần biết trước số chủ đề và bảo đảm mỗi đoạn vừa ngữ cảnh của LLM.
-- **Tầng hai, đa tác tử**: xử lý mọi chủ đề song song theo kiểu map–reduce. Một **bộ phân loại hành vi
-  lời nói đã hiệu chỉnh xác suất** được dùng ở ba chỗ:
-  1. *cổng* quyết định có chạy agent trích xuất việc giao và kết luận hay không;
-  2. *phân loại sơ bộ* candidate thành chắc chắn và nghi ngờ;
-  3. *kiểm trạng thái* của các việc cần báo cáo tiến độ.
+Chúng tôi phát biểu bài toán *sinh biên bản họp có căn cứ* từ bản ghi giọng nói tiếng Việt, gồm bốn
+phần: diễn biến, giao việc, kết luận, và tiến độ các việc đã giao từ trước. Chúng tôi đề xuất **DiVA**,
+dựa trên hai nguyên tắc: *chỉ tốn chi phí kiểm chứng khi thật sự nghi ngờ*, và *không chắc thì giữ lại
+cho người đọc quyết, không tự xoá*. DiVA gồm ba thành phần:
 
-  Candidate nghi ngờ được một **Verifier ReAct** kiểm. Verifier có công cụ chỉ đọc tra được toàn bộ
-  cuộc họp, rồi trao đổi với agent trích xuất trong một **giao thức đồng thuận** có ngân sách giới hạn
-  và luật kết thúc an toàn.
+1. bộ cắt chủ đề hội thoại dựa trên độ mạch lạc, không cần biết trước số chủ đề;
+2. bộ phân loại hành vi lời nói (giao việc, kết luận, đề xuất…) đã hiệu chỉnh xác suất, dùng để định
+   tuyến;
+3. cơ chế kiểm chứng, trong đó một tác tử tự tìm bằng chứng trong toàn bộ cuộc họp rồi đi tới đồng thuận
+   với tác tử trích xuất.
 
-Về kết quả, bộ chọn ranh giới nâng điểm cắt chủ đề tổng hợp trên gold thật từ 0,392 lên 0,637. Bộ
-phân loại hành vi lời nói đạt F1 0,894 (luật từ khoá: 0,682), ECE 0,040. Dùng nó làm cổng ở ngưỡng
-$p \ge 0{,}2$ không bỏ sót mục gold nào, trong khi luật từ khoá làm mất 3 mục. Trên một cuộc họp có
-danh sách việc, thành phần theo dõi tiến độ khớp 4/4 trạng thái việc qua 4 lần chạy. Hệ thống xử lý
-một cuộc họp 1.259 lượt nói trong khoảng 78 giây. Chúng tôi nêu rõ giới hạn của các bằng chứng này,
-và đề xuất một giao thức đánh giá end‑to‑end.
+Kết quả thực nghiệm:
+
+- Bộ chọn ranh giới chủ đề nâng điểm cắt chủ đề trên dữ liệu thật từ 0,39 lên 0,64.
+- Bộ phân loại hành vi lời nói nhận ra lời giao việc tốt hơn hẳn luật từ khoá (F1 0,89 so với 0,68) và
+  có xác suất được hiệu chỉnh tốt (ECE 0,04). Nhờ vậy chỉ khoảng 20% số lượt nói cần đến bước kiểm chứng
+  đắt tiền.
+- Trên một cuộc họp có danh sách việc, hệ thống xác định đúng trạng thái cả 4 việc.
+
+Chúng tôi thảo luận các giới hạn và đề xuất một giao thức đánh giá end‑to‑end.
 
 ---
 
 ## 1. Giới thiệu
 
-Soạn biên bản cho một phiên họp hành chính mất nhiều giờ. Biên bản thường có bốn phần: diễn biến
-thảo luận theo người phát biểu, các việc được giao, các kết luận, và (ở họp giao ban hay họp kiểm
-điểm) tình hình thực hiện các việc đã giao từ trước. Mô hình ngôn ngữ lớn (LLM) viết tóm tắt trôi
-chảy, nhưng biên bản đòi hỏi **độ chính xác có căn cứ**:
+Họp là phương thức điều hành chủ yếu của các cơ quan hành chính nhà nước Việt Nam. Ví dụ: giao ban
+tuần của UBND, họp chuyên đề về một dự án đầu tư, hay họp Ban Thường vụ. Sau mỗi cuộc họp, bộ phận văn
+phòng soạn biên bản, và thường soạn thêm thông báo kết luận của người chủ trì. Đây là văn bản hành chính
+chính thức theo quy định về công tác văn thư. Văn bản này xác lập *trách nhiệm*: đơn vị nào chủ trì, đơn
+vị nào phối hợp, hạn hoàn thành, và những nội dung đã được thống nhất. Đến kỳ họp sau, danh sách việc
+trong biên bản trở thành chương trình kiểm điểm: từng đơn vị báo cáo việc đã xong, đang làm, hay vướng
+mắc.
 
-- một việc không ai giao mà xuất hiện trong biên bản là lỗi nghiêm trọng;
-- một đề xuất chưa được chấp nhận mà bị ghi thành kết luận cũng vậy;
-- giao nhầm người, hay báo cáo "đã xong" cho một việc thực ra bị yêu cầu làm lại, đều có hậu quả
-  hành chính.
+Hiện nay, biên bản chủ yếu do thư ký ghi tay hoặc nghe lại ghi âm để soạn. Với các cuộc họp dài, nhiều
+nội dung và nhiều đơn vị tham dự, việc này tốn công và dễ sót. Nhận dạng giọng nói tiếng Việt đã đủ tốt
+để tạo bản ghi, và mô hình ngôn ngữ lớn (LLM) viết tóm tắt rất trôi chảy. Tuy nhiên, giữa *một bản tóm
+tắt* và *một biên bản dùng được* có khoảng cách lớn. Lỗi trong biên bản có hậu quả hành chính trực tiếp:
 
-Bản ghi ASR tiếng Việt thực tế làm bài toán khó thêm theo năm hướng:
+- ghi một **đề xuất** của đại biểu thành **chỉ đạo** của người chủ trì;
+- giao việc cho nhầm người, ví dụ "anh Sơn" khi cuộc họp có hai người tên Sơn;
+- nhầm đơn vị chủ trì với đơn vị phối hợp;
+- bỏ sót một lời giao việc nói theo kiểu khẩu ngữ ("anh Phong gửi giúp em trong tuần này được không ạ?");
+- báo cáo một việc "đã xong" trong khi người chủ trì vừa yêu cầu làm lại.
 
-- **(K1) Độ dài và cấu trúc.** Một phiên dài từ 5 nghìn tới 260 nghìn ký tự, gồm nhiều mục nghị sự.
-- **(K2) Khoảng cách giữa dữ liệu huấn luyện và dữ liệu thật.** Bộ cắt chủ đề học trên hội thoại tổng
-  hợp, nhưng phải chạy trên cuộc họp thật: cùng một dự án, cùng từ vựng, cùng người nói.
-- **(K3) Định danh tác nhân.** Ví dụ: "anh Sơn" khi cuộc họp có hai người tên Sơn; việc giao cho đơn
-  vị ("Sở Tài chính chủ trì, phối hợp Sở Xây dựng"); đại từ "em", "bên em".
-- **(K4) Hành vi lời nói mơ hồ.** Lời giao việc thường ở dạng khẩu ngữ hoặc câu hỏi ("anh Phong gửi
-  giúp em trong tuần này được không ạ?"). "Đề nghị" của chủ trì là chỉ đạo, còn của đại biểu chỉ là
-  kiến nghị.
-- **(K5) Nhãn người nói không tin cậy.** Bộ phân tách người nói (diarization) có thể gộp người trình
-  bày và người chủ trì vào cùng một nhãn.
+Do đó, người dùng cần kiểm tra được từng mục: mục này dựa vào câu nói nào, của ai, ở thời điểm nào.
 
-Một hướng làm đơn giản là gọi một LLM trên từng chủ đề rồi tin kết quả. Cách này không kiểm soát được
-lỗi bịa (K4) và lỗi định danh (K3). Ngược lại, kiểm chứng mọi mục bằng tranh luận đa tác tử lại tốn
-chi phí tuyến tính theo số mục, và chỉ thấy được đoạn hiện tại. Trong khi đó, lượt chốt có thể nằm ở
-một chủ đề khác.
+**Vì sao bài toán khó.** Có bốn lý do:
 
-**Ý tưởng chính** của DiVA là **kiểm chứng chọn lọc theo tầng**. Chi phí tăng theo mức độ nghi ngờ:
+1. *Độ dài.* Một phiên họp có thể dài hàng trăm nghìn ký tự, gồm nhiều mục nghị sự đan xen.
+2. *Ngữ dụng.* Cùng một câu "đề nghị Sở Xây dựng rà soát lại" là chỉ đạo khi người chủ trì nói, nhưng
+   chỉ là kiến nghị khi đại biểu nói. Lời giao việc thường không có từ khoá rõ ràng.
+3. *Định danh trách nhiệm.* Việc thường giao cho *đơn vị* chứ không cho cá nhân, có nhiều bên với vai
+   trò khác nhau, và cách gọi trong bản ghi rất lỏng ("bên em", "anh Sơn", "UBND TP").
+4. *Dữ liệu.* Gần như chưa có dữ liệu tiếng Việt có nhãn cho bài toán này. Dữ liệu tổng hợp thì khác xa
+   cuộc họp thật, và bộ tách người nói có thể gộp nhiều người vào một nhãn.
 
-1. luật tất định, 0 token;
-2. bộ phân loại hành vi lời nói đã hiệu chỉnh, khoảng 0,3 s mỗi lượt;
-3. Verifier ReAct có công cụ, cộng giao thức đồng thuận, chỉ dành cho phần thật sự mơ hồ.
+**Hạn chế của các cách làm hiện có.** Cách đơn giản nhất là gọi một LLM trên toàn bản ghi hoặc trên
+từng đoạn, rồi tin kết quả. Cách này không kiểm soát được lỗi bịa và lỗi gán trách nhiệm. Cách ngược lại
+là cho nhiều tác tử tranh luận về mọi mục. Chi phí khi đó tăng theo số mục, và mỗi cuộc tranh luận chỉ
+nhìn thấy đoạn hiện tại, trong khi lời chốt có thể nằm ở phần khác của cuộc họp.
 
-Cũng bộ phân loại ở tầng 2 được dùng *trước* khi trích xuất, như một cổng để bỏ các agent không cần
-thiết.
+**Cách tiếp cận của chúng tôi.** DiVA coi việc soạn biên bản là một bài toán *trích xuất có căn cứ* và
+tổ chức việc kiểm chứng theo *mức độ nghi ngờ*:
 
-**Đóng góp** của bài báo:
+- Cuộc họp được cắt thành các chủ đề, và các chủ đề được xử lý song song.
+- Mỗi mục trích ra phải chỉ được câu nói làm căn cứ.
+- Một bộ phân loại hành vi lời nói rẻ và đã hiệu chỉnh quyết định mục nào chắc chắn, mục nào mơ hồ.
+- Chỉ các mục mơ hồ mới được chuyển cho một tác tử kiểm chứng. Tác tử này tự tra cứu toàn bộ cuộc họp
+  và tranh luận có giới hạn với tác tử đã trích ra mục đó.
+- Khi hai bên vẫn không thống nhất, hoặc hệ thống gặp lỗi, mục được giữ lại kèm dấu hiệu để người đọc
+  quyết định, thay vì bị xoá.
 
-1. **DialSTART‑VN** (Mục 4.2). Chúng tôi huấn luyện mô hình mạch lạc lượt‑cặp trên backbone tiếng
-   Việt, tăng tốc suy luận khoảng $2w$ lần, và đề xuất bộ chọn ranh giới không cần oracle với ràng buộc
-   ký tự tỉ lệ theo độ dài cuộc họp.
-2. **Kiến trúc map–reduce cho phân tích biên bản** (Mục 4.3). Ngữ cảnh chạy dồn giữa các chủ đề được
-   thay bằng một danh bạ người nói dựng một lần, nên các chủ đề độc lập với nhau và độ trễ không còn
-   tăng tuyến tính theo số chủ đề.
-3. **Một bộ phân loại, ba vai trò** (Mục 4.4–4.5). Bộ phân loại hành vi lời nói đã hiệu chỉnh xác suất
-   vừa là cổng chọn agent, vừa phân loại sơ bộ candidate, vừa (với bộ câu hỏi riêng) kiểm trạng thái
-   tiến độ. Ngưỡng ba vùng được chọn dựa trên độ hiệu chỉnh xác suất.
-4. **Giao thức đồng thuận Verifier ⇄ Proposer** (Mục 4.6). Giao thức có ba lập trường (accept / amend
-   / defend). Thứ tự trường JSON được dùng như một ràng buộc suy luận "bằng chứng trước, kết luận sau",
-   và bảng kết thúc bảo đảm lỗi hạ tầng không xoá nội dung đã trích.
-5. **Theo dõi tiến độ theo danh sách việc** (Mục 4.8). Thành phần này trích trạng thái từng việc cũ,
-   kiểm bằng câu hỏi tuỳ theo kiểu việc, gộp theo việc (lời chỉ đạo thắng lời báo cáo), và xác định
-   quan hệ của việc giao mới với việc cũ: *tiếp nối / giao lại / đổi hạn / mới*.
+**Đóng góp.**
 
----
-
-## 2. Công trình liên quan
-
-**Cắt chủ đề hội thoại.** TextTiling (Hearst, 1997) đặt nền cho *depth score* trên chuỗi độ tương
-đồng giữa hai cửa sổ. TreeSeg (Gklezakos et al., 2024) phân cụm chia dần trên embedding. Xing &
-Carenini (2021) chấm điểm mạch lạc lượt‑cặp bằng đầu NSP của BERT. DialSTART (Gao et al., 2023) bổ
-sung biểu diễn chủ đề học bằng đối sánh tương phản trên phân đoạn giả. Các hướng dùng LLM, như phân
-loại ý định từng lượt (Def‑DTS) hay sinh mục lục nhiều tầng, cho thấy zero‑shot còn cách xa bản
-fine‑tune. "When F1 Fails" chỉ ra rằng chọn ngưỡng (độ mịn) ảnh hưởng tới điểm nhiều hơn chọn phương
-pháp. Đây là động lực để chúng tôi đầu tư vào bộ chọn ranh giới thay vì dùng số ranh giới oracle.
-
-**Trích xuất từ cuộc họp.** Nghiên cứu trên AMI và ICSI (Carletta et al., 2005; Janin et al., 2003)
-về phát hiện action item (Purver et al., 2007) và tóm tắt hướng truy vấn (QMSum; Zhong et al., 2021)
-chủ yếu dùng tiếng Anh. Các nghiên cứu này không đòi hỏi trích dẫn tới từng lượt nói, không định danh
-đơn vị và không theo dõi tiến độ việc cũ.
-
-**Tác tử LLM và tự kiểm chứng.** ReAct (Yao et al., 2023) xen kẽ suy nghĩ và hành động công cụ.
-Plan‑and‑Solve (Wang et al., 2023) tách bước lập kế hoạch khỏi bước thực thi. Tranh luận đa tác tử
-(Du et al., 2023; Liang et al., 2023), Self‑Refine (Madaan et al., 2023) và CRITIC (Gou et al., 2024)
-dùng phản hồi để sửa đầu ra. DiVA khác các hướng trên ở ba điểm:
-
-- kiểm chứng là **chọn lọc** và có **phân loại sơ bộ đã hiệu chỉnh**, thay vì áp cho mọi đầu ra;
-- mọi lượt trao đổi phải neo vào một `turn_id` có thật và qua **luật hậu kiểm tất định**;
-- giao thức có **ngân sách cứng** và quy tắc kết thúc thiên về giữ nội dung.
-
-**Phân loại có hiệu chỉnh để định tuyến.** Dùng xác suất đã hiệu chỉnh để quyết định khi nào chuyển
-sang mô hình đắt hơn là ý tưởng quen thuộc trong cascade và selective prediction (Geifman &
-El‑Yaniv, 2017; Chen et al., 2023, FrugalGPT). Chúng tôi áp dụng ý tưởng này cho định tuyến *giữa các
-agent* trong một pipeline trích xuất có căn cứ.
+1. **Phát biểu bài toán** sinh biên bản họp hành chính có căn cứ, gồm bốn đầu ra (diễn biến, giao việc,
+   kết luận, tiến độ việc cũ), cùng các yêu cầu nghiệp vụ: trích dẫn được, định danh người/đơn vị và vai
+   trò, chuẩn hoá hạn chót, phân biệt chỉ đạo với kiến nghị.
+2. **DiVA**, một kiến trúc *kiểm chứng chọn lọc*. Trong đó, một bộ phân loại hành vi lời nói đã hiệu
+   chỉnh vừa quyết định có cần trích xuất hay không, vừa định tuyến mục nghi ngờ sang một cơ chế đồng
+   thuận giữa tác tử trích xuất và tác tử kiểm chứng có công cụ tra cứu.
+3. **Phương pháp cắt chủ đề** cho cuộc họp tiếng Việt, không cần biết trước số chủ đề, và giữ mỗi đoạn
+   trong giới hạn xử lý của LLM.
+4. **Phân tích thực nghiệm** trên dữ liệu thật và dữ liệu tổng hợp. Phân tích này cho thấy khoảng cách
+   giữa hai loại dữ liệu, giá trị của việc hiệu chỉnh xác suất khi định tuyến, và những điểm mà LLM lẫn
+   bộ phân loại còn sai trong theo dõi tiến độ.
 
 ---
 
-## 3. Định nghĩa bài toán
+## 2. Bài toán
 
-**Đầu vào.** Bản ghi gồm các lượt nói $\mathcal{T} = (u_1,\dots,u_n)$, mỗi lượt
-$u_i = (\iota_i, s_i, x_i)$ gồm mã lượt, nhãn người nói và nội dung. Siêu dữ liệu tuỳ chọn gồm:
+### 2.1. Biên bản họp hành chính cần gì
 
-- ngày họp $\delta$ và người chủ trì $c$;
-- danh sách tham dự $\mathcal{R}$: người (họ tên, chức vị, đơn vị) và đơn vị (tên, tên gọi tắt,
-  chức năng);
-- danh sách việc cần báo cáo $\mathcal{G} = \{g_j\}$, với
-  $g_j = (\text{id}, \text{tiêu đề}, \text{chủ trì}, \text{phối hợp}, \text{hạn}, \sigma^0_j)$ và
-  $\sigma^0_j \in \{\text{not\_started}, \text{in\_progress}, \text{done}, \text{blocked}\}$.
+Chúng tôi xác định yêu cầu từ quy trình soạn biên bản của bộ phận văn phòng và từ các biên bản thật mà
+nhóm thu thập được.
 
-**Cắt chủ đề.** Tìm ranh giới $B = \{b_1 < \dots < b_{K-1}\}$ để tạo $K$ đoạn liền mạch
-$S_1,\dots,S_K$, sao cho mỗi đoạn có $|S_k|_{\text{char}} \le L_{\max}$. Điều kiện này chỉ được nới khi
-một lượt đơn lẻ đã dài hơn $L_{\max}$.
+| Phần | Nội dung | Yêu cầu nghiệp vụ |
+|---|---|---|
+| Diễn biến họp | Ý kiến chính của từng người phát biểu theo từng nội dung | Đúng người, không gán ý của người này cho người khác |
+| Giao việc | Ai làm gì, chủ trì/phối hợp, hạn khi nào | Chỉ ghi khi có người có thẩm quyền giao hoặc có người nhận; đúng người/đơn vị; hạn quy được về ngày |
+| Kết luận | Nội dung đã được chốt, thống nhất | Phân biệt kết luận với đề xuất chưa được chấp nhận |
+| Tiến độ | Tình trạng các việc đã giao từ trước | Không bỏ việc nào; biết việc nào chưa được báo cáo, quá hạn, bị yêu cầu làm lại |
 
-**Đầu ra.** Gồm bốn phần:
+Cả bốn phần có chung một yêu cầu: **truy vết được**. Mỗi mục phải chỉ ra được câu nói làm căn cứ, để
+người duyệt kiểm tra trong vài giây thay vì nghe lại cả cuộc họp.
 
-- **Diễn biến** $\mathcal{D}$: các luận điểm $(k, s, \text{text}, E)$, với $E \subseteq \text{ids}(S_k)$.
-- **Giao việc** $\mathcal{A}$: các bộ
-  $(\text{text}, \text{actor}, \tau, \text{assignees}, \text{deadline}, d^\*, \kappa, E, t^\*, \text{task\_id}, \rho)$. Trong đó:
-  - $\tau \in \{\text{person}, \text{organization}, \text{unknown}\}$ là loại tác nhân;
-  - assignees là các bên nhận việc kèm vai trò (chủ trì / phối hợp / cùng thực hiện);
-  - $d^\*$ là ngày chuẩn hoá và $\kappa$ là kiểu hạn
-    ($\kappa \in \{\text{exact}, \text{before}, \text{end\_of\_period}, \text{relative}, \text{unknown}\}$);
-  - $t^\*$ là lượt giao hoặc nhận việc;
-  - $\rho \in \{\text{new}, \text{follow\_up}, \text{reassign}, \text{reschedule}\}$ là quan hệ với việc cũ.
-- **Kết luận** $\mathcal{C}$: các bộ $(\text{text}, E, t^\*)$, với $t^\*$ là lượt chốt.
-- **Tiến độ** $\mathcal{P}$ (khi có $\mathcal{G}$): mỗi việc $g_j$ có trạng thái mới
-  $\sigma_j \in \Sigma \cup \{\text{not\_reported}\}$, với
-  $\Sigma = \{\text{done}, \text{in\_progress}, \text{blocked}, \text{returned}, \text{deferred}, \text{mentioned}\}$,
-  kèm hạn mới, cờ mâu thuẫn, cờ quá hạn và các cập nhật có bằng chứng.
+### 2.2. Phát biểu hình thức
 
-**Ràng buộc căn cứ.**
+Đầu vào là bản ghi gồm các lượt nói $\mathcal T=(u_1,\dots,u_n)$, mỗi lượt có người nói và nội dung. Kèm
+theo có thể có một số thông tin của phiên họp:
 
-- (i) Mọi $E$ chỉ chứa mã lượt thật.
-- (ii) Câu trích chỉ được giữ nếu là chuỗi con của lượt nói.
-- (iii) Một việc giao hoặc kết luận đã qua kiểm chứng phải có $t^\*$ thuộc cuộc họp. $t^\*$ có thể nằm
-  ở chủ đề khác.
-- (iv) Không việc nào trong $\mathcal{G}$ bị xoá khỏi đầu ra.
+- ngày họp và người chủ trì;
+- danh sách người/đơn vị tham dự;
+- danh sách việc cần báo cáo $\mathcal G$, mỗi việc có đơn vị chủ trì, hạn và trạng thái trước phiên họp.
+
+Đầu ra gồm bốn tập:
+
+- **Diễn biến** $\mathcal D$: các luận điểm $(\text{người nói}, \text{nội dung}, E)$.
+- **Giao việc** $\mathcal A$: các mục $(\text{nội dung}, \text{các bên nhận việc kèm vai trò}, \text{hạn}, E, t^\*)$.
+- **Kết luận** $\mathcal C$: các mục $(\text{nội dung}, E, t^\*)$.
+- **Tiến độ** $\mathcal P$: mỗi việc $g\in\mathcal G$ có trạng thái mới, thuộc tập
+  {xong, đang làm, vướng mắc, phải làm lại, hoãn, chỉ được nhắc, không được báo cáo}, kèm bằng chứng.
+
+Ở đây $E$ là tập lượt nói làm bằng chứng. $t^\*$ là *lượt quyết định*: lượt giao/nhận việc, hoặc lượt
+chốt. Ràng buộc căn cứ gồm ba điều:
+
+- mọi bằng chứng là lượt nói thật;
+- mọi việc giao và kết luận sau kiểm chứng phải có lượt quyết định (lượt này có thể nằm ở phần khác của
+  cuộc họp);
+- không việc nào trong $\mathcal G$ bị bỏ khỏi đầu ra.
+
+### 2.3. Thách thức
+
+- **T1. Ngữ cảnh dài.** Một cuộc họp không vừa một lần xử lý, nên phải cắt thành chủ đề. Nhưng lời giao
+  việc ở chủ đề này có thể được chốt ở chủ đề khác.
+- **T2. Hành vi lời nói.** Giao việc, kết luận, đề xuất và báo cáo phân biệt với nhau theo *nghĩa* và
+  theo *vai người nói*, không theo từ khoá.
+- **T3. Trách nhiệm.** Người nhận việc có thể là cá nhân hoặc đơn vị, có nhiều bên với vai trò khác
+  nhau, và cách gọi không chuẩn.
+- **T4. Chi phí và độ tin cậy.** Kiểm chứng mọi mục bằng LLM là quá đắt. Không kiểm chứng thì lỗi bịa
+  lọt ra ngoài.
+- **T5. Dữ liệu ít và lệch.** Dữ liệu có nhãn rất ít, dữ liệu tổng hợp khác dữ liệu thật, và nhãn người
+  nói không tin cậy.
 
 ---
 
-## 4. Phương pháp
+## 3. Công trình liên quan
+
+**Tóm tắt và trích xuất từ cuộc họp.** Các nghiên cứu trên kho AMI và ICSI (Carletta et al., 2005;
+Janin et al., 2003) bao gồm phát hiện việc cần làm (Purver et al., 2007) và tóm tắt theo truy vấn
+(QMSum; Zhong et al., 2021). Các nghiên cứu này chủ yếu cho tiếng Anh và cho bối cảnh doanh nghiệp. Chúng
+ít đòi hỏi trích dẫn tới từng câu, không định danh đơn vị, và không theo dõi tiến độ việc qua các phiên.
+
+**Cắt chủ đề hội thoại.** Các phương pháp đi từ đo độ tương đồng giữa hai cửa sổ (TextTiling; Hearst,
+1997) và phân cụm trên embedding (TreeSeg; Gklezakos et al., 2024), tới chấm điểm mạch lạc giữa các lượt
+nói (Xing & Carenini, 2021; DialSTART, Gao et al., 2023). Các nghiên cứu gần đây cho thấy chọn độ mịn
+khi cắt ảnh hưởng tới kết quả nhiều không kém chọn phương pháp. Đây là điểm chúng tôi tập trung xử lý.
+
+**Tác tử LLM và tự kiểm chứng.** ReAct (Yao et al., 2023) cho mô hình xen kẽ suy luận và tra cứu. Tranh
+luận đa tác tử (Du et al., 2023; Liang et al., 2023) và tự sửa lỗi (Madaan et al., 2023; Gou et al.,
+2024) dùng phản hồi để cải thiện đầu ra. Các hướng định tuyến theo độ tin cậy (Geifman & El‑Yaniv,
+2017; Chen et al., 2023) chỉ chuyển sang mô hình đắt hơn khi cần. DiVA kết hợp hai hướng này: định tuyến
+bằng bộ phân loại đã hiệu chỉnh, và tranh luận *có neo bằng chứng, có ngân sách, có quy tắc an toàn*,
+chỉ dành cho phần mơ hồ.
+
+---
+
+## 4. Phương pháp DiVA
 
 ### 4.1. Tổng quan
 
 ```mermaid
 flowchart LR
-  A[Bản ghi ASR] --> B[Tiền xử lý<br/>dòng hiệu lực → bằng chứng → lượt nói]
-  B --> C[DialSTART‑VN<br/>điểm khe → làm mượt → depth → chọn ranh giới]
-  C --> D[Planner<br/>danh bạ người nói + người chủ trì + danh sách việc]
-  D -->|Send × K, song song| T1[Subgraph chủ đề 1]
-  D --> T2[Subgraph chủ đề 2]
-  D --> TK[Subgraph chủ đề K]
-  T1 & T2 & TK --> F[Tổng hợp<br/>sắp thứ tự · định danh · gộp trùng · quan hệ việc · tiến độ theo việc]
-  F --> R[Biên bản + bản ghi kiểm chứng]
+  A[Bản ghi giọng nói] --> B[Cắt chủ đề]
+  B --> C1[Chủ đề 1] & C2[Chủ đề 2] & C3[Chủ đề K]
+  subgraph "Xử lý song song từng chủ đề"
+    C1 --> E[Trích xuất<br/>diễn biến · giao việc · kết luận · tiến độ]
+    E --> F{Phân loại sơ bộ<br/>theo hành vi lời nói}
+    F -->|chắc chắn| O[Kết quả]
+    F -->|mơ hồ| V[Kiểm chứng có tra cứu<br/>+ đồng thuận]
+    V --> O
+  end
+  O --> R[Biên bản + vết kiểm chứng]
 ```
 
-Mỗi subgraph chủ đề chạy như sau:
+DiVA dựa trên ba nguyên tắc thiết kế:
 
-```mermaid
-flowchart TB
-  S((chủ đề k)) --> L[Gán nhãn chủ đề]
-  S --> G{Cổng hành vi lời nói<br/>∃ lượt: p_commit ≥ 0,2 ?}
-  L --> X[ ]:::j
-  G --> X
-  X --> CA[Content agent]
-  X -->|cổng mở| AA[Action agent]
-  X -->|cổng mở| DA[Decision agent]
-  X -->|có danh sách việc| PA[Progress agent]
-  CA & AA & DA & PA --> EC[Evidence‑check<br/>luật + phân loại lượt chốt + kiểm tiến độ]
-  EC -->|CLEAR| O[kết quả]
-  EC -->|UNCERTAIN · Send mỗi candidate| V[Verifier ReAct ⇄ Proposer]
-  V --> O
-  classDef j fill:none,stroke:none
-```
+- **(P1) Căn cứ trước, nội dung sau.** Mọi tác tử phải chỉ ra lượt nói làm căn cứ trước khi viết nội
+  dung hay đưa ra kết luận.
+- **(P2) Chi phí tỉ lệ với mức nghi ngờ.** Kiểm tra rẻ chạy cho mọi mục; kiểm chứng đắt chỉ chạy cho mục
+  mơ hồ.
+- **(P3) An toàn khi không chắc.** Lỗi hệ thống hay bất đồng không giải quyết được thì *giữ* mục kèm dấu
+  hiệu cho người duyệt, không tự xoá.
 
-**Tiền xử lý.** Hệ thống áp bản sửa của người duyệt lên ASR, rồi "đóng băng" từng dòng thành bằng chứng
-có mã ổn định. Các dòng liên tiếp được gộp thận trọng thành lượt nói: chỉ gộp khi cùng người nói đã xác
-định, cùng vai trò, và cách nhau không quá 5 s. Lượt nói là đơn vị nhỏ nhất cho cả cắt chủ đề lẫn trích
-dẫn.
+### 4.2. Cắt chủ đề dựa trên mạch lạc
 
-### 4.2. DialSTART‑VN: cắt chủ đề dựa trên mạch lạc
-
-**Mô hình.** Mô hình có hai bộ mã hoá, cùng khởi tạo từ `NlpHUST/vibert4news-base-cased`:
-
-- nhánh chủ đề $f_\theta$: lấy pooled output của mỗi lượt làm embedding chủ đề $\mathbf{e}_i$;
-- nhánh mạch lạc $g_\phi$: BERT có đầu NSP, trả logit "liền mạch" $\ell$ cho cặp (ngữ cảnh trái, lượt
-  kế tiếp).
-
-Với khe $g$ giữa $u_g$ và $u_{g+1}$, cửa sổ $w=2$:
+Chúng tôi huấn luyện lại mô hình DialSTART cho tiếng Việt. Với mỗi khe giữa hai lượt nói liên tiếp, mô
+hình cho một điểm liền mạch kết hợp hai tín hiệu: lượt sau có *nối tiếp* được lượt trước không, và hai
+cửa sổ hai bên có *cùng chủ đề* không:
 
 $$
-\text{score}(g)=\sigma\!\Big(\ell\big([x_{g-w+1..g}]_{\texttt{[SEP]}},\,x_{g+1}\big)+\cos\big(\bar{\mathbf e}_{g-w+1..g},\,\bar{\mathbf e}_{g+1..g+w}\big)\Big)
+\text{score}(g)=\sigma\big(\text{coh}(u_{\le g},u_{g+1})+\cos(\bar{\mathbf e}_{\text{trái}},\bar{\mathbf e}_{\text{phải}})\big).
 $$
 
-Điểm thấp nghĩa là khe dễ là ranh giới.
+Khe có điểm "lõm" sâu so với hai đỉnh lân cận là ứng viên ranh giới.
 
-**Huấn luyện** theo DialSTART trên hội thoại tiếng Việt tổng hợp:
+Mô hình gốc được đánh giá với *số chủ đề đã biết trước*. Khi chạy thật thì không có số này. Chúng tôi đề
+xuất một bộ chọn ranh giới gồm bốn bước:
 
-$$
-\mathcal L=\max\big(0,\,m-(s^{+}-s^{-})\big)+\mathcal L_{\text{topic}},\qquad s^{\pm}=\ell^{\pm}+\cos^{\pm},\ m=1
-$$
+1. làm mượt điểm để bỏ các chỗ lõm giả do câu xen ngang ("Vâng", "Mời anh…");
+2. giữ các khe sâu hơn một ngưỡng thích nghi theo phân bố điểm của chính cuộc họp đó;
+3. bỏ các đoạn quá ngắn, với độ dài tối thiểu tỉ lệ theo độ dài cuộc họp;
+4. tách các đoạn vượt giới hạn xử lý của LLM.
 
-$\mathcal L_{\text{topic}}$ là margin tương phản trên **phân đoạn giả**. Cách dựng: tính depth trên độ
-tương đồng chủ đề và lấy 5 khe sâu nhất làm ranh giới giả. Với mỗi lượt neo, các lượt cùng đoạn giả là
-dương, các lượt ngoài đoạn là âm.
+Nhờ vậy, cùng một cấu hình chạy được cho cả cuộc họp 5 nghìn ký tự lẫn 260 nghìn ký tự.
 
-**Suy luận hiệu quả và trung thành với lúc huấn luyện.**
+### 4.3. Xử lý song song với ngữ cảnh toàn cuộc họp
 
-- *Mã hoá đúng như lúc huấn luyện.* Bộ đánh giá gốc cắt mỗi lượt còn 128 ký tự, trong khi khoảng 1/3
-  số lượt trong cuộc họp thật dài hơn thế. Chúng tôi giữ cả lượt (tối đa 256 token) cho nhánh chủ đề,
-  và giữ 256 token *cuối* của ngữ cảnh trái cho NSP.
-- *Mã hoá mỗi lượt một lần.* Pooled output không phụ thuộc padding, nên mỗi lượt chỉ cần mã hoá một lần.
-  Trung bình cửa sổ được tính bằng tổng tích luỹ $\mathbf P_j=\sum_{i<j}\mathbf e_i$, mỗi khe $O(1)$,
-  nhanh hơn khoảng $2w$ lần so với mã hoá lại từng cửa sổ.
-- *Gom batch theo độ dài*, với trần (số câu × độ dài lớn nhất) $\le 4096$ token.
+Nếu xử lý chủ đề tuần tự để mang thông tin người nói từ chủ đề trước sang chủ đề sau, thời gian sẽ tăng
+tuyến tính theo số chủ đề. DiVA dựng *một lần* cho cả cuộc họp một **danh bạ** gồm người nói, người chủ
+trì, người/đơn vị tham dự và danh sách việc. Sau đó mọi chủ đề được xử lý song song và độc lập.
 
-**Bộ chọn ranh giới không cần oracle.** Bộ đánh giá gốc chọn đúng $K^\*-1$ khe sâu nhất, với $K^\*$ là
-số chủ đề thật, nên không dùng được khi triển khai. Chúng tôi làm như sau. Trước hết làm mượt điểm
-khe bằng trung bình trượt cửa sổ 3, rồi tính depth kiểu TextTiling:
+Mỗi chủ đề có các tác tử trích xuất riêng: diễn biến, giao việc, kết luận, và tiến độ (khi có danh sách
+việc). Prompt của các tác tử mã hoá quy tắc nghiệp vụ. Hai quy tắc tiêu biểu:
 
-$$
-\text{depth}(g)=\tfrac12\big(\text{peak}_L(g)+\text{peak}_R(g)-2\,\text{score}(g)\big).
-$$
+- *"Đề nghị/yêu cầu + người/đơn vị + việc" do người chủ trì nói là giao việc, kể cả khi không có chữ
+  "giao".*
+- *Chỉ khai một mục là "đề xuất" khi không chắc chắn.*
 
-Sau đó áp Thuật toán 1.
+Kết quả cuối được ghép lại theo thứ tự chủ đề, và các mục trùng giữa các chủ đề được gộp lại.
 
-```
-Thuật toán 1: SELECT‑BOUNDARIES(depth, chars, emb)
-  τ ← mean(depth) + α·std(depth)                           ▷ α = 1,0
-  E ← {0, n}
-  for g theo depth giảm dần, while depth[g] > τ:               ▷ (a) ngưỡng
-      if cả hai phía của g+1 có ≥ m_min lượt: thêm g+1 vào E    ▷ m_min = 4
-  while đoạn ngắn nhất < C_min ký tự:                       ▷ (b) bỏ đoạn vụn
-      xoá trong hai mép của đoạn đó mép có depth thấp hơn
-  [tuỳ chọn] gộp cặp đoạn kề có cos(emb trung bình) ≥ β nếu đoạn gộp ≤ L_max   ▷ (c)
-  for mỗi đoạn có ký tự > L_max:                            ▷ (d) ràng buộc cứng
-      tách tại khe depth cao nhất bên trong (ưu tiên khe giữ ≥ m_min lượt mỗi bên), lặp
-  return E \ {0, n}
-```
+### 4.4. Định tuyến theo hành vi lời nói đã hiệu chỉnh
 
-Sàn ký tự tỉ lệ theo độ dài cuộc họp:
-$C_{\min}=\operatorname{clip}\!\big(\lfloor\textstyle\sum_i|u_i|/15\rfloor,\,1500,\,10000\big)$, với
-$L_{\max}=35.000$. Văn bản đưa vào mô hình *không* kèm tên người nói, giống dữ liệu huấn luyện. Còn độ
-dài dùng cho các ràng buộc được đo trên dòng "người nói: nội dung", chính là chuỗi sẽ vào prompt phía
-sau.
-
-### 4.3. Planner và xử lý song song theo chủ đề
-
-**Danh bạ người nói** $\mathcal S$ được dựng *một lần* cho cả cuộc họp (0 token). Danh bạ gồm:
-
-- tên người nói không trùng, theo thứ tự xuất hiện;
-- người chủ trì $c$, được quy về đúng nhãn người nói nếu khớp duy nhất một người;
-- danh sách tham dự $\mathcal R$ và danh sách việc $\mathcal G$.
-
-Ở hệ thống trước (v1), ngữ cảnh tên người được chuyển dồn từ chủ đề này sang chủ đề sau, nên các chủ
-đề phải chạy tuần tự. $\mathcal S$ thay ngữ cảnh đó: mọi chủ đề đọc cùng một danh bạ, kể cả tên người
-chỉ xuất hiện ở chủ đề sau, và tên do agent tự gán (có thể sai) không lan sang chủ đề khác.
-
-**Map–reduce.** Graph cha phát một gói `Send` cho *mọi* chủ đề cùng lúc. Mỗi gói mang theo các lượt của
-chủ đề, toàn bộ lượt của cuộc họp (dùng cho công cụ của Verifier) và $\mathcal S$. Trong mỗi subgraph,
-gán nhãn chủ đề chạy song song với cổng hành vi lời nói (Mục 4.4). Các nhánh trích xuất nối thẳng vào
-bước evidence‑check. Mọi nhánh cách điểm phân nhánh đúng một bước, nên kết quả của chúng được ghi trong
-cùng một *superstep*, và evidence‑check chạy đúng một lần dù số nhánh thay đổi. Kết quả các chủ đề được
-cộng dồn bằng reducer. Bước tổng hợp sắp lại theo thứ tự chủ đề (thứ tự hoàn thành là ngẫu nhiên) và
-gộp các mục trùng giữa các chủ đề.
-
-**Giới hạn tài nguyên.** Một semaphore dùng chung cả tiến trình bọc mọi adapter LLM, nên số lời gọi
-đồng thời luôn bị chặn bất kể có bao nhiêu chủ đề.
-
-### 4.4. Bộ phân loại hành vi lời nói và cổng chọn agent
-
-**Bộ phân loại.** Đầu vào của $h$ là lượt cần xét kèm 2 lượt ngữ cảnh đứng trước. Lượt dài hơn 2.500 ký
-tự được cắt theo câu thành nhiều cửa sổ. Đầu ra là phân bố trên
-$\mathcal Y=\{\text{giao\_việc}, \text{kết\_luận}, \text{đề\_xuất}, \text{bác\_bỏ}, \text{thảo\_luận}, \text{khác}\}$.
-Hướng dẫn của bộ phân loại yêu cầu xét *theo nghĩa*: khẩu ngữ ("nhá", "cứ làm đi") vẫn có thể là
-giao/chốt, và "đề nghị" của chủ trì khác "đề nghị" của đại biểu. Xác suất chốt được định nghĩa là
+Chúng tôi dùng một bộ phân loại $h$ gán cho mỗi lượt nói (kèm 2 lượt ngữ cảnh) một phân bố trên sáu hành
+vi: *giao việc, kết luận, đề xuất, bác bỏ, thảo luận, khác*. Bộ phân loại được hướng dẫn xét theo nghĩa
+và theo vai người nói. Xác suất "chốt" là
 
 $$
-p_{\text{commit}}(u)=h(\text{giao\_việc}\mid u)+h(\text{kết\_luận}\mid u).
+p_{\text{chốt}}(u)=h(\text{giao việc}\mid u)+h(\text{kết luận}\mid u).
 $$
 
-Hai ngưỡng $\tau_{\text{rej}}=0{,}2$ và $\tau_{\text{acc}}=0{,}8$ chia trục xác suất thành ba vùng: *rõ là
-không*, *mơ hồ* và *rõ là có*. Hai ngưỡng này được chọn trên tập hiệu chỉnh: ở vùng
-$p<0{,}2$ chỉ 4% lượt là lượt chốt thật, ở vùng $p\ge 0{,}8$ có 92% (Mục 6.2).
+Vì xác suất này được hiệu chỉnh tốt (Mục 6.2), hai ngưỡng $\tau_{\text{thấp}}=0{,}2$ và
+$\tau_{\text{cao}}=0{,}8$ chia lượt nói thành ba vùng có ý nghĩa nghiệp vụ: *rõ là không chốt*, *mơ hồ*,
+và *rõ là chốt*. Bộ phân loại được dùng ở hai chỗ:
 
-**Cổng chọn agent.** Action agent và Decision agent chỉ chạy trên chủ đề $S_k$ khi
+- **Cổng trích xuất.** Tác tử giao việc và tác tử kết luận chỉ chạy trên chủ đề có ít nhất một lượt nói
+  với $p_{\text{chốt}}\ge\tau_{\text{thấp}}$. Ngưỡng thấp được chọn có chủ đích: chạy thừa chỉ tốn chi
+  phí, còn bỏ nhầm thì mất nội dung.
+- **Phân loại sơ bộ.** Với mỗi mục giao việc hoặc kết luận, lượt quyết định mà tác tử khai được đưa qua
+  $h$:
+  - vùng *rõ là chốt*: mục được chấp nhận ngay, nếu các kiểm tra luật khác cũng đạt (người nhận việc có
+    thật, không mơ hồ giữa nhiều người);
+  - vùng *mơ hồ* hoặc *rõ là không*: mục được chuyển sang kiểm chứng.
 
-$$
-\exists\, u \in S_k,\ \exists\,\text{cửa sổ } \omega \text{ của } u:\ p_{\text{commit}}(\omega) \ge \tau_{\text{rej}}.
-$$
+### 4.5. Kiểm chứng có tra cứu và đồng thuận
 
-Cổng duyệt các lượt **từ cuối lên**, vì lời chốt thường nằm ở cuối chủ đề, và dừng ngay ở cửa sổ đầu
-tiên vượt ngưỡng. Khi bộ phân loại lỗi, cổng mở, vì chạy thừa chỉ tốn một lời gọi còn bỏ nhầm thì mất
-kết quả. Content agent không bao giờ bị bỏ. Hai agent dùng chung $p_{\text{commit}}$ thay vì lọc riêng
-theo nhãn, vì một phần lượt chốt kết luận bị xếp vào nhãn giao việc (Mục 6.3). Với lượt ngắn, đầu vào
-của cổng trùng với đầu vào của evidence‑check, nên kết quả phân loại được dùng lại.
+**Tác tử kiểm chứng** hoạt động theo kiểu ReAct. Nó có ba công cụ chỉ đọc, phạm vi là *toàn bộ cuộc
+họp*: đọc một lượt nói, tìm các lượt liên quan theo từ khoá, và tra ứng viên người/đơn vị cho một cách
+gọi. Kết luận của tác tử kiểm chứng là *giữ*, *sửa*, *bỏ* hoặc *chưa kết luận được*. Có ba ràng buộc đi
+kèm:
 
-### 4.5. Agent trích xuất và evidence‑check
+- Tác tử phải chỉ ra lượt quyết định *trước* khi đưa ra kết luận (P1). Kết luận *giữ* hoặc *sửa* mà không
+  có lượt quyết định có thật thì tự động bị hạ thành *bỏ*.
+- Dấu hiệu nghi ngờ của bước phân loại sơ bộ chỉ được coi là gợi ý, không được coi là bằng chứng.
+- Số bước tra cứu bị giới hạn.
 
-**Agent trích xuất.** Ba agent (Content, Action, Decision) mỗi agent tốn một lời gọi trên một chủ đề, với
-schema JSON cố định. Prompt có các quy tắc chung:
+**Đồng thuận.** Khi tác tử kiểm chứng không giữ nguyên một mục, phản hồi của nó được gửi lại cho chính
+tác tử đã trích ra mục đó. Tác tử này chọn một trong ba lập trường:
 
-- *Bằng chứng trước*: chọn `evidence_turn_ids` trước khi viết nội dung.
-- *Ngôi thứ ba*: không dùng đại từ trần trụi, không đoán tên.
-- *Quy tắc chủ trì*: khi người chủ trì nói "đề nghị/yêu cầu/giao + người/đơn vị + việc" thì đó là
-  **giao việc**, kể cả khi không có chữ "giao". Cùng câu đó do thành viên khác nói thì chỉ là đề xuất.
-- *Nhãn người nói có thể gộp nhiều người*, nên vai của mỗi lượt được xét theo nội dung (K5).
-- *Khai trung thực*: chỉ đánh dấu `proposed`/`reported` khi không chắc. Chắc là đề xuất chưa ai nhận
-  hay báo cáo tiến độ thì không đưa vào, vì mỗi mục nghi ngờ tốn vài lời gọi kiểm chứng.
+- *chấp nhận*: theo đề nghị của bên kiểm chứng;
+- *sửa*: sửa mục theo bản ghi, phải kèm lượt quyết định có thật;
+- *bảo vệ*: giữ nguyên mục và chỉ ra lượt quyết định mà bên kiểm chứng đã bỏ sót.
 
-Hạn chót được chuẩn hoá theo ngày họp, theo một bộ quy ước tường minh: tuần kết thúc vào Chủ nhật,
-"tháng sau" là ngày cuối tháng kế, "A hoặc B" lấy mốc muộn hơn, v.v. Một module luật đóng vai trò dự
-phòng. Lỗi LLM được thử lại ngay tại chỗ, tối đa 2 lần.
+Hai bên trao đổi tối đa $R$ vòng. Kết quả cuối được xác định như sau:
 
-**Evidence‑check** phân mỗi candidate vào CLEAR (vào kết quả ngay) hoặc UNCERTAIN (gửi Verifier, kèm lý
-do bị gắn cờ). Một *việc giao* bị gắn cờ khi:
-
-- actor rỗng hoặc chung chung ("nhóm", "một thành viên");
-- actor không có căn cứ trong bản ghi hay danh bạ (từ chỉ vai trò như "chủ trì", "phối hợp với" được bỏ
-  trước khi kiểm);
-- actor khớp từ hai ứng viên trở lên mà không ai đủ rõ;
-- lượt chốt không phải lời giao hoặc nhận việc.
-
-Một *kết luận* bị gắn cờ khi lượt chốt không phải lời chốt. Với lượt chốt $t$, luật từ khoá được thay
-bằng $h$:
-
-$$
-\text{flag}(t)=
-\begin{cases}
-\varnothing & p_{\text{commit}}(t)\ge\tau_{\text{acc}}\\
-\text{"chưa rõ"} + h(\cdot\mid t) & \tau_{\text{rej}}\le p_{\text{commit}}(t)<\tau_{\text{acc}}\\
-\text{"không phải lời chốt"} & p_{\text{commit}}(t)<\tau_{\text{rej}}
-\end{cases}
-$$
-
-Khi API phân loại lỗi hoặc quá thời gian chờ (10 s), hệ thống quay về luật từ khoá.
-
-### 4.6. Verifier ReAct và giao thức đồng thuận
-
-**Verifier.** ReAct được dựng trên giao diện sinh JSON một lượt, nên không cần provider hỗ trợ tool
-calling. Mỗi bước, mô hình trả về
-
-$$
-(\text{thought},\ \text{action},\ \text{argument},\ \underbrace{\text{deciding\_turn\_id}}_{\text{trước}},\ \text{verdict},\ \text{revised\_actor},\ \text{revised\_actor\_type},\ \text{actor\_reason},\ \text{reasoning}),
-$$
-
-với $\text{verdict}\in\{\text{keep}, \text{revise}, \text{drop}, \text{unresolved}\}$. Mã nguồn chạy công
-cụ được gọi, rồi đưa suy nghĩ, hành động và observation của mọi bước trước vào prompt lượt sau. Ba công
-cụ đều chỉ đọc:
-
-- `get_turn(id)` trả nguyên văn một lượt bất kỳ trong cả cuộc họp. Hàm chấp nhận cả các dạng viết tắt mà
-  mô hình hay dùng ("T30", "30") khi số đó ứng với đúng một lượt.
-- `search_meeting(q)` trả top‑5 lượt theo BM25 ($k_1=1{,}2$, $b=0{,}75$) trên âm tiết nội dung và cặp
-  âm tiết (cặp âm tiết có trọng số ×2), cắt quanh chỗ khớp.
-- `lookup_speaker(mention@id)` trả các ứng viên người/đơn vị kèm điểm, lý do và nhãn rõ ràng/mơ hồ
-  (Mục 4.7).
-
-Có bốn quyết định thiết kế đáng chú ý:
-
-- (i) **Thứ tự trường như ràng buộc suy luận.** Mô hình tự hồi quy sinh JSON theo thứ tự trường. Đặt
-  `deciding_turn_id` trước `verdict` buộc mô hình chỉ ra lượt giao/chốt trước khi kết luận, thay vì chọn
-  nhãn rồi tìm bằng chứng cho khớp.
-- (ii) **Cờ của bộ lọc là gợi ý, không phải bằng chứng.** Trước khi kết luận drop, Verifier phải đọc
-  các lượt tổng kết của người chủ trì.
-- (iii) **Ngân sách.** Mỗi vòng có tối đa $T+1$ lời gọi ($T=3$), và lượt cuối buộc phải kết luận. Gọi
-  lại y hệt một công cụ đã gọi thì công cụ không chạy lại.
-- (iv) **Luật hậu kiểm tất định.**
-  - `keep`/`revise` không có `deciding_turn_id` thuộc cuộc họp thì bị hạ thành `drop`.
-  - Actor do Verifier chọn phải trùng tên một ứng viên công cụ đã trả về và phải kèm lý do; nếu không,
-    hệ thống dùng kết quả của luật.
-  - Lượt chốt được phép nằm ở chủ đề khác.
-
-**Giao thức đồng thuận.** Giao thức thay cho bước duyệt người. Bên đề xuất (Proposer) là chính agent đã
-sinh ra candidate.
-
-```
-Thuật toán 2: VERIFY‑WITH‑CONSENSUS(x₀), tối đa R = 3 vòng
-  x ← x₀; H ← []
-  for r = 1..R:
-      (v, t*, x̂, fb) ← Verifier(x, H)               ▷ lỗi LLM → return (x₀, fallback)
-      if v = keep: return (x̂, consensus)
-      (σ, t_p, arg) ← Proposer(x, v, fb, observations, H)   ▷ σ ∈ {accept, amend, defend}
-      if σ = accept ∧ t_p là lượt thật ∧ v ≠ revise: σ ← defend   ▷ tự mâu thuẫn
-      H.append((x, steps, v, fb, t*, σ, arg, t_p))
-      if σ = accept: return (x̂ nếu v = revise, ngược lại DROP; consensus)
-      if σ = amend:  x ← bản sửa, chỉ nhận nếu t_p là lượt thật và actor định danh được
-      # σ = defend: giữ x, vòng sau Verifier xét lại kèm lập luận
-  if v = unresolved: return (x₀, fallback)
-  return (kết luận cuối của Verifier, verifier)
-```
-
-| Kết thúc | Kết quả | Nhãn |
-|---|---|---|
-| Đồng thuận | keep/revise thì giữ, drop thì bỏ | `consensus` |
-| Hết vòng, Verifier đã kết luận | theo Verifier | `verifier` |
-| Hết vòng, vẫn `unresolved` | giữ candidate **gốc** | `fallback` |
-| Lỗi LLM ở bất kỳ bước nào | giữ candidate **gốc** | `fallback` |
-
-Hai bất biến an toàn của giao thức: lỗi hạ tầng không bao giờ xoá nội dung đã trích, và bản do agent tự
-sửa mà Verifier chưa xét lại không bao giờ vào kết quả. Proposer cũng điền `confirm_turn_id` *trước*
-`stance`. Trường văn bản tự do được đặt cuối schema: với một mô hình mở, chúng tôi quan sát thấy hiện
-tượng sinh khoảng trắng vô tận khi sau trường tự do vẫn còn trường bắt buộc.
-
-### 4.7. Định danh tác nhân có giải thích
-
-Mỗi cách gọi (mention) được so với các ứng viên lấy từ danh bạ, danh sách tham dự và các dạng tên đơn vị
-trong bản ghi. Điểm của ứng viên $a$ được tính theo thứ tự ưu tiên:
-
-$$
-\text{score}(a)=\underbrace{\text{name}(a)}_{1{,}0\,/\,0{,}7\,/\,0{,}6}\ +\ \underbrace{\text{ctx}(a)}_{\pm 0{,}3}\ +\ \mathbb 1[\text{ctx chưa phân định}]\cdot\min\!\big(0{,}3,\ 0{,}1\cdot|\text{terms}(a)\cap\text{terms}(\text{việc})|\big).
-$$
-
-- *Tên.* Khớp họ tên, tên đơn vị hoặc tên gọi tắt: 1,0. Khớp một phần tên đơn vị: 0,7. Khớp tên gọi,
-  hoặc dạng tên đơn vị ngoài danh sách: 0,6.
-- *Ngữ cảnh quanh lượt chốt.* Người nói ngay sau lượt chốt được +0,3. Người giao việc ở lượt chốt bị
-  −0,3 (không ai tự gọi mình là "anh Sơn"); với việc tự nhận thì được +0,3.
-- *Chức năng.* Chỉ xét khi ngữ cảnh chưa phân định: mỗi âm tiết nội dung của việc trùng với chức vị,
-  đơn vị hoặc chức năng của ứng viên được +0,1, tối đa +0,3.
-
-Ứng viên đứng đầu là *rõ ràng* khi $\text{score}_1\ge 0{,}6$ và $\text{score}_1-\text{score}_2\ge 0{,}2$.
-Nếu không, hệ thống gán $\tau=\text{unknown}$, giữ danh sách ứng viên kèm điểm để người đọc tự quyết, và
-**không bỏ việc giao**.
-
-Actor ghép được tách thành các bên kèm vai trò lead / support / joint. Tên đơn vị được chuẩn hoá trước
-khi so: "UBND TP", "Ủy ban nhân dân Thành phố" và "UBND Thành phố" là một, nhưng HĐND vẫn khác UBND.
-
-### 4.8. Theo dõi tiến độ theo danh sách việc
-
-Thành phần này chỉ chạy khi có danh sách việc $\mathcal G$. Khi không có, số lời gọi, prompt và schema
-của toàn hệ thống giữ nguyên.
-
-**(1) Trích xuất.** Progress agent tốn một lời gọi mỗi chủ đề và nhận cả $\mathcal G$. Với mỗi việc được
-nhắc tới, agent trả một cập nhật gồm: mã việc (enum đóng), trạng thái $\in\Sigma$, lượt nêu trạng thái,
-bằng chứng, hạn mới hoặc cờ bỏ hạn, rồi tóm tắt, vướng mắc và chỉ đạo. Prompt quy định ba điều: nhắc
-chung cả đề án thì không tính là nhắc từng việc; lượt nêu trạng thái là lượt kết luận/chỉ đạo *cuối
-cùng* của người chủ trì nếu có; và lượt nêu hạn mới phải nằm trong bằng chứng. Parser bỏ các mục có mã
-lạ hoặc không có bằng chứng.
-
-**(2) Kiểm bằng câu hỏi tuỳ kiểu việc.** Trước hết, mỗi việc được một bộ phân loại kiểu việc
-$h^{\text{kind}}$ xếp loại một lần: *báo cáo tại họp* hay *làm ra sản phẩm*. Từ đó chọn câu hỏi kiểm:
-
-$$
-h^{\text{st}}=\begin{cases}h^{\text{report}} & h^{\text{kind}}(\text{báo cáo}\mid g)\ge 0{,}8\\ h^{\text{progress}} & \text{ngược lại}\end{cases}
-$$
-
-- $h^{\text{progress}}$ có 7 nhãn: báo cáo xong / đang làm / vướng mắc, yêu cầu làm lại, hoãn, chỉ nhắc,
-  không liên quan.
-- $h^{\text{report}}$ coi việc *đã xong khi nội dung được trình bày*. Lý do tách riêng: với việc kiểu
-  "báo cáo tình hình các dự án", tình trạng của đối tượng được báo cáo ("dự án đang làm thủ tục") là
-  *nội dung* báo cáo, không phải trạng thái của việc.
-
-Bộ kiểm duyệt các lượt nêu trạng thái, bắt đầu từ lượt agent khai rồi tới các lượt bằng chứng khác, từ
-lượt muộn nhất:
-
-| Điều kiện (ngưỡng 0,8) | Quyết định |
+| Kết thúc | Kết quả |
 |---|---|
-| Một cửa sổ xác nhận đúng trạng thái agent khai | giữ |
-| Không cửa sổ nào xác nhận; lượt đầu tiên có trạng thái rõ khác | sửa theo bộ phân loại (không đổi giữa các trạng thái *báo cáo* bằng câu hỏi chung) |
-| Agent khai trạng thái báo cáo; tổng nhóm báo cáo ≥ 0,8 | giữ trạng thái agent khai, cờ `kept` |
-| `mentioned` nhưng mọi lượt có p(không liên quan) ≥ 0,8 | **bỏ** cập nhật (agent gắn nhầm việc) |
-| `mentioned` nhưng có lượt là báo cáo rõ | nâng lên trạng thái đó |
-| `mentioned` nhưng có lượt là làm lại/hoãn | chỉ nâng khi $p_{\text{commit}}\ge 0{,}8$, tức là lời chỉ đạo chứ không phải kiến nghị |
-| Còn lại | hạ về `mentioned`, cờ `uncertain` |
-| Bộ phân loại tắt hoặc lỗi | giữ điều agent khai, cờ `unchecked` |
+| Hai bên thống nhất | Theo kết quả thống nhất |
+| Hết vòng, bên kiểm chứng đã có kết luận | Theo bên kiểm chứng |
+| Hết vòng, bên kiểm chứng vẫn chưa kết luận được | Giữ mục **gốc**, đánh dấu cho người duyệt |
+| Lỗi hệ thống | Giữ mục **gốc**, đánh dấu cho người duyệt |
 
-Quyết định "xong hay đang làm" đối với việc làm ra sản phẩm được để agent đưa ra, vì agent đọc cả chủ
-đề. Bộ phân loại chỉ quyết lượt nói là báo cáo, chỉ đạo hay chỉ nhắc (Mục 6.4 giải thích lý do).
+Bảng này cụ thể hoá P3. Mọi vòng trao đổi được lưu lại thành *vết kiểm chứng* để người duyệt xem vì sao
+một mục được giữ, sửa hay bỏ.
 
-**(3) Gộp theo việc.** Trong các cập nhật có trạng thái rõ của cùng một việc, lời **chỉ đạo/kết luận**
-(xác suất là chỉ đạo $\ge 0{,}8$) thắng lời **báo cáo**. Cùng loại thì lượt muộn hơn thắng. Quy tắc này
-*không dựa vào nhãn người nói*, vì nhãn có thể gộp nhiều người (K5). Ba cờ được tính thêm:
+### 4.6. Định danh trách nhiệm
 
-- *mâu thuẫn*: có một báo cáo "xong" đã xác nhận cùng một trạng thái rõ khác. "Đang làm" rồi bị trả lại
-  là diễn tiến bình thường, không phải mâu thuẫn;
-- *not_reported*: không chủ đề nào nhắc tới việc;
-- *quá hạn*: hạn cũ trước ngày họp mà việc chưa xong.
+Với mỗi cách gọi người nhận việc, ví dụ "anh Sơn" hay "Sở Tài chính chủ trì, phối hợp Sở Xây dựng", DiVA
+tách thành các bên kèm vai trò (chủ trì, phối hợp, cùng thực hiện). Sau đó mỗi bên được chấm điểm ứng
+viên theo ba nguồn, lần lượt ưu tiên:
 
-**(4) Quan hệ việc giao ↔ việc cũ.** Khi có $\mathcal G$, schema của Action agent có thêm trường
-$\text{task\_id}\in\text{ids}(\mathcal G)\cup\{\text{new}\}$. Chỉ ghi mã việc khi việc giao là *chính* việc
-đó (làm tiếp, làm lại, giao bên khác, đổi hạn). Sản phẩm mới phát sinh trong phiên thì ghi `new`, kể cả
-khi nó phục vụ việc cũ. Quan hệ $\rho$ được suy ra *tất định* từ các trường, không so khớp chữ:
+1. *tên*: khớp đầy đủ, khớp một phần, hay chỉ khớp tên gọi;
+2. *ngữ cảnh hội thoại*: người đáp lời ngay sau lời giao thường là người nhận việc, còn người giao việc
+   thì không tự gọi mình bằng tên;
+3. *chức năng*: chức vị hoặc chức năng của đơn vị khớp với nội dung việc.
 
-$$
-\rho=\begin{cases}
-\text{new} & \text{task\_id}=\varnothing\\
-\text{reassign} & \text{việc được giao} \wedge \text{mọi bên nhận} \notin \text{chủ trì/phối hợp cũ}\\
-\text{reschedule} & \text{hạn mới}\ne\text{hạn cũ}\\
-\text{follow\_up} & \text{còn lại}
-\end{cases}
-$$
+Khi không ứng viên nào đủ rõ, việc giao vẫn được giữ, kèm danh sách ứng viên và điểm để người duyệt
+chọn. Hệ thống không tự đoán.
 
-Định danh actor không cộng điểm cho bên chủ trì cũ, để không che mất trường hợp giao lại. Hai việc giao
-gắn với hai việc cũ khác nhau không bao giờ bị gộp làm một.
+### 4.7. Theo dõi tiến độ việc đã giao
 
-### 4.9. Phân tích chi phí
+Khi phiên họp có danh sách việc cũ, tác tử tiến độ trích ra trạng thái của từng việc được nhắc tới. Sau
+đó trạng thái được kiểm bằng bộ phân loại. Một quan sát nghiệp vụ quan trọng là **có hai kiểu việc**:
 
-Ký hiệu:
+- *việc báo cáo* (ví dụ "báo cáo tình hình các dự án"): xong khi nội dung đã được trình bày tại cuộc họp;
+- *việc làm ra sản phẩm* (tờ trình, hồ sơ, văn bản): xong khi sản phẩm đã có.
 
-- $K$: số chủ đề; $K_g\le K$: số chủ đề cổng mở;
-- $M$: số candidate nghi ngờ;
-- $R$: số vòng đồng thuận tối đa; $T$: số lời gọi công cụ tối đa mỗi vòng;
-- $n_k$: số cửa sổ phân loại của chủ đề $k$.
+Với việc báo cáo, tình trạng của *đối tượng* được báo cáo ("dự án đang làm thủ tục") là nội dung của báo
+cáo, không phải trạng thái của *việc*. Vì vậy DiVA phân loại kiểu việc trước, rồi đặt câu hỏi kiểm phù
+hợp với kiểu đó.
 
-| | v1 (tuần tự, Debate+Judge) | DiVA |
-|---|---|---|
-| Lời gọi trích xuất | $3K$ | $K + 2K_g$ (+ $K$ nếu có $\mathcal G$) |
-| Lời gọi kiểm chứng LLM | $3M$ | $\sum_m c_m,\ c_m\le R(T+2)=15$ |
-| Lời gọi phân loại | 0 | cổng $\le\sum_k n_k$ (dừng sớm) + evidence‑check (có cache) + tiến độ |
-| Độ trễ đường găng | $\sum_k t_k$ | $\max_k t_k$ (chặn bởi semaphore) |
+Các cập nhật của cùng một việc được gộp theo hai quy tắc. Thứ nhất, **lời chỉ đạo của người có thẩm
+quyền thắng lời báo cáo**: báo cáo "xong" rồi chủ trì yêu cầu làm lại thì kết quả là *phải làm lại*,
+kèm cờ mâu thuẫn. Thứ hai, cùng loại thì lời muộn hơn thắng. Việc không được ai nhắc tới được đánh dấu
+*không được báo cáo*, và việc quá hạn mà chưa xong được đánh dấu *quá hạn*.
 
-Lời gọi phân loại rẻ (p50 0,30 s) và ổn định. Trên dữ liệu tổng hợp, khoảng 18% số chủ đề không có
-việc giao lẫn kết luận. Đây là cận trên của phần lời gọi agent mà cổng có thể tiết kiệm.
+Mỗi việc giao mới cũng được xếp quan hệ với danh sách việc cũ: *việc mới*, *tiếp nối*, *giao lại cho bên
+khác*, hoặc *đổi hạn*. Thông tin này giúp văn phòng cập nhật sổ theo dõi nhiệm vụ.
 
 ---
 
 ## 5. Thiết lập thực nghiệm
 
-### 5.1. Câu hỏi nghiên cứu
+**Câu hỏi nghiên cứu.**
 
-- **RQ1.** Bộ chọn ranh giới có thu hẹp được khoảng cách giữa dữ liệu tổng hợp và dữ liệu thật trong cắt
-  chủ đề không?
-- **RQ2.** Bộ phân loại hành vi lời nói đã hiệu chỉnh có tốt hơn luật từ khoá khi dùng để phân loại sơ
-  bộ candidate không?
-- **RQ3.** Có thể dùng chính bộ phân loại đó làm cổng chọn agent mà không mất recall không?
-- **RQ4.** Thành phần theo dõi tiến độ có trích đúng trạng thái việc không, và vì sao câu hỏi kiểm cần
-  tuỳ theo kiểu việc?
-- **RQ5.** Hệ thống có chạy được trong thời gian chấp nhận được trên một cuộc họp dài không?
+- **RQ1.** Có cắt được chủ đề cuộc họp thật mà không cần biết trước số chủ đề không?
+- **RQ2.** Bộ phân loại hành vi lời nói đã hiệu chỉnh có định tuyến kiểm chứng tốt hơn luật từ khoá
+  không?
+- **RQ3.** Có thể dùng bộ phân loại để bỏ qua bước trích xuất ở chủ đề không có giao việc/kết luận mà
+  không mất nội dung không?
+- **RQ4.** Theo dõi tiến độ có xác định đúng trạng thái việc không, và những yếu tố nào quyết định độ
+  chính xác?
+- **RQ5.** Hệ thống có chạy được trong thời gian chấp nhận được trên cuộc họp dài không?
 
-### 5.2. Dữ liệu
+**Dữ liệu.**
 
-| Tập | Mô tả | Dùng cho |
-|---|---|---|
-| `vn_synth` | Hội thoại tổng hợp tiếng Việt, có nhãn ranh giới | Huấn luyện DialSTART‑VN |
-| QH‑47 | 47 phiên Quốc hội khoá XIII có ground truth chủ đề; 12 phiên dùng để đo cắt chủ đề | Độ thuần chủ đề của lượt nói; ablation bộ chọn ranh giới (RQ1) |
-| Gold‑3 | 3 cuộc họp hành chính, ranh giới đã duyệt | Tinh chỉnh cắt chủ đề (RQ1) |
-| Synth‑30 | 30 transcript tổng hợp; 869 lượt có nhãn hành vi lời nói (484 dương, 385 âm); 166 kết luận gold | RQ1, RQ2, RQ3 |
-| M_CM | Cuộc họp thật: 32 lượt, khoảng 25k ký tự, 3 chủ đề, danh sách 4 việc, có gold tiến độ | RQ4 |
-| M_TH | Cuộc họp thật: 1.259 lượt, khoảng 205k ký tự, 14 chủ đề | RQ5 |
-
-### 5.3. Độ đo
-
-- **Cắt chủ đề:** $P_k$, F1 ranh giới theo dung sai ký tự (F1@2k, F1@5k), và điểm tổng hợp
-  $S=\tfrac14(\text{F1@2k}+\text{F1@5k}+2-2P_k)$.
-- **Bộ phân loại:** Precision, Recall, F1, và ECE (10 bin).
-- **Cổng:** số mục gold bị mất và số lời gọi agent bị bỏ.
-- **Tiến độ:** số việc có trạng thái khớp gold, và quan hệ $\rho$.
-- **Hiệu năng:** thời gian thực.
-
-### 5.4. Cấu hình
-
-| Thành phần | Cấu hình |
+| Tập | Mô tả |
 |---|---|
-| DialSTART‑VN | `vibert4news-base-cased` ×2; $w=2$; max_len 512; làm mượt 3; $\alpha=1{,}0$; $m_{\min}=4$; $C_{\min}=\text{clip}(L/15,1500,10000)$; $L_{\max}=35.000$ |
-| Gán nhãn chủ đề, agent trích xuất, Proposer, Progress agent | gemma (OpenAI‑compatible, temperature 0) |
-| Verifier | `gpt-4o-mini`, JSON schema strict |
-| Bộ phân loại $h$, $h^{\text{kind}}$, $h^{\text{progress}}$, $h^{\text{report}}$ | OpenAI Decisions API, timeout 10 s |
-| Siêu tham số | $\tau_{\text{rej}}=0{,}2$; $\tau_{\text{acc}}=0{,}8$; $R=3$; $T=3$; top‑$k$=5; thử lại 2; semaphore 8; song song 16 |
+| Quốc hội | 47 phiên Quốc hội khoá XIII có chủ đề gán tay; 12 phiên dùng để đánh giá cắt chủ đề |
+| Họp hành chính (gold) | 3 cuộc họp thật có ranh giới chủ đề đã duyệt |
+| Tổng hợp | 30 cuộc họp tổng hợp tiếng Việt; 869 lượt nói có nhãn hành vi lời nói; 166 kết luận gold |
+| Họp có danh sách việc | 1 cuộc họp thật (32 lượt, 3 chủ đề) với 4 việc cần báo cáo, có trạng thái gold |
+| Họp dài | 1 cuộc họp thật 1.259 lượt nói, 14 chủ đề |
+
+**Độ đo.**
+
+- Cắt chủ đề: $P_k$, F1 ranh giới, và điểm tổng hợp $S=\tfrac14(\text{F1}_{2k}+\text{F1}_{5k}+2-2P_k)$.
+- Hành vi lời nói: Precision, Recall, F1, và sai số hiệu chỉnh ECE.
+- Tiến độ: số việc có trạng thái khớp gold.
+- Thời gian chạy.
+
+**Mô hình.** Bộ cắt chủ đề dùng backbone BERT tiếng Việt (vibert4news). Các tác tử trích xuất dùng một
+LLM mở (gemma). Tác tử kiểm chứng dùng gpt‑4o‑mini. Bộ phân loại hành vi lời nói là một API phân loại
+trả về phân bố xác suất. Các siêu tham số: $R=3$ vòng đồng thuận, tối đa 3 lần tra cứu mỗi vòng.
 
 ---
 
-## 6. Kết quả
+## 6. Kết quả và phân tích
 
-> **Phạm vi bằng chứng.** Các kết quả dưới đây đo từng thành phần riêng, trên các tập khác nhau. Chúng
-> chưa thay được một đánh giá end‑to‑end có kiểm soát. Riêng Giao việc và Kết luận chưa có gold
-> end‑to‑end (xem Mục 7 và 8).
+> Các kết quả dưới đây đánh giá từng thành phần trên các tập khác nhau. Chất lượng end‑to‑end của phần
+> Giao việc và Kết luận chưa được đo trên dữ liệu thật có nhãn (Mục 7).
 
 ### 6.1. RQ1: Cắt chủ đề
 
-**Trần sai số của việc cắt theo lượt nói.** Trên QH‑47, chặn dưới (pigeonhole) của tỉ lệ cặp
-(người nói, phiên) chứa nhiều chủ đề là **49,5%** khi chỉ tính đại biểu (541/1.092 cặp), và 43/47 phiên
-có ít nhất một lượt đa chủ đề. Như vậy mọi bộ cắt theo lượt nói đều có sai số nội tại trên dạng dữ liệu
-này.
-
-**Bảng 1. Khoảng cách tổng hợp → thật.**
+**Bảng 1. Khoảng cách giữa dữ liệu tổng hợp và dữ liệu thật.**
 
 | Cấu hình | Dữ liệu | Kết quả |
 |---|---|---|
-| DialSTART‑VN, số ranh giới oracle | val tổng hợp | $P_k=0{,}011$ |
-| DialSTART‑VN, chưa có bộ chọn | Gold‑3 | $P_k=0{,}485$, cắt quá vụn |
-| + bộ chọn ranh giới (bộ tham số cũ) | Gold‑3 / Synth‑30 | $S=0{,}392$ / $0{,}336$ |
-| **+ bộ chọn ranh giới (đề xuất)** | Gold‑3 / Synth‑30 | $S=\mathbf{0{,}637}$ / $\mathbf{0{,}686}$ |
+| Mô hình, biết trước số chủ đề | Tổng hợp | $P_k=0{,}011$ |
+| Mô hình, chưa có bộ chọn ranh giới | Họp thật | $P_k=0{,}485$, cắt quá vụn |
+| + bộ chọn ranh giới (cấu hình ban đầu) | Thật / tổng hợp | $S=0{,}392$ / $0{,}336$ |
+| **+ bộ chọn ranh giới (đề xuất)** | Thật / tổng hợp | $S=\mathbf{0{,}637}$ / $\mathbf{0{,}686}$ |
 
-Tương quan Spearman giữa điểm trên Synth‑30 và trên Gold‑3 chỉ là 0,56. Vì vậy khi tinh chỉnh, chúng tôi
-ưu tiên gold thật.
+Mô hình gần như hoàn hảo trên dữ liệu tổng hợp nhưng hỏng trên cuộc họp thật. Bộ chọn ranh giới thu hẹp
+phần lớn khoảng cách này. Tương quan giữa điểm trên dữ liệu tổng hợp và điểm trên dữ liệu thật chỉ ở mức
+vừa (Spearman 0,56). Điều này nhắc rằng không nên tinh chỉnh chỉ dựa trên dữ liệu tổng hợp.
 
-**Bảng 2. Ablation bộ chọn ranh giới (12 phiên QH).**
+Trên 12 phiên Quốc hội, bỏ bước làm mượt làm F1 giảm từ 0,418 xuống 0,297. Đây là bước có ảnh hưởng lớn
+nhất trong bộ chọn ranh giới.
 
-| Biến thể | F1 |
-|---|---|
-| Đầy đủ | 0,418 |
-| − làm mượt | 0,297 (−0,121) |
-| + gộp đoạn giống nhau (c) | +0,025 |
+**Giới hạn nội tại.** Ít nhất 49,5% số cặp (đại biểu, phiên họp) có một lượt phát biểu chứa nhiều chủ
+đề. Vì vậy, mọi phương pháp cắt theo lượt nói đều có một mức sai số không tránh được trên dạng dữ liệu
+này.
 
-**Bảng 3. Đối chiếu với các hướng khác đã thử** (khác tập và khác thời điểm, chỉ để tham khảo).
+### 6.2. RQ2: Hành vi lời nói và định tuyến kiểm chứng
 
-| Phương pháp | Kết quả |
-|---|---|
-| TreeSeg theo câu (12 cuộc họp) | F1 0,26–0,37, không vượt mốc chia đều 0,346 |
-| LLM zero‑shot chia trên tóm tắt cụm | $P_k$ 0,48–0,56; cắt vụn cả ở phiên chỉ có 1 chủ đề |
-| DialTreeSeg (DialSTART + TreeSeg) | $P_k$ 0,224; F1@5k 0,486 |
-
-DialSTART‑VN được chọn làm mặc định vì ba lý do: không phụ thuộc dịch vụ embedding ngoài (lời gọi
-embedding là bước duy nhất trong pipeline không có dự phòng khi lỗi), chỉ dùng một mô hình, và nhanh
-(12 s cho 1.259 lượt).
-
-### 6.2. RQ2: Bộ phân loại hành vi lời nói để phân loại sơ bộ
-
-**Bảng 4. Phát hiện lượt chốt trên 869 lượt của Synth‑30.**
+**Bảng 2. Nhận diện lượt chốt (giao việc/kết luận) trên 869 lượt nói.**
 
 | Phương pháp | P | R | F1 |
 |---|---|---|---|
-| Luật từ khoá (v1) | 0,774 | 0,610 | 0,682 |
-| $h$, $p\ge0{,}3$ | 0,813 | 0,959 | 0,880 |
-| $h$, $p\ge0{,}5$ | **0,863** | **0,928** | **0,894** |
-| $h$, $p\ge0{,}8$ | 0,923 | 0,816 | 0,866 |
-| $h$, $p\ge0{,}9$ | 0,939 | 0,738 | 0,826 |
+| Luật từ khoá | 0,774 | 0,610 | 0,682 |
+| Bộ phân loại, ngưỡng 0,5 | **0,863** | **0,928** | **0,894** |
+| Bộ phân loại, ngưỡng 0,8 | 0,923 | 0,816 | 0,866 |
 
-ECE = 0,040. Độ trễ p50 là 0,30 s và p95 là 0,41 s.
+Sai số hiệu chỉnh ECE là 0,040: khi bộ phân loại nói 90% thì thực tế đúng xấp xỉ 90%. Tính chất này cho
+phép dùng ngưỡng như một chính sách nghiệp vụ.
 
-**Bảng 5. Ba vùng quyết định.**
+**Bảng 3. Ba vùng định tuyến.**
 
-| Vùng | n | Tỉ lệ thật sự là chốt | Hành động |
+| Vùng | Tỉ lệ lượt nói | Tỉ lệ thật sự là lời chốt | Xử lý |
 |---|---|---|---|
-| $p<0{,}2$ | 267 | 0,04 | gắn cờ "không phải lời chốt" |
-| $0{,}2\le p<0{,}8$ | 174 | 0,45 | gửi Verifier |
-| $p\ge0{,}8$ | 428 | 0,92 | CLEAR |
+| $p<0{,}2$ | 31% | 4% | coi là không chốt |
+| $0{,}2\le p<0{,}8$ | 20% | 45% | chuyển kiểm chứng |
+| $p\ge0{,}8$ | 49% | 92% | chấp nhận |
 
-Chỉ 20% số lượt rơi vào vùng thật sự mơ hồ (tỉ lệ dương 0,45). Đây là điều kiện để kiểm chứng chọn lọc
-tiết kiệm được chi phí.
+Chỉ khoảng 20% lượt nói thật sự mơ hồ, với tỉ lệ đúng gần như tung đồng xu. Đây đúng là phần nên dành
+cho bước kiểm chứng đắt tiền.
 
-**Bảng 6. Tỉ lệ bị coi là "đã chốt" theo loại lượt** (cột phải là $h$ với $p\ge0{,}5$).
+**Phân tích lỗi.**
 
-| Loại (gold) | n | Từ khoá | $h$ |
-|---|---|---|---|
-| giao việc | 338 | 0,51 | **0,91** |
-| kết luận | 106 | 0,85 | 0,94 |
-| giao việc + kết luận | 40 | 0,82 | 1,00 |
-| khác (âm) | 240 | 0,26 | 0,18 |
-| đề xuất có rào đón (âm) | 90 | 0,09 | 0,11 |
-| việc chưa có người nhận (âm) | 36 | 0,22 | 0,31 |
-| việc bị bác (âm) | 9 | 0,22 | 0,11 |
-| quyết định bị thay thế | 10 | 0,50 | 0,50 |
+- Lợi ích lớn nhất nằm ở **lời giao việc khẩu ngữ**: tỉ lệ nhận ra tăng từ 51% lên 91%. Ví dụ "Anh
+  Phong gửi giúp em trong tuần này được không ạ?" bị luật từ khoá bỏ qua vì là câu hỏi, còn bộ phân loại
+  cho $p=0{,}95$.
+- Hai loại còn khó là *việc chưa có người nhận* và *quyết định bị thay thế sau đó*. Cả hai cần ngữ cảnh
+  rộng hơn vài lượt nói, và đó chính là lý do tác tử kiểm chứng được tra cứu toàn bộ cuộc họp.
 
-Lợi ích lớn nhất nằm ở lời giao việc khẩu ngữ (0,51 → 0,91). Ví dụ "Anh Phong gửi giúp em trong tuần này
-được không ạ?" bị luật bỏ vì là câu hỏi, trong khi $h$ cho $p=0{,}95$. Hai điểm yếu còn lại là *việc chưa
-có người nhận* và *quyết định bị thay thế*. Cả hai đều cần ngữ cảnh rộng hơn 2 lượt, nên phù hợp với
-Verifier, vốn tra được cả cuộc họp.
+### 6.3. RQ3: Bỏ qua trích xuất an toàn
 
-### 6.3. RQ3: Cổng chọn agent
+Chúng tôi mô phỏng các cách bỏ qua tác tử giao việc/kết luận trên 30 cuộc họp tổng hợp.
 
-Chúng tôi mô phỏng cổng trên kết quả phân loại đã lưu của Synth‑30 (304 lời gọi Action/Decision tiềm năng).
+**Bảng 4. Tiêu chí bỏ qua và nội dung bị mất.**
 
-**Bảng 7. So sánh các tiêu chí cổng.**
-
-| Tiêu chí cổng | Mục gold bị mất |
+| Tiêu chí | Nội dung gold bị mất |
 |---|---|
-| Từ khoá (≈ 33 cụm giao việc + ≈ 22 cụm kết luận) | **3** (1 việc giao + 2 kết luận), dù chỉ bỏ 3/304 lời gọi |
-| Lọc Decision agent theo $p(\text{kết\_luận})\ge0{,}2$ | 5/166 kết luận (lượt chốt của cả 5 bị xếp nhãn giao việc) |
-| **$\exists$ lượt: $p_{\text{commit}}\ge0{,}2$ (đề xuất)** | **0** |
+| Không có từ khoá giao/chốt nào | 1 việc giao + 2 kết luận (dù chỉ bỏ được 3/304 lần chạy) |
+| Lọc riêng theo xác suất "kết luận" | 5/166 kết luận |
+| **Không lượt nào có $p_{\text{chốt}}\ge0{,}2$ (đề xuất)** | **0** |
 
-Cổng từ khoá vừa gần như không tiết kiệm gì vừa làm mất kết quả. Tách nhãn cho từng agent cũng gây mất
-kết luận. Dùng chung $p_{\text{commit}}$ ở ngưỡng $\tau_{\text{rej}}$ không mất mục nào. Phần tiết kiệm của
-cổng bị chặn trên bởi tỉ lệ chủ đề không có việc giao lẫn kết luận (khoảng 18% trên Synth‑30).
+Từ khoá vừa không tiết kiệm được gì vừa làm mất nội dung. Lọc riêng theo từng nhãn cũng làm mất kết
+luận, vì một số lời chốt kết luận được bộ phân loại xếp vào nhãn giao việc. Dùng xác suất "chốt" gộp cả
+hai nhãn ở ngưỡng thấp thì không mất mục nào. Phần tiết kiệm bị chặn trên bởi tỉ lệ chủ đề không có giao
+việc lẫn kết luận, khoảng 18% trên dữ liệu tổng hợp.
 
 ### 6.4. RQ4: Theo dõi tiến độ
 
-**Kết quả trên M_CM** (danh sách v2 gồm 3 việc có dấu vết được giao trước phiên, cộng 1 việc giả lập
-không có trong cuộc họp để kiểm `not_reported`):
+Trên cuộc họp có danh sách việc (3 việc thật được giao từ trước, cộng 1 việc giả lập không được nhắc
+tới), DiVA xác định đúng trạng thái **4/4 việc** ở cả 4 lần chạy. Việc giả lập được đánh dấu đúng là
+*không được báo cáo*. Yêu cầu "làm lại tờ trình" được xếp đúng là *tiếp nối* việc cũ, còn các việc phát
+sinh trong phiên được xếp là *việc mới*.
 
-- 3 lần gọi lặp Progress agent trên các chủ đề đã cắt sẵn, và 1 lần chạy cả pipeline, đều khớp **4/4**
-  trạng thái việc với gold.
-- Quan hệ việc giao: "làm lại tờ trình" ra `follow_up` của việc cũ T1; các việc phát sinh trong phiên ra
-  `new`, đúng như gold.
-- Chi phí: 20 lời gọi phân loại cho cả cuộc họp, so với 13 khi không có danh sách việc.
+Phân tích cho thấy ba yếu tố quyết định độ chính xác:
 
-**Bài học về thiết kế dữ liệu đầu vào.** Danh sách v1 gồm 6 việc, trong đó 3 việc thực ra phát sinh ngay
-trong phiên nhưng bị chiếu ngược thành "việc cũ". Trên danh sách này, ba lần chạy cả pipeline đều khớp
-3/6 việc, nhưng *không cùng 3 việc*. Có hai nguồn dao động: mô hình mở không tất định dù temperature 0,
-và mỗi lần chạy lại cắt chủ đề nên prompt cũng đổi. Vì vậy, muốn so sánh prompt thì phải giữ cố định
-phân đoạn chủ đề. Bộ phân loại thì cho cùng kết quả với cùng đầu vào.
+1. **Chất lượng danh sách việc đầu vào.** Ở phiên bản danh sách đầu tiên, 3/6 "việc cũ" thực ra là việc
+   phát sinh ngay trong phiên. Hệ thống chỉ khớp 3/6, và mỗi lần chạy khớp một bộ 3 việc khác nhau. Định
+   nghĩa thế nào là "việc cũ" là quyết định nghiệp vụ, không phải lỗi mô hình.
+2. **Câu hỏi kiểm phải hợp với kiểu việc.** Với việc "báo cáo tình hình các dự án", câu hỏi chung xếp
+   lượt trả lời là "đang làm" (0,92), vì các dự án đang làm thủ tục. Câu hỏi dành cho việc báo cáo xếp
+   đúng là "đã báo cáo" (0,99). Bộ phân loại kiểu việc tách được việc báo cáo (1,00) khỏi các việc làm
+   ra sản phẩm (tờ trình 0,35; tiếp thu góp ý 0,03).
+3. **Phân công giữa tác tử và bộ phân loại.** Có trường hợp câu "đã giải trình, tiếp thu" nằm trong một
+   đoạn dài nói về đề án "tiếp tục hoàn thiện", và bộ phân loại xếp "đang làm". Ba cách viết lại câu hỏi
+   đều không sửa được mà không làm hỏng trường hợp khác. Vì vậy chúng tôi để tác tử, vốn đọc cả chủ đề,
+   quyết "xong hay đang làm". Bộ phân loại chỉ quyết lượt nói là *báo cáo*, *chỉ đạo* hay *chỉ nhắc
+   tới*. Bộ phân loại cũng ngăn một *kiến nghị* của đại biểu biến một việc đã xong thành "phải làm lại".
 
-**Vì sao câu hỏi kiểm cần tuỳ theo kiểu việc.** Với việc "Báo cáo tình hình các dự án cảng", lượt trả
-lời bị $h^{\text{progress}}$ xếp "đang làm" (0,92), vì nội dung nói các dự án đang làm thủ tục. Còn
-$h^{\text{report}}$ xếp đúng là "đã báo cáo" (0,99). Bộ phân loại kiểu việc tách được việc báo cáo
-(1,00) khỏi các việc làm ra sản phẩm: tờ trình 0,35; tiếp thu góp ý 0,03; việc báo cáo tiến độ giả lập
-0,73.
+Ngoài ra, cùng một đầu vào, LLM mở vẫn có thể cho kết quả khác nhau giữa các lần chạy, và cắt chủ đề khác
+đi cũng làm prompt thay đổi. So sánh hai cấu hình chỉ có ý nghĩa khi giữ cố định phân đoạn chủ đề và
+chạy lặp lại nhiều lần.
 
-**Vì sao không để bộ phân loại tự đổi giữa các trạng thái báo cáo.** Câu "đã giải trình, tiếp thu" của
-việc tiếp thu góp ý nằm trong một đoạn 2.388 ký tự nói đề án "tiếp tục hoàn thiện", và $h^{\text{progress}}$
-xếp "đang làm" (0,89). Ba cách viết lại câu hỏi đều không vượt được ngưỡng 0,8:
+### 6.5. RQ5: Thời gian chạy
 
-| Biến thể câu hỏi | Kết quả |
-|---|---|
-| Thêm sản phẩm của việc vào đầu vào | 0,72 "đang làm" |
-| Quy tắc "xét sản phẩm của việc" + viết lại mô tả nhãn | 0,63 "xong", nhưng lượt "tờ trình phải làm lại" tụt từ 0,87 xuống 0,75 |
-| Chỉ lấy đoạn 800 ký tự quanh câu đó | 0,60 "xong" |
+Cuộc họp 1.259 lượt nói, 14 chủ đề được xử lý trong khoảng **78 giây**, trong đó cắt chủ đề mất 12 giây.
+Lần đo này thực hiện trước khi có vòng đồng thuận. Nhờ xử lý song song, thời gian không còn tăng tuyến
+tính theo số chủ đề như ở cách xử lý tuần tự.
 
-Từ kết quả này, chúng tôi phân công như sau: agent (đọc cả chủ đề) quyết *xong hay đang làm*, còn bộ
-phân loại quyết *lượt nói là báo cáo, chỉ đạo hay chỉ nhắc*. Bộ phân loại hành vi lời nói $h$ còn được
-dùng làm cổng cho trạng thái "làm lại/hoãn". Nhờ vậy, ở M_CM, một đề nghị của đại biểu không biến một
-việc đã xong thành `returned`.
-
-### 6.5. RQ5: Hiệu năng
-
-Trên M_TH (1.259 lượt, 14 chủ đề), toàn hệ thống chạy khoảng **78 s**, trong đó cắt chủ đề mất **12 s**.
-Lần đo này dùng Verifier DeepSeek và được thực hiện *trước* khi có giao thức đồng thuận và cổng chọn
-agent. Hệ thống v1 tuần tự có độ trễ $\sum_k t_k$; DiVA có độ trễ $\max_k t_k$ cộng thời gian chờ
-semaphore.
-
-### 6.6. Minh hoạ giao thức đồng thuận
-
-*Kịch bản minh hoạ dựng theo luồng của bộ kiểm thử, không phải số đo.* Action agent trích việc "Rà soát
-phương án", với lượt chốt T12 là lời của một thành viên. Evidence‑check gắn cờ "chưa rõ" vì
-$p_{\text{commit}}(T12)$ rơi vào vùng mơ hồ.
-
-- **Vòng 1.** Verifier gọi `search_meeting("rà soát phương án")`, thấy T12 và T40, rồi kết luận `revise`
-  với phản hồi: "T12 chỉ là đề xuất; T40 của chủ trì giao Sở Xây dựng". Agent trả lời `amend`: đổi actor
-  thành Sở Xây dựng, lượt chốt T40.
-- **Vòng 2.** Verifier trả `keep` với `deciding_turn_id = T40`.
-
-Kết quả có nhãn `consensus`. Tổng chi phí là $c=(2+1)+1=4$ lời gọi LLM, thấp hơn nhiều so với cận 15.
+Chi phí kiểm chứng cho mỗi mục mơ hồ bị chặn trên, tối đa 15 lần gọi LLM. Trong ví dụ điển hình, tác tử
+kiểm chứng tìm thấy lời giao việc thật của người chủ trì ở lượt khác, tác tử trích xuất sửa người nhận
+việc theo đó, và hai bên thống nhất sau 2 vòng, tổng cộng 4 lần gọi.
 
 ---
 
-## 7. Thảo luận và hạn chế
+## 7. Thảo luận
 
-**Chưa có gold end‑to‑end cho Giao việc và Kết luận.** Ba giả định rủi ro nhất chưa được kiểm:
+**Ý nghĩa nghiệp vụ.** DiVA không thay người soạn biên bản. Nó chuyển công việc từ *nghe lại và viết*
+sang *duyệt có trích dẫn*. Mỗi mục kèm câu nói làm căn cứ. Mục mơ hồ được đánh dấu kèm lý do và các ứng
+viên người nhận việc. Vết kiểm chứng cho người duyệt biết vì sao một mục được giữ hay bỏ. Thiết kế "không
+chắc thì giữ lại và đánh dấu" chấp nhận nhiều mục cần duyệt hơn để đổi lấy việc không âm thầm mất nội
+dung. Với biên bản hành chính, sót một chỉ đạo thường đắt hơn duyệt thừa một mục.
 
-- (i) danh bạ dựng một lần không làm giảm chất lượng định danh so với ngữ cảnh chạy dồn;
-- (ii) cổng không làm mất recall trên cuộc họp thật (mới mô phỏng trên dữ liệu tổng hợp);
-- (iii) giao thức đồng thuận không khiến bên nào *nhượng bộ sai*.
+**Hạn chế.**
 
-**Gold nhỏ, một người gán.** Gold‑3 có 3 cuộc họp. Gold tiến độ có 1 cuộc họp và 4 việc. Chênh một ranh
-giới có thể làm F1 lệch khoảng 0,14, nên các khác biệt nhỏ nằm trong vùng nhiễu.
+- *Chưa có đánh giá end‑to‑end* cho Giao việc và Kết luận trên dữ liệu thật có nhãn. Cũng chưa kiểm
+  chứng được rằng vòng đồng thuận không khiến một bên nhượng bộ sai.
+- *Dữ liệu đánh giá nhỏ*: 3 cuộc họp cho cắt chủ đề, 1 cuộc họp cho tiến độ, đều do một người gán nhãn.
+  Các khác biệt nhỏ có thể nằm trong vùng nhiễu.
+- *Lệch giữa dữ liệu tổng hợp và dữ liệu thật*: bộ cắt chủ đề và các ngưỡng của bộ phân loại đều được
+  chọn phần lớn trên dữ liệu tổng hợp. Các ngưỡng cho phần tiến độ chưa được hiệu chỉnh riêng.
+- *Đơn vị là lượt nói*: không tách được lượt nói chứa nhiều chủ đề. Khi bộ tách người nói gộp nhiều
+  người vào một nhãn, vai người nói (chủ trì hay trình bày) có thể bị hiểu sai.
+- *Thiên lệch tự đồng ý*: tác tử trả lời phản hồi chính là tác tử đã trích ra mục đó. Dùng mô hình khác
+  họ cho bên kiểm chứng giảm rủi ro này nhưng không loại bỏ hẳn.
 
-**Ngưỡng mượn.** Các ngưỡng 0,8 của $h^{\text{progress}}$, $h^{\text{report}}$ và $h^{\text{kind}}$ được
-mượn từ $h$ và chưa được hiệu chỉnh riêng. Với việc làm ra sản phẩm, quyết định "xong hay đang làm" phụ
-thuộc vào agent (cờ `kept`), nên lỗi của agent ở chỗ này không bị bắt.
+**Triển khai có trách nhiệm.** Nội dung họp của cơ quan nhà nước có thể nhạy cảm. Hệ thống nên chạy trên
+hạ tầng được phép, ưu tiên mô hình triển khai nội bộ cho các bước xử lý toàn văn. Biên bản cuối cùng vẫn
+phải do người có thẩm quyền duyệt.
 
-**Khoảng cách tổng hợp → thật** vẫn tồn tại ở cả mô hình cắt chủ đề lẫn ngưỡng của bộ phân loại.
+**Giao thức đánh giá đề xuất.** Bước tiếp theo là xây gold end‑to‑end gồm 3–5 biên bản có danh sách
+việc, có hai người gán nhãn độc lập, rồi đo các ablation sau:
 
-**Giới hạn của việc cắt theo lượt nói và của diarization.** Cắt theo lượt nói không tách được lượt đa
-chủ đề. Khi nhãn người nói gộp nhiều người, quy tắc ưu tiên theo loại lượt chỉ giảm ảnh hưởng chứ không
-sửa được gốc. Dòng "Người chủ trì" trong prompt cũng có thể khiến lời của người trình bày cùng nhãn bị
-đọc như lời chủ trì.
-
-**Thiên lệch tự đồng ý.** Proposer chính là mô hình đã sinh candidate. Dùng Verifier khác họ mô hình
-giảm được rủi ro này nhưng không loại bỏ hoàn toàn.
-
-**Chi phí.** Mỗi candidate nghi ngờ có thể tốn tới 15 lời gọi LLM. Prompt của Verifier dài 20–40 nghìn
-ký tự với chủ đề lớn.
-
----
-
-## 8. Giao thức đánh giá end‑to‑end đề xuất
-
-| Mã | Ablation | Câu hỏi | Độ đo |
-|---|---|---|---|
-| A1 | Tắt cổng chọn agent | Cổng có mất recall trên dữ liệu thật không; tiết kiệm bao nhiêu? | Recall Giao việc/Kết luận; số lời gọi |
-| A2 | Danh bạ một lần so với ngữ cảnh chạy dồn (v1) | Định danh có giảm không? | Độ chính xác actor; tỉ lệ `unknown` |
-| A3 | $R\in\{1,2,3\}$; tắt Proposer | Giao thức đồng thuận có ích không? | P/R; phân bố nhãn kết thúc; số vòng |
-| A4 | Verifier ReAct so với Debate+Judge | Tra cả cuộc họp có hơn chỉ đọc đoạn hiện tại? | P/R; tỉ lệ lượt chốt nằm ở chủ đề khác |
-| A5 | $h$ so với luật từ khoá ở evidence‑check | Ảnh hưởng tới $M$ và P/R cuối | $M$; P/R |
-| A6 | DialSTART‑VN / DialTreeSeg / TreeSeg / chia đều | Cắt chủ đề ảnh hưởng thế nào tới đầu ra phía sau? | P/R Giao việc; $P_k$; số mục trùng xuyên chủ đề |
-| A7 | Đổi họ mô hình Verifier | Thiên lệch tự đồng ý | Tỉ lệ `keep` khi cùng/khác mô hình |
-| A8 | Câu hỏi tiến độ chung so với tuỳ kiểu việc | Lợi ích của $h^{\text{kind}}$ | Độ khớp trạng thái việc |
-
-Điều kiện tiên quyết là mở rộng gold: ít nhất 3–5 biên bản có 3–6 mục nghị sự, có danh sách việc, và
-có người gán thứ hai để đo độ đồng thuận giữa người gán. Mỗi so sánh prompt cần cố định phân đoạn chủ
-đề và lặp ít nhất 3 lần.
+1. tắt cổng trích xuất, để đo recall và chi phí;
+2. dùng danh bạ toàn cuộc họp so với ngữ cảnh chuyển dồn giữa các chủ đề;
+3. thay đổi số vòng đồng thuận, hoặc bỏ hẳn vòng đồng thuận;
+4. so sánh kiểm chứng có tra cứu toàn cuộc họp với tranh luận chỉ trong đoạn;
+5. so sánh các bộ cắt chủ đề khác nhau;
+6. so sánh câu hỏi tiến độ chung với câu hỏi tuỳ kiểu việc.
 
 ---
 
-## 9. Kết luận
+## 8. Kết luận
 
-DiVA sinh biên bản họp tiếng Việt có căn cứ bằng cách kết hợp cắt chủ đề dựa trên mạch lạc với một hệ
-đa tác tử kiểm chứng chọn lọc. Hệ thống đặt *một bộ phân loại hành vi lời nói đã hiệu chỉnh* vào ba vị
-trí (cổng chọn agent, phân loại sơ bộ, kiểm tiến độ), và chỉ dùng tới Verifier ReAct cùng giao thức
-đồng thuận cho phần thật sự mơ hồ. Nhờ vậy DiVA vừa song song hoá được theo chủ đề, vừa giữ được các
-bất biến an toàn: không bịa mục mới khi chưa được kiểm, không xoá nội dung khi hạ tầng lỗi, không xoá
-việc cũ khỏi danh sách. Các bằng chứng thành phần hiện có ủng hộ từng lựa chọn thiết kế. Bước tiếp theo
-bắt buộc là đánh giá end‑to‑end trên gold mở rộng theo giao thức ở Mục 8.
+Chúng tôi phát biểu bài toán sinh biên bản họp hành chính tiếng Việt có căn cứ, trong đó đúng *trách
+nhiệm* quan trọng hơn đẹp câu chữ, và đề xuất DiVA. DiVA cắt cuộc họp thành chủ đề, xử lý song song, và
+dùng một bộ phân loại hành vi lời nói đã hiệu chỉnh để quyết định nơi cần trích xuất và nơi cần kiểm
+chứng. Việc kiểm chứng dành cho một tác tử có tra cứu toàn cuộc họp, làm việc theo cơ chế đồng thuận với
+quy tắc an toàn. Thực nghiệm thành phần cho thấy ba điều: hiệu chỉnh xác suất là điều kiện để định tuyến
+hiệu quả; từ khoá không đủ để nhận ra lời giao việc tiếng Việt; và trong theo dõi tiến độ, cần phân biệt
+việc báo cáo với việc làm ra sản phẩm. Đánh giá end‑to‑end trên dữ liệu thật mở rộng là bước tiếp theo
+cần thiết.
 
 ---
 
@@ -817,7 +539,7 @@ bắt buộc là đánh giá end‑to‑end trên gold mở rộng theo giao th�
 - Carletta, J. et al. (2005). The AMI Meeting Corpus: A Pre-announcement. *MLMI*.
 - Chen, L., Zaharia, M., Zou, J. (2023). FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance. arXiv:2305.05176.
 - Du, Y., Li, S., Torralba, A., Tenenbaum, J., Mordatch, I. (2023). Improving Factuality and Reasoning in Language Models through Multiagent Debate. arXiv:2305.14325.
-- Gao, H., Wang, R., Lin, T.-E., Wu, Y., Yang, M., Huang, F., Li, Y. (2023). Unsupervised Dialogue Topic Segmentation with Topic-aware Utterance Representation. *SIGIR*. arXiv:2305.02747.
+- Gao, H., Wang, R., Lin, T.-E., Wu, Y., Yang, M., Huang, F., Li, Y. (2023). Unsupervised Dialogue Topic Segmentation with Topic-aware Utterance Representation. *SIGIR*.
 - Geifman, Y., El-Yaniv, R. (2017). Selective Classification for Deep Neural Networks. *NeurIPS*.
 - Gklezakos, D. et al. (2024). TreeSeg: Hierarchical Topic Segmentation of Large Transcripts. arXiv:2407.12028.
 - Gou, Z. et al. (2024). CRITIC: Large Language Models Can Self-Correct with Tool-Interactive Critiquing. *ICLR*.
@@ -826,67 +548,6 @@ bắt buộc là đánh giá end‑to‑end trên gold mở rộng theo giao th�
 - Liang, T. et al. (2023). Encouraging Divergent Thinking in Large Language Models through Multi-Agent Debate. arXiv:2305.19118.
 - Madaan, A. et al. (2023). Self-Refine: Iterative Refinement with Self-Feedback. *NeurIPS*.
 - Purver, M., Dowding, J., Niekrasz, J., Ehlen, P., Noorbaloochi, S., Peters, S. (2007). Detecting and Summarizing Action Items in Multi-Party Dialogue. *SIGdial*.
-- Wang, L. et al. (2023). Plan-and-Solve Prompting. *ACL*.
-- Xing, L., Carenini, G. (2021). Improving Unsupervised Dialogue Topic Segmentation with Utterance-Pair Coherence Scoring. *SIGdial*. arXiv:2106.06719.
+- Xing, L., Carenini, G. (2021). Improving Unsupervised Dialogue Topic Segmentation with Utterance-Pair Coherence Scoring. *SIGdial*.
 - Yao, S. et al. (2023). ReAct: Synergizing Reasoning and Acting in Language Models. *ICLR*.
 - Zhong, M. et al. (2021). QMSum: A New Benchmark for Query-based Multi-domain Meeting Summarization. *NAACL*.
-- Các tài liệu về cắt chủ đề bằng LLM và độ đo (Def‑DTS, Findings ACL 2025; Multi-level ToC, arXiv:2601.02128; CobSeg, arXiv:2605.30668; When F1 Fails, arXiv:2512.17083): xem `experiments/RESEARCH_dialogue_topic_segmentation.md`.
-
----
-
-## Phụ lục A. Triển khai hệ thống
-
-**Dịch vụ.** Hệ thống cung cấp ba endpoint:
-
-- `POST /v3/meetings/analyze` nhận transcript kèm `meeting_date`, `chair`, `attendees`, `tasks` (đều tuỳ
-  chọn) và trả đủ bốn phần cùng bản ghi kiểm chứng.
-- `POST /v3/meetings/analyze/{part}` tính lại riêng một phần (`development`, `assignments`, `decisions`
-  hoặc `progress`) trên *cùng* phân đoạn và nhãn chủ đề.
-- `GET /v3/meetings/analyses/{key}` đọc lại kết quả đã lưu, không gọi LLM.
-
-**Cache có địa chỉ theo nội dung.** Khoá là
-$\text{sha256}(\text{payload chuẩn hoá} \,\|\, \text{fingerprint})$. Fingerprint gồm mã nguồn, cấu hình,
-checkpoint và biến môi trường chọn mô hình, nên sửa prompt là cache cũ hết hiệu lực. Kết quả được chia
-thành *base* (lượt nói, phân đoạn, nhãn) và bốn *phần*. Cache giữ ba bất biến:
-
-1. mọi phần trong một phản hồi dùng chung một base;
-2. mỗi mục có tối đa một lần tính đang chạy (single‑flight, lock Redis được gia hạn trong lúc tính);
-3. chỉ ghi khi tính xong, và lần chạy lại có chủ đề lỗi không đè bản đầy đủ đang lưu.
-
-Backend mặc định là Redis, có TTL và dùng chung giữa các worker. Bộ phân loại nhớ kết quả theo nội dung,
-nên chạy lại một phần chỉ gọi lại agent và Verifier.
-
-**Giao diện.** Mỗi tab (Diễn biến, Giao việc, Kết luận, Tiến độ) có nút chạy lại riêng. Tab Giao việc
-xếp một việc dưới mọi bên nhận việc kèm vai trò và quan hệ với việc cũ. Tab Tiến độ hiện trạng thái cũ →
-mới cùng các cờ. Khung bản ghi kiểm chứng hiển thị chuỗi tra cứu và các vòng đồng thuận, có bộ lọc
-"Chưa đồng thuận".
-
-## Phụ lục B. Ánh xạ phương pháp → mã nguồn
-
-| Thành phần | File |
-|---|---|
-| DialSTART‑VN: mô hình, loss | `experiments/dialstart/model.py` |
-| Suy luận + bộ chọn ranh giới | `experiments/dialstart/dialstart_segmenter.py`; tham số `_DIALSTART_*` trong `be/services/pipeline.py` |
-| Graph cha / subgraph / state | `src/agentic_v3/graph/{meeting,topic,state}.py` |
-| Planner + cổng chọn agent | `src/agentic_v3/nodes/planner.py` (`may_assign_or_decide`) |
-| Bộ phân loại hành vi lời nói | `src/agentic_v3/core/turn_act.py`; số liệu: `experiments/009_decisions_api/` |
-| Prompt, agent trích xuất | `src/agentic_v3/nodes/{prompts,extractors}.py`, `src/agentic_v3/core/nodes/` |
-| Luật evidence‑check, chuẩn hoá hạn | `src/agentic_v3/core/{_shared,deadline}.py` |
-| Verifier, đồng thuận, công cụ | `src/agentic_v3/nodes/{verifier,verifier_tools}.py` |
-| Định danh tác nhân | `src/agentic_v3/actors/{resolution,mentions,attendees}.py` |
-| Tiến độ | `src/agentic_v3/nodes/{progress,progress_act}.py`, `src/agentic_v3/actors/agenda.py` |
-| Dịch vụ, cache | `be/routers/meetings_v3.py`, `be/services/{pipeline_v3,analysis_cache}.py` |
-
-## Phụ lục C. Tái lập
-
-```bash
-# Bảng 4–6 (không cần mạng)
-python experiments/009_decisions_api/analyze.py
-
-# Test với LLM giả và Redis giả
-python -m pytest src/agentic_v3/tests be/test_api_v3.py be/test_analysis_cache.py
-
-# Chạy dịch vụ
-docker compose up -d redis
-TOPIC_SEGMENTER=dialstart uvicorn --app-dir be main:app
-```
