@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.agentic.schemas import ActionItemCandidate
+from src.agentic_v3.core.schemas import ActionItemCandidate
 from src.agentic_v3 import MeetingAnalyzerV3, attendee_path_for, load_attendee_roster
 from src.agentic_v3.actors.resolution import (
     apply_verifier_actor_choice,

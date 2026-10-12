@@ -1,5 +1,5 @@
 """Kiểu dữ liệu riêng của v3. Candidate, luận điểm và lỗi dùng lại nguyên kiểu của
-``src.agentic.schemas`` để tầng trình bày (``be/services``) serialize như v1.
+``.core.schemas`` (chép từ ``src.agentic.schemas``) để tầng trình bày (``be/services``) serialize như v1.
 
 ``verification`` của candidate trong v3 có thêm hai giá trị ngoài ``Verification``
 của v1: ``"consensus"`` (Verifier và agent trích xuất đồng thuận) và ``"verifier"``
@@ -12,7 +12,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Literal, TypedDict
 
-from ..agentic.schemas import (
+from .core.deadline import DeadlineKind
+from .core.schemas import (
     ActionItemCandidate,
     CandidateKind,
     DecisionCandidate,
@@ -20,12 +21,30 @@ from ..agentic.schemas import (
     TopicFailure,
 )
 from ..utils.contracts import SpeakerTurn, TopicLabel
+from .actors.agenda import TaskAgenda
 from .actors.attendees import AttendeeRoster
 
 VerifierVerdict = Literal["keep", "revise", "drop", "unresolved"]
 ProposerStance = Literal["accept", "amend", "defend"]
 ActorType = Literal["person", "organization", "unknown"]
 AssigneeRole = Literal["lead", "support", "joint"]
+# Trạng thái agent tiến độ khai cho một việc trong một chủ đề (xem ``nodes/progress.py``).
+UpdateStatus = Literal["done", "in_progress", "blocked", "returned", "deferred", "mentioned"]
+UPDATE_STATUSES: tuple[str, ...] = ("done", "in_progress", "blocked", "returned", "deferred", "mentioned")
+# Quan hệ của một việc giao với danh sách việc cần báo cáo (gán ở ``finalize``).
+AssignmentRelation = Literal["new", "follow_up", "reassign", "reschedule"]
+# Phần kết quả tính được riêng trên cùng nền cắt chủ đề + nhãn (``MeetingAnalyzerV3.analyze``):
+# Diễn biến (Content agent), Giao việc (Action), Kết luận (Decision), Tiến độ (agent tiến độ).
+AnalysisPart = Literal["development", "assignments", "decisions", "progress"]
+ANALYSIS_PARTS: tuple[AnalysisPart, ...] = ("development", "assignments", "decisions", "progress")
+# Agent trích xuất sinh ra từng phần: tên node trong ``graph/topic.py``, cũng là ``agent`` của
+# ``TopicFailure``/``SkippedAgent`` thuộc phần đó.
+AGENT_OF_PART: dict[AnalysisPart, str] = {
+    "development": "content_agent",
+    "assignments": "action_agent",
+    "decisions": "decision_agent",
+    "progress": "progress_agent",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,10 +58,17 @@ class SpeakerRegistry:
         names: tên người nói không trùng, theo thứ tự xuất hiện đầu tiên.
         roster: danh sách người/đơn vị tham dự (file ``*.attendees.json``); rỗng nếu
             cuộc họp không có file đi kèm.
+        chair: người chủ trì do phiên họp cung cấp (đã quy về tên người nói nếu khớp
+            duy nhất một người), None nếu không có. Agent trích xuất và Verifier đều
+            thấy dòng này ở đầu prompt.
+        agenda: danh sách việc cần báo cáo tiến độ (file ``*.tasks.json``); rỗng nếu
+            không có, khi đó không chạy agent tiến độ.
     """
 
     names: tuple[str, ...]
     roster: AttendeeRoster = AttendeeRoster()
+    chair: str | None = None
+    agenda: TaskAgenda = TaskAgenda()
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,6 +129,8 @@ class ActionItemV3(ActionItemCandidate):
         actor_flag: "ambiguous" khi CÓ một bên nhận việc chưa đủ rõ.
         actor_reason: lý do chọn actor chính (của Verifier, hoặc luật chấm điểm).
         assignees: mọi bên nhận việc kèm vai trò (chủ trì/phối hợp/cùng thực hiện).
+        relation: quan hệ với danh sách việc cần báo cáo ("new", "follow_up",
+            "reassign", "reschedule"); None khi phiên họp không có danh sách việc.
     """
 
     actor_type: ActorType = "unknown"
@@ -110,23 +138,7 @@ class ActionItemV3(ActionItemCandidate):
     actor_flag: str | None = None
     actor_reason: str = ""
     assignees: tuple[ActorAssignee, ...] = ()
-
-
-@dataclass(frozen=True, slots=True)
-class TopicPlan:
-    """Kế hoạch chạy agent cho MỘT chủ đề, do Planner (luật, 0 token) lập.
-
-    Các trường:
-        segment_id: mã chủ đề.
-        run_action / run_decision: có chạy Action / Decision agent cho chủ đề này không.
-        action_cues / decision_cues: các cụm từ đã khớp (để audit vì sao chạy/bỏ).
-    """
-
-    segment_id: str
-    run_action: bool
-    run_decision: bool
-    action_cues: tuple[str, ...] = ()
-    decision_cues: tuple[str, ...] = ()
+    relation: AssignmentRelation | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -205,6 +217,93 @@ class VerificationRecord:
     rounds: tuple[ConsensusRound, ...] = ()
 
 
+@dataclass(frozen=True, slots=True)
+class ProgressUpdate:
+    """Một cập nhật tiến độ của MỘT việc trong MỘT chủ đề (``nodes/progress.py``).
+
+    Các trường:
+        segment_id: chủ đề chứa cập nhật.
+        task_id: mã việc trong danh sách việc cần báo cáo.
+        status: trạng thái sau khi kiểm (xem ``UpdateStatus``).
+        status_turn_id: lượt nói nêu trạng thái; None nếu agent không chỉ ra được.
+        evidence_ids, quotes: bằng chứng (turn_id + nguyên văn).
+        summary: một câu tóm tắt nội dung báo cáo/chỉ đạo về việc.
+        blockers: vướng mắc được nêu.
+        directive: chỉ đạo của người chủ trì về việc, rỗng nếu không có.
+        deadline_raw, deadline_date, deadline_kind: hạn MỚI được nêu (cùng cách chuẩn hoá
+            với việc giao, xem ``core/deadline.py``).
+        deadline_removed: True khi cuộc họp bỏ hạn ("không kết luận về thời gian").
+        proposed_status: trạng thái agent khai, khi khác ``status`` (bị sửa/hạ).
+        status_flag: "revised" (Decisions sửa trạng thái), "uncertain" (không xác
+            nhận được, đã hạ về "mentioned") hoặc "kept" (Decisions xác nhận lượt là báo cáo
+            về việc nhưng không xác nhận đúng trạng thái agent khai; vẫn giữ trạng thái đó);
+            None nếu Decisions xác nhận hoặc chưa kiểm.
+        status_probabilities: phân bố xác suất Decisions cho lượt nêu trạng thái (lượt dài:
+            đoạn quyết định); với "mentioned" là đoạn nói về việc rõ nhất.
+        p_directive: xác suất lượt nêu trạng thái là chỉ đạo/kết luận (``turn_judge``),
+            None nếu không đo; ``finalize`` dùng để chỉ đạo thắng báo cáo.
+        verification: "decisions" (đã qua Decisions), "unchecked" (Decisions tắt/lỗi, giữ
+            nguyên điều agent khai) hoặc "rule" (mặc định khi mới trích, chưa qua bước kiểm).
+        reason: lý do sửa/hạ trạng thái (để audit).
+    """
+
+    segment_id: str
+    task_id: str
+    status: UpdateStatus
+    status_turn_id: str | None
+    evidence_ids: tuple[str, ...]
+    quotes: tuple[str, ...]
+    summary: str = ""
+    blockers: tuple[str, ...] = ()
+    directive: str = ""
+    deadline_raw: str | None = None
+    deadline_date: str | None = None
+    deadline_kind: DeadlineKind = "unknown"
+    deadline_removed: bool = False
+    proposed_status: str | None = None
+    status_flag: str | None = None
+    status_probabilities: tuple[tuple[str, float], ...] = ()
+    p_directive: float | None = None
+    verification: str = "rule"
+    reason: str = ""
+
+
+@dataclass(frozen=True, slots=True)
+class TaskProgress:
+    """Tiến độ của MỘT việc trong danh sách, gộp từ mọi chủ đề (``finalize``).
+
+    Các trường:
+        task_id, title, owner: thông tin việc (owner là tên bên chủ trì).
+        previous_status: trạng thái gần nhất trước phiên họp (từ file danh sách).
+        status: trạng thái sau phiên họp (``UpdateStatus``) hoặc "not_reported".
+        previous_due: hạn trước phiên họp.
+        deadline_raw, deadline_date, deadline_kind, deadline_removed: hạn mới (theo cập
+            nhật thắng), None/False nếu không đổi.
+        status_conflict: có báo cáo "done" đã xác nhận cùng một cập nhật đã xác nhận nêu
+            trạng thái khác (vd. báo cáo xong nhưng bị yêu cầu làm lại).
+        uncertain: cập nhật thắng chưa được xác nhận (``status_flag == "uncertain"``).
+        overdue: hạn cũ đã qua so với ngày họp mà việc chưa xong.
+        deciding_update: cập nhật quyết định trạng thái, None nếu không được báo cáo.
+        updates: mọi cập nhật của việc, theo thứ tự lượt nói (để audit).
+    """
+
+    task_id: str
+    title: str
+    owner: str
+    previous_status: str | None
+    status: str
+    previous_due: str | None = None
+    deadline_raw: str | None = None
+    deadline_date: str | None = None
+    deadline_kind: DeadlineKind = "unknown"
+    deadline_removed: bool = False
+    status_conflict: bool = False
+    uncertain: bool = False
+    overdue: bool = False
+    deciding_update: ProgressUpdate | None = None
+    updates: tuple[ProgressUpdate, ...] = ()
+
+
 class VerifyTask(TypedDict):
     """Gói dữ liệu ``Send`` cho Verifier: MỘT candidate uncertain.
 
@@ -234,6 +333,8 @@ class MeetingReport:
         verification_records: bản ghi kiểm chứng (kèm các vòng trao đổi).
         failures: lời gọi trích xuất vẫn lỗi sau mọi lượt thử.
         skipped_agents: agent bị Planner bỏ qua.
+        task_progress: tiến độ từng việc trong danh sách việc cần báo cáo, theo thứ tự
+            của file; rỗng nếu phiên họp không có danh sách việc.
     """
 
     labels: tuple[TopicLabel, ...]
@@ -243,20 +344,28 @@ class MeetingReport:
     verification_records: tuple[VerificationRecord, ...]
     failures: tuple[TopicFailure, ...]
     skipped_agents: tuple[SkippedAgent, ...]
+    task_progress: tuple[TaskProgress, ...] = ()
 
 
 __all__ = [
+    "AGENT_OF_PART",
+    "ANALYSIS_PARTS",
     "ActionItemV3",
     "ActorAssignee",
     "ActorCandidate",
     "ActorType",
+    "AnalysisPart",
     "AssigneeRole",
+    "AssignmentRelation",
     "ConsensusRound",
     "MeetingReport",
+    "ProgressUpdate",
     "ProposerStance",
     "SkippedAgent",
     "SpeakerRegistry",
-    "TopicPlan",
+    "TaskProgress",
+    "UPDATE_STATUSES",
+    "UpdateStatus",
     "VerificationRecord",
     "VerifierStep",
     "VerifierVerdict",

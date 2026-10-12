@@ -8,6 +8,7 @@ observation để Verifier tự sửa ở bước sau, không raise ra ngoài.
 from __future__ import annotations
 
 import math
+import re
 import unicodedata
 from collections import Counter
 from collections.abc import Collection, Sequence
@@ -131,6 +132,7 @@ class MeetingTools:
     ) -> None:
         self._turns = tuple(meeting_turns)
         self._by_id = {turn.turn_id: turn for turn in self._turns}
+        self._by_number = _index_by_number(self._turns)
         self._registry = registry
         self._top_k = search_top_k
         self._task_text = task_text
@@ -165,11 +167,28 @@ class MeetingTools:
         Đầu ra: dòng lượt nói, hoặc thông báo lỗi.
         """
 
-        bare = turn_id.strip().lstrip("[").split("|", 1)[0].rstrip("]").strip()
+        bare = self._resolve_turn_id(turn_id)
         turn = self._by_id.get(bare)
         if turn is None:
             return f"LỖI: không có lượt nói '{bare}' trong cuộc họp."
         return format_turn_line(turn, max_chars=_MAX_GET_TURN_CHARS)
+
+    def _resolve_turn_id(self, raw: str) -> str:
+        """Chuẩn hoá cách Verifier gọi một lượt nói về turn_id thật của cuộc họp.
+
+        Nhận "[T1|Tên]", và cả dạng viết tắt mà model hay dùng: "T30", "000030", "30" cho
+        "TURN_000030" (so theo số thứ tự, chỉ khi số đó ứng với đúng một lượt nói).
+        Trước đây các dạng này trả "không có lượt nói", Verifier tra lại nhiều lần và hết bước.
+
+        Đầu vào: raw - chuỗi Verifier đưa.
+        Đầu ra: turn_id thật nếu tìm được, ngược lại chuỗi đã bỏ ngoặc (để báo lỗi).
+        """
+
+        bare = raw.strip().lstrip("[").split("|", 1)[0].rstrip("]").strip()
+        if bare in self._by_id:
+            return bare
+        number = _trailing_number(bare)
+        return self._by_number.get(number, bare) if number is not None else bare
 
     def search_meeting(self, query: str) -> str:
         """Tìm các lượt nói khớp từ khoá nhất trong cả cuộc họp.
@@ -229,7 +248,7 @@ class MeetingTools:
 
         alias, _, turn_part = argument.partition("@")
         alias = alias.strip()
-        context_turn_id = turn_part.strip().lstrip("[").split("|", 1)[0].rstrip("]").strip() or None
+        context_turn_id = self._resolve_turn_id(turn_part) or None
         if not alias:
             return "LỖI: thiếu cách gọi actor trước '@'."
         if context_turn_id and context_turn_id not in self._by_id:
@@ -251,6 +270,28 @@ class MeetingTools:
         else:
             lines.append(f"MƠ HỒ: chưa ứng viên nào đủ rõ cho '{alias}'; chọn theo bằng chứng hoặc để unknown.")
         return "\n".join(lines)
+
+
+def _trailing_number(turn_id: str) -> int | None:
+    """Số thứ tự ở cuối một turn_id ("TURN_000030" -> 30, "T5" -> 5), None nếu không có."""
+
+    match = re.search(r"(\d+)\s*$", turn_id)
+    return int(match.group(1)) if match else None
+
+
+def _index_by_number(turns: Sequence[SpeakerTurn]) -> dict[int, str]:
+    """Số thứ tự -> turn_id, bỏ các số trùng nhau giữa nhiều lượt (mơ hồ thì không đoán)."""
+
+    index: dict[int, str] = {}
+    duplicated: set[int] = set()
+    for turn in turns:
+        number = _trailing_number(turn.turn_id)
+        if number is None:
+            continue
+        if number in index:
+            duplicated.add(number)
+        index[number] = turn.turn_id
+    return {number: turn_id for number, turn_id in index.items() if number not in duplicated}
 
 
 def _format_candidate(candidate: ActorCandidate) -> str:

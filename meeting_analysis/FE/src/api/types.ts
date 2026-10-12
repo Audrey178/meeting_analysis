@@ -127,9 +127,31 @@ export interface AnalyzeResponse {
 // ----- Agentic v3 (src/agentic_v3): POST /v3/meetings/analyze -> AnalyzeV3Result -----
 // Mirrors be/schemas.py (AnalyzeV3Request, AnalyzeV3Result & co). Keep in sync by hand.
 
+/** Một việc cần báo cáo tiến độ (cùng dạng file `<transcript>.tasks.json`); chỉ v3 dùng.
+ * owner/support/reporter: mã người/đơn vị trong attendees (vd. "P1", "O2") hoặc tên tự do. */
+export interface TaskIn {
+  id: string;
+  title: string;
+  owner: string;
+  support?: string[];
+  reporter?: string | null;
+  /** YYYY-MM-DD */
+  due?: string | null;
+  last_status?: TaskStatus | null;
+  source?: string;
+}
+
+export type TaskStatus = "not_started" | "in_progress" | "done" | "blocked";
+
+export interface TasksIn {
+  tasks: TaskIn[];
+}
+
 export interface AnalyzeV3Request extends AnalyzeRequest {
   /** Người chủ trì (tuỳ chọn); v3 đưa vào prompt để nhận ra lời giao việc/kết luận của chủ trì. */
   chair?: string | null;
+  /** Việc cần báo cáo tiến độ (tuỳ chọn); có thì kết quả có `task_progress`. */
+  tasks?: TasksIn;
 }
 
 export interface VerifierStepOut {
@@ -198,18 +220,94 @@ export interface ActionItemV3Out extends ActionItemOut {
   actor_reason?: string;
   actor_candidates?: ActorCandidateOut[];
   assignees?: ActorAssigneeOut[];
+  /** Mã việc cũ mà việc giao này tiếp nối (khi request có `tasks`). */
+  task_id?: string | null;
+  /** "new" | "follow_up" | "reassign" | "reschedule"; null khi request không có `tasks`. */
+  relation?: AssignmentRelation | null;
+}
+
+export type AssignmentRelation = "new" | "follow_up" | "reassign" | "reschedule";
+
+export type UpdateStatus = "done" | "in_progress" | "blocked" | "returned" | "deferred" | "mentioned";
+
+/** Một cập nhật tiến độ của một việc trong một chủ đề. */
+export interface ProgressUpdateOut {
+  segment_id: string;
+  task_id: string;
+  status: UpdateStatus;
+  status_turn_id: string | null;
+  evidence_ids: string[];
+  quotes: string[];
+  summary: string;
+  blockers: string[];
+  directive: string;
+  deadline_raw: string | null;
+  deadline_date: string | null;
+  deadline_kind: string;
+  deadline_removed: boolean;
+  /** Trạng thái agent khai, khi bị Decisions sửa/hạ. */
+  proposed_status: string | null;
+  /** "revised" | "uncertain" | "kept" (Decisions chỉ xác nhận là báo cáo, giữ trạng thái agent khai) | null */
+  status_flag: string | null;
+  status_probabilities: Record<string, number>;
+  p_directive: number | null;
+  /** "decisions" (đã qua Decisions) | "unchecked" (Decisions tắt/lỗi) | "rule" (chưa qua bước kiểm) */
+  verification: string;
+  reason: string;
+}
+
+/** Tiến độ một việc sau phiên họp; `status` = "not_reported" khi không chủ đề nào nói tới. */
+export interface TaskProgressOut {
+  task_id: string;
+  title: string;
+  owner: string;
+  previous_status: string | null;
+  status: UpdateStatus | "not_reported";
+  previous_due: string | null;
+  deadline_raw: string | null;
+  deadline_date: string | null;
+  deadline_kind: string;
+  deadline_removed: boolean;
+  status_conflict: boolean;
+  uncertain: boolean;
+  overdue: boolean;
+  deciding_update: ProgressUpdateOut | null;
+  updates: ProgressUpdateOut[];
+}
+
+/** Một phần kết quả v3 chạy lại được riêng (`POST /v3/meetings/analyze/{part}`). */
+export type V3Part = "development" | "assignments" | "decisions" | "progress";
+
+/** Trạng thái cache của một phần kết quả. */
+export interface V3PartMeta {
+  /** Lần tính thứ mấy của phần này cho cùng request (1 = lần đầu, tăng mỗi lần chạy lại). */
+  generation: number;
+  /** ISO 8601 (UTC). */
+  computed_at: string;
+  /** Response này lấy phần đó từ cache, không tính lại. */
+  from_cache: boolean;
+  /** "incomplete": có chủ đề lỗi (xem `failed_topics`). */
+  status: "ok" | "incomplete" | string;
 }
 
 export interface AnalyzeV3Result {
+  /** Khoá cache của request: `GET /v3/meetings/analyses/{analysis_key}` lấy lại kết quả. */
+  analysis_key: string;
+  /** Tăng sau mỗi lần ghi cache; response có version nhỏ hơn bản đang hiển thị là response cũ. */
+  cache_version: number;
+  /** Trạng thái từng phần; không có "progress" khi request không có `tasks`. */
+  parts: Partial<Record<V3Part, V3PartMeta>>;
   meeting_id: string;
   revision_id: string;
   topics: TopicOut[];
   verified_assignments: ActionItemV3Out[];
   verified_decisions: DecisionOut[];
+  /** Tiến độ từng việc cần báo cáo; rỗng khi request không có `tasks`. */
+  task_progress?: TaskProgressOut[];
   turns: TurnOut[];
   failed_topics: { segment_id: string; agent: string; error: string }[];
   verification_records: VerificationRecordOut[];
-  /** Extractor agents the Planner skipped (no assign/decide cue in the topic). */
+  /** Extractor agents the Planner skipped (Decisions found no assign/decide turn in the topic). */
   skipped_agents: { segment_id: string; agent: string }[];
 }
 

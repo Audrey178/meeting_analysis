@@ -13,6 +13,7 @@ python-dotenv>=1.0      # be/main.py, src/utils/openai_adapters.py (đọc .env)
 fastapi>=0.115
 uvicorn[standard]>=0.30
 pydantic>=2.0
+redis>=5.0              # be/services/analysis_cache.py (V3_CACHE=redis, mặc định); server: docker compose up -d redis
 
 # --- Cắt chủ đề + embedding cục bộ ---
 # be/services/pipeline_v3.py import experiments/dialstart ngay khi khởi động (torch + BertTokenizer);
@@ -23,6 +24,7 @@ sentence-transformers>=3.0
 
 # --- Test ---
 pytest>=8.0
+fakeredis[lua]>=2.20    # be/conftest.py: Redis giả cho test cache (lua: lock của redis-py chạy script)
 
 # Chỉ dùng cho script đánh giá/thí nghiệm, không cần để chạy API:
 #   python-docx (experiments/treeseg_turn_level/gt_parser.py), segeval, tqdm, keras (experiments/dialstart/test.py, eval_utils.py)

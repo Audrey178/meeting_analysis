@@ -10,9 +10,10 @@ class V3Config:
     """Các núm chỉnh của pipeline v3.
 
     Các trường:
-        skip_agents_without_cues: True thì Planner bỏ Action/Decision agent ở chủ đề
-            không có từ giao/nhận/chốt việc nào (Content agent không bao giờ bị bỏ).
-            Tắt để làm ablation đo recall của bước bỏ qua.
+        skip_agents_without_commit: True thì Planner hỏi Decisions (cần ``turn_judge``) và bỏ
+            Action/Decision agent ở chủ đề không có lượt nào có thể là giao/nhận/chốt việc
+            (``planner.may_assign_or_decide``; Content agent không bao giờ bị bỏ). Tắt để làm
+            ablation đo recall của bước bỏ qua.
         extract_attempts: số lần gọi tối đa cho MỖI agent trích xuất của một chủ đề
             (adapter đã tự retry lỗi tạm thời; đây là lượt thử lại ở tầng agent,
             thay cho ``retry_failed_topics`` chạy sau chủ đề cuối của v1).
@@ -28,7 +29,7 @@ class V3Config:
             ``LLMConcurrencyGate`` giới hạn, không phải giá trị này.
     """
 
-    skip_agents_without_cues: bool = True
+    skip_agents_without_commit: bool = True
     extract_attempts: int = 2
     verifier_max_tool_calls: int = 3
     search_top_k: int = 5

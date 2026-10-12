@@ -27,7 +27,7 @@ import unicodedata
 from collections.abc import Sequence
 from dataclasses import dataclass, fields, replace
 
-from ...agentic.schemas import ActionItemCandidate
+from ..core.schemas import ActionItemCandidate
 from ...stages._shared import VN_STOPWORDS, word_tokens
 from ...utils.contracts import SpeakerTurn
 from .mentions import ActorMention, find_support_names_in_text, split_actor_mentions

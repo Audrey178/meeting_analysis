@@ -3,6 +3,7 @@ import type {
   AnalyzeResponse,
   AnalyzeV3Request,
   AnalyzeV3Result,
+  V3Part,
 } from "./types";
 
 // Empty by default: dev uses the Vite proxy (vite.config.ts) for same-origin
@@ -78,11 +79,31 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-/** Pipeline v3: chạy một mạch tới kết quả (Verifier và agent trích xuất tự đồng thuận, không duyệt người). */
-export function analyzeMeetingV3(payload: AnalyzeV3Request): Promise<AnalyzeV3Result> {
-  return requestJson<AnalyzeV3Result>("/v3/meetings/analyze", {
+/**
+ * Pipeline v3: chạy một mạch tới kết quả (Verifier và agent trích xuất tự đồng thuận, không duyệt người).
+ * Backend dùng lại mọi phần đã cache cho cùng request; `refresh` tính lại tất cả, kể cả cắt chủ đề + nhãn.
+ */
+export function analyzeMeetingV3(
+  payload: AnalyzeV3Request,
+  options: { refresh?: boolean } = {},
+): Promise<AnalyzeV3Result> {
+  return requestJson<AnalyzeV3Result>(`/v3/meetings/analyze${options.refresh ? "?refresh=true" : ""}`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(payload),
   });
+}
+
+/** Tính lại riêng một phần trên cùng chủ đề + nhãn; trả kết quả đủ mọi phần (các phần khác từ cache). */
+export function reloadMeetingV3Part(part: V3Part, payload: AnalyzeV3Request): Promise<AnalyzeV3Result> {
+  return requestJson<AnalyzeV3Result>(`/v3/meetings/analyze/${part}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+/** Kết quả đã cache của một bản phân tích, không gọi LLM; `ApiError` 404 nếu cache không còn. */
+export function getMeetingV3Analysis(analysisKey: string): Promise<AnalyzeV3Result> {
+  return requestJson<AnalyzeV3Result>(`/v3/meetings/analyses/${encodeURIComponent(analysisKey)}`);
 }

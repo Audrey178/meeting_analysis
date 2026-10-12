@@ -1,4 +1,11 @@
-import type { ActionItemOut, ActionItemV3Out, ActorAssigneeOut, ActorType, AssigneeRole } from "../api/types";
+import type {
+  ActionItemOut,
+  ActionItemV3Out,
+  ActorAssigneeOut,
+  ActorType,
+  AssigneeRole,
+  AssignmentRelation,
+} from "../api/types";
 import { groupActionItemsByAssignee, initialsOf, speakerColor, UNASSIGNED_LABEL } from "../lib/format";
 import { Avatar, CitationCount, EmptyState, EvidenceItem, VerificationTag } from "./agentic/primitives";
 
@@ -13,6 +20,25 @@ function formatDeadline(item: ActionItemOut): string {
   const [year, month, day] = item.deadline_date.split("-");
   const prefix = (item.deadline_kind && DEADLINE_KIND_PREFIX[item.deadline_kind]) ?? "";
   return `${prefix}${day}/${month}/${year}`;
+}
+
+const RELATION_LABEL: Record<AssignmentRelation, { label: string; title: string }> = {
+  new: { label: "Việc mới", title: "Không thuộc việc nào trong danh sách việc cần báo cáo" },
+  follow_up: { label: "Tiếp nối", title: "Tiếp nối/làm lại một việc trong danh sách, cùng bên chủ trì" },
+  reassign: { label: "Giao lại", title: "Việc trong danh sách được giao cho bên khác bên chủ trì/phối hợp cũ" },
+  reschedule: { label: "Đổi hạn", title: "Việc trong danh sách được đặt hạn mới khác hạn cũ" },
+};
+
+/** Quan hệ của việc giao với danh sách việc cần báo cáo (chỉ v3, khi request có `tasks`). */
+function RelationTag({ item }: { item: ActionItemV3Out }) {
+  if (!item.relation) return null;
+  const relation = RELATION_LABEL[item.relation];
+  return (
+    <span className={item.relation === "new" ? "tag tag-muted" : "tag tag-neutral"} title={relation.title}>
+      {relation.label}
+      {item.task_id ? ` · ${item.task_id}` : ""}
+    </span>
+  );
 }
 
 const ROLE_LABEL: Record<AssigneeRole, string> = { lead: "Chủ trì", support: "Phối hợp", joint: "Cùng thực hiện" };
@@ -135,6 +161,7 @@ export function TaskAssignmentBlock({
                           {!unassigned && <ResolvedFrom item={item} current={group.assignee} />}
                           {!unassigned && <OtherAssignees item={item} current={group.assignee} />}
                           {unassigned && <UnresolvedCandidates assignees={item.assignees ?? []} />}
+                          <RelationTag item={item} />
                           <VerificationTag verification={item.verification} />
                         </>
                       }

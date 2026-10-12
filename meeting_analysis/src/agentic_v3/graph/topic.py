@@ -1,17 +1,23 @@
 """Subgraph xử lý MỘT chủ đề, từ gán nhãn đến kiểm chứng. Graph cha ``Send`` mọi chủ
 đề vào subgraph này cùng lúc (xem ``meeting.py``).
 
-    START -> label_topic -> content_agent  ------------------\\
-                         -> action_agent   (nếu plan cho phép) -> evidence_check
-                         -> decision_agent (nếu plan cho phép) -/       │
-                                                       (candidate UNCERTAIN, Send)
-                                                                        ▼
-                                                               verifier (0..N) -> END
-                                                    (mỗi candidate: Verifier <-> agent trích
-                                                     xuất trao đổi tới khi đồng thuận)
+    START -> label_topic ------------\\
+          -> plan_topic (Decisions) --> dispatch_extractors
+                                          -> content_agent  --------------------------\\
+                                          -> action_agent   (nếu plan_topic cho phép) -> evidence_check
+                                          -> decision_agent (nếu plan_topic cho phép) -/       │
+                                          -> progress_agent (nếu có danh sách việc)   /        │
+                                                                           (candidate UNCERTAIN, Send)
+                                                                                               ▼
+                                                                                      verifier (0..N) -> END
+                                                                           (mỗi candidate: Verifier <-> agent
+                                                                            trích xuất trao đổi tới khi đồng thuận)
 
 Gán nhãn nằm TRONG subgraph (không chạy hết stage07 trước như v1): chủ đề nào có nhãn
-thì trích xuất ngay, không chờ nhãn của chủ đề chậm nhất.
+thì trích xuất ngay, không chờ nhãn của chủ đề chậm nhất. ``plan_topic`` hỏi Decisions xem
+chủ đề có lượt nào có thể là giao/chốt việc (``planner.may_assign_or_decide``) để bỏ
+Action/Decision agent ở chủ đề không có; nó chạy song song với gán nhãn nên không cộng thêm
+thời gian chờ của nhãn.
 
 Ba agent trích xuất dùng lại các node của v1 (cùng luật làm sạch output) nhưng chạy
 với prompt của v3 và dòng người chủ trì (``nodes/extractors.py``); ``previous_context``
@@ -19,8 +25,17 @@ của Action agent được thay bằng danh bạ người nói của cả cuộ
 (``planner.format_registry_context``). Lỗi LLM được thử lại ngay trong chủ đề
 (``extract_attempts``) thay vì đợi tới sau chủ đề cuối như v1.
 
-Vì sao ba nhánh nối thẳng vào ``evidence_check`` (không dùng ``add_edge([...], ...)``
-chờ đủ ba): số nhánh thay đổi theo ``TopicPlan``; mọi nhánh cách điểm phân nhánh
+Agent tiến độ (``nodes/progress.py``) chỉ chạy khi phiên họp có danh sách việc cần báo
+cáo; cập nhật của nó được kiểm bằng Decisions trong ``evidence_check`` và không đi Verifier.
+
+Mỗi agent trích xuất sinh đúng một phần kết quả (``AGENT_OF_PART``), nên ``parts`` của
+``TopicInput`` chọn agent nào được chạy: tầng dịch vụ tính lại riêng một phần (vd. chỉ Giao
+việc) mà không đụng tới phần khác. Khi đó nhãn chủ đề được nạp sẵn (``preset_label``) để mọi
+phần dùng chung một nhãn: nhãn nằm trong prompt của cả bốn agent, và giao diện gắn mọi mục vào
+chủ đề theo nhãn đó.
+
+Vì sao các nhánh nối thẳng vào ``evidence_check`` (không dùng ``add_edge([...], ...)``
+chờ đủ ba): số nhánh thay đổi theo ``parts``, ``plan_topic`` và danh sách việc; mọi nhánh cách điểm phân nhánh
 đúng một bước nên LangGraph ghi kết quả của chúng trong cùng một superstep và
 ``evidence_check`` chạy đúng một lần.
 """
@@ -34,25 +49,28 @@ from functools import partial
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
-from ...agentic._shared import check_action_evidence, check_decision_evidence
-from ...agentic.schemas import SegmentTask
-from ...agentic.turn_act import TurnActJudge
+from ..core._shared import check_action_evidence, check_decision_evidence
+from ..core.schemas import SegmentTask
+from ..core.turn_act import TurnActJudge
 from ...stages.stage07_topic_labeling import label_topics
 from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
 from ..actors.resolution import list_known_actor_names, resolve_actor, split_item_mentions
 from ..config import V3Config
 from ..nodes.extractors import make_extractor
-from ..nodes.planner import format_registry_context
-from ..schemas import SkippedAgent, VerifyTask
-from .state import TopicInput, TopicOutput, TopicState
+from ..nodes.planner import COMMIT_PARTS, format_registry_context, may_assign_or_decide
+from ..nodes.progress import check_progress_updates, make_progress_agent
+from ..nodes.progress_act import ProgressActJudge
 from ..nodes.verifier import make_verifier
+from ..schemas import AGENT_OF_PART, ANALYSIS_PARTS, AnalysisPart, SkippedAgent, SpeakerRegistry, VerifyTask
+from .state import TopicInput, TopicOutput, TopicState
 
 # Tên node agent trích xuất -> (khoá kết quả của node v1, khoá trong TopicState).
 _EXTRACTORS = {
     "content_agent": ("meeting_development", "meeting_development"),
     "action_agent": ("action_item_candidates_raw", "action_candidates_raw"),
     "decision_agent": ("decision_candidates_raw", "decision_candidates_raw"),
+    "progress_agent": ("progress_updates_raw", "progress_updates_raw"),
 }
 
 
@@ -64,7 +82,8 @@ def _wrap_extractor(
     Agent trả kết quả rỗng + ``TopicFailure`` khi LLM lỗi (không raise); wrapper gọi
     lại tối đa ``attempts`` lần và chỉ ghi lỗi của lần cuối.
 
-    Đầu vào: name - tên node; agent - ``extractors.make_extractor``; attempts - số lần gọi tối đa.
+    Đầu vào: name - tên node; agent - ``extractors.make_extractor`` (hoặc
+        ``progress.make_progress_agent``); attempts - số lần gọi tối đa.
     Đầu ra: hàm node đọc ``task`` trong TopicState.
     """
 
@@ -89,14 +108,17 @@ def _wrap_extractor(
 def _make_label_node(labeler: TopicLabelAdapter, labeler_config: TopicLabelerConfig):
     """Tạo node ``label_topic``: gán nhãn chủ đề (stage07, có guard + fallback) và dựng ``task``.
 
+    Chủ đề đã có nhãn nạp sẵn (``preset_label``) thì dùng lại, không gọi LLM.
+
     Đầu vào: labeler - adapter gán nhãn; labeler_config - cấu hình stage07.
     Đầu ra: hàm node.
     """
 
     def label_topic(state: TopicState) -> dict:
         segment = state["segment"]
-        plan = state["plan"]
-        (label,) = label_topics((segment,), config=labeler_config, adapter=labeler)
+        label = state["preset_label"]
+        if label is None:
+            (label,) = label_topics((segment,), config=labeler_config, adapter=labeler)
         task: SegmentTask = {
             "segment_id": segment.segment_id,
             "title": label.title,
@@ -105,30 +127,63 @@ def _make_label_node(labeler: TopicLabelAdapter, labeler_config: TopicLabelerCon
             "previous_context": format_registry_context(state["registry"]),
             "meeting_date": state.get("meeting_date"),
         }
-        skipped = [
-            SkippedAgent(segment.segment_id, agent)
-            for agent, run in (("action_agent", plan.run_action), ("decision_agent", plan.run_decision))
-            if not run
-        ]
-        return {"labels": [label], "task": task, "skipped_agents": skipped}
+        return {"labels": [label], "task": task}
 
     return label_topic
 
 
-def _route_extractors(state: TopicState) -> list[str]:
-    """Chọn các agent trích xuất cần chạy cho chủ đề theo ``TopicPlan``.
+def _make_plan_node(turn_judge: TurnActJudge | None, config: V3Config):
+    """Tạo node ``plan_topic``: có chạy Action/Decision agent ở chủ đề này không.
 
-    Đầu vào: state - sau ``label_topic``.
-    Đầu ra: list tên node (luôn có ``content_agent``).
+    Chỉ hỏi Decisions (``planner.may_assign_or_decide``) khi có ``turn_judge``, cấu hình bật
+    ``skip_agents_without_commit`` và ``parts`` có phần của hai agent đó; còn lại thì chạy cả
+    hai. Agent bị bỏ được ghi ``SkippedAgent`` (chỉ với phần nằm trong ``parts``).
+
+    Đầu vào: turn_judge - bộ phân loại lượt nói (None thì không bỏ agent nào); config - cấu hình v3.
+    Đầu ra: hàm node.
     """
 
-    plan = state["plan"]
-    targets = ["content_agent"]
-    if plan.run_action:
-        targets.append("action_agent")
-    if plan.run_decision:
-        targets.append("decision_agent")
-    return targets
+    def plan_topic(state: TopicState) -> dict:
+        parts = [part for part in COMMIT_PARTS if part in state["parts"]]
+        if turn_judge is None or not config.skip_agents_without_commit or not parts:
+            return {"run_commit_agents": True}
+        if may_assign_or_decide(state["turns"], turn_judge):
+            return {"run_commit_agents": True}
+        segment_id = state["segment"].segment_id
+        return {
+            "run_commit_agents": False,
+            "skipped_agents": [SkippedAgent(segment_id, AGENT_OF_PART[part]) for part in parts],
+        }
+
+    return plan_topic
+
+
+def _dispatch_extractors(state: TopicState) -> dict:
+    """Điểm hợp của ``label_topic`` và ``plan_topic`` (chạy song song); không đổi state."""
+
+    return {}
+
+
+def _route_extractors(state: TopicState) -> list[str] | str:
+    """Chọn các agent trích xuất cần chạy cho chủ đề theo ``parts`` và ``run_commit_agents``.
+
+    Content agent chạy ở MỌI chủ đề; Action/Decision agent khi ``plan_topic`` cho phép; agent
+    tiến độ khi phiên họp có danh sách việc cần báo cáo.
+
+    Đầu vào: state - sau ``label_topic`` và ``plan_topic``.
+    Đầu ra: list tên node, hoặc ``END`` khi chủ đề không còn agent nào phải chạy (vd. chỉ tính
+        Giao việc mà Planner bỏ Action agent ở chủ đề này).
+    """
+
+    has_agenda = bool(state["registry"].agenda.tasks)
+
+    def runs(part: AnalysisPart) -> bool:
+        if part == "progress":
+            return has_agenda
+        return part not in COMMIT_PARTS or state["run_commit_agents"]
+
+    targets = [AGENT_OF_PART[part] for part in ANALYSIS_PARTS if part in state["parts"] and runs(part)]
+    return targets or END
 
 
 def _ambiguous_actor_reasons(item, state: TopicState) -> list[str]:
@@ -168,18 +223,24 @@ def _strip_actor_roles(item, state: TopicState):
     return replace(item, actor=", ".join(mention.text for mention in mentions))
 
 
-def evidence_check(state: TopicState, turn_judge: TurnActJudge | None = None) -> dict:
+def evidence_check(
+    state: TopicState, turn_judge: TurnActJudge | None = None, progress_judge: ProgressActJudge | None = None
+) -> dict:
     """Tách candidate thô của chủ đề thành CLEAR (vào kết quả) / UNCERTAIN (đi Verifier).
 
     Luật của v1 (0 token); tên đã biết lấy từ danh bạ cả cuộc họp thay vì ngữ cảnh
     chạy dồn, cộng người và đơn vị trong danh sách tham dự (để "giao Sở Tài chính"
     không bị coi là actor không có căn cứ). Việc mà luật v1 coi là CLEAR nhưng actor
     mơ hồ giữa nhiều ứng viên vẫn đi Verifier. Có ``turn_judge`` thì lượt chốt được
-    xét theo nghĩa thay cho từ khoá (xem ``agentic/turn_act.py``).
+    xét theo nghĩa thay cho từ khoá (xem ``core/turn_act.py``). Cập nhật tiến độ được
+    kiểm bằng ``progress_judge`` trên lượt nêu trạng thái (``nodes/progress.py``), không
+    đi Verifier.
 
     Đầu vào: state - sau khi các agent trích xuất của chủ đề đã xong;
-        turn_judge - bộ phân loại lượt chốt (tuỳ chọn).
-    Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR) và ``pending_verify`` (ghi đè).
+        turn_judge - bộ phân loại lượt chốt (tuỳ chọn);
+        progress_judge - bộ phân loại lượt nêu trạng thái tiến độ (tuỳ chọn).
+    Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR), ``progress_updates`` và
+        ``pending_verify`` (ghi đè).
     """
 
     segment_id = state["segment"].segment_id
@@ -213,9 +274,13 @@ def evidence_check(state: TopicState, turn_judge: TurnActJudge | None = None) ->
             clear_decisions.append(item)
         else:
             pending.append(_verify_task("decision", index, item, flag.reasons))
+    progress_updates = check_progress_updates(
+        state.get("progress_updates_raw", []), turns, state["registry"].agenda, progress_judge, turn_judge
+    )
     return {
         "verified_assignments": clear_actions,
         "verified_decisions": clear_decisions,
+        "progress_updates": progress_updates,
         "pending_verify": tuple(pending),
     }
 
@@ -244,30 +309,40 @@ def build_topic_graph(
     labeler_config: TopicLabelerConfig,
     config: V3Config,
     turn_judge: TurnActJudge | None = None,
+    *,
+    progress_llm: LLMAdapter | None = None,
+    progress_judge: ProgressActJudge | None = None,
 ):
     """Dựng và biên dịch subgraph một chủ đề.
 
     Các adapter nên đã đi qua ``LLMConcurrencyGate`` (graph này không tự giới hạn).
 
     Đầu vào: bốn LLM (content/action/decision/verifier), adapter gán nhãn, cấu hình
-        stage07, cấu hình v3 và bộ phân loại lượt chốt (None thì dùng luật từ khoá).
+        stage07, cấu hình v3 và bộ phân loại lượt chốt (cho evidence-check, None thì dùng luật từ
+        khoá; và cho ``plan_topic``, None thì không bỏ agent nào);
+        progress_llm - LLM của agent tiến độ (None thì dùng ``action_llm``);
+        progress_judge - Decisions cho lượt nêu trạng thái (None thì không kiểm).
     Đầu ra: subgraph đã compile; đầu vào ``TopicInput``, đầu ra ``TopicOutput``.
     """
 
     attempts = config.extract_attempts
     graph = StateGraph(TopicState, input_schema=TopicInput, output_schema=TopicOutput)
     graph.add_node("label_topic", _make_label_node(labeler, labeler_config))
-    graph.add_node("content_agent", _wrap_extractor("content_agent", make_content_agent(content_llm), attempts))
-    graph.add_node("action_agent", _wrap_extractor("action_agent", make_action_agent(action_llm), attempts))
-    graph.add_node("decision_agent", _wrap_extractor("decision_agent", make_decision_agent(decision_llm), attempts))
-    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge))
+    graph.add_node("plan_topic", _make_plan_node(turn_judge, config))
+    graph.add_node("dispatch_extractors", _dispatch_extractors)
+    for name, llm in (("content_agent", content_llm), ("action_agent", action_llm), ("decision_agent", decision_llm)):
+        graph.add_node(name, _wrap_extractor(name, make_extractor(name, llm), attempts))
+    graph.add_node(
+        "progress_agent", _wrap_extractor("progress_agent", make_progress_agent(progress_llm or action_llm), attempts)
+    )
+    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge, progress_judge=progress_judge))
     proposer_llms = {"action": action_llm, "decision": decision_llm}
     graph.add_node("verifier", make_verifier(verifier_llm, proposer_llms, config))
 
     graph.add_edge(START, "label_topic")
-    graph.add_conditional_edges(
-        "label_topic", _route_extractors, ["content_agent", "action_agent", "decision_agent"]
-    )
+    graph.add_edge(START, "plan_topic")
+    graph.add_edge(["label_topic", "plan_topic"], "dispatch_extractors")
+    graph.add_conditional_edges("dispatch_extractors", _route_extractors, [*_EXTRACTORS, END])
     for name in _EXTRACTORS:
         graph.add_edge(name, "evidence_check")
     graph.add_conditional_edges("evidence_check", _route_verify, ["verifier", END])

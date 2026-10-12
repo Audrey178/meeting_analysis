@@ -18,7 +18,7 @@ for _dir in (_BE_DIR, _TREESEG_DIR, _REPO_ROOT):
     if str(_dir) not in sys.path:
         sys.path.insert(0, str(_dir))
 
-from fastapi import Request
+from fastapi import HTTPException, Request
 
 from src.stages.stage07_topic_labeling import StructuredLLMTopicLabeler
 from src.utils.ports import EmbeddingAdapter, LLMAdapter, TopicLabelAdapter
@@ -142,4 +142,30 @@ def get_analyzer_v3(request: Request):
     return state.analyzer_v3
 
 
+def get_analysis_cache_v3(request: Request):
+    """Cache kết quả v3 dùng chung của ứng dụng, dựng lười ở request v3 đầu tiên.
+
+    Dùng chung để mọi request thấy cùng chỗ chạy-một-lần và version (xem
+    ``services/analysis_cache.py``). Test ghi đè dependency này bằng cache trong bộ nhớ hoặc
+    Redis giả. Dựng lỗi (vd. Redis chưa chạy) thì trả 503 và request sau thử dựng lại.
+
+    Đầu vào: request - lấy ``app.state``.
+    Đầu ra: ``AnalysisCache``.
+    Lỗi HTTP: 503 nếu không dùng được nơi lưu cache.
+    """
+
+    from services.analysis_cache import CacheUnavailableError
+    from services.pipeline_v3 import build_analysis_cache_v3
+
+    state = request.app.state
+    with _ANALYSIS_CACHE_V3_LOCK:
+        if getattr(state, "analysis_cache_v3", None) is None:
+            try:
+                state.analysis_cache_v3 = build_analysis_cache_v3()
+            except CacheUnavailableError as exc:
+                raise HTTPException(status_code=503, detail=str(exc)) from exc
+    return state.analysis_cache_v3
+
+
 _ANALYZER_V3_LOCK = threading.Lock()
+_ANALYSIS_CACHE_V3_LOCK = threading.Lock()
