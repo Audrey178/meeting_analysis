@@ -34,7 +34,11 @@ production deploy where the API lives elsewhere, set `VITE_API_BASE_URL`
 
 Màn nạp transcript cho chọn pipeline:
 
-- **Agentic v3** — mặc định. `POST /v3/meetings/analyze` đồng bộ (`hooks/useV3Analysis.ts`).
+- **Agentic v3** — mặc định. `POST /v3/meetings/analyze` đồng bộ (`hooks/useV3Analysis.ts`);
+  backend cache kết quả theo request. Mỗi tab Diễn biến/Giao việc/Kết luận/Tiến độ có nút chạy
+  lại riêng phần đó (`POST /v3/meetings/analyze/{part}`, cùng chủ đề + nhãn), hàng thống kê có
+  "Chạy lại toàn bộ" (`?refresh=true`); tải lại trang lấy lại kết quả từ cache
+  (`GET /v3/meetings/analyses/{analysis_key}`, phiên lưu ở `sessionStorage`).
   Ngày họp tùy chọn (quy hạn "tuần sau" ra ngày). Có thể nạp kèm danh sách tham dự
   (`*.attendees.json`: `people`, `organizations` với `aliases`/`functions` tùy chọn) để actor của
   việc giao được quy về đúng người hoặc đơn vị. Giao việc hiện nhãn Cá nhân/Đơn vị, vai trò (chủ

@@ -33,6 +33,18 @@ UpdateStatus = Literal["done", "in_progress", "blocked", "returned", "deferred",
 UPDATE_STATUSES: tuple[str, ...] = ("done", "in_progress", "blocked", "returned", "deferred", "mentioned")
 # Quan hệ của một việc giao với danh sách việc cần báo cáo (gán ở ``finalize``).
 AssignmentRelation = Literal["new", "follow_up", "reassign", "reschedule"]
+# Phần kết quả tính được riêng trên cùng nền cắt chủ đề + nhãn (``MeetingAnalyzerV3.analyze``):
+# Diễn biến (Content agent), Giao việc (Action), Kết luận (Decision), Tiến độ (agent tiến độ).
+AnalysisPart = Literal["development", "assignments", "decisions", "progress"]
+ANALYSIS_PARTS: tuple[AnalysisPart, ...] = ("development", "assignments", "decisions", "progress")
+# Agent trích xuất sinh ra từng phần: tên node trong ``graph/topic.py``, cũng là ``agent`` của
+# ``TopicFailure``/``SkippedAgent`` thuộc phần đó.
+AGENT_OF_PART: dict[AnalysisPart, str] = {
+    "development": "content_agent",
+    "assignments": "action_agent",
+    "decisions": "decision_agent",
+    "progress": "progress_agent",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -127,25 +139,6 @@ class ActionItemV3(ActionItemCandidate):
     actor_reason: str = ""
     assignees: tuple[ActorAssignee, ...] = ()
     relation: AssignmentRelation | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class TopicPlan:
-    """Kế hoạch chạy agent cho MỘT chủ đề, do Planner (luật, 0 token) lập.
-
-    Các trường:
-        segment_id: mã chủ đề.
-        run_action / run_decision: có chạy Action / Decision agent cho chủ đề này không.
-        action_cues / decision_cues: các cụm từ đã khớp (để audit vì sao chạy/bỏ).
-        run_progress: có chạy agent tiến độ không (True khi phiên họp có danh sách việc).
-    """
-
-    segment_id: str
-    run_action: bool
-    run_decision: bool
-    action_cues: tuple[str, ...] = ()
-    decision_cues: tuple[str, ...] = ()
-    run_progress: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -355,10 +348,13 @@ class MeetingReport:
 
 
 __all__ = [
+    "AGENT_OF_PART",
+    "ANALYSIS_PARTS",
     "ActionItemV3",
     "ActorAssignee",
     "ActorCandidate",
     "ActorType",
+    "AnalysisPart",
     "AssigneeRole",
     "AssignmentRelation",
     "ConsensusRound",
@@ -368,7 +364,6 @@ __all__ = [
     "SkippedAgent",
     "SpeakerRegistry",
     "TaskProgress",
-    "TopicPlan",
     "UPDATE_STATUSES",
     "UpdateStatus",
     "VerificationRecord",

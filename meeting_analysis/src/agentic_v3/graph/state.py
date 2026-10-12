@@ -24,11 +24,11 @@ from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from ..actors.agenda import TaskAgenda
 from ..actors.attendees import AttendeeRoster
 from ..schemas import (
+    AnalysisPart,
     MeetingReport,
     ProgressUpdate,
     SkippedAgent,
     SpeakerRegistry,
-    TopicPlan,
     VerificationRecord,
     VerifyTask,
 )
@@ -41,8 +41,9 @@ class TopicInput(TypedDict):
     turns: tuple[SpeakerTurn, ...]  # lượt nói của chủ đề
     meeting_turns: tuple[SpeakerTurn, ...]  # lượt nói của cả cuộc họp (cho tool Verifier)
     registry: SpeakerRegistry
-    plan: TopicPlan
     meeting_date: str | None  # ngày họp ISO, neo chuẩn hoá hạn chót của Action agent
+    parts: frozenset[AnalysisPart]  # phần kết quả cần tính: chọn agent trích xuất nào được chạy
+    preset_label: TopicLabel | None  # nhãn đã có thì dùng lại, None thì gán nhãn bằng LLM
 
 
 class TopicOutput(TypedDict):
@@ -62,11 +63,13 @@ class TopicState(TopicInput, TopicOutput):
     """State nội bộ của subgraph một chủ đề.
 
     ``task`` là gói ``SegmentTask`` kiểu v1 (có title/summary sau khi gán nhãn) để gọi
-    lại nguyên các agent trích xuất của v1. ``pending_verify`` ghi đè, chỉ đọc ngay
-    sau ``evidence_check``.
+    lại nguyên các agent trích xuất của v1. ``run_commit_agents`` do ``plan_topic`` ghi: có chạy
+    Action/Decision agent ở chủ đề này không. ``pending_verify`` ghi đè, chỉ đọc ngay sau
+    ``evidence_check``.
     """
 
     task: SegmentTask
+    run_commit_agents: bool
     action_candidates_raw: Annotated[list[ActionItemCandidate], operator.add]
     decision_candidates_raw: Annotated[list[DecisionCandidate], operator.add]
     progress_updates_raw: Annotated[list[ProgressUpdate], operator.add]
@@ -78,8 +81,9 @@ class MeetingStateV3(TopicOutput):
 
     Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``,
     ``attendee_roster`` (danh sách tham dự, None nếu không có), ``task_agenda`` (danh sách việc
-    cần báo cáo tiến độ, None nếu không có).
-    Nhóm Planner: ``registry``, ``plans``.
+    cần báo cáo tiến độ, None nếu không có), ``parts`` (phần kết quả cần tính) và
+    ``preset_labels`` (nhãn đã có theo segment_id, rỗng thì gán nhãn trong từng chủ đề).
+    Nhóm Planner: ``registry``.
     Nhóm kết quả cộng dồn từ các chủ đề: các khoá của ``TopicOutput``.
     Kết quả cuối: ``report``.
     """
@@ -92,8 +96,9 @@ class MeetingStateV3(TopicOutput):
     turns_by_id: dict[str, SpeakerTurn]
     attendee_roster: AttendeeRoster | None
     task_agenda: TaskAgenda | None
+    parts: frozenset[AnalysisPart]
+    preset_labels: dict[str, TopicLabel]
     registry: SpeakerRegistry
-    plans: dict[str, TopicPlan]
     report: MeetingReport | None
 
 

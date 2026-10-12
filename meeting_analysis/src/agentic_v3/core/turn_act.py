@@ -9,13 +9,18 @@ p_commit >= ``COMMIT_CLEAR_MIN`` thì 92% đúng là chốt, < ``COMMIT_REJECT_M
 
 ``DecisionsTurnActJudge`` gọi OpenAI Decisions API (``client.decisions.create``), cùng
 schema câu hỏi đã đo trong thí nghiệm trên.
+
+``render_turn_act_input`` chỉ giữ ``MAX_TURN_CHARS`` ký tự đầu mỗi lượt. Nơi cần xét cả lượt
+dài (câu chốt có thể nằm sau mốc đó) cắt lượt thành nhiều đoạn bằng ``turn_windows`` và hỏi
+từng đoạn, nên input mỗi lời gọi vẫn ngắn như lúc đo.
 """
 
 from __future__ import annotations
 
+import re
 import threading
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Protocol
 
 from ...utils.contracts import SpeakerTurn
@@ -100,6 +105,74 @@ def render_turn_act_input(turn: SpeakerTurn, context: Sequence[SpeakerTurn]) -> 
     return "\n\n".join(parts)
 
 
+_SENTENCE_BREAK = re.compile(r"(?<=[.!?…])\s+")
+
+
+def split_turn_text(text: str, max_chars: int = MAX_TURN_CHARS) -> tuple[str, ...]:
+    """Cắt nội dung một lượt thành các đoạn liền nhau, mỗi đoạn tối đa ``max_chars`` ký tự.
+
+    Cắt theo ranh giới câu; câu dài hơn ``max_chars`` thì cắt ở khoảng trắng.
+
+    Đầu vào: text - nội dung lượt; max_chars - trần ký tự mỗi đoạn.
+    Đầu ra: tuple các đoạn theo thứ tự (một phần tử nếu lượt đủ ngắn).
+    """
+
+    if len(text) <= max_chars:
+        return (text,)
+    pieces: list[str] = []
+    for sentence in _SENTENCE_BREAK.split(text):
+        while len(sentence) > max_chars:
+            cut = sentence.rfind(" ", 0, max_chars)
+            cut = cut if cut > 0 else max_chars
+            pieces.append(sentence[:cut])
+            sentence = sentence[cut:].lstrip()
+        if sentence:
+            pieces.append(sentence)
+    windows: list[str] = []
+    current = ""
+    for piece in pieces:
+        if current and len(current) + 1 + len(piece) > max_chars:
+            windows.append(current)
+            current = piece
+        else:
+            current = f"{current} {piece}" if current else piece
+    if current:
+        windows.append(current)
+    return tuple(windows)
+
+
+def tail_turn(turn: SpeakerTurn, max_chars: int = MAX_TURN_CHARS) -> SpeakerTurn:
+    """Lượt ngữ cảnh chỉ giữ ``max_chars`` ký tự CUỐI (phần sát lượt cần xét), cắt ở khoảng trắng."""
+
+    text = turn.text_exact
+    if len(text) <= max_chars:
+        return turn
+    tail = text[-max_chars:]
+    space = tail.find(" ")
+    return replace(turn, text_exact=tail[space + 1:] if space >= 0 else tail)
+
+
+def turn_windows(
+    turn: SpeakerTurn, context: Sequence[SpeakerTurn]
+) -> tuple[tuple[SpeakerTurn, tuple[SpeakerTurn, ...]], ...]:
+    """Cắt lượt dài hơn ``MAX_TURN_CHARS`` thành các đoạn để hỏi riêng, kèm ngữ cảnh của từng đoạn.
+
+    Mỗi đoạn là một ``SpeakerTurn`` cùng ``turn_id``. Đoạn sau nhận đoạn trước làm ngữ cảnh;
+    lượt ngữ cảnh dài chỉ giữ phần cuối, sát lượt cần xét.
+
+    Đầu vào: turn - lượt cần xét; context - các lượt đứng trước, theo thứ tự.
+    Đầu ra: tuple (đoạn, ngữ cảnh của đoạn) theo thứ tự trong lượt; một phần tử nếu lượt đủ ngắn.
+    """
+
+    previous = tuple(tail_turn(item) for item in list(context)[-CONTEXT_TURNS:])
+    windows = []
+    for text in split_turn_text(turn.text_exact):
+        part = turn if text == turn.text_exact else replace(turn, text_exact=text)
+        windows.append((part, previous))
+        previous = (*previous, part)
+    return tuple(windows)
+
+
 class DecisionsTurnActJudge:
     """``TurnActJudge`` gọi OpenAI Decisions API, nhớ kết quả theo nội dung input.
 
@@ -143,4 +216,7 @@ __all__ = [
     "TurnActJudge",
     "TurnActJudgement",
     "render_turn_act_input",
+    "split_turn_text",
+    "tail_turn",
+    "turn_windows",
 ]

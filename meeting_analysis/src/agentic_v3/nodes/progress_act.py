@@ -29,13 +29,12 @@ nhiều đoạn và hỏi từng đoạn (input mỗi lời gọi vẫn ngắn).
 
 from __future__ import annotations
 
-import re
 import threading
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Any, Protocol
 
-from ..core.turn_act import CONTEXT_TURNS, DEFAULT_MODEL, MAX_TURN_CHARS, render_turn_act_input
+from ..core.turn_act import DEFAULT_MODEL, render_turn_act_input, turn_windows
 from ...utils.contracts import SpeakerTurn
 
 # Ngưỡng tạm (chưa hiệu chỉnh, xem docstring module).
@@ -196,53 +195,6 @@ def render_progress_act_input(task_title: str, turn: SpeakerTurn, context: Seque
     return f"VIỆC ĐANG XÉT:\n{task_title}\n\n{render_turn_act_input(turn, context)}"
 
 
-_SENTENCE_BREAK = re.compile(r"(?<=[.!?…])\s+")
-
-
-def split_turn_text(text: str, max_chars: int = MAX_TURN_CHARS) -> tuple[str, ...]:
-    """Cắt nội dung một lượt thành các đoạn liền nhau, mỗi đoạn tối đa ``max_chars`` ký tự.
-
-    Cắt theo ranh giới câu; câu dài hơn ``max_chars`` thì cắt ở khoảng trắng.
-
-    Đầu vào: text - nội dung lượt; max_chars - trần ký tự mỗi đoạn.
-    Đầu ra: tuple các đoạn theo thứ tự (một phần tử nếu lượt đủ ngắn).
-    """
-
-    if len(text) <= max_chars:
-        return (text,)
-    pieces: list[str] = []
-    for sentence in _SENTENCE_BREAK.split(text):
-        while len(sentence) > max_chars:
-            cut = sentence.rfind(" ", 0, max_chars)
-            cut = cut if cut > 0 else max_chars
-            pieces.append(sentence[:cut])
-            sentence = sentence[cut:].lstrip()
-        if sentence:
-            pieces.append(sentence)
-    windows: list[str] = []
-    current = ""
-    for piece in pieces:
-        if current and len(current) + 1 + len(piece) > max_chars:
-            windows.append(current)
-            current = piece
-        else:
-            current = f"{current} {piece}" if current else piece
-    if current:
-        windows.append(current)
-    return tuple(windows)
-
-
-def _tail(turn: SpeakerTurn, max_chars: int = MAX_TURN_CHARS) -> SpeakerTurn:
-    """Lượt ngữ cảnh chỉ giữ ``max_chars`` ký tự CUỐI (phần sát lượt cần xét), cắt ở khoảng trắng."""
-
-    text = turn.text_exact
-    if len(text) <= max_chars:
-        return turn
-    tail = text[-max_chars:]
-    space = tail.find(" ")
-    return replace(turn, text_exact=tail[space + 1:] if space >= 0 else tail)
-
-
 def judge_turn_windows(
     judge: ProgressActJudge, task_title: str, turn: SpeakerTurn, context: Sequence[SpeakerTurn]
 ) -> tuple[ProgressActJudgement, ...]:
@@ -257,13 +209,7 @@ def judge_turn_windows(
     Lỗi: exception của judge được ném tiếp (nơi gọi đánh dấu ``unchecked``).
     """
 
-    previous = tuple(_tail(item) for item in list(context)[-CONTEXT_TURNS:])
-    judgements = []
-    for window in split_turn_text(turn.text_exact):
-        part = turn if window == turn.text_exact else replace(turn, text_exact=window)
-        judgements.append(judge.judge(task_title, part, previous))
-        previous = (*previous, part)
-    return tuple(judgements)
+    return tuple(judge.judge(task_title, part, previous) for part, previous in turn_windows(turn, context))
 
 
 class DecisionsProgressActJudge:
@@ -343,5 +289,4 @@ __all__ = [
     "TASK_KIND_QUESTION",
     "judge_turn_windows",
     "render_progress_act_input",
-    "split_turn_text",
 ]

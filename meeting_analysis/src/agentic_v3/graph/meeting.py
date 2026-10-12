@@ -23,6 +23,9 @@ thành, không xác định), định danh actor (người/đơn vị/chưa xác
 giữa các chủ đề (thay cho việc v1 truyền ``known_assignments`` để agent tự tránh lặp).
 Khi phiên họp có danh sách việc cần báo cáo, ``finalize`` còn gộp cập nhật tiến độ thành
 một dòng cho mỗi việc và gán quan hệ việc giao <-> việc cũ (``nodes/progress.py``).
+
+State ``parts`` chọn phần kết quả cần tính (mặc định mọi phần, xem ``topic.py``);
+``preset_labels`` mang nhãn đã có để các lần tính riêng từng phần dùng chung một nhãn.
 """
 
 from __future__ import annotations
@@ -40,32 +43,27 @@ from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
 from ..actors.resolution import resolve_actor
 from ..config import V3Config
-from ..nodes.planner import plan_meeting
+from ..nodes.planner import build_speaker_registry
 from ..nodes.progress import link_assignment_to_agenda, summarize_task_progress
 from ..nodes.progress_act import ProgressActJudge
 from ..schemas import ActionItemV3, MeetingReport, VerificationRecord
 from .state import MeetingStateV3
 from .topic import build_topic_graph
 
-def make_plan_node(config: V3Config):
-    """Tạo node ``plan_meeting`` (luật, 0 token).
+def plan_meeting(state: MeetingStateV3) -> dict:
+    """Node ``plan_meeting`` (luật, 0 token): dựng danh bạ người nói của cả cuộc họp.
 
-    Đầu vào: config - cấu hình v3.
-    Đầu ra: hàm node trả ``registry`` và ``plans``.
+    Đầu vào: state - đầu vào của graph cha.
+    Đầu ra: dict ``{"registry": SpeakerRegistry}``.
     """
 
-    def plan_meeting_node(state: MeetingStateV3) -> dict:
-        registry, plans = plan_meeting(
-            state["segments"],
-            state["turns_by_id"],
-            skip_without_cues=config.skip_agents_without_cues,
-            roster=state.get("attendee_roster"),
-            chair=state.get("chair"),
-            agenda=state.get("task_agenda"),
-        )
-        return {"registry": registry, "plans": plans}
-
-    return plan_meeting_node
+    registry = build_speaker_registry(
+        tuple(state["turns_by_id"].values()),
+        state.get("attendee_roster"),
+        chair=state.get("chair"),
+        agenda=state.get("task_agenda"),
+    )
+    return {"registry": registry}
 
 
 def dispatch_topics(state: MeetingStateV3) -> list[Send] | str:
@@ -86,8 +84,9 @@ def dispatch_topics(state: MeetingStateV3) -> list[Send] | str:
                 "turns": get_turns_of_segment(segment, state["turns_by_id"]),
                 "meeting_turns": meeting_turns,
                 "registry": state["registry"],
-                "plan": state["plans"][segment.segment_id],
                 "meeting_date": state.get("meeting_date"),
+                "parts": state["parts"],
+                "preset_label": state["preset_labels"].get(segment.segment_id),
             },
         )
         for segment in state["segments"]
@@ -112,6 +111,9 @@ def finalize(state: MeetingStateV3) -> dict:
     """Sắp kết quả theo thứ tự chủ đề, quy actor, gộp mục trùng, gộp tiến độ theo việc và
     đóng gói ``MeetingReport``.
 
+    Phần không nằm trong ``parts`` để rỗng; riêng tiến độ phải bỏ hẳn, vì gộp theo việc
+    sinh một dòng "not_reported" cho mọi việc kể cả khi agent tiến độ không chạy.
+
     Đầu vào: state - sau khi mọi chủ đề xong.
     Đầu ra: dict ``{"report": MeetingReport}``.
     """
@@ -132,8 +134,10 @@ def finalize(state: MeetingStateV3) -> dict:
     merged_assignments = [
         link_assignment_to_agenda(item, agenda) for item in merge_duplicate_assignments(assignments)
     ]
-    task_progress = summarize_task_progress(
-        agenda, state.get("progress_updates", []), meeting_turns, state.get("meeting_date")
+    task_progress = (
+        summarize_task_progress(agenda, state.get("progress_updates", []), meeting_turns, state.get("meeting_date"))
+        if "progress" in state["parts"]
+        else ()
     )
 
     report = MeetingReport(
@@ -186,7 +190,7 @@ def build_graph_v3(
         progress_llm=progress_llm, progress_judge=progress_judge,
     )
     graph = StateGraph(MeetingStateV3)
-    graph.add_node("plan_meeting", make_plan_node(config))
+    graph.add_node("plan_meeting", plan_meeting)
     graph.add_node("topic", topic_graph)
     graph.add_node("finalize", finalize)
     graph.add_edge(START, "plan_meeting")

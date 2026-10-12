@@ -11,7 +11,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from src.agentic_v3 import MeetingAnalyzerV3, plan_meeting
+from src.agentic_v3 import MeetingAnalyzerV3
 from src.agentic_v3.actors.agenda import (
     TaskAgenda,
     load_task_agenda,
@@ -22,7 +22,7 @@ from src.agentic_v3.actors.attendees import parse_attendee_roster
 from src.agentic_v3.core._shared import merge_duplicate_assignments
 from src.agentic_v3.core.schemas import ActionItemCandidate
 from src.agentic_v3.core.nodes.action_agent import ACTION_SCHEMA
-from src.agentic_v3.core.turn_act import MAX_TURN_CHARS, TurnActJudgement
+from src.agentic_v3.core.turn_act import MAX_TURN_CHARS, TurnActJudgement, split_turn_text
 from src.agentic_v3.nodes.extractors import make_extractor
 from src.agentic_v3.nodes.planner import build_speaker_registry, format_registry_context
 from src.agentic_v3.nodes.progress import (
@@ -31,7 +31,7 @@ from src.agentic_v3.nodes.progress import (
     make_progress_agent,
     summarize_task_progress,
 )
-from src.agentic_v3.nodes.progress_act import DecisionsProgressActJudge, ProgressActJudgement, split_turn_text
+from src.agentic_v3.nodes.progress_act import DecisionsProgressActJudge, ProgressActJudgement
 from src.agentic_v3.nodes.prompts import ACTION_SYSTEM_PROMPT, ACTION_TASK_ID_RULE
 from src.agentic_v3.schemas import ActionItemV3, ActorAssignee, ProgressUpdate
 from src.agentic_v3.tests.test_pipeline import SEGMENTS, TURNS, FakeLabeler, FakeLLM, _verifier_final
@@ -194,14 +194,8 @@ def test_sample_agenda_file_matches_its_attendees():
     assert agenda.task_ids == ("T1", "T3", "T5", "X1")
 
 
-def test_planner_runs_progress_only_with_agenda_and_shows_tasks_in_context():
-    turns_by_id = {t.turn_id: t for t in TURNS}
-    _, without = plan_meeting(SEGMENTS, turns_by_id)
-    registry, with_agenda = plan_meeting(SEGMENTS, turns_by_id, agenda=AGENDA)
-
-    assert not any(plan.run_progress for plan in without.values())
-    assert all(plan.run_progress for plan in with_agenda.values())
-    context = format_registry_context(registry)
+def test_registry_context_shows_agenda_tasks():
+    context = format_registry_context(build_speaker_registry(TURNS, agenda=AGENDA))
     assert "- T1: Đẩy nhanh khối lượng thi công (chủ trì: Anh Phong; hạn: 2026-10-31" in context
 
 

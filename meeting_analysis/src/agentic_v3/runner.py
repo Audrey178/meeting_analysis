@@ -5,15 +5,20 @@ Một ``MeetingAnalyzerV3`` giữ:
   gọi LLM đồng thời của tiến trình);
 - graph đã compile (không cần checkpointer: không còn bước dừng chờ người duyệt, các
   candidate chưa chắc chắn được Verifier và agent trích xuất trao đổi tới khi đồng thuận).
+
+Tầng dịch vụ có thể tách một lần chạy thành nền chung (``label_segments``: nhãn mọi chủ đề)
+và từng phần kết quả (``analyze(parts=..., labels=...)``) để tính lại riêng một phần trên
+cùng nền đó.
 """
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Collection, Sequence
 
 from .core.turn_act import TurnActJudge
+from ..stages.stage07_topic_labeling import label_topics
 from ..utils.config import TopicLabelerConfig
-from ..utils.contracts import SpeakerTurn, TopicSegment
+from ..utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from ..utils.ports import LLMAdapter, TopicLabelAdapter
 from .actors.agenda import TaskAgenda
 from .actors.attendees import AttendeeRoster
@@ -21,7 +26,7 @@ from .config import V3Config
 from .graph.meeting import build_graph_v3
 from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
 from .nodes.progress_act import ProgressActJudge
-from .schemas import MeetingReport
+from .schemas import ANALYSIS_PARTS, AnalysisPart, MeetingReport
 
 
 class MeetingAnalyzerV3:
@@ -62,13 +67,15 @@ class MeetingAnalyzerV3:
         self.config = config or V3Config()
         self.gate = LLMConcurrencyGate(llm_concurrency)
         verifier_gate = self.gate if verifier_llm_concurrency is None else LLMConcurrencyGate(verifier_llm_concurrency)
+        self._labeler = self.gate.wrap_topic_labeler(labeler)
+        self._labeler_config = labeler_config or TopicLabelerConfig()
         self.graph = build_graph_v3(
             self.gate.wrap_llm(content_llm),
             self.gate.wrap_llm(action_llm),
             self.gate.wrap_llm(decision_llm),
             verifier_gate.wrap_llm(verifier_llm),
-            self.gate.wrap_topic_labeler(labeler),
-            labeler_config or TopicLabelerConfig(),
+            self._labeler,
+            self._labeler_config,
             self.config,
             turn_judge=turn_judge,
             progress_llm=self.gate.wrap_llm(progress_llm) if progress_llm is not None else None,
@@ -86,6 +93,8 @@ class MeetingAnalyzerV3:
         segments: Sequence[TopicSegment],
         attendee_roster: AttendeeRoster | None = None,
         task_agenda: TaskAgenda | None = None,
+        parts: Collection[AnalysisPart] | None = None,
+        labels: Sequence[TopicLabel] | None = None,
     ) -> MeetingReport:
         """Chạy pipeline cho một cuộc họp tới khi có kết quả cuối.
 
@@ -102,9 +111,18 @@ class MeetingAnalyzerV3:
                 theo quy ước đặt tên); None thì actor chỉ quy về người nói trong bản ghi.
             task_agenda: danh sách việc cần báo cáo tiến độ (``agenda.load_task_agenda``);
                 None thì không chạy agent tiến độ và ``task_progress`` rỗng.
-        Đầu ra: MeetingReport.
+            parts: phần kết quả cần tính (``ANALYSIS_PARTS``); None thì tính mọi phần. Phần
+                không được yêu cầu để rỗng trong ``MeetingReport``.
+            labels: nhãn đã có của các chủ đề (thường từ ``label_segments``) để dùng lại thay vì
+                gán nhãn trong từng chủ đề; None thì gán nhãn như bình thường.
+        Đầu ra: MeetingReport (``labels`` luôn đủ mọi chủ đề).
+        Lỗi: ValueError nếu ``parts`` có phần không tồn tại.
         """
 
+        selected = frozenset(ANALYSIS_PARTS if parts is None else parts)
+        unknown = selected.difference(ANALYSIS_PARTS)
+        if unknown:
+            raise ValueError(f"phần kết quả không hợp lệ: {sorted(unknown)} (hợp lệ: {list(ANALYSIS_PARTS)})")
         state = {
             "meeting_id": meeting_id,
             "revision_id": revision_id,
@@ -114,6 +132,8 @@ class MeetingAnalyzerV3:
             "turns_by_id": {turn.turn_id: turn for turn in turns},
             "attendee_roster": attendee_roster,
             "task_agenda": task_agenda,
+            "parts": selected,
+            "preset_labels": {label.segment_id: label for label in labels or ()},
             "labels": [],
             "meeting_development": [],
             "verified_assignments": [],
@@ -126,6 +146,18 @@ class MeetingAnalyzerV3:
         }
         output = self.graph.invoke(state, {"max_concurrency": self.config.max_concurrency})
         return output["report"]
+
+    def label_segments(self, segments: Sequence[TopicSegment]) -> tuple[TopicLabel, ...]:
+        """Gán nhãn mọi chủ đề (stage07, song song, qua gate) -- nền chung của các phần kết quả.
+
+        Cùng bộ gán nhãn và cấu hình với node ``label_topic`` của graph, nên nhãn tính ở đây
+        rồi nạp vào ``analyze(labels=...)`` giống nhãn graph tự gán.
+
+        Đầu vào: segments - các chủ đề theo thứ tự.
+        Đầu ra: tuple ``TopicLabel`` cùng thứ tự ``segments``.
+        """
+
+        return label_topics(tuple(segments), config=self._labeler_config, adapter=self._labeler)
 
 
 __all__ = ["MeetingAnalyzerV3"]

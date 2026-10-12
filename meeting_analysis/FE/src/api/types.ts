@@ -275,7 +275,28 @@ export interface TaskProgressOut {
   updates: ProgressUpdateOut[];
 }
 
+/** Một phần kết quả v3 chạy lại được riêng (`POST /v3/meetings/analyze/{part}`). */
+export type V3Part = "development" | "assignments" | "decisions" | "progress";
+
+/** Trạng thái cache của một phần kết quả. */
+export interface V3PartMeta {
+  /** Lần tính thứ mấy của phần này cho cùng request (1 = lần đầu, tăng mỗi lần chạy lại). */
+  generation: number;
+  /** ISO 8601 (UTC). */
+  computed_at: string;
+  /** Response này lấy phần đó từ cache, không tính lại. */
+  from_cache: boolean;
+  /** "incomplete": có chủ đề lỗi (xem `failed_topics`). */
+  status: "ok" | "incomplete" | string;
+}
+
 export interface AnalyzeV3Result {
+  /** Khoá cache của request: `GET /v3/meetings/analyses/{analysis_key}` lấy lại kết quả. */
+  analysis_key: string;
+  /** Tăng sau mỗi lần ghi cache; response có version nhỏ hơn bản đang hiển thị là response cũ. */
+  cache_version: number;
+  /** Trạng thái từng phần; không có "progress" khi request không có `tasks`. */
+  parts: Partial<Record<V3Part, V3PartMeta>>;
   meeting_id: string;
   revision_id: string;
   topics: TopicOut[];
@@ -286,7 +307,7 @@ export interface AnalyzeV3Result {
   turns: TurnOut[];
   failed_topics: { segment_id: string; agent: string; error: string }[];
   verification_records: VerificationRecordOut[];
-  /** Extractor agents the Planner skipped (no assign/decide cue in the topic). */
+  /** Extractor agents the Planner skipped (Decisions found no assign/decide turn in the topic). */
   skipped_agents: { segment_id: string; agent: string }[];
 }
 

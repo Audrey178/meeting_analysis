@@ -31,6 +31,12 @@ interface ResultViewProps {
   extraTab?: ExtraTab;
   /** Dòng ghi chú thêm dưới thanh tab (vd. agent bị Planner bỏ qua ở v3). */
   notice?: ReactNode;
+  /** Thanh điều khiển đầu nội dung từng tab (v3: nút chạy lại phần đó + trạng thái cache). */
+  tabToolbars?: Partial<Record<ResultTab, ReactNode>>;
+  /** Tab có phần đang chạy lại (nhãn tab thêm dấu "…"). */
+  busyTabs?: Partial<Record<ResultTab, boolean>>;
+  /** Nút đặt cạnh thời gian chạy ở hàng thống kê (v3: chạy lại toàn bộ). */
+  headerAction?: ReactNode;
   elapsedMs: number;
   selectedPointKey: string | null;
   onSelectPoint: (key: string, evidenceIds: string[]) => void;
@@ -105,6 +111,9 @@ export function ResultView({
   verification,
   extraTab,
   notice,
+  tabToolbars,
+  busyTabs,
+  headerAction,
   elapsedMs,
   selectedPointKey,
   onSelectPoint,
@@ -158,7 +167,10 @@ export function ResultView({
             hint="Số mục bị nghi ngờ được giữ lại / tổng số mục phải qua Debate+Judge"
           />
         )}
-        <div className="ml-auto flex items-center px-4 text-xs text-neutral-700">{formatDurationMs(elapsedMs)}</div>
+        <div className="ml-auto flex items-center gap-3 px-4 text-xs text-neutral-700">
+          {headerAction}
+          {formatDurationMs(elapsedMs)}
+        </div>
       </div>
 
       <div className="flex overflow-x-auto border-b-2 border-divider">
@@ -171,7 +183,7 @@ export function ResultView({
               tab === value ? "bg-accent text-bg" : "text-neutral-700 hover:bg-neutral-200"
             }`}
           >
-            {label}
+            {busyTabs?.[value] ? `${label} …` : label}
           </button>
         ))}
       </div>
@@ -188,6 +200,8 @@ export function ResultView({
       )}
 
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
+        {tabToolbars?.[tab]}
+
         {tab !== "raw" && (
           <p className="mb-4 text-[12px] text-neutral-600">
             Bấm vào một mục để tô các lượt nói làm bằng chứng trên transcript và xem trích dẫn.

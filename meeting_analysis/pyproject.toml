@@ -25,6 +25,8 @@ dependencies = [
 api = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
+    # be/services/analysis_cache.py: cache kết quả v3 trên Redis (V3_CACHE=redis, mặc định).
+    "redis>=5.0",
 ]
 
 # src/utils/local_embeddings.py: open-source embedding backend

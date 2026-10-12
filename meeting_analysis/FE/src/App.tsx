@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { checkHealth } from "./api/client";
-import type { AttendeesIn, EvidenceRef, PipelineKind, TasksIn, TranscriptItem } from "./api/types";
+import type { AttendeesIn, EvidenceRef, PipelineKind, TasksIn, TranscriptItem, V3Part } from "./api/types";
 import { ErrorBanner } from "./components/ErrorBanner";
 import { InputScreen } from "./components/InputScreen";
 import { NavBar } from "./components/NavBar";
@@ -10,6 +10,7 @@ import { TranscriptPanel } from "./components/TranscriptPanel";
 import { useAnalysis } from "./hooks/useAnalysis";
 import { useV3Analysis } from "./hooks/useV3Analysis";
 import { V3ResultView } from "./components/v3/V3ResultView";
+import { selectionBelongsToPart } from "./lib/v3Selection";
 
 interface Transcript {
   meeting_id?: string;
@@ -61,6 +62,8 @@ export default function App() {
       };
       void v3.run(v3Request);
     } else {
+      // Bỏ phiên v3 đang lưu để tải lại trang không khôi phục nhầm kết quả v3.
+      v3.reset();
       void agentic.run(request);
     }
   }
@@ -75,6 +78,19 @@ export default function App() {
   function handleRetry() {
     if (pipeline === "v3" && v3.request) void v3.run(v3.request);
     else if (agentic.request) void agentic.run(agentic.request);
+  }
+
+  // Chạy lại một phần v3: các phần khác giữ nguyên, chỉ bỏ chọn nếu mục đang chọn thuộc phần đó.
+  function handleReloadPart(part: V3Part) {
+    void v3.reloadPart(part).then((applied) => {
+      if (applied) setSelected((prev) => (prev && selectionBelongsToPart(part, prev.key) ? null : prev));
+    });
+  }
+
+  function handleRefreshAll() {
+    if (!v3.request) return;
+    setSelected(null);
+    void v3.run(v3.request, { refresh: true });
   }
 
   function handleSelect(key: string, evidence: EvidenceRef[]) {
@@ -108,7 +124,7 @@ export default function App() {
       <div className="grid min-h-0 flex-1 grid-cols-[480px_minmax(0,1fr)]">
         <TranscriptPanel
           turns={turns}
-          items={turns ? null : (pendingItems ?? (status === "idle" ? draftItems : null))}
+          items={turns ? null : (pendingItems ?? active.request?.items ?? (status === "idle" ? draftItems : null))}
           selectedEvidence={selected?.evidence ?? null}
         />
 
@@ -128,6 +144,10 @@ export default function App() {
             elapsedMs={v3.elapsedMs}
             selectedPointKey={selected?.key ?? null}
             onSelectPoint={handleSelectAgentic}
+            reloading={v3.reloading}
+            partErrors={v3.partErrors}
+            onReloadPart={handleReloadPart}
+            onRefreshAll={handleRefreshAll}
           />
         )}
         {status === "success" && pipeline === "agentic" && agentic.data && (

@@ -300,7 +300,8 @@ class VerificationRecordOut(BaseModel):
 
 
 class SkippedAgentOut(BaseModel):
-    """Agent trích xuất mà Planner bỏ qua ở một chủ đề (không có cue giao/chốt việc)."""
+    """Agent trích xuất mà Planner bỏ qua ở một chủ đề (Decisions: không lượt nào có thể là
+    giao/chốt việc)."""
 
     segment_id: str
     agent: str
@@ -406,11 +407,33 @@ class TaskProgressOut(BaseModel):
     updates: list[ProgressUpdateOut] = []
 
 
+class AnalysisPartOut(BaseModel):
+    """Trạng thái cache của một phần kết quả v3 (development | assignments | decisions | progress).
+
+    ``generation``: lần tính thứ mấy của phần này cho cùng request (1 = lần đầu, tăng mỗi lần
+    chạy lại). ``from_cache``: response này lấy phần đó từ cache, không tính lại. ``status``:
+    "ok" hoặc "incomplete" (có chủ đề lỗi, xem ``failed_topics``; lần gọi ``/analyze`` sau sẽ
+    tính lại phần này).
+    """
+
+    generation: int
+    computed_at: str
+    from_cache: bool
+    status: str
+
+
 class AnalyzeV3Result(BaseModel):
     """Kết quả cuối của v3: cùng ba phần output như ``AnalyzeResponse``, cộng bản ghi
     kiểm chứng, các agent đã bỏ qua và tiến độ các việc cần báo cáo (``task_progress``,
-    rỗng khi request không có ``tasks``)."""
+    rỗng khi request không có ``tasks``).
 
+    ``analysis_key`` là khoá cache của request (``GET /v3/meetings/analyses/{analysis_key}``
+    lấy lại kết quả). ``cache_version`` tăng sau mỗi lần ghi cache của bản phân tích: frontend
+    bỏ response có version nhỏ hơn bản đang hiển thị. ``parts`` là trạng thái từng phần."""
+
+    analysis_key: str = ""
+    cache_version: int = 0
+    parts: dict[str, AnalysisPartOut] = {}
     meeting_id: str
     revision_id: str
     topics: list[TopicOut]

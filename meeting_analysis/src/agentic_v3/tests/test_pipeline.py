@@ -1,6 +1,6 @@
 """Test end-to-end của ``src.agentic_v3`` với LLM giả (không gọi mạng).
 
-Kiểm: Planner bỏ agent đúng chỗ, tool của Verifier, các chủ đề chạy song song nhưng
+Kiểm: Planner dựng danh bạ cả cuộc họp và bỏ agent theo Decisions đúng chỗ, tool của Verifier, các chủ đề chạy song song nhưng
 không vượt gate, Verifier ReAct (tra tool rồi kết luận), vòng feedback Verifier <->
 agent trích xuất tới khi đồng thuận, thử lại agent tại chỗ, và thứ tự kết quả.
 """
@@ -10,14 +10,17 @@ from __future__ import annotations
 import threading
 import time
 
+import pytest
+
 from src.agentic_v3 import (
     MeetingAnalyzerV3,
     V3Config,
     build_speaker_registry,
-    plan_meeting,
 )
+from src.agentic_v3.actors.agenda import parse_task_agenda
+from src.agentic_v3.core.turn_act import MAX_TURN_CHARS, TurnActJudgement
 from src.agentic_v3.nodes import prompts
-from src.agentic_v3.nodes.planner import ACTION_CUES, DECISION_CUES, find_cues
+from src.agentic_v3.nodes.planner import may_assign_or_decide
 from src.agentic_v3.nodes.verifier import VERIFIER_SCHEMA
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.agentic_v3.schemas import SpeakerRegistry
@@ -180,10 +183,12 @@ def _proposer(stance: str, confirm_turn_id: str | None = None, text: str | None 
             "revised_text": text, "revised_actor": actor}
 
 
-def _analyzer(llm: FakeLLM, config: V3Config | None = None, llm_concurrency: int = 8) -> MeetingAnalyzerV3:
+def _analyzer(
+    llm: FakeLLM, config: V3Config | None = None, llm_concurrency: int = 8, turn_judge=None
+) -> MeetingAnalyzerV3:
     return MeetingAnalyzerV3(
         content_llm=llm, action_llm=llm, decision_llm=llm, verifier_llm=llm,
-        labeler=FakeLabeler(), config=config, llm_concurrency=llm_concurrency,
+        labeler=FakeLabeler(), config=config, llm_concurrency=llm_concurrency, turn_judge=turn_judge,
     )
 
 
@@ -191,18 +196,90 @@ def _start(analyzer: MeetingAnalyzerV3):
     return analyzer.analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS)
 
 
-def test_planner_skips_agents_only_where_no_cue():
-    registry, plans = plan_meeting(SEGMENTS, {t.turn_id: t for t in TURNS})
-
-    assert registry.names == ("Anh Tuấn", "Hiếu", "Chị Mai", "Anh Phong")
-    assert plans["S1"].run_action and plans["S1"].run_decision
-    assert not plans["S3"].run_action and not plans["S3"].run_decision
+def test_planner_registry_lists_speakers_of_whole_meeting():
+    assert build_speaker_registry(TURNS).names == ("Anh Tuấn", "Hiếu", "Chị Mai", "Anh Phong")
 
 
-def test_planner_never_skips_when_disabled():
-    _, plans = plan_meeting(SEGMENTS, {t.turn_id: t for t in TURNS}, skip_without_cues=False)
+# p_commit của từng lượt theo Decisions giả: S3 (T5, T6) không có lượt nào có thể là giao/chốt việc.
+P_COMMIT = {"T1": 0.95, "T2": 0.9, "T3": 0.3, "T4": 0.1, "T5": 0.05, "T6": 0.02}
 
-    assert all(plan.run_action and plan.run_decision for plan in plans.values())
+
+class FakeTurnJudge:
+    """Decisions giả cho lượt nói: ``score(turn) -> p_commit``; ghi lại các đoạn được hỏi theo thứ tự.
+
+    Đầu vào khi tạo: score - hàm chấm (mặc định tra ``P_COMMIT``); fail_on - turn_id mà lời gọi lỗi.
+    """
+
+    def __init__(self, score=lambda turn: P_COMMIT[turn.turn_id], fail_on: str | None = None):
+        self.score = score
+        self.fail_on = fail_on
+        self.calls: list[SpeakerTurn] = []
+        self._lock = threading.Lock()
+
+    def judge(self, turn, context):
+        with self._lock:
+            self.calls.append(turn)
+        if turn.turn_id == self.fail_on:
+            raise LLMUpstreamError("decisions down")
+        p = self.score(turn)
+        return TurnActJudgement(label="ket_luan" if p >= 0.5 else "thao_luan",
+                                probabilities={"ket_luan": p, "thao_luan": 1 - p})
+
+
+def test_planner_checks_turns_from_the_end_and_stops_at_first_possible_commit():
+    judge = FakeTurnJudge()
+
+    assert may_assign_or_decide(TURNS[2:4], judge)  # T4 rõ là không, T3 có thể là chốt
+    assert [turn.turn_id for turn in judge.calls] == ["T4", "T3"]
+
+
+def test_planner_skips_only_when_every_turn_is_clearly_not_a_commit():
+    judge = FakeTurnJudge()
+
+    assert not may_assign_or_decide(TURNS[4:], judge)
+    assert [turn.turn_id for turn in judge.calls] == ["T6", "T5"]
+
+
+def test_planner_runs_agents_when_decisions_fails():
+    assert may_assign_or_decide(TURNS[4:], FakeTurnJudge(fail_on="T5"))
+
+
+def test_planner_judges_long_turn_window_by_window_from_the_end():
+    # Câu chốt nằm sau ký tự MAX_TURN_CHARS: chỉ hỏi phần đầu lượt thì bỏ sót.
+    long_turn = _turn("L", "Anh Tuấn", "Báo cáo bối cảnh đề án. " * 120 + "Chốt lại, giao Hiếu làm lại tờ trình.")
+    judge = FakeTurnJudge(score=lambda turn: 0.9 if "Chốt lại" in turn.text_exact else 0.0)
+
+    assert may_assign_or_decide((long_turn,), judge)
+    (window,) = judge.calls  # đoạn cuối được hỏi trước và đã đủ
+    assert len(window.text_exact) <= MAX_TURN_CHARS and window.text_exact.endswith("làm lại tờ trình.")
+
+
+def test_planner_skips_action_and_decision_agents_where_decisions_finds_no_commit_turn():
+    llm = FakeLLM(verifier_script=[_verifier_final("drop")])
+    report = _start(_analyzer(llm, turn_judge=FakeTurnJudge()))
+
+    assert {(s.segment_id, s.agent) for s in report.skipped_agents} == {
+        ("S3", "action_agent"), ("S3", "decision_agent"),
+    }
+    assert [llm.calls.count(kind) for kind in ("content", "action", "decision")] == [3, 2, 2]
+
+
+def test_planner_never_skips_without_judge_or_when_disabled():
+    for analyzer_kwargs in ({}, {"turn_judge": FakeTurnJudge(), "config": V3Config(skip_agents_without_commit=False)}):
+        llm = FakeLLM(verifier_script=[_verifier_final("drop")])
+        report = _start(_analyzer(llm, **analyzer_kwargs))
+
+        assert report.skipped_agents == ()
+        assert [llm.calls.count(kind) for kind in ("content", "action", "decision")] == [len(SEGMENTS)] * 3
+
+
+def test_planner_asks_decisions_only_when_action_or_decision_part_is_requested():
+    judge = FakeTurnJudge()
+    analyzer = _analyzer(FakeLLM(), turn_judge=judge)
+
+    analyzer.analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS, parts={"development"})
+
+    assert judge.calls == []
 
 
 def test_tools_read_whole_meeting_and_report_errors_as_observations():
@@ -216,12 +293,14 @@ def test_tools_read_whole_meeting_and_report_errors_as_observations():
 
 
 def test_topics_run_in_parallel_within_gate_limit():
+    # Gate rộng hơn số agent trích xuất của một chủ đề (3): lúc gate đầy, các lời gọi phải đến từ
+    # >= 2 chủ đề. Gate đúng 3 thì một chủ đề có thể chiếm hết suất (semaphore không theo thứ tự).
     llm = FakeLLM(delay=0.05, verifier_script=[_verifier_final("drop")])
-    result = _start(_analyzer(llm, llm_concurrency=3))
+    result = _start(_analyzer(llm, llm_concurrency=4))
 
     assert result.labels
     assert llm.max_segments_in_flight > 1  # nhiều chủ đề cùng gọi LLM một lúc
-    assert llm.max_in_flight <= 3  # nhưng không vượt gate
+    assert llm.max_in_flight <= 4  # nhưng không vượt gate
 
 
 def test_verifier_uses_tool_then_drops_unaccepted_proposal():
@@ -310,15 +389,12 @@ def test_failed_extractor_is_retried_in_place():
     assert [a.actor for a in report.assignments] == ["Hiếu"]
 
 
-def test_report_is_ordered_by_topic_and_skips_are_recorded():
+def test_report_is_ordered_by_topic():
     llm = FakeLLM(delay=0.01, verifier_script=[_verifier_final("drop")])
     report = _start(_analyzer(llm))
 
     assert [label.segment_id for label in report.labels] == ["S1", "S2", "S3"]
     assert [s.segment_id for s in report.meeting_development] == ["S1", "S2", "S3"]
-    assert {(s.segment_id, s.agent) for s in report.skipped_agents} == {
-        ("S3", "action_agent"), ("S3", "decision_agent"),
-    }
 
 
 def test_assignment_deadline_is_normalized_against_meeting_date():
@@ -479,12 +555,6 @@ def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.CONTENT_SYSTEM_PROMPT
 
 
-def test_chair_directive_without_named_actor_is_an_action_cue():
-    text = "Nó có 2 cái nhóm việc mà các đồng chí cần bổ sung thêm. Đề án cần làm rõ tác động."
-    assert "bổ sung" in find_cues(text.casefold(), ACTION_CUES)
-    assert "tinh thần chung" in find_cues("tinh thần chung là thông qua thường vụ", DECISION_CUES)
-
-
 def test_shared_rules_appear_once_per_extractor_prompt():
     for system in (prompts.CONTENT_SYSTEM_PROMPT, prompts.ACTION_SYSTEM_PROMPT, prompts.DECISION_SYSTEM_PROMPT):
         assert system.count(prompts.TURN_ID_RULE) == 1
@@ -548,3 +618,66 @@ def test_assignment_rule_ranks_chair_first_but_does_not_require_one():
     assert "lưu ý các ý kiến góp ý" in rule
     assert prompts.VERIFY_ACCEPTANCE_NOTE in prompts.VERIFY_RUBRICS["action"]
     assert "KHÔNG bỏ vì không nêu cá nhân" in prompts.VERIFY_RUBRICS["action"]
+
+
+# Tính riêng từng phần trên nhãn nạp sẵn (tầng dịch vụ dùng để chạy lại một phần)
+
+
+class CountingLabeler(FakeLabeler):
+    """``FakeLabeler`` đếm số lần được gọi."""
+
+    def __init__(self):
+        self.calls = 0
+        self._lock = threading.Lock()
+
+    def label_topic(self, segment, *args, **kwargs):
+        with self._lock:
+            self.calls += 1
+        return super().label_topic(segment, *args, **kwargs)
+
+
+def test_single_part_runs_only_its_agent_on_preset_labels():
+    llm, labeler = FakeLLM(), CountingLabeler()
+    analyzer = MeetingAnalyzerV3(content_llm=llm, action_llm=llm, decision_llm=llm, verifier_llm=llm, labeler=labeler)
+    labels = analyzer.label_segments(SEGMENTS)
+
+    report = analyzer.analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS, parts={"decisions"}, labels=labels)
+
+    assert labeler.calls == 3  # chỉ lần gán nhãn nền; graph dùng lại nhãn nạp sẵn
+    assert llm.calls == ["decision"] * len(SEGMENTS)
+    assert report.labels == labels
+    assert report.meeting_development == () and report.assignments == ()
+
+
+def test_parts_computed_separately_match_one_pass_run():
+    full = _start(_analyzer(FakeLLM(verifier_script=[_verifier_final("drop")])))
+
+    analyzer = _analyzer(FakeLLM(verifier_script=[_verifier_final("drop")]))
+    labels = analyzer.label_segments(SEGMENTS)
+    split = {
+        part: analyzer.analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS, parts={part}, labels=labels)
+        for part in ("development", "assignments", "decisions")
+    }
+
+    assert labels == full.labels
+    assert split["development"].meeting_development == full.meeting_development
+    assert split["assignments"].assignments == full.assignments
+    assert split["assignments"].verification_records == full.verification_records
+    assert split["decisions"].decisions == full.decisions
+
+
+def test_task_progress_is_left_out_when_progress_part_is_not_requested():
+    agenda = parse_task_agenda({"tasks": [{"id": "K1", "title": "Map nhãn", "owner": "Hiếu"}]})
+    analyzer = _analyzer(FakeLLM(verifier_script=[_verifier_final("drop")]))
+
+    report = analyzer.analyze(
+        meeting_id="M1", turns=TURNS, segments=SEGMENTS, task_agenda=agenda, parts={"assignments"}
+    )
+
+    assert report.task_progress == ()
+    assert [a.actor for a in report.assignments] == ["Hiếu"]
+
+
+def test_unknown_part_is_rejected():
+    with pytest.raises(ValueError, match="summary"):
+        _analyzer(FakeLLM()).analyze(meeting_id="M1", turns=TURNS, segments=SEGMENTS, parts={"summary"})

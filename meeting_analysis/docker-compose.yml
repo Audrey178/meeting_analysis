@@ -1,0 +1,22 @@
+# Redis cho cache kết quả pipeline v3 (be/services/analysis_cache.py, V3_CACHE=redis).
+#   docker compose up -d redis     # chạy nền; dữ liệu giữ trong volume redis-data qua các lần restart
+#   docker compose down            # dừng (thêm -v để xoá luôn dữ liệu cache)
+# Backend đọc V3_CACHE_REDIS_URL (mặc định redis://localhost:6379/0).
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: meeting-analysis-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:6379:6379" # chỉ mở cho máy này
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

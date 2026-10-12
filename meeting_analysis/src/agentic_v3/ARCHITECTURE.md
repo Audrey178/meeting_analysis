@@ -16,7 +16,7 @@ trạng thái bằng Decisions API, gộp tiến độ theo việc, quan hệ vi
 | Thứ tự chủ đề | Tuần tự: chủ đề N xong hẳn mới gửi N+1 | **Song song**: mọi chủ đề cùng lúc (`Send` → subgraph) |
 | Ngữ cảnh giữa chủ đề | `known_names`/`known_assignments` chạy dồn | `SpeakerRegistry` của cả cuộc họp, dựng 1 lần trước |
 | Gán nhãn chủ đề | Chạy hết stage07 trước | Ngay trong subgraph, chủ đề nào có nhãn thì trích xuất luôn |
-| Chọn agent | Luôn chạy đủ 3 agent | **Planner** (luật, 0 token) bỏ Action/Decision khi không có cue |
+| Chọn agent | Luôn chạy đủ 3 agent | **Planner** hỏi Decisions, bỏ Action/Decision ở chủ đề không có lượt nào có thể là giao/chốt việc |
 | Prompt agent trích xuất | Prompt v1 | Prompt riêng của v3 (`nodes/prompts.py`), kèm người chủ trì |
 | Kiểm chứng candidate nghi ngờ | Debate + Judge (3 lời gọi, chỉ đọc đoạn hiện tại) | **Verifier ReAct** có tool tra **cả cuộc họp** |
 | Khi chưa chắc | Giữ theo luật an toàn | **Vòng đồng thuận** Verifier ⇄ agent trích xuất |
@@ -44,7 +44,7 @@ riêng của v3 (mục 4.2).
                      │          (luật, 0 token)        │  │  │   (song song)        │
                      │                                 ▼  ▼  ▼                      │
                      │                       ┌── subgraph topic (graph/topic.py) ─┐ │
-                     │                       │ label_topic                        │ │
+                     │                       │ label_topic ∥ plan_topic           │ │
                      │                       │   ├─► content_agent ──────────┐    │ │
                      │                       │   ├─► action_agent   (nếu plan)├─► evidence_check
                      │                       │   ├─► decision_agent (nếu plan)┤    │ │
@@ -98,14 +98,14 @@ src/agentic_v3/
 
 | File | Vai trò |
 |---|---|
-| `config.py` | `V3Config`: các núm chỉnh (bỏ agent theo cue, số lần thử, số bước Verifier, số vòng đồng thuận, độ song song). |
-| `schemas.py` | Kiểu dữ liệu riêng của v3: `SpeakerRegistry` (kèm `roster`), `ActorCandidate`, `ActionItemV3` (lớp con `ActionItemCandidate` của v1, thêm `actor_type`/`actor_candidates`/`actor_flag`/`actor_reason`), `TopicPlan`, `SkippedAgent`, `VerifierStep`, `ConsensusRound`, `VerificationRecord`, `VerifyTask`, `MeetingReport`. Candidate dùng lại kiểu của v1. |
+| `config.py` | `V3Config`: các núm chỉnh (bỏ agent theo Decisions, số lần thử, số bước Verifier, số vòng đồng thuận, độ song song). |
+| `schemas.py` | Kiểu dữ liệu riêng của v3: `SpeakerRegistry` (kèm `roster`), `ActorCandidate`, `ActionItemV3` (lớp con `ActionItemCandidate` của v1, thêm `actor_type`/`actor_candidates`/`actor_flag`/`actor_reason`), `SkippedAgent`, `VerifierStep`, `ConsensusRound`, `VerificationRecord`, `VerifyTask`, `MeetingReport`. Candidate dùng lại kiểu của v1. |
 | `runner.py` | `MeetingAnalyzerV3`: điểm vào cho tầng dịch vụ; `analyze()` trả `MeetingReport`. |
 | `core/` | Bản chép các module v1 mà v3 dùng: kiểu candidate (`schemas.py`), chuẩn hoá hạn (`deadline.py`), bộ chấm lượt nói (`turn_act.py`), luật hậu kiểm (`_shared.py`), ba node trích xuất và phần dùng lại của debate/judge (`nodes/`). |
 | `graph/meeting.py` | Graph cha: `plan_meeting` → dispatch song song → `finalize`. |
 | `graph/topic.py` | Subgraph MỘT chủ đề: gán nhãn → trích xuất → evidence-check → Verifier. |
 | `graph/state.py` | State LangGraph: `MeetingStateV3` (graph cha), `TopicInput`/`TopicOutput`/`TopicState` (subgraph). Các khoá kết quả cộng dồn bằng `operator.add`. |
-| `nodes/planner.py` | Planner luật: dựng `SpeakerRegistry` và `TopicPlan` cho từng chủ đề. |
+| `nodes/planner.py` | Planner: dựng `SpeakerRegistry` (luật) và quyết định chạy Action/Decision agent ở từng chủ đề (`may_assign_or_decide`, Decisions). |
 | `nodes/verifier.py` | Verifier ReAct + vòng đồng thuận với agent trích xuất. |
 | `nodes/verifier_tools.py` | Tool CHỈ ĐỌC cho Verifier: `get_turn`, `search_meeting`, `lookup_speaker`. |
 | `nodes/progress.py` | Agent tiến độ, kiểm cập nhật tiến độ, gộp tiến độ theo việc, quan hệ việc giao ↔ việc cũ (mục 4.6). |
@@ -123,9 +123,10 @@ src/agentic_v3/
 
 ## 4. Luồng xử lý chi tiết
 
-### 4.1. Planner (`nodes/planner.py`) — luật, 0 token
+### 4.1. Planner (`nodes/planner.py`)
 
-Chạy **một lần** trước khi tách song song:
+Danh bạ và danh sách việc chạy **một lần** trước khi tách song song (luật, 0 token); bỏ agent
+thì chạy trong subgraph của từng chủ đề (Decisions):
 
 1. **`SpeakerRegistry`**: danh sách tên người nói không trùng của cả cuộc họp, theo thứ
    tự xuất hiện. Đưa vào prompt Action agent (ô `previous_context` của v1) và dùng làm
@@ -137,24 +138,36 @@ Chạy **một lần** trước khi tách song song:
    trong danh sách được coi là có căn cứ khi evidence-check (để "giao Sở Tài chính chủ
    trì" không bị loại). Việc mà actor khớp ≥ 2 ứng viên không ai đủ rõ (hai người tên
    Sơn) vẫn đi Verifier dù luật v1 coi là CLEAR.
-2. **`TopicPlan`** cho từng chủ đề: chạy Action agent nếu có cụm trong `ACTION_CUES`
-   ("giao", "phụ trách", "sẽ", "trước ngày"…), chạy Decision agent nếu có cụm trong
-   `DECISION_CUES` ("chốt", "thống nhất", "kết luận"…). Cue cố ý **rộng**: bỏ nhầm làm
-   giảm recall, còn chạy thừa chỉ tốn một lời gọi. Content agent không bao giờ bị bỏ.
-   Tắt bằng `skip_agents_without_cues=False` (dùng cho ablation).
-3. **Danh sách việc cần báo cáo** (`SpeakerRegistry.agenda`, file `<transcript>.tasks.json`
-   hoặc `tasks` của API): có việc thì `TopicPlan.run_progress=True` ở MỌI chủ đề (agent tiến
-   độ tự chọn việc nào chủ đề có nói tới, Planner không lọc theo từ khoá), và
+2. **Danh sách việc cần báo cáo** (`SpeakerRegistry.agenda`, file `<transcript>.tasks.json`
+   hoặc `tasks` của API): có việc thì agent tiến độ chạy ở MỌI chủ đề (agent tự chọn việc
+   nào chủ đề có nói tới), và
    `format_registry_context` thêm khối "Việc cần báo cáo tiến độ" vào prompt. Action agent
    nhận thêm `ACTION_TASK_ID_RULE` và trường `task_id` trong schema (`extractors.py`) để ghi
    mã việc cũ. Không có việc thì không đổi gì: số lời gọi LLM, prompt và schema của Action
    agent đều giữ nguyên.
+3. **Bỏ Action/Decision agent theo Decisions** (node `plan_topic`, chạy song song với
+   `label_topic`): `may_assign_or_decide` hỏi `turn_judge` (câu hỏi `turn_act`, cùng câu đã
+   hiệu chỉnh cho evidence-check) từng lượt của chủ đề, **từ lượt cuối lên** (lượt chốt hay ở
+   cuối), lượt dài hơn `MAX_TURN_CHARS` hỏi từng đoạn (`turn_windows`, đoạn sau trước). Gặp
+   lượt có p_commit ≥ `COMMIT_REJECT_MAX` (0.2) thì dừng và chạy cả hai agent; mọi lượt đều
+   dưới ngưỡng thì bỏ cả hai và ghi `SkippedAgent`. Judge lỗi → chạy. Không có `turn_judge`
+   (`TURN_ACT_MODEL` trống), tắt `skip_agents_without_commit`, hoặc `parts` không có Giao việc/
+   Kết luận → không hỏi, không bỏ. Content agent không bao giờ bị bỏ.
+   - Vì sao p_commit chung cho cả hai agent: lọc Decision agent theo riêng p(`ket_luan`) ≥ 0.2
+     bỏ sót 5/166 kết luận gold của `eval/synthetic` (lượt chốt của cả 5 bị xếp `giao_viec`);
+     p_commit ≥ 0.2 không sót mục nào, cả việc giao lẫn kết luận (mô phỏng trên kết quả đã
+     lưu của `experiments/009_decisions_api`).
+   - Vì sao không dùng từ khoá: cue cũ (`ACTION_CUES`/`DECISION_CUES`) trên `eval/synthetic`
+     chỉ bỏ 3/304 lời gọi agent mà làm mất 1 việc giao + 2 kết luận gold.
+   - Giá: mỗi chủ đề tốn 1..N lời gọi Decisions (N = số lượt/đoạn); chủ đề bị bỏ luôn tốn
+     đủ N. Với lượt ngắn, input giống hệt input evidence-check nên judge nhớ kết quả dùng lại.
 
 ### 4.2. Subgraph một chủ đề (`graph/topic.py`)
 
-1. **`label_topic`**: gán nhãn bằng stage07 (`label_topics`, có guard + fallback), dựng
-   `SegmentTask` kiểu v1, ghi `SkippedAgent` cho agent bị Planner bỏ.
-2. **Agent trích xuất** (dùng lại node v1, chạy song song theo `TopicPlan`):
+1. **`label_topic`** ∥ **`plan_topic`**: gán nhãn bằng stage07 (`label_topics`, có guard +
+   fallback), dựng `SegmentTask` kiểu v1; song song, `plan_topic` quyết định có chạy
+   Action/Decision agent không (§4.1). Hai nhánh hợp ở `dispatch_extractors` (không đổi state).
+2. **Agent trích xuất** (dùng lại node v1, chạy song song theo `parts` và `plan_topic`):
    - `content_agent` → luận điểm theo người nói (Diễn biến họp),
    - `action_agent` → candidate việc giao,
    - `decision_agent` → candidate kết luận.
@@ -172,7 +185,8 @@ Chạy **một lần** trước khi tách song song:
 4. **`verifier`**: mỗi candidate UNCERTAIN được `Send` riêng, chạy song song.
 
 Ba nhánh trích xuất nối thẳng vào `evidence_check` (không dùng join chờ đủ ba): số nhánh
-thay đổi theo plan, nhưng mọi nhánh cách điểm phân nhánh đúng một bước nên LangGraph ghi
+thay đổi theo `parts`, `plan_topic` và danh sách việc, nhưng mọi nhánh cách điểm phân nhánh
+đúng một bước nên LangGraph ghi
 kết quả trong cùng một superstep và `evidence_check` chạy đúng một lần.
 
 ### 4.3. Verifier ReAct (`nodes/verifier.py`, `nodes/verifier_tools.py`)
@@ -408,10 +422,11 @@ không có danh sách việc.
 ### 5.1. State
 
 - **`MeetingStateV3`** (graph cha): đầu vào (`meeting_id`, `revision_id`, `meeting_date`,
-  `chair`, `segments`, `turns_by_id`, `attendee_roster`, `task_agenda`), kết quả Planner (`registry`, `plans`), các khoá cộng dồn của
-  `TopicOutput`, và `report`.
+  `chair`, `segments`, `turns_by_id`, `attendee_roster`, `task_agenda`, `parts` — phần kết quả
+  cần tính, `preset_labels` — nhãn nạp sẵn theo `segment_id`), kết quả Planner (`registry`),
+  các khoá cộng dồn của `TopicOutput`, và `report`.
 - **`TopicInput`** (gói `Send`): `segment`, `turns` của chủ đề, `meeting_turns` của cả
-  cuộc họp (cho tool Verifier), `registry`, `plan`.
+  cuộc họp (cho tool Verifier), `registry`, `parts`, `preset_label`.
 - **`TopicOutput`** (khoá subgraph trả về, reducer `operator.add`): `labels`,
   `meeting_development`, `verified_assignments`, `verified_decisions`,
   `verification_records`, `topic_failures`, `skipped_agents`, `progress_updates` (đã kiểm).
@@ -467,7 +482,7 @@ Chưa đo lại với vòng đồng thuận và Verifier gpt-4o-mini.
 
 | Trường | Mặc định | Ý nghĩa |
 |---|---|---|
-| `skip_agents_without_cues` | `True` | Planner bỏ Action/Decision khi không có cue |
+| `skip_agents_without_commit` | `True` | Planner bỏ Action/Decision khi Decisions không thấy lượt nào có thể là giao/chốt việc (cần `turn_judge`) |
 | `extract_attempts` | `2` | Số lần gọi tối đa mỗi agent trích xuất |
 | `verifier_max_tool_calls` | `3` | Số lần gọi tool mỗi vòng Verifier |
 | `search_top_k` | `5` | Số lượt nói `search_meeting` trả về |
@@ -478,7 +493,7 @@ Chưa đo lại với vòng đồng thuận và Verifier gpt-4o-mini.
 
 | Biến | Ý nghĩa |
 |---|---|
-| `V3_SKIP_AGENTS_WITHOUT_CUES`, `V3_EXTRACT_ATTEMPTS`, `V3_VERIFIER_MAX_TOOL_CALLS`, `V3_CONSENSUS_MAX_ROUNDS`, `V3_MAX_CONCURRENCY` | Ghi đè `V3Config` |
+| `V3_SKIP_AGENTS_WITHOUT_COMMIT`, `V3_EXTRACT_ATTEMPTS`, `V3_VERIFIER_MAX_TOOL_CALLS`, `V3_CONSENSUS_MAX_ROUNDS`, `V3_MAX_CONCURRENCY` | Ghi đè `V3Config` |
 | `V3_LLM_CONCURRENCY` | Kích thước gate dùng chung (mặc định 8) |
 | `VERIFIER_MODEL_NAME`, `VERIFIER_BASE_URL`, `VERIFIER_API_KEY` | Backend riêng cho Verifier (để trống = dùng chung LLM chính) |
 | `VERIFIER_RESPONSE_MODE` | `json_schema` (OpenAI strict) hoặc `json_object` |
@@ -486,6 +501,9 @@ Chưa đo lại với vòng đồng thuận và Verifier gpt-4o-mini.
 | `VERIFIER_THINKING` | `enabled`/`disabled` cho DeepSeek; để trống với OpenAI |
 | `TURN_ACT_MODEL` | Model Decisions (`gpt-6-luna`) xét lượt chốt theo nghĩa, và lượt nêu trạng thái tiến độ (chung client); để trống = luật từ khoá cho lượt chốt, tiến độ giữ trạng thái agent khai (`unchecked`) |
 | `TURN_ACT_API_KEY`, `TURN_ACT_BASE_URL`, `TURN_ACT_TIMEOUT_SECONDS` | Key (mặc định `VERIFIER_API_KEY` rồi `OPENAI_API_KEY`), endpoint (mặc định `api.openai.com`), timeout (10s) |
+| `V3_CACHE` | Nơi cache kết quả API (§8.1): `redis` (mặc định), `disk` (file JSON), `memory` (trong tiến trình, LRU) hoặc `off` |
+| `V3_CACHE_REDIS_URL`, `V3_CACHE_TTL_SECONDS` | Redis (mặc định `redis://localhost:6379/0`, chạy bằng `docker compose up -d redis`); thời gian giữ một bản phân tích kể từ lần ghi cuối (mặc định 7 ngày) |
+| `V3_CACHE_DIR`, `V3_CACHE_MAX_ANALYSES` | Thư mục cache `disk` (mặc định `outputs/v3_cache`, không tự dọn); số bản giữ ở `memory` (mặc định 32) |
 
 Cấu hình hiện tại: agent trích xuất + gán nhãn = gemma (server riêng), Verifier =
 `gpt-4o-mini` (`json_schema`). `be/main.py` nạp `.env` với `override=True` nên `.env`
@@ -497,29 +515,87 @@ thắng biến cũ còn export trong shell.
 
 - **Điểm vào**: `MeetingAnalyzerV3(content_llm, action_llm, decision_llm, verifier_llm,
   labeler, …, progress_llm=None, progress_judge=None).analyze(meeting_id, revision_id, meeting_date,
-  chair, turns, segments, attendee_roster=None, task_agenda=None) -> MeetingReport`.
-  `chair` (tùy chọn) là tên người chủ trì; `task_agenda` (tùy chọn) bật agent tiến độ.
+  chair, turns, segments, attendee_roster=None, task_agenda=None, parts=None, labels=None) -> MeetingReport`.
+  `chair` (tùy chọn) là tên người chủ trì; `task_agenda` (tùy chọn) bật agent tiến độ;
+  `parts` chọn phần kết quả cần tính (`ANALYSIS_PARTS`, None = mọi phần; phần không yêu cầu
+  để rỗng) và `labels` nạp nhãn có sẵn thay vì gán nhãn trong từng chủ đề.
+  `label_segments(segments)` gán nhãn mọi chủ đề bằng cùng labeler + gate.
   Graph compile một lần, dùng cho mọi cuộc họp; analyzer sống suốt vòng đời ứng dụng
   để mọi request dùng chung một gate.
-- **API**: `POST /v3/meetings/analyze` (`be/routers/meetings_v3.py`) nhận `AnalyzeV3Request`
-  (transcript + `meeting_date`, `chair`, `attendees`, `tasks` tùy chọn) → `AnalyzeV3Result`
-  (`topics`, `verified_assignments` kèm `task_id`/`relation`, `verified_decisions`,
-  `task_progress`, `turns`, `failed_topics`, `verification_records` kèm `rounds`,
-  `skipped_agents`). `attendees`/`tasks` sai dạng (vd. mã đơn vị không có) → 422, kiểm trước
-  khi cắt chủ đề. Cắt chủ đề (stage01–03 +
-  segmenter) dùng chung với v1 qua `segment_meeting`.
-- **FE**: ô "Chủ trì" ở màn nhập (dùng chung với MA-MRG) gửi kèm `chair`; `useV3Analysis` gọi một lần; `VerifierRecordsBlock` hiển thị chuỗi tra cứu và
+- **API** (`be/routers/meetings_v3.py`, kết quả cache theo nội dung request, xem §8.1):
+  - `POST /v3/meetings/analyze[?refresh=true]` nhận `AnalyzeV3Request` (transcript +
+    `meeting_date`, `chair`, `attendees`, `tasks` tùy chọn) → `AnalyzeV3Result` (`topics`,
+    `verified_assignments` kèm `task_id`/`relation`, `verified_decisions`, `task_progress`,
+    `turns`, `failed_topics`, `verification_records` kèm `rounds`, `skipped_agents`, cộng
+    `analysis_key`, `cache_version`, `parts`). Phần nào đã có trong cache thì dùng lại;
+    `refresh` tính lại tất cả, kể cả cắt chủ đề + nhãn.
+  - `POST /v3/meetings/analyze/{part}` (`development` | `assignments` | `decisions` |
+    `progress`): cùng body, tính lại riêng phần đó trên cùng chủ đề + nhãn, trả kết quả đủ
+    mọi phần. `progress` khi request không có `tasks` → 409; chạy lại mà có chủ đề lỗi trong
+    khi bản đang lưu đầy đủ → 502, bản cũ được giữ.
+  - `GET /v3/meetings/analyses/{analysis_key}`: kết quả đã cache, không gọi LLM (404 nếu
+    không còn đủ).
+
+  `attendees`/`tasks` sai dạng (vd. mã đơn vị không có) → 422, kiểm trước khi cắt chủ đề.
+  Cắt chủ đề (stage01–03 + segmenter) dùng chung với v1 qua `segment_meeting`.
+- **FE**: ô "Chủ trì" ở màn nhập (dùng chung với MA-MRG) gửi kèm `chair`; `useV3Analysis` gọi một lần,
+  mỗi tab Diễn biến/Giao việc/Kết luận/Tiến độ có nút chạy lại riêng phần đó (kết quả cũ vẫn
+  hiện trong lúc chờ, lỗi hiện ngay trong tab), hàng thống kê có nút "Chạy lại toàn bộ";
+  phiên đang xem nằm trong `sessionStorage` nên tải lại trang lấy lại kết quả từ cache;
+  `VerifierRecordsBlock` hiển thị chuỗi tra cứu và
   các vòng feedback, có bộ lọc "Chưa đồng thuận". Ô "Việc cần báo cáo tiến độ" (JSON/tệp
   `*.tasks.json`) gửi kèm `tasks`; tab "Tiến độ" (`TaskProgressBlock`) hiện mỗi việc một thẻ
   (trạng thái cũ → mới, hạn, cờ mâu thuẫn/chưa xác nhận/quá hạn, các cập nhật bấm được để tô
   bằng chứng); tab Giao việc có nhãn quan hệ (Việc mới / Tiếp nối / Giao lại / Đổi hạn).
+
+### 8.1. Cache kết quả và chạy lại từng phần (`be/services/pipeline_v3.py`, `analysis_cache.py`)
+
+```
+analysis_key = sha256(payload chuẩn hoá + fingerprint pipeline)
+  base         turns, segments, labels          segment_meeting + label_segments
+  development  topics                           analyze(parts={"development"}, labels)
+  assignments  verified_assignments + bản ghi Verifier kind=action + failed/skipped của action_agent
+  decisions    verified_decisions   + bản ghi Verifier kind=decision + …
+  progress     task_progress (chỉ khi có tasks)
+```
+
+- **Nhãn thuộc base** vì nằm trong prompt của cả bốn agent và giao diện gắn mọi mục vào chủ đề
+  theo `segment_id`/nhãn; chạy lại một phần không bao giờ cắt lại chủ đề hay gán lại nhãn.
+  Chạy một mạch = base rồi các phần song song (cùng đường code với chạy lại một phần), nên mất
+  phần chồng gối "chủ đề nào có nhãn thì trích xuất ngay" — chậm thêm cỡ một lượt gán nhãn.
+- **Khoá**: hash payload (gồm `chair`, `attendees`, `tasks`, `meeting_date`), không dùng
+  `meeting_id`/`revision_id` (transcript STT export dùng chung `stt-export`/`export-0`).
+  Fingerprint gồm mã nguồn `src`, `be/services`, `be/schemas.py`, `configs`, segmenter (hash nội
+  dung; checkpoint `.pt` theo kích thước + mtime) và biến môi trường chọn model/endpoint/cấu
+  hình, nên sửa prompt (kể cả chưa commit) là cache cũ hết hiệu lực.
+- **Ba bất biến**: (1) mọi phần trong một response cùng một base (mỗi mục phần ghi
+  `base_version`; base bị request khác thay giữa chừng thì làm lại theo base mới); (2) mỗi mục có
+  tối đa một lần tính đang chạy (`SingleFlight`; tên lần tính của phần gồm version base), request
+  trùng — bấm hai lần, hai tab, tải lại trang khi đang chạy — chờ chung; (3) chỉ ghi khi tính
+  xong, và lần chạy lại có chủ đề lỗi không đè bản đầy đủ đang lưu.
+- Phần có `failed_topics` được lưu với `status="incomplete"`; `POST /analyze` coi như chưa có
+  cache và tính lại phần đó. Mỗi lần ghi tăng `cache_version`; FE bỏ response có version nhỏ hơn
+  bản đang hiển thị.
+- Chạy lại chỉ gọi lại agent trích xuất + Verifier: Planner theo luật cho cùng danh bạ, và
+  phân loại Decisions (của `plan_topic` lẫn evidence-check) được judge nhớ theo nội dung trong
+  tiến trình.
+- **Backend** (`V3_CACHE`): `redis` (mặc định, `RedisAnalysisBackend`) để mọi worker/instance dùng
+  chung: mỗi bản phân tích là một hash có TTL gồm `data:<mục>`, `version:<mục>` và bộ đếm
+  `__version__` (ghi bằng một script Lua nên dữ liệu và version luôn đi cùng nhau); khoá đọc-ghi
+  là lock Redis; chạy-một-lần là lock Redis được gia hạn trong lúc tính, người chờ tính sau khi
+  lock được nhả nên `_compute_base`/`_compute_part` xem lại cache trước và dùng mục mới hơn
+  version lúc request bắt đầu. `disk`/`memory`/`off` dùng `LocalAnalysisBackend` (khoá,
+  version, `SingleFlight` trong tiến trình — chỉ đúng với một worker). Redis không kết nối được
+  → 503.
 
 ---
 
 ## 9. Kiểm thử
 
 `src/agentic_v3/tests/test_pipeline.py` (13 test, LLM giả nhận vai qua schema/system prompt):
-Planner bỏ agent đúng chỗ; tool đọc cả cuộc họp và trả lỗi thành observation; chủ đề chạy
+Planner dựng danh bạ cả cuộc họp; Planner hỏi Decisions từ lượt cuối lên, dừng ở lượt đầu tiên
+vượt ngưỡng, xét lượt dài từng đoạn, judge lỗi thì vẫn chạy, bỏ agent đúng chỗ, không bỏ khi không
+có judge/tắt cấu hình/không cần phần đó; tool đọc cả cuộc họp và trả lỗi thành observation; chủ đề chạy
 song song nhưng không vượt gate; Verifier tra tool rồi kết luận; luật hạ `keep` không có
 lượt chốt thành `drop`; agent `amend` rồi Verifier đồng ý; agent `accept` thì bỏ; hết vòng
 thì theo Verifier; vẫn `unresolved` thì giữ fallback; lỗi LLM giữ bản gốc; thử lại agent
@@ -527,14 +603,24 @@ tại chỗ; agent trích xuất chạy với prompt v3; người chủ trì đ�
 trong prompt; kết quả sắp theo thứ tự chủ đề.
 
 `src/agentic_v3/tests/test_progress.py`: đọc danh sách việc (tra mã, tên tự do, các lỗi, quy
-ước đặt tên, file mẫu khớp attendees mẫu); Planner chỉ bật agent tiến độ khi có danh sách;
+ước đặt tên, file mẫu khớp attendees mẫu); danh sách việc có trong ngữ cảnh prompt;
 parser agent tiến độ (mã lạ, lượt ngoài chủ đề, gộp trùng, lỗi LLM); kiểm bằng Decisions (giữ /
 sửa / hạ / lỗi → `unchecked`); gộp theo việc (chỉ đạo thắng báo cáo, lượt muộn thắng, mâu
 thuẫn, `not_reported`, quá hạn); `relation`; không gộp việc giao của hai việc cũ khác nhau;
 end-to-end có/không có danh sách việc (không có thì không thêm lời gọi nào).
 
 `be/test_api_v3.py`: wiring HTTP end-to-end, gồm luồng đồng thuận trong một request,
-`chair` tới được mọi prompt, `tasks` → `task_progress` + `relation`, và `tasks` sai dạng → 422.
+`chair` tới được mọi prompt, `tasks` → `task_progress` + `relation`, và `tasks` sai dạng → 422;
+cache và chạy lại từng phần: request lặp lại không gọi LLM, chạy lại một phần không gán lại nhãn
+và không đụng phần khác, chạy lại khi cache trống, chạy lại lỗi giữ bản cũ, phần `incomplete`
+được tính lại, `refresh`, `progress` không có `tasks` → 409, tra theo `analysis_key`, hai request
+chạy lại cùng phần chỉ tính một lần, base bị thay giữa chừng — mỗi test chạy trên cả backend
+trong tiến trình lẫn Redis. `test_pipeline.py` kiểm tính riêng từng phần trên nhãn nạp sẵn (ghép
+lại bằng kết quả chạy một mạch). `be/test_analysis_cache.py`: nơi lưu file/bộ nhớ, version qua
+restart, khoá, fingerprint, `SingleFlight`; backend Redis: TTL, version chung giữa hai worker,
+khoá re-entrant và loại trừ worker khác, người chờ dùng lại kết quả, lock được gia hạn khi tính
+lâu, Redis không kết nối được. Redis mặc định là fakeredis (`be/conftest.py`); đặt
+`V3_TEST_REDIS_URL=redis://localhost:6379/15` để chạy trên Redis thật.
 
 ---
 
@@ -543,7 +629,9 @@ end-to-end có/không có danh sách việc (không có thì không thêm lời 
 1. **Chưa đo chất lượng trên gold thật** (`experiments/007_dialtreeseg/gold`). Các giả định
    rủi ro nhất chưa được kiểm:
    - `SpeakerRegistry` thay `known_names` chạy dồn không làm giảm chất lượng actor;
-   - bỏ agent theo cue không mất recall (đo bằng `skip_agents_without_cues=False`);
+   - bỏ agent theo Decisions không mất recall trên cuộc họp thật (mới mô phỏng trên
+     `eval/synthetic`; đo bằng `skip_agents_without_commit=False`), và tiết kiệm đủ để bù lời
+     gọi Decisions (trên synthetic chỉ ~18% chủ đề không có việc giao lẫn kết luận);
    - vòng đồng thuận không khiến agent "nhượng bộ" sai, hoặc Verifier nhượng bộ trước
      agent phản biện.
 2. **Agent trả lời feedback chạy trên gemma**, từng gặp lỗi JSON: trích nguyên văn bằng
@@ -583,3 +671,8 @@ end-to-end có/không có danh sách việc (không có thì không thêm lời 
 8. **Pha 2 (chưa làm)**: Verifier thêm loại "progress" (kết luận giữ / đổi trạng thái / thiếu
    căn cứ, không bao giờ xoá việc; tool `lookup_task`), và lọc việc theo chủ đề bằng Decisions
    nếu danh sách việc quá dài (> ~30 việc).
+9. **Cache (§8.1)**: backend `disk`/`memory` chỉ đúng với uvicorn một worker và thư mục
+   `outputs/v3_cache` không tự dọn (Redis thì có TTL và chạy được nhiều worker); chưa giữ lịch sử
+   các lần chạy lại nên chưa "khôi phục bản trước" được khi lần chạy lại thành công nhưng kém hơn.
+   Nhiều worker thì mỗi worker có `LLMConcurrencyGate` riêng, nên tổng số lời gọi LLM đồng thời
+   nhân theo số worker.
