@@ -67,9 +67,9 @@ class SpeakerPoint:
     Các trường:
         text: nội dung luận điểm (ngôi thứ ba).
         evidence_ids: các turn_id làm bằng chứng cho luận điểm.
-        quotes: câu trích nguyên văn ứng với từng phần tử của ``evidence_ids``
-            (cùng thứ tự và độ dài). Luôn do luật điền và kiểm chứng
-            (``_shared.validate_evidence_with_quotes``), không tin trực tiếp từ LLM.
+        quotes: nguyên văn lượt nói ứng với từng phần tử của ``evidence_ids``
+            (cùng thứ tự và độ dài). Luôn do luật điền
+            (``_shared.validate_evidence_by_turn_ids``), không tin trực tiếp từ LLM.
     """
 
     text: str
@@ -222,31 +222,6 @@ class DebateTask(TypedDict):
 JudgeVerdict = Literal["keep", "revise", "drop"]
 
 
-@dataclass(frozen=True, slots=True)
-class DebateRecord:
-    """Bản ghi đầy đủ MỘT vòng debate+judge cho một candidate uncertain, để audit.
-
-    Không phải input cho bước nào sau -- chỉ để hiển thị minh bạch (renderer,
-    API) vì sao một candidate uncertain được giữ hoặc bị bỏ.
-
-    ``verdict``: keep / revise (sửa người phụ trách) / drop; ``kept`` = verdict
-    khác drop. ``final_text``: candidate sau khi sửa ("" nếu bị bỏ).
-    ``deciding_turn_id``: lượt nói giao/chốt mà judge dựa vào (None nếu không có).
-    """
-
-    segment_id: str
-    kind: CandidateKind
-    candidate_text: str
-    reasons: tuple[str, ...]
-    support_argument: str
-    oppose_argument: str
-    kept: bool
-    reasoning: str
-    verdict: JudgeVerdict = "keep"
-    final_text: str = ""
-    deciding_turn_id: str | None = None
-
-
 __all__ = [
     "SegmentTask",
     "TopicFailure",
@@ -261,5 +236,4 @@ __all__ = [
     "CandidateKind",
     "EvidenceFlag",
     "DebateTask",
-    "DebateRecord",
 ]

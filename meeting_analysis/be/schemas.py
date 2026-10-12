@@ -75,9 +75,9 @@ class SpeakerPointOut(BaseModel):
     Các trường:
         text: nội dung luận điểm.
         evidence_ids: các turn_id làm bằng chứng.
-        quotes: câu trích nguyên văn ứng với từng ``evidence_ids`` (cùng thứ tự và độ
-            dài); là câu thực sự được trích chứ không phải cả lượt nói (xem
-            ``src.agentic_v3.core._shared.validate_evidence_with_quotes``).
+        quotes: nguyên văn lượt nói ứng với từng ``evidence_ids`` (cùng thứ tự và độ
+            dài), do luật điền (xem
+            ``src.agentic_v3.core._shared.validate_evidence_by_turn_ids``).
         citation_count: số trích dẫn (bằng số turn_id bằng chứng).
     """
 

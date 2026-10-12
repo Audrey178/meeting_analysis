@@ -22,7 +22,7 @@ from dataclasses import dataclass, field
 import heapq
 
 import numpy as np
-from src.utils.contracts import AnalysisAtom, SpeakerTurn, TopicSegment
+from src.utils.contracts import SpeakerTurn, TopicSegment
 
 EmbedFn = Callable[[str], Sequence[float]]
 
@@ -382,23 +382,22 @@ def spans_to_boundary_indices(spans: Sequence[tuple[int, int]]) -> list[int]:
     return [hi for _lo, hi in spans[:-1]]
 
 
-def _get_item_id(item: SpeakerTurn | AnalysisAtom, index: int) -> str:
+def _get_item_id(item: SpeakerTurn, index: int) -> str:
     """Lấy mã ổn định của một phần tử đầu vào TreeSeg.
 
-    Dùng ``atom_id`` nếu người gọi truyền ``AnalysisAtom`` (cờ ``--atoms``), dùng
-    ``turn_id`` nếu là ``SpeakerTurn`` (mặc định). Nếu phần tử không có thuộc tính nào
-    (kiểu duck-typing) thì lấy chỉ số vị trí, để đoạn vẫn truy vết được thay vì âm thầm
-    mất khóa nối.
+    Dùng ``turn_id`` của ``SpeakerTurn``. Nếu phần tử không có thuộc tính này (kiểu
+    duck-typing) thì lấy chỉ số vị trí, để đoạn vẫn truy vết được thay vì âm thầm mất
+    khóa nối.
 
     Đầu vào: item - phần tử đầu vào; index - vị trí của nó trong dãy.
     Đầu ra: str - mã của phần tử.
     """
 
-    return getattr(item, "atom_id", None) or getattr(item, "turn_id", None) or str(index)
+    return getattr(item, "turn_id", None) or str(index)
 
 
 def segment_turns_with_treeseg(
-    turns: Sequence[SpeakerTurn | AnalysisAtom],
+    turns: Sequence[SpeakerTurn],
     embed_fn: EmbedFn,
     width: int,
     min_size: int,
@@ -417,7 +416,7 @@ def segment_turns_with_treeseg(
     ``cut_tree_by_gain_threshold``) để các lời gọi LLM phía sau không nhận chủ đề quá lớn.
 
     Đầu vào:
-        turns: các lượt nói (hoặc atom), theo thứ tự thời gian.
+        turns: các lượt nói, theo thứ tự thời gian.
         embed_fn: hàm nhận một chuỗi, trả về vector embedding.
         width: số phần tử đứng trước dùng làm ngữ cảnh khi embed.
         min_size: kích thước tối thiểu của một đoạn.
@@ -443,7 +442,7 @@ def segment_turns_with_treeseg(
 
 
 def boundaries_to_topic_segments(
-    turns: Sequence[SpeakerTurn | AnalysisAtom], boundaries: Sequence[int]
+    turns: Sequence[SpeakerTurn], boundaries: Sequence[int]
 ) -> list[TopicSegment]:
     """Đóng gói dãy lượt nói đã cắt tại ``boundaries`` thành các ``TopicSegment``.
 
@@ -452,7 +451,7 @@ def boundaries_to_topic_segments(
     ``start_ms`` / ``end_ms`` là CHỈ SỐ lượt nói (nửa mở), không phải mili-giây.
 
     Đầu vào:
-        turns: các lượt nói (hoặc atom), theo thứ tự thời gian.
+        turns: các lượt nói, theo thứ tự thời gian.
         boundaries: chỉ số bắt đầu mỗi đoạn mới, tăng dần, trong (0, len(turns)).
     Đầu ra: list[TopicSegment] phủ kín ``turns``.
     """

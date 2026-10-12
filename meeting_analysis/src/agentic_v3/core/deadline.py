@@ -73,8 +73,6 @@ _BEFORE_RE = re.compile(
 )
 _EITHER_RE = re.compile(r"\s+(?:hoặc|hay là|hay)\s+")
 
-_NEXT = ("sau", "tới")
-
 
 def _has_any(text: str, phrases: tuple[str, ...]) -> bool:
     return any(phrase in text for phrase in phrases)

@@ -371,13 +371,9 @@ class DialStartSegmenter:
             pairs, lambda ids, mask, types: self.model.coheren_model(ids, mask, types)[0][0][:, 0]
         )
 
-    def score_gaps(self, texts: Sequence[str]) -> list[float]:
-        """Điểm mạch lạc sigmoid(NSP + cos chủ đề) cho n-1 khe; thấp = dễ là ranh giới."""
-
-        return self.score_gaps_with_embeddings(texts)[0]
-
     def score_gaps_with_embeddings(self, texts: Sequence[str]) -> tuple[list[float], np.ndarray]:
-        """Như ``score_gaps`` nhưng trả thêm embedding chủ đề (n, d) của từng lượt."""
+        """Điểm mạch lạc sigmoid(NSP + cos chủ đề) cho n-1 khe (thấp = dễ là ranh giới), kèm
+        embedding chủ đề (n, d) của từng lượt."""
 
         if len(texts) < 2:
             return [], np.zeros((len(texts), 0))

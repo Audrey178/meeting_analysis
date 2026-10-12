@@ -6,8 +6,7 @@ từ các lượt nói của đoạn theo cùng một cách, và đều phải l
 việc các node tự lệch nhau theo thời gian.
 
 Nhóm hàm trong file:
-    - Kiểm tra bằng chứng (trích dẫn): ``validate_evidence_with_quotes``,
-      ``validate_evidence_by_turn_ids``.
+    - Kiểm tra bằng chứng (trích dẫn): ``validate_evidence_by_turn_ids``.
     - Evidence-check CLEAR/UNCERTAIN (kiến trúc M5): ``check_action_evidence``,
       ``check_decision_evidence``.
     - Làm sạch output: ``strip_assignment_prefix``, ``is_assignment_point``,
@@ -16,10 +15,7 @@ Nhóm hàm trong file:
       ``match_claimed_name_to_real_speaker``, ``make_speaker_initials``.
     - Xử lý người phụ trách (actor): ``make_actor_grouping_key``,
       ``is_bare_personal_pronoun``.
-    - Ngữ cảnh giữa các chủ đề: ``collect_names_and_assignments_of_topic``,
-      ``format_previous_context``.
-    - Dựng prompt / chia lô: ``format_turns_as_transcript``,
-      ``split_into_ranges_within_budget``, ``get_turns_of_segment``.
+    - Dựng prompt: ``format_turns_as_transcript``, ``get_turns_of_segment``.
 """
 
 from __future__ import annotations
@@ -31,7 +27,7 @@ from collections.abc import Sequence
 from dataclasses import replace
 
 from ...utils.contracts import SpeakerTurn, TopicSegment
-from .schemas import ActionItemCandidate, DecisionCandidate, EvidenceFlag, SpeakerSection
+from .schemas import ActionItemCandidate, DecisionCandidate, EvidenceFlag
 from .turn_act import COMMIT_CLEAR_MIN, COMMIT_REJECT_MAX, TurnActJudge
 
 logger = logging.getLogger(__name__)
@@ -137,46 +133,6 @@ def read_list_or_empty(value: object) -> list:
     """
 
     return value if isinstance(value, list) else []
-
-
-def validate_evidence_with_quotes(
-    turns: tuple[SpeakerTurn, ...], claimed_evidence: list[dict]
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Lọc bằng chứng do model nêu (gồm turn_id + câu trích) về những gì kiểm chứng được.
-
-    Chức năng:
-        - Chỉ giữ mục có ``turn_id`` là lượt nói thật của ĐOẠN này. turn_id bịa
-          hoặc thuộc đoạn khác bị loại, để không làm tăng sai số "N trích dẫn".
-        - Với câu trích: chỉ tin nếu nó là chuỗi con thật (sau khi gộp khoảng
-          trắng) của ``text_exact`` của lượt nói. Ngược lại dùng nguyên văn cả
-          lượt nói. Cách này an toàn và vẫn truy vết được, tránh nhận nhầm câu
-          model đã diễn đạt lại.
-
-    Đầu vào:
-        turns: các lượt nói của đoạn chủ đề hiện tại.
-        claimed_evidence: danh sách dict ``{"turn_id": ..., "quote": ...}`` do model trả về.
-
-    Đầu ra:
-        Tuple ``(evidence_ids, quotes)``, hai tuple cùng độ dài và cùng thứ tự.
-    """
-
-    known = {turn.turn_id: turn.text_exact for turn in turns}
-    evidence_ids: list[str] = []
-    quotes: list[str] = []
-    for entry in claimed_evidence:
-        turn_id = _extract_bare_turn_id(str(entry.get("turn_id") or ""))
-        if turn_id not in known:
-            continue
-        turn_text = known[turn_id]
-        claimed_quote = (entry.get("quote") or "").strip()
-        quote = (
-            claimed_quote
-            if claimed_quote and _collapse_whitespace(claimed_quote) in _collapse_whitespace(turn_text)
-            else turn_text
-        )
-        evidence_ids.append(turn_id)
-        quotes.append(quote)
-    return tuple(evidence_ids), tuple(quotes)
 
 
 def read_confirm_turn_id(turns: tuple[SpeakerTurn, ...], value: object) -> str | None:
@@ -848,72 +804,6 @@ def is_non_identifying_actor(actor: str) -> bool:
     )
 
 
-def collect_names_and_assignments_of_topic(
-    speaker_sections: tuple[SpeakerSection, ...], action_items: tuple[ActionItemCandidate, ...]
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Thu phần đóng góp của MỘT chủ đề vừa xong vào ngữ cảnh chạy dồn giữa các chủ đề.
-
-    Luật, 0 token. Ngữ cảnh này giúp chủ đề sau quy được "em"/"anh" về tên thật đã
-    biết ở chủ đề trước (xem vòng lặp tuần tự trong ``graph.py``). Actor không định
-    danh được ai cụ thể (đại từ trần, hoặc cụm như "nhóm"/"một thành viên" --
-    ``is_non_identifying_actor``) không bao giờ được đưa vào danh sách tên đã biết,
-    vì mang nó sang chủ đề sau chỉ lan sự mơ hồ thay vì giải quyết nó (nếu lọt vào,
-    ``format_previous_context`` sẽ hiển thị nó dưới nhãn "Người đã biết tên" và dạy
-    model rằng đó là một tên hợp lệ).
-
-    Đầu vào:
-        speaker_sections: các phần luận điểm theo người nói của chủ đề.
-        action_items: các việc được giao của chủ đề.
-
-    Đầu ra:
-        Tuple ``(names, assignments)``: ``names`` là tên thật không trùng (giữ
-        thứ tự gặp đầu tiên); ``assignments`` là mỗi việc một dòng "người: nội dung".
-    """
-
-    names = [s.full_name for s in speaker_sections if s.full_name]
-    for item in action_items:
-        actor = (item.actor or "").strip()
-        if actor and not is_non_identifying_actor(actor):
-            names.append(actor)
-    assignments = [
-        f"{item.actor}: {item.text}"
-        for item in action_items
-        if item.actor and not is_non_identifying_actor(item.actor)
-    ]
-    # Bỏ trùng nhưng giữ thứ tự gặp đầu tiên để chạy lại luôn ra cùng kết quả.
-    seen: set[str] = set()
-    unique_names = []
-    for name in names:
-        if name not in seen:
-            seen.add(name)
-            unique_names.append(name)
-    return tuple(unique_names), tuple(assignments)
-
-
-def format_previous_context(known_names: tuple[str, ...], known_assignments: tuple[str, ...]) -> str:
-    """Biến ngữ cảnh đã dồn từ các chủ đề trước thành khối văn bản ngắn đưa vào prompt.
-
-    Kết quả nằm ở ``SegmentTask.previous_context``. Đây chỉ là bản tóm tắt tên và
-    việc đã giao, không bao giờ là bản ghi thô của các chủ đề trước, để agent
-    không phải xử lý lại toàn bộ cuộc họp (SPEC.md AC-5.1).
-
-    Đầu vào:
-        known_names: tên người đã biết từ các chủ đề trước.
-        known_assignments: các dòng "người: việc" đã giao ở các chủ đề trước.
-
-    Đầu ra: str - khối văn bản cho prompt, hoặc câu báo chưa có chủ đề trước.
-    """
-
-    if not known_names and not known_assignments:
-        return "(Chưa có chủ đề nào trước đó.)"
-    parts = []
-    if known_names:
-        parts.append("Người đã biết tên từ các chủ đề trước: " + ", ".join(known_names) + ".")
-    if known_assignments:
-        parts.append("Việc đã được giao ở các chủ đề trước: " + "; ".join(known_assignments) + ".")
-    return " ".join(parts)
-
-
 def format_turns_as_transcript(turns: tuple[SpeakerTurn, ...]) -> str:
     """Dựng bản ghi văn bản đưa vào prompt, mỗi lượt nói một dòng.
 
@@ -927,31 +817,6 @@ def format_turns_as_transcript(turns: tuple[SpeakerTurn, ...]) -> str:
     return "\n".join(
         f"[{turn.turn_id}|{turn.speaker or 'unknown'}] {turn.text_exact}" for turn in turns
     )
-
-
-def split_into_ranges_within_budget(sizes: Sequence[int], budget: int) -> list[range]:
-    """Chia dãy phần tử thành các đoạn LIÊN TIẾP sao cho tổng kích thước mỗi đoạn không vượt ngân sách.
-
-    Chia tham lam từ trái sang phải. Một phần tử tự nó đã lớn hơn ngân sách vẫn
-    được một đoạn riêng (không bị bỏ).
-
-    Đầu vào:
-        sizes: kích thước (số ký tự) của từng phần tử, theo thứ tự.
-        budget: ngân sách tối đa cho tổng kích thước một đoạn.
-
-    Đầu ra: danh sách ``range`` chỉ số, phủ hết các phần tử, đúng thứ tự.
-    """
-
-    ranges: list[range] = []
-    start, used = 0, 0
-    for index, size in enumerate(sizes):
-        if index > start and used + size > budget:
-            ranges.append(range(start, index))
-            start, used = index, 0
-        used += size
-    if sizes:
-        ranges.append(range(start, len(sizes)))
-    return ranges
 
 
 def make_speaker_initials(full_name: str) -> str:
@@ -975,7 +840,6 @@ __all__ = [
     "split_dict_entries",
     "read_list_or_empty",
     "read_stripped_text",
-    "validate_evidence_with_quotes",
     "validate_evidence_by_turn_ids",
     "read_confirm_turn_id",
     "check_action_evidence",
@@ -990,9 +854,6 @@ __all__ = [
     "make_actor_grouping_key",
     "is_bare_personal_pronoun",
     "is_non_identifying_actor",
-    "collect_names_and_assignments_of_topic",
-    "format_previous_context",
     "format_turns_as_transcript",
-    "split_into_ranges_within_budget",
     "make_speaker_initials",
 ]

@@ -25,12 +25,10 @@ from __future__ import annotations
 
 import json
 import logging
-import math
 import os
 import random
 import time
 from collections.abc import Mapping
-from openai import OpenAI
 from dotenv import load_dotenv
 
 import httpx
@@ -250,52 +248,6 @@ class OpenAIEmbeddingClient:
             f"(original {len(body)} chars, last attempt {len(attempt)} chars)"
         )
 
-    def cosine(self, left_text: str, right_text: str) -> float:
-        left = self.embed(left_text)
-        right = self.embed(right_text)
-        dot = sum(a * b for a, b in zip(left, right))
-        left_norm = math.sqrt(sum(a * a for a in left))
-        right_norm = math.sqrt(sum(b * b for b in right))
-        if left_norm == 0.0 or right_norm == 0.0:
-            return 0.0
-        # Guard float drift so a caller's [-1, 1] range check never trips on
-        # a value like 1.0000000000000002.
-        return max(-1.0, min(1.0, dot / (left_norm * right_norm)))
-
-
-class OpenAICosineSimilarity:
-    """``CosineSimilarityAdapter`` for Stage 6 segmentation, domain ``[-1, 1]``."""
-
-    def __init__(self, embedding_client: OpenAIEmbeddingClient) -> None:
-        self._embeddings = embedding_client
-
-    @property
-    def model_name(self) -> str:
-        return f"openai-embedding:{self._embeddings.model}"
-
-    def similarity(self, left_text: str, right_text: str) -> float:
-        return self._embeddings.cosine(left_text, right_text)
-
-
-class OpenAISemanticSimilarity:
-    """``SemanticSimilarityAdapter`` for Stage 8 recurrence, domain ``[0, 1]``.
-
-    Reuses the same embeddings (and cache) as :class:`OpenAICosineSimilarity`
-    when given the same :class:`OpenAIEmbeddingClient` instance, just
-    rescaled from cosine's ``[-1, 1]``.
-    """
-
-    def __init__(self, embedding_client: OpenAIEmbeddingClient) -> None:
-        self._embeddings = embedding_client
-
-    @property
-    def model_name(self) -> str:
-        return f"openai-embedding:{self._embeddings.model}"
-
-    def similarity(self, left_text: str, right_text: str) -> float:
-        cosine = self._embeddings.cosine(left_text, right_text)
-        return (cosine + 1.0) / 2.0
-
 
 def _openai_strict_schema(schema: Mapping[str, object]) -> dict:
     """Normalize a ``{properties, required}`` schema into OpenAI Structured
@@ -303,8 +255,8 @@ def _openai_strict_schema(schema: Mapping[str, object]) -> dict:
     (fields the caller left optional become nullable instead of omittable)
     and every object has ``additionalProperties: False``. Property
     insertion order is preserved from ``schema["properties"]``, so a caller
-    enforcing evidence-first field order (see ``ports.EventAdapter``) has
-    that order actually reach the wire request.
+    enforcing evidence-first field order has that order actually reach the
+    wire request.
 
     Recurses into nested object/array schemas -- e.g. ``src/agentic_v3``'s
     per-evidence-entry schema (``{"evidence": {"type": "array", "items":
@@ -548,7 +500,5 @@ class OpenAIChatJSONAdapter:
 
 __all__ = [
     "OpenAIChatJSONAdapter",
-    "OpenAICosineSimilarity",
     "OpenAIEmbeddingClient",
-    "OpenAISemanticSimilarity",
 ]

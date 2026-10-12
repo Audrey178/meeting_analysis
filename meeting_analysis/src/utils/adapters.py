@@ -8,10 +8,7 @@ the effective-transcript resolver, where provenance can be recorded.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-import json
 import math
-from pathlib import Path
-import re
 from typing import Any, TypeAlias
 
 from .contracts import RawTranscriptItem
@@ -63,30 +60,6 @@ _STT_EXPORT_FIELDS = frozenset(
         "recording_id",
     }
 )
-_VERSIONED_STEM_RE = re.compile(r"^(?P<meeting>.+)-(?P<revision>v\d+)$", re.IGNORECASE)
-
-
-def load_transcript(path: str | Path) -> TranscriptInput:
-    """Load a UTF-8 JSON transcript and adapt it to pipeline contracts."""
-
-    source_path = Path(path)
-    with source_path.open("r", encoding="utf-8") as stream:
-        payload = json.load(stream)
-
-    if not isinstance(payload, Mapping):
-        raise ValueError("transcript JSON root must be an object")
-    match = _VERSIONED_STEM_RE.match(source_path.stem)
-    if match:
-        meeting_id_hint = match.group("meeting")
-        revision_id_hint = match.group("revision")
-    else:
-        meeting_id_hint = source_path.stem
-        revision_id_hint = None
-    return parse_transcript_payload(
-        payload,
-        meeting_id_hint=meeting_id_hint,
-        revision_id_hint=revision_id_hint,
-    )
 
 
 def parse_transcript_payload(
@@ -486,4 +459,4 @@ def _is_scalar(value: Any) -> bool:
     return value is None or isinstance(value, (str, int, float, bool))
 
 
-__all__ = ["TranscriptInput", "load_transcript", "parse_transcript_payload"]
+__all__ = ["TranscriptInput", "parse_transcript_payload"]

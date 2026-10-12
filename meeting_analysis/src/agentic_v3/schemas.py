@@ -24,8 +24,6 @@ from ..utils.contracts import SpeakerTurn, TopicLabel
 from .actors.agenda import TaskAgenda
 from .actors.attendees import AttendeeRoster
 
-VerifierVerdict = Literal["keep", "revise", "drop", "unresolved"]
-ProposerStance = Literal["accept", "amend", "defend"]
 ActorType = Literal["person", "organization", "unknown"]
 AssigneeRole = Literal["lead", "support", "joint"]
 # Trạng thái agent tiến độ khai cho một việc trong một chủ đề (xem ``nodes/progress.py``).
@@ -360,7 +358,6 @@ __all__ = [
     "ConsensusRound",
     "MeetingReport",
     "ProgressUpdate",
-    "ProposerStance",
     "SkippedAgent",
     "SpeakerRegistry",
     "TaskProgress",
@@ -368,6 +365,5 @@ __all__ = [
     "UpdateStatus",
     "VerificationRecord",
     "VerifierStep",
-    "VerifierVerdict",
     "VerifyTask",
 ]

@@ -10,9 +10,8 @@ lượt cho từng segment:
 2. **Grounding guard** (``_find_label_grounding_issues``): chỉ là kiểm tra chuỗi
    thuần tuý, không gọi model thêm lần nào, để loại bỏ tiêu đề nêu tên riêng
    không có trong segment, hoặc trùng một cụm từ chung chung bị cấm (vd.
-   "thảo luận chung"). Tiêu đề bị từ chối sẽ được thử lại một lần, kèm
-   hướng dẫn cho model biết chính xác lỗi lần trước
-   (``_build_retry_instruction_from_issue``).
+   "thảo luận chung"). Tiêu đề bị từ chối sẽ được thử lại (tối đa
+   ``max_retry_attempts`` lần).
 3. **Fallback tất định**, dùng khi lần thử lại cũng không qua guard hoặc
    adapter gọi lỗi (raise): ``_make_extractive_fallback_label`` trích tiêu đề và
    tóm tắt trực tiếp từ đầu văn bản của segment. Chỉ dùng lại text đã có sẵn
@@ -25,70 +24,23 @@ lượt cho từng segment:
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 import dataclasses
 import logging
 import math
 import os
-import re
 import unicodedata
 
 from ..utils.config import TopicLabelerConfig
-from ..utils.contracts import (
-    AnalysisAtom,
-    AtomFeatures,
-    EvidenceItem,
-    TopicLabel,
-    TopicSegment,
-)
+from ..utils.contracts import EvidenceItem, TopicLabel, TopicSegment
 from ..utils.llm_call_log import llm_call
 from ..utils.ports import LLMAdapter, TopicLabelAdapter
-from ._shared import SPACE_RE, VN_STOPWORDS, WORD_RE, join_atoms, word_tokens
+from ._shared import VN_STOPWORDS, word_tokens
 
 logger = logging.getLogger(__name__)
 
-# Khớp các từ và các đoạn ký tự không phải từ nằm giữa chúng, để phân biệt được
-# "một tên có dấu phân cách" với "hai tên đứng cạnh nhau".
-_WORD_OR_SEP_RE = re.compile(r"\w+|\W+", re.UNICODE)
-
 # Số đoạn gán nhãn song song mặc định (ghi đè bằng TOPIC_LABELER_MAX_WORKERS).
 _DEFAULT_LABEL_MAX_WORKERS = 8
-
-
-def _build_retry_instruction_from_issue(reason: str) -> str:
-    """Chuyển một mã lý do (reason code) của grounding guard thành câu hướng dẫn sửa lỗi cho model.
-
-    Không có bước này, lần thử lại sẽ lặp lại y hệt request cũ; mà adapter chạy
-    ở temperature 0 trả lời y hệt cho request y hệt, nên lần thử lại sẽ lại trượt
-    guard vì đúng lý do cũ.
-
-    Đầu vào: reason - mã lý do từ ``_find_label_grounding_issues`` (hoặc mã
-        ``adapter_error:...`` khi adapter báo lỗi).
-
-    Đầu ra: str - câu tiếng Việt nêu rõ lỗi lần trước và cách sửa.
-
-    Lưu ý: nhánh ``title_entity_not_in_segment:`` chưa có nơi nào sinh ra mã này
-    (guard hiện chỉ kiểm tra cụm chung chung), nên nhánh đó đang chưa được dùng.
-    """
-
-    if reason.startswith("title_entity_not_in_segment:"):
-        entities = reason[len("title_entity_not_in_segment:") :]
-        return (
-            f"Lần trước bạn đặt tên riêng {entities} không có trong nguyên "
-            "văn. Chỉ dùng tên riêng xuất hiện đúng nguyên văn trong đoạn. "
-            "Không hoàn thiện, không sửa chính tả tên riêng."
-        )
-    if reason == "title_is_generic_blacklisted":
-        return (
-            "Lần trước tiêu đề bị coi là chung chung. Nêu rõ nội dung cụ "
-            "thể của đoạn, tránh cụm từ chung chung như 'thảo luận chung', "
-            "'trao đổi công việc'."
-        )
-    return (
-        f"Lần trước nhãn bị từ chối vì lý do: {reason}. Hãy đặt nhãn khác, "
-        "bám sát nguyên văn hơn."
-    )
 
 
 class StructuredLLMTopicLabeler:
@@ -132,7 +84,7 @@ class StructuredLLMTopicLabeler:
         segment: TopicSegment,
         prev_segment: TopicSegment | None, 
         prev_topic: TopicLabel | None,
-        atoms: tuple[AnalysisAtom, ...],
+        atoms: tuple | None,
         evidence: tuple[EvidenceItem, ...],
         *,
         prior_issues: tuple[str, ...] = (),
@@ -146,8 +98,7 @@ class StructuredLLMTopicLabeler:
                 chỉ làm ngữ cảnh cho model, không dùng để khẳng định nội dung.
             atoms, evidence: không dùng (giữ để khớp giao thức ``TopicLabelAdapter``).
             prior_issues: các lý do lần thử trước bị từ chối. Hiện chưa được đưa
-                vào prompt (xem ``_build_retry_instruction_from_issue``), nên lần
-                thử lại vẫn gửi đúng request cũ.
+                vào prompt, nên lần thử lại vẫn gửi đúng request cũ.
 
         Đầu ra: ``TopicLabel`` với ``method="llm_structured"``.
 
@@ -318,15 +269,6 @@ Không thêm giải thích hoặc quá trình phân tích.
         )
 
 
-# Khớp giá trị mặc định của FeatureBuilderConfig.top_k_keyphrases: keyphrase thứ N
-# (đếm từ 0) của một atom được (_RANK_WEIGHT_BASE - N) điểm hạng, nên keyphrase
-# vượt top-5 mặc định không được điểm nào. Đây chỉ là thay thế cho điểm BM25 mà
-# Stage 5 không xuất theo từng cụm (AtomFeatures.keyphrases là tuple chuỗi đã xếp
-# hạng, không kèm số), KHÔNG phải điểm BM25 thật. Xem plan_stage_7_8.md §2.5,
-# TASK-GRAPH-stage7-8.md D-103.
-_RANK_WEIGHT_BASE = 5
-
-
 def _find_label_grounding_issues(
     label: TopicLabel, segment_text: str, config: TopicLabelerConfig
 ) -> tuple[str, ...]:
@@ -342,8 +284,7 @@ def _find_label_grounding_issues(
     thiếu trường) do ``_validate_label_structure`` xử lý trước và luôn gây lỗi ngay.
 
     Lưu ý: kiểm tra "tên riêng trong tiêu đề không có trong segment" từng được thiết
-    kế nhưng CHƯA có trong hàm này; ``segment_text`` được chuẩn hóa nhưng hiện
-    chưa dùng để so khớp.
+    kế nhưng CHƯA có trong hàm này; ``segment_text`` hiện chưa được dùng.
 
     Đầu vào:
         label: nhãn do LLM sinh.
@@ -355,11 +296,6 @@ def _find_label_grounding_issues(
     """
 
     issues: list[str] = []
-    normalized_segment = (
-        " "
-        + " ".join(WORD_RE.findall(unicodedata.normalize("NFC", segment_text))).casefold()
-        + " "
-    )
     normalized_title = unicodedata.normalize("NFC", label.title).strip().casefold()
     exact_blacklist_match = any(
         normalized_title == unicodedata.normalize("NFC", entry).strip().casefold()
@@ -389,12 +325,11 @@ def _remove_stopwords(text: str) -> tuple[str, ...]:
 
 def label_topics(
     segments: tuple[TopicSegment, ...],
-    atoms: tuple[AnalysisAtom, ...] | None = None ,
+    atoms: tuple | None = None,
     evidence: tuple[EvidenceItem, ...] | None = None,
     config: TopicLabelerConfig | None = None,
     *,
     adapter: TopicLabelAdapter | None = None,
-    # atom_features: tuple[AtomFeatures, ...] = () ,
 ) -> tuple[TopicLabel, ...]:
     """Gán nhãn (tiêu đề + tóm tắt) cho từng đoạn chủ đề, mỗi đoạn một ``TopicLabel``, đúng thứ tự.
 
@@ -452,7 +387,7 @@ def _label_max_workers() -> int:
 
 def _label_one_segment(
     segment: TopicSegment,
-    atoms: tuple[AnalysisAtom, ...] | None,
+    atoms: tuple | None,
     evidence: tuple[EvidenceItem, ...] | None,
     config: TopicLabelerConfig,
     adapter: TopicLabelAdapter,
@@ -568,9 +503,6 @@ def _validate_label_structure(
         raise ValueError("topic label title exceeds max_title_chars")
 
 
-_FALLBACK_METHODS = frozenset(
-    {"keyword_fallback_after_guard_failure", "extractive_offline_fallback"}
-)
 """Các giá trị ``TopicLabel.method`` nghĩa là title/summary đến từ một
 fallback tất định, không phải từ LLM sinh có bám sát nguyên văn -- judge của
 Stage 8 (TIP-010, plan_stage_7_8.md §3.6) kiểm tra membership ở đây thay vì

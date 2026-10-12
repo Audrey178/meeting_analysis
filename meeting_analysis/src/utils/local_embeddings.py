@@ -12,7 +12,6 @@ torch, and this one never needs the ``openai`` package.
 from __future__ import annotations
 
 import logging
-import math
 import threading
 from collections.abc import Callable, Sequence
 from typing import Any
@@ -88,16 +87,6 @@ class SentenceTransformerEmbeddingClient:
             for body, vector in zip(missing, vectors, strict=True):
                 self._cache[body] = tuple(float(value) for value in vector)
         return tuple(self._cache[body] for body in bodies)
-
-    def cosine(self, left_text: str, right_text: str) -> float:
-        left, right = self.embed_many((left_text, right_text))
-        dot = sum(a * b for a, b in zip(left, right))
-        left_norm = math.sqrt(sum(a * a for a in left))
-        right_norm = math.sqrt(sum(b * b for b in right))
-        if left_norm == 0.0 or right_norm == 0.0:
-            return 0.0
-        # Guard float drift so a caller's [-1, 1] range check never trips.
-        return max(-1.0, min(1.0, dot / (left_norm * right_norm)))
 
 
 def _default_device() -> str:
