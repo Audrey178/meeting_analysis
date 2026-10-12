@@ -1,0 +1,567 @@
+% DiVA -- bản thảo theo template ACL (acl-org/acl-style-files).
+% Biên dịch bằng pdfLaTeX: latexmk -pdf diva.tex
+% (cần gói vntex cho bảng mã T5 tiếng Việt; Overleaf có sẵn).
+\documentclass[11pt]{article}
+
+% "review" = bản nộp ẩn danh; "preprint" = bản có tên tác giả và số trang; "final" = bản camera-ready.
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T5]{fontenc}   % tiếng Việt (theo hướng dẫn của template ACL)
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric}
+
+\setlist{nosep,leftmargin=*}
+\renewcommand{\abstractname}{Tóm tắt}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\newcommand{\pchot}{p_{\text{chốt}}}
+\newcommand{\diva}{\textsc{DiVA}}
+
+\title{DiVA: Sinh biên bản họp hành chính tiếng Việt có căn cứ\\
+bằng cắt chủ đề hội thoại và đa tác tử kiểm chứng}
+
+\author{Ẩn danh \\
+  \texttt{anonymous@example.com}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Trong cơ quan hành chính, biên bản họp không chỉ là một bản tóm tắt. Nó là căn cứ giao trách nhiệm
+(ai làm gì, phối hợp với ai, hạn khi nào, cuộc họp đã kết luận gì) và là chương trình kiểm điểm ở phiên
+họp sau. Một hệ thống tự động soạn biên bản vì thế phải đúng về \emph{trách nhiệm}, không chỉ trôi chảy
+về câu chữ. Chúng tôi phát biểu bài toán \emph{sinh biên bản họp có căn cứ} từ bản ghi giọng nói tiếng
+Việt, gồm bốn phần: diễn biến, giao việc, kết luận và tiến độ các việc đã giao từ trước. Chúng tôi đề
+xuất \diva{}, một kiến trúc \emph{kiểm chứng chọn lọc} gồm ba thành phần: bộ cắt chủ đề dựa trên độ mạch
+lạc không cần biết trước số chủ đề; bộ phân loại hành vi lời nói đã hiệu chỉnh xác suất, dùng để định
+tuyến; và tác tử kiểm chứng tra cứu toàn bộ cuộc họp rồi đi tới đồng thuận với tác tử trích xuất. Bộ chọn
+ranh giới nâng điểm cắt chủ đề trên dữ liệu thật từ 0,39 lên 0,64. Bộ phân loại nhận ra lời giao việc
+tốt hơn hẳn luật từ khoá (F1 0,89 so với 0,68), với ECE 0,04, nên chỉ khoảng 20\% số lượt nói cần đến
+bước kiểm chứng đắt tiền. Trên một cuộc họp có danh sách việc, hệ thống xác định đúng trạng thái cả 4
+việc.
+\end{abstract}
+
+%======================================================================
+\section{Giới thiệu}
+%======================================================================
+
+Họp là phương thức điều hành chủ yếu của các cơ quan hành chính nhà nước Việt Nam, từ giao ban tuần
+của UBND, họp chuyên đề về một dự án đầu tư, tới họp Ban Thường vụ. Sau mỗi cuộc họp, bộ phận văn phòng
+soạn biên bản, và thường soạn thêm thông báo kết luận của người chủ trì. Đây là văn bản hành chính chính
+thức. Văn bản này xác lập \emph{trách nhiệm}: đơn vị nào chủ trì, đơn vị nào phối hợp, hạn hoàn thành,
+và những nội dung đã được thống nhất. Đến kỳ họp sau, danh sách việc trong biên bản trở thành chương
+trình kiểm điểm.
+
+Hiện nay biên bản chủ yếu do thư ký ghi tay hoặc nghe lại ghi âm để soạn, nên tốn công và dễ sót với
+các cuộc họp dài, nhiều nội dung. Nhận dạng giọng nói tiếng Việt đã đủ tốt để tạo bản ghi, và mô hình
+ngôn ngữ lớn (LLM) viết tóm tắt rất trôi chảy. Tuy nhiên, giữa \emph{một bản tóm tắt} và \emph{một biên
+bản dùng được} có khoảng cách lớn. Lỗi trong biên bản có hậu quả hành chính trực tiếp:
+\begin{itemize}
+  \item ghi một \emph{đề xuất} của đại biểu thành \emph{chỉ đạo} của người chủ trì;
+  \item giao việc cho nhầm người (``anh Sơn'' khi cuộc họp có hai người tên Sơn), hoặc nhầm đơn vị
+        chủ trì với đơn vị phối hợp;
+  \item bỏ sót lời giao việc khẩu ngữ (``anh Phong gửi giúp em trong tuần này được không ạ?'');
+  \item báo một việc ``đã xong'' trong khi người chủ trì vừa yêu cầu làm lại.
+\end{itemize}
+Vì vậy người dùng cần kiểm tra được từng mục: mục này dựa vào câu nói nào, của ai.
+
+\paragraph{Vì sao bài toán khó.} Thứ nhất, một phiên họp có thể dài hàng trăm nghìn ký tự, gồm nhiều mục
+nghị sự đan xen. Thứ hai, cùng câu ``đề nghị Sở Xây dựng rà soát lại'' là chỉ đạo khi người chủ trì nói,
+nhưng chỉ là kiến nghị khi đại biểu nói, và lời giao việc thường không có từ khoá rõ ràng. Thứ ba, việc
+thường giao cho \emph{đơn vị}, có nhiều bên với vai trò khác nhau, và cách gọi rất lỏng (``bên em'',
+``UBND TP''). Thứ tư, gần như chưa có dữ liệu tiếng Việt có nhãn cho bài toán này, dữ liệu tổng hợp khác
+xa cuộc họp thật, và bộ tách người nói có thể gộp nhiều người vào một nhãn.
+
+\paragraph{Hạn chế của các cách làm hiện có.} Gọi một LLM trên từng đoạn rồi tin kết quả thì không kiểm
+soát được lỗi bịa và lỗi gán trách nhiệm. Cho nhiều tác tử tranh luận về mọi mục thì chi phí tăng theo
+số mục, và mỗi cuộc tranh luận chỉ thấy đoạn hiện tại, trong khi lời chốt có thể nằm ở phần khác của
+cuộc họp.
+
+\paragraph{Cách tiếp cận.} \diva{} coi việc soạn biên bản là \emph{trích xuất có căn cứ} và tổ chức kiểm
+chứng theo \emph{mức độ nghi ngờ}. Cuộc họp được cắt thành chủ đề và xử lý song song. Mỗi mục trích ra
+phải chỉ được câu nói làm căn cứ. Một bộ phân loại hành vi lời nói rẻ, đã hiệu chỉnh, quyết định mục nào
+chắc chắn và mục nào mơ hồ. Chỉ mục mơ hồ mới được chuyển cho một tác tử kiểm chứng, tác tử này tra cứu
+toàn bộ cuộc họp và tranh luận có giới hạn với tác tử đã trích ra mục đó. Khi không thống nhất được hoặc
+hệ thống gặp lỗi, mục được giữ lại kèm dấu hiệu cho người duyệt thay vì bị xoá.
+
+\paragraph{Đóng góp.}
+\begin{enumerate}
+  \item Phát biểu bài toán sinh biên bản họp hành chính có căn cứ, gồm bốn đầu ra và các yêu cầu nghiệp
+        vụ: trích dẫn được, định danh người/đơn vị và vai trò, chuẩn hoá hạn chót, phân biệt chỉ đạo với
+        kiến nghị (\S\ref{sec:problem}).
+  \item \diva{}, một kiến trúc kiểm chứng chọn lọc. Một bộ phân loại hành vi lời nói đã hiệu chỉnh vừa
+        quyết định có cần trích xuất hay không, vừa định tuyến mục nghi ngờ sang cơ chế đồng thuận giữa
+        tác tử trích xuất và tác tử kiểm chứng có công cụ tra cứu (\S\ref{sec:method}).
+  \item Một phương pháp cắt chủ đề cho cuộc họp tiếng Việt, không cần biết trước số chủ đề, giữ mỗi đoạn
+        trong giới hạn xử lý của LLM (\S\ref{sec:seg}).
+  \item Phân tích thực nghiệm cho thấy khoảng cách giữa dữ liệu tổng hợp và dữ liệu thật, giá trị của
+        hiệu chỉnh xác suất khi định tuyến, và các điểm còn sai trong theo dõi tiến độ (\S\ref{sec:results}).
+\end{enumerate}
+
+%======================================================================
+\section{Bài toán}
+\label{sec:problem}
+%======================================================================
+
+\subsection{Biên bản họp hành chính cần gì}
+
+Bảng~\ref{tab:requirements} tóm tắt các yêu cầu, rút ra từ quy trình soạn biên bản của bộ phận văn phòng
+và các biên bản thật nhóm thu thập được. Cả bốn phần có chung một yêu cầu: \textbf{truy vết được}, tức
+mỗi mục chỉ ra được câu nói làm căn cứ để người duyệt kiểm tra trong vài giây thay vì nghe lại cả cuộc
+họp.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.2\linewidth}L{0.72\linewidth}@{}}
+\toprule
+\textbf{Phần} & \textbf{Yêu cầu nghiệp vụ} \\
+\midrule
+Diễn biến & Ý kiến chính của từng người theo nội dung; đúng người phát biểu. \\
+Giao việc & Chỉ ghi khi người có thẩm quyền giao hoặc có người nhận; đúng người/đơn vị và vai trò
+chủ trì/phối hợp; hạn quy được về ngày. \\
+Kết luận & Phân biệt nội dung đã chốt với đề xuất chưa được chấp nhận. \\
+Tiến độ & Không bỏ việc cũ nào; biết việc nào chưa được báo cáo, quá hạn, bị yêu cầu làm lại. \\
+\bottomrule
+\end{tabular}
+\caption{Bốn phần của biên bản và yêu cầu nghiệp vụ tương ứng.}
+\label{tab:requirements}
+\end{table}
+
+\subsection{Phát biểu hình thức}
+
+Đầu vào là bản ghi $\mathcal{T}=(u_1,\dots,u_n)$, mỗi lượt nói có người nói và nội dung. Kèm theo có thể
+có ngày họp, người chủ trì, danh sách người/đơn vị tham dự, và danh sách việc cần báo cáo $\mathcal{G}$
+(mỗi việc có đơn vị chủ trì, hạn và trạng thái trước phiên họp). Đầu ra gồm bốn tập:
+\begin{itemize}
+  \item \textbf{Diễn biến} $\mathcal{D}$: luận điểm (người nói, nội dung, $E$);
+  \item \textbf{Giao việc} $\mathcal{A}$: (nội dung, các bên nhận việc kèm vai trò, hạn, $E$, $t^{*}$);
+  \item \textbf{Kết luận} $\mathcal{C}$: (nội dung, $E$, $t^{*}$);
+  \item \textbf{Tiến độ} $\mathcal{P}$: mỗi $g\in\mathcal{G}$ có trạng thái mới trong \{xong, đang làm,
+        vướng mắc, phải làm lại, hoãn, chỉ được nhắc, không được báo cáo\} kèm bằng chứng.
+\end{itemize}
+$E$ là tập lượt nói làm bằng chứng; $t^{*}$ là \emph{lượt quyết định} (lượt giao/nhận việc hoặc lượt
+chốt). Ràng buộc căn cứ: mọi bằng chứng là lượt nói thật; mọi việc giao và kết luận sau kiểm chứng phải
+có lượt quyết định, có thể nằm ở phần khác của cuộc họp; và không việc nào trong $\mathcal{G}$ bị bỏ
+khỏi đầu ra.
+
+\subsection{Thách thức}
+\begin{description}
+  \item[T1 Ngữ cảnh dài.] Phải cắt cuộc họp thành chủ đề, nhưng lời giao việc ở chủ đề này có thể được
+        chốt ở chủ đề khác.
+  \item[T2 Hành vi lời nói.] Giao việc, kết luận, đề xuất và báo cáo phân biệt theo \emph{nghĩa} và
+        \emph{vai người nói}, không theo từ khoá.
+  \item[T3 Trách nhiệm.] Người nhận việc là cá nhân hoặc đơn vị, nhiều bên, cách gọi không chuẩn.
+  \item[T4 Chi phí và độ tin cậy.] Kiểm chứng mọi mục bằng LLM quá đắt; không kiểm chứng thì lỗi bịa lọt ra.
+  \item[T5 Dữ liệu ít và lệch.] Ít dữ liệu có nhãn, dữ liệu tổng hợp khác dữ liệu thật, nhãn người nói
+        không tin cậy.
+\end{description}
+
+%======================================================================
+\section{Công trình liên quan}
+%======================================================================
+
+\paragraph{Tóm tắt và trích xuất từ cuộc họp.} Các nghiên cứu trên AMI và ICSI
+\citep{carletta2005ami,janin2003icsi} gồm phát hiện việc cần làm \citep{purver2007actionitems} và tóm tắt
+theo truy vấn \citep{zhong2021qmsum}. Chúng chủ yếu cho tiếng Anh và bối cảnh doanh nghiệp, ít đòi hỏi
+trích dẫn tới từng câu, không định danh đơn vị và không theo dõi tiến độ việc qua các phiên.
+
+\paragraph{Cắt chủ đề hội thoại.} Các phương pháp đi từ đo tương đồng giữa hai cửa sổ
+\citep{hearst1997texttiling} và phân cụm trên embedding \citep{gklezakos2024treeseg} tới chấm điểm mạch
+lạc giữa các lượt nói \citep{xing2021coherence,gao2023dialstart}. Hầu hết được đánh giá khi biết trước số
+chủ đề; chọn độ mịn khi chạy thật là điểm chúng tôi tập trung xử lý.
+
+\paragraph{Tác tử LLM và tự kiểm chứng.} ReAct \citep{yao2023react} xen kẽ suy luận và tra cứu. Tranh luận
+đa tác tử \citep{du2023debate,liang2023divergent} và tự sửa lỗi \citep{madaan2023selfrefine,gou2024critic}
+dùng phản hồi để cải thiện đầu ra. Định tuyến theo độ tin cậy
+\citep{geifman2017selective,chen2023frugalgpt} chỉ chuyển sang mô hình đắt khi cần. \diva{} kết hợp hai
+hướng: định tuyến bằng bộ phân loại đã hiệu chỉnh, và tranh luận \emph{có neo bằng chứng, có ngân sách,
+có quy tắc an toàn}, chỉ dành cho phần mơ hồ.
+
+%======================================================================
+\section{Phương pháp \diva{}}
+\label{sec:method}
+%======================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  font=\small, x=0.96cm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=2.6em, inner sep=3pt, fill=white},
+  dec/.style={draw, diamond, aspect=2, align=center, inner sep=0pt, fill=white},
+  arr/.style={-{Latex[length=2mm]}}]
+  \node[box] (asr) at (-0.4,0) {Bản ghi\\giọng nói};
+  \node[box] (seg) at (1.6,0) {Cắt chủ đề\\(\S\ref{sec:seg})};
+  \node[box] (ext) at (5.6,0) {Trích xuất theo chủ đề\\diễn biến $\cdot$ giao việc\\kết luận $\cdot$ tiến độ};
+  \node[dec] (tri) at (8.9,0) {Phân loại\\hành vi\\lời nói};
+  \node[box] (ok)  at (11.6,0.95) {Chấp nhận};
+  \node[box] (ver) at (11.6,-0.95) {Kiểm chứng tra cứu\\+ đồng thuận};
+  \node[box] (out) at (14.2,0) {Biên bản\\+ vết\\kiểm chứng};
+  \node[box, fill=gray!10, minimum height=1.8em] (reg) at (5.6,2.4)
+       {Danh bạ toàn cuộc họp: người nói, chủ trì, đơn vị, việc cũ};
+  \draw[arr] (asr) -- (seg);
+  \draw[arr] (seg) -- node[below, font=\scriptsize]{$K$ chủ đề} (ext);
+  \draw[arr] (ext) -- (tri);
+  \draw[arr] (tri.north) |- node[pos=0.25, left, font=\scriptsize]{chắc chắn} (ok.west);
+  \draw[arr] (tri.south) |- node[pos=0.25, left, font=\scriptsize]{mơ hồ} (ver.west);
+  \draw[arr] (ok.east) -| (out.north);
+  \draw[arr] (ver.east) -| (out.south);
+  \draw[arr, dashed] (reg) -- (ext);
+  \begin{scope}[on background layer]
+    \node[draw, dashed, rounded corners, fill=blue!4, inner xsep=5pt, inner ysep=4pt,
+          fit=(ext) (tri) (ok) (ver),
+          label={[font=\scriptsize]below:xử lý song song cho từng chủ đề}] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{Tổng quan \diva{}. Kiểm tra rẻ chạy cho mọi mục; chỉ các mục mơ hồ được chuyển sang tác tử
+kiểm chứng có công cụ tra cứu toàn cuộc họp và cơ chế đồng thuận.}
+\label{fig:overview}
+\end{figure*}
+
+Hình~\ref{fig:overview} tóm tắt \diva{}. Thiết kế dựa trên ba nguyên tắc:
+\begin{description}
+  \item[P1 Căn cứ trước, nội dung sau.] Mọi tác tử phải chỉ ra lượt nói làm căn cứ trước khi viết nội
+        dung hay đưa ra kết luận.
+  \item[P2 Chi phí tỉ lệ với mức nghi ngờ.] Kiểm tra rẻ chạy cho mọi mục; kiểm chứng đắt chỉ chạy cho
+        mục mơ hồ.
+  \item[P3 An toàn khi không chắc.] Lỗi hệ thống hay bất đồng không giải quyết được thì \emph{giữ} mục
+        kèm dấu hiệu cho người duyệt, không tự xoá.
+\end{description}
+
+\subsection{Cắt chủ đề dựa trên mạch lạc}
+\label{sec:seg}
+
+Chúng tôi huấn luyện lại DialSTART \citep{gao2023dialstart} cho tiếng Việt. Với mỗi khe $g$ giữa hai lượt
+nói liên tiếp, mô hình cho điểm liền mạch kết hợp hai tín hiệu: lượt sau có \emph{nối tiếp} lượt trước
+không, và hai cửa sổ hai bên có \emph{cùng chủ đề} không:
+\begin{equation}
+\mathrm{score}(g)=\sigma\big(\mathrm{coh}(u_{\le g},u_{g+1})+\cos(\bar{\mathbf{e}}_{\text{trái}},\bar{\mathbf{e}}_{\text{phải}})\big).
+\end{equation}
+Khe có điểm ``lõm'' sâu so với hai đỉnh lân cận là ứng viên ranh giới.
+
+Mô hình gốc được đánh giá với \emph{số chủ đề đã biết}, điều không có khi chạy thật. Chúng tôi đề xuất bộ
+chọn ranh giới bốn bước: (1) làm mượt điểm để bỏ các chỗ lõm giả do câu xen ngang (``Vâng'', ``Mời
+anh\ldots''); (2) giữ khe sâu hơn một ngưỡng thích nghi theo phân bố điểm của chính cuộc họp đó; (3) bỏ
+đoạn quá ngắn, với độ dài tối thiểu tỉ lệ theo độ dài cuộc họp; (4) tách đoạn vượt giới hạn xử lý của LLM.
+Nhờ vậy cùng một cấu hình chạy được cho cuộc họp từ 5 nghìn tới 260 nghìn ký tự.
+
+\subsection{Xử lý song song với ngữ cảnh toàn cuộc họp}
+
+Xử lý chủ đề tuần tự để mang thông tin người nói sang chủ đề sau làm thời gian tăng tuyến tính theo số
+chủ đề. \diva{} dựng \emph{một lần} một \textbf{danh bạ} cho cả cuộc họp (người nói, người chủ trì,
+người/đơn vị tham dự, danh sách việc), rồi xử lý mọi chủ đề song song và độc lập. Mỗi chủ đề có các tác
+tử trích xuất riêng cho diễn biến, giao việc, kết luận và tiến độ. Prompt mã hoá quy tắc nghiệp vụ, ví
+dụ: \emph{``đề nghị/yêu cầu + người/đơn vị + việc'' do người chủ trì nói là giao việc, kể cả khi không có
+chữ ``giao''}. Kết quả được ghép theo thứ tự chủ đề và gộp mục trùng giữa các chủ đề.
+
+\subsection{Định tuyến theo hành vi lời nói đã hiệu chỉnh}
+\label{sec:routing}
+
+Bộ phân loại $h$ gán cho mỗi lượt nói (kèm 2 lượt ngữ cảnh) một phân bố trên sáu hành vi: \emph{giao
+việc, kết luận, đề xuất, bác bỏ, thảo luận, khác}, xét theo nghĩa và theo vai người nói. Xác suất ``chốt''
+là
+\begin{equation}
+\pchot(u)=h(\text{giao việc}\mid u)+h(\text{kết luận}\mid u).
+\end{equation}
+Vì xác suất này được hiệu chỉnh tốt (\S\ref{sec:rq2}), hai ngưỡng $\tau_{\text{thấp}}=0{,}2$ và
+$\tau_{\text{cao}}=0{,}8$ chia lượt nói thành ba vùng có ý nghĩa nghiệp vụ: \emph{rõ là không chốt},
+\emph{mơ hồ}, \emph{rõ là chốt}. Bộ phân loại được dùng ở hai chỗ:
+\begin{itemize}
+  \item \textbf{Cổng trích xuất.} Tác tử giao việc và kết luận chỉ chạy trên chủ đề có ít nhất một lượt
+        với $\pchot\ge\tau_{\text{thấp}}$. Ngưỡng thấp có chủ đích: chạy thừa chỉ tốn chi phí, bỏ nhầm
+        thì mất nội dung.
+  \item \textbf{Phân loại sơ bộ.} Lượt quyết định mà tác tử khai cho mỗi mục được đưa qua $h$. Vùng
+        \emph{rõ là chốt} được chấp nhận ngay nếu các kiểm tra luật khác cũng đạt (người nhận việc có
+        thật, không mơ hồ giữa nhiều người); các vùng còn lại chuyển sang kiểm chứng.
+\end{itemize}
+
+\subsection{Kiểm chứng có tra cứu và đồng thuận}
+\label{sec:consensus}
+
+\paragraph{Tác tử kiểm chứng} hoạt động theo kiểu ReAct \citep{yao2023react} với ba công cụ chỉ đọc trên
+\emph{toàn bộ cuộc họp}: đọc một lượt nói, tìm lượt liên quan theo từ khoá, và tra ứng viên người/đơn vị
+cho một cách gọi. Kết luận là \emph{giữ}, \emph{sửa}, \emph{bỏ} hoặc \emph{chưa kết luận được}. Tác tử
+phải chỉ ra lượt quyết định \emph{trước} khi kết luận (P1); kết luận giữ/sửa mà không có lượt quyết định
+có thật bị hạ thành bỏ. Dấu hiệu nghi ngờ của bước phân loại sơ bộ chỉ là gợi ý, không phải bằng chứng,
+và số bước tra cứu bị giới hạn.
+
+\paragraph{Đồng thuận.} Khi tác tử kiểm chứng không giữ nguyên một mục, phản hồi được gửi lại cho chính
+tác tử đã trích ra mục đó. Tác tử này chọn \emph{chấp nhận}, \emph{sửa} (kèm lượt quyết định có thật) hoặc
+\emph{bảo vệ} (chỉ ra lượt quyết định bị bỏ sót). Hai bên trao đổi tối đa $R$ vòng; quy tắc kết thúc ở
+Bảng~\ref{tab:termination} cụ thể hoá P3. Mọi vòng được lưu thành \emph{vết kiểm chứng} để người duyệt
+xem vì sao một mục được giữ, sửa hay bỏ.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.56\linewidth}L{0.36\linewidth}@{}}
+\toprule
+\textbf{Kết thúc} & \textbf{Kết quả} \\
+\midrule
+Hai bên thống nhất & Theo kết quả thống nhất \\
+Hết vòng, bên kiểm chứng đã kết luận & Theo bên kiểm chứng \\
+Hết vòng, vẫn chưa kết luận được & Giữ mục \textbf{gốc}, đánh dấu \\
+Lỗi hệ thống & Giữ mục \textbf{gốc}, đánh dấu \\
+\bottomrule
+\end{tabular}
+\caption{Quy tắc kết thúc của cơ chế đồng thuận.}
+\label{tab:termination}
+\end{table}
+
+\subsection{Định danh trách nhiệm}
+
+Mỗi cách gọi người nhận việc (``anh Sơn'', ``Sở Tài chính chủ trì, phối hợp Sở Xây dựng'') được tách thành
+các bên kèm vai trò (chủ trì, phối hợp, cùng thực hiện). Mỗi bên được chấm điểm ứng viên theo ba nguồn,
+lần lượt ưu tiên: \emph{tên} (khớp đầy đủ, một phần, hay chỉ tên gọi); \emph{ngữ cảnh hội thoại} (người
+đáp lời ngay sau lời giao thường là người nhận việc; người giao việc không tự gọi mình bằng tên); và
+\emph{chức năng} (chức vị hay chức năng đơn vị khớp nội dung việc). Khi không ứng viên nào đủ rõ, việc
+giao vẫn được giữ kèm danh sách ứng viên và điểm để người duyệt chọn; hệ thống không tự đoán.
+
+\subsection{Theo dõi tiến độ việc đã giao}
+\label{sec:progress}
+
+Khi có danh sách việc cũ, tác tử tiến độ trích trạng thái từng việc được nhắc tới, rồi trạng thái được
+kiểm bằng bộ phân loại. Quan sát nghiệp vụ then chốt là có \textbf{hai kiểu việc}: \emph{việc báo cáo}
+(``báo cáo tình hình các dự án'') xong khi nội dung đã được trình bày tại cuộc họp, còn \emph{việc làm ra
+sản phẩm} (tờ trình, hồ sơ, văn bản) xong khi sản phẩm đã có. Với việc báo cáo, tình trạng của
+\emph{đối tượng} được báo cáo (``dự án đang làm thủ tục'') là nội dung báo cáo, không phải trạng thái của
+\emph{việc}. Vì vậy \diva{} phân loại kiểu việc trước rồi đặt câu hỏi kiểm phù hợp.
+
+Các cập nhật của cùng một việc được gộp theo hai quy tắc: \textbf{lời chỉ đạo của người có thẩm quyền
+thắng lời báo cáo} (báo cáo ``xong'' rồi chủ trì yêu cầu làm lại thì kết quả là \emph{phải làm lại}, kèm
+cờ mâu thuẫn), và cùng loại thì lời muộn hơn thắng. Việc không ai nhắc tới được đánh dấu \emph{không được
+báo cáo}; việc quá hạn mà chưa xong được đánh dấu \emph{quá hạn}. Mỗi việc giao mới cũng được xếp quan hệ
+với danh sách cũ: \emph{việc mới}, \emph{tiếp nối}, \emph{giao lại cho bên khác} hoặc \emph{đổi hạn}, giúp
+văn phòng cập nhật sổ theo dõi nhiệm vụ.
+
+%======================================================================
+\section{Thiết lập thực nghiệm}
+%======================================================================
+
+\paragraph{Câu hỏi nghiên cứu.}
+\textbf{RQ1}: Có cắt được chủ đề cuộc họp thật mà không cần biết trước số chủ đề?
+\textbf{RQ2}: Bộ phân loại đã hiệu chỉnh có định tuyến kiểm chứng tốt hơn luật từ khoá?
+\textbf{RQ3}: Có thể bỏ qua trích xuất ở chủ đề không có giao việc/kết luận mà không mất nội dung?
+\textbf{RQ4}: Theo dõi tiến độ có đúng không, và yếu tố nào quyết định độ chính xác?
+\textbf{RQ5}: Thời gian chạy trên cuộc họp dài có chấp nhận được?
+
+\paragraph{Dữ liệu.} Bảng~\ref{tab:data} liệt kê các tập dữ liệu.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.27\linewidth}L{0.65\linewidth}@{}}
+\toprule
+\textbf{Tập} & \textbf{Mô tả} \\
+\midrule
+Quốc hội & 47 phiên Quốc hội khoá XIII có chủ đề gán tay; 12 phiên dùng đánh giá cắt chủ đề \\
+Họp HC (gold) & 3 cuộc họp hành chính thật, ranh giới chủ đề đã duyệt \\
+Tổng hợp & 30 cuộc họp tổng hợp; 869 lượt có nhãn hành vi lời nói; 166 kết luận gold \\
+Có danh sách việc & 1 cuộc họp thật (32 lượt, 3 chủ đề), 4 việc có trạng thái gold \\
+Họp dài & 1 cuộc họp thật, 1.259 lượt nói, 14 chủ đề \\
+\bottomrule
+\end{tabular}
+\caption{Dữ liệu thực nghiệm.}
+\label{tab:data}
+\end{table}
+
+\paragraph{Độ đo.} Cắt chủ đề: $P_k$ \citep{beeferman1999pk}, F1 ranh giới theo dung sai 2k/5k ký tự, và
+điểm tổng hợp $S=\tfrac14(\mathrm{F1}_{2k}+\mathrm{F1}_{5k}+2-2P_k)$. Hành vi lời nói: P, R, F1 và sai số
+hiệu chỉnh ECE \citep{guo2017calibration}. Tiến độ: số việc có trạng thái khớp gold. Thời gian chạy.
+
+\paragraph{Mô hình.} Bộ cắt chủ đề dùng backbone BERT tiếng Việt (vibert4news). Các tác tử trích xuất dùng
+LLM mở (gemma); tác tử kiểm chứng dùng gpt-4o-mini; bộ phân loại hành vi lời nói là một API phân loại trả
+về phân bố xác suất. $R=3$ vòng đồng thuận, tối đa 3 lần tra cứu mỗi vòng.
+
+%======================================================================
+\section{Kết quả và phân tích}
+\label{sec:results}
+%======================================================================
+
+Các kết quả dưới đây đánh giá từng thành phần trên các tập khác nhau; chất lượng end-to-end của phần
+Giao việc và Kết luận chưa được đo trên dữ liệu thật có nhãn (xem phần Hạn chế).
+
+\subsection{RQ1: Cắt chủ đề}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Cấu hình} & \textbf{Dữ liệu} & \textbf{Kết quả} \\
+\midrule
+Biết trước số chủ đề & Tổng hợp & $P_k=0{,}011$ \\
+Chưa có bộ chọn & Thật & $P_k=0{,}485$ \\
++ bộ chọn (ban đầu) & Thật / TH & $S=0{,}392$ / $0{,}336$ \\
+\textbf{+ bộ chọn (đề xuất)} & Thật / TH & $S=\mathbf{0{,}637}$ / $\mathbf{0{,}686}$ \\
+\bottomrule
+\end{tabular}
+\caption{Khoảng cách giữa dữ liệu tổng hợp (TH) và dữ liệu thật trong cắt chủ đề.}
+\label{tab:seg}
+\end{table}
+
+Bảng~\ref{tab:seg} cho thấy mô hình gần như hoàn hảo trên dữ liệu tổng hợp nhưng hỏng trên cuộc họp thật
+(cắt quá vụn). Bộ chọn ranh giới thu hẹp phần lớn khoảng cách. Tương quan giữa điểm trên hai loại dữ liệu
+chỉ ở mức vừa (Spearman 0,56), nên không nên tinh chỉnh chỉ dựa trên dữ liệu tổng hợp. Trên 12 phiên Quốc
+hội, bỏ bước làm mượt làm F1 giảm từ 0,418 xuống 0,297, là bước có ảnh hưởng lớn nhất. Ngoài ra, ít nhất
+49,5\% cặp (đại biểu, phiên họp) có một lượt phát biểu chứa nhiều chủ đề, nên mọi phương pháp cắt theo
+lượt nói đều có một mức sai số không tránh được.
+
+\subsection{RQ2: Hành vi lời nói và định tuyến kiểm chứng}
+\label{sec:rq2}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Phương pháp} & \textbf{P} & \textbf{R} & \textbf{F1} \\
+\midrule
+Luật từ khoá & 0,774 & 0,610 & 0,682 \\
+Bộ phân loại, $p\ge0{,}5$ & \textbf{0,863} & \textbf{0,928} & \textbf{0,894} \\
+Bộ phân loại, $p\ge0{,}8$ & 0,923 & 0,816 & 0,866 \\
+\bottomrule
+\end{tabular}
+\caption{Nhận diện lượt chốt (giao việc/kết luận) trên 869 lượt nói.}
+\label{tab:turnact}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lccl@{}}
+\toprule
+\textbf{Vùng} & \textbf{\% lượt} & \textbf{\% là chốt} & \textbf{Xử lý} \\
+\midrule
+$p<0{,}2$ & 31 & 4 & không chốt \\
+$0{,}2\le p<0{,}8$ & 20 & 45 & kiểm chứng \\
+$p\ge0{,}8$ & 49 & 92 & chấp nhận \\
+\bottomrule
+\end{tabular}
+\caption{Ba vùng định tuyến theo $\pchot$.}
+\label{tab:zones}
+\end{table}
+
+Bộ phân loại vượt luật từ khoá rõ rệt (Bảng~\ref{tab:turnact}), với ECE 0,040: khi bộ phân loại nói 90\%
+thì thực tế đúng xấp xỉ 90\%. Tính chất này cho phép dùng ngưỡng như một chính sách nghiệp vụ.
+Bảng~\ref{tab:zones} cho thấy chỉ khoảng 20\% lượt nói thật sự mơ hồ, với tỉ lệ đúng gần như tung đồng
+xu; đây đúng là phần nên dành cho bước kiểm chứng đắt tiền.
+
+Lợi ích lớn nhất nằm ở \textbf{lời giao việc khẩu ngữ}: tỉ lệ nhận ra tăng từ 51\% lên 91\%. Câu ``Anh
+Phong gửi giúp em trong tuần này được không ạ?'' bị luật từ khoá bỏ qua vì là câu hỏi, còn bộ phân loại cho
+$p=0{,}95$. Hai loại còn khó là \emph{việc chưa có người nhận} và \emph{quyết định bị thay thế sau đó};
+cả hai cần ngữ cảnh rộng hơn vài lượt, đó là lý do tác tử kiểm chứng được tra cứu toàn bộ cuộc họp.
+
+\subsection{RQ3: Bỏ qua trích xuất an toàn}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.52\linewidth}L{0.4\linewidth}@{}}
+\toprule
+\textbf{Tiêu chí bỏ qua} & \textbf{Nội dung gold bị mất} \\
+\midrule
+Không có từ khoá giao/chốt & 1 việc giao + 2 kết luận (chỉ bỏ được 3/304 lần chạy) \\
+Lọc riêng theo $p(\text{kết luận})$ & 5/166 kết luận \\
+\textbf{Không lượt nào có $\pchot\ge0{,}2$} & \textbf{0} \\
+\bottomrule
+\end{tabular}
+\caption{Mô phỏng các tiêu chí bỏ qua tác tử giao việc/kết luận trên 30 cuộc họp tổng hợp.}
+\label{tab:gate}
+\end{table}
+
+Từ khoá vừa không tiết kiệm được gì vừa làm mất nội dung (Bảng~\ref{tab:gate}). Lọc riêng theo từng nhãn
+cũng mất kết luận, vì một số lời chốt kết luận bị xếp vào nhãn giao việc. Gộp hai nhãn thành $\pchot$ ở
+ngưỡng thấp thì không mất mục nào. Phần tiết kiệm bị chặn trên bởi tỉ lệ chủ đề không có giao việc lẫn
+kết luận, khoảng 18\% trên dữ liệu tổng hợp.
+
+\subsection{RQ4: Theo dõi tiến độ}
+
+Trên cuộc họp có danh sách việc (3 việc thật giao từ trước và 1 việc giả lập không được nhắc tới),
+\diva{} xác định đúng trạng thái \textbf{4/4 việc} ở cả 4 lần chạy. Việc giả lập được đánh dấu đúng là
+\emph{không được báo cáo}; yêu cầu ``làm lại tờ trình'' được xếp là \emph{tiếp nối} việc cũ, còn các việc
+phát sinh trong phiên là \emph{việc mới}. Ba yếu tố quyết định độ chính xác:
+
+\paragraph{Chất lượng danh sách việc đầu vào.} Ở phiên bản danh sách đầu tiên, 3/6 ``việc cũ'' thực ra
+phát sinh ngay trong phiên. Hệ thống chỉ khớp 3/6, và mỗi lần chạy khớp một bộ 3 việc khác nhau. Định
+nghĩa thế nào là ``việc cũ'' là quyết định nghiệp vụ, không phải lỗi mô hình.
+
+\paragraph{Câu hỏi kiểm phải hợp với kiểu việc.} Với việc ``báo cáo tình hình các dự án'', câu hỏi chung
+xếp lượt trả lời là ``đang làm'' (0,92) vì các dự án đang làm thủ tục; câu hỏi dành cho việc báo cáo xếp
+đúng là ``đã báo cáo'' (0,99). Bộ phân loại kiểu việc tách được việc báo cáo (1,00) khỏi việc làm ra sản
+phẩm (tờ trình 0,35; tiếp thu góp ý 0,03).
+
+\paragraph{Phân công giữa tác tử và bộ phân loại.} Câu ``đã giải trình, tiếp thu'' nằm trong một đoạn dài
+nói về đề án ``tiếp tục hoàn thiện'' bị bộ phân loại xếp ``đang làm'', và ba cách viết lại câu hỏi đều
+không sửa được mà không làm hỏng trường hợp khác. Vì vậy tác tử, vốn đọc cả chủ đề, quyết ``xong hay đang
+làm''; bộ phân loại chỉ quyết lượt nói là báo cáo, chỉ đạo hay chỉ nhắc tới, và ngăn một kiến nghị của
+đại biểu biến việc đã xong thành ``phải làm lại''.
+
+Ngoài ra, LLM mở vẫn có thể cho kết quả khác nhau giữa các lần chạy với cùng đầu vào, và cắt chủ đề khác
+đi cũng làm prompt thay đổi; so sánh hai cấu hình chỉ có ý nghĩa khi cố định phân đoạn và chạy lặp.
+
+\subsection{RQ5: Thời gian chạy}
+
+Cuộc họp 1.259 lượt, 14 chủ đề được xử lý trong khoảng \textbf{78 giây}, trong đó cắt chủ đề mất 12 giây
+(đo trước khi có vòng đồng thuận). Nhờ xử lý song song, thời gian không còn tăng tuyến tính theo số chủ
+đề. Chi phí kiểm chứng mỗi mục mơ hồ bị chặn trên ở 15 lần gọi LLM; trong ví dụ điển hình, tác tử kiểm
+chứng tìm thấy lời giao việc thật của người chủ trì ở lượt khác, tác tử trích xuất sửa người nhận việc
+theo đó, và hai bên thống nhất sau 2 vòng, tổng cộng 4 lần gọi.
+
+%======================================================================
+\section{Thảo luận}
+%======================================================================
+
+\paragraph{Ý nghĩa nghiệp vụ.} \diva{} không thay người soạn biên bản mà chuyển công việc từ \emph{nghe
+lại và viết} sang \emph{duyệt có trích dẫn}. Mỗi mục kèm câu nói làm căn cứ; mục mơ hồ được đánh dấu kèm
+lý do và ứng viên người nhận việc; vết kiểm chứng cho biết vì sao một mục được giữ hay bỏ. Thiết kế
+``không chắc thì giữ lại và đánh dấu'' chấp nhận nhiều mục cần duyệt hơn để đổi lấy việc không âm thầm mất
+nội dung; với biên bản hành chính, sót một chỉ đạo thường đắt hơn duyệt thừa một mục.
+
+\paragraph{Giao thức đánh giá đề xuất.} Bước tiếp theo là xây gold end-to-end gồm 3--5 biên bản có danh
+sách việc, hai người gán nhãn độc lập, và đo các ablation: tắt cổng trích xuất; danh bạ toàn cuộc họp so
+với ngữ cảnh chuyển dồn; thay đổi hoặc bỏ vòng đồng thuận; kiểm chứng tra cứu toàn cuộc họp so với tranh
+luận trong đoạn; các bộ cắt chủ đề khác nhau; câu hỏi tiến độ chung so với tuỳ kiểu việc.
+
+%======================================================================
+\section{Kết luận}
+%======================================================================
+
+Chúng tôi phát biểu bài toán sinh biên bản họp hành chính tiếng Việt có căn cứ, trong đó đúng \emph{trách
+nhiệm} quan trọng hơn đẹp câu chữ, và đề xuất \diva{}. \diva{} cắt cuộc họp thành chủ đề, xử lý song song,
+và dùng một bộ phân loại hành vi lời nói đã hiệu chỉnh để quyết định nơi cần trích xuất và nơi cần kiểm
+chứng; việc kiểm chứng dành cho một tác tử tra cứu toàn cuộc họp, làm việc theo cơ chế đồng thuận có quy
+tắc an toàn. Thực nghiệm thành phần cho thấy hiệu chỉnh xác suất là điều kiện để định tuyến hiệu quả, từ
+khoá không đủ để nhận ra lời giao việc tiếng Việt, và theo dõi tiến độ cần phân biệt việc báo cáo với việc
+làm ra sản phẩm. Đánh giá end-to-end trên dữ liệu thật mở rộng là bước tiếp theo cần thiết.
+
+%======================================================================
+\section*{Hạn chế (Limitations)}
+%======================================================================
+
+\textbf{Chưa có đánh giá end-to-end} cho Giao việc và Kết luận trên dữ liệu thật có nhãn, và chưa kiểm
+chứng được rằng vòng đồng thuận không khiến một bên nhượng bộ sai. \textbf{Dữ liệu đánh giá nhỏ}: 3 cuộc
+họp cho cắt chủ đề và 1 cuộc họp cho tiến độ, đều do một người gán nhãn; các khác biệt nhỏ có thể nằm
+trong vùng nhiễu. \textbf{Lệch giữa dữ liệu tổng hợp và thật}: bộ cắt chủ đề và ngưỡng của bộ phân loại
+được chọn phần lớn trên dữ liệu tổng hợp; ngưỡng cho phần tiến độ chưa được hiệu chỉnh riêng.
+\textbf{Đơn vị là lượt nói}: không tách được lượt nói chứa nhiều chủ đề, và khi bộ tách người nói gộp
+nhiều người vào một nhãn thì vai người nói có thể bị hiểu sai. \textbf{Thiên lệch tự đồng ý}: tác tử trả
+lời phản hồi chính là tác tử đã trích ra mục đó; dùng mô hình khác họ cho bên kiểm chứng chỉ giảm chứ không
+loại bỏ rủi ro này.
+
+\section*{Cân nhắc đạo đức (Ethical Considerations)}
+
+Nội dung họp của cơ quan nhà nước có thể nhạy cảm. Hệ thống nên chạy trên hạ tầng được phép, ưu tiên mô
+hình triển khai nội bộ cho các bước xử lý toàn văn. \diva{} được thiết kế để hỗ trợ, không thay thế, người
+soạn và người duyệt biên bản; biên bản cuối cùng phải do người có thẩm quyền duyệt.
+
+\bibliography{references}
+
+\end{document}
