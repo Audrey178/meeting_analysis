@@ -2,8 +2,8 @@
 
     uvicorn --app-dir be main:app
 
-Xem ``DESIGN.md`` về quy trình mà API này phơi ra, và ``services/pipeline.py`` cho
-chính quy trình đó; module này chỉ ghép ứng dụng HTTP lại với nhau.
+Xem ``PIPELINE.md`` về quy trình mà API này phơi ra, ``services/segmentation.py`` và
+``services/pipeline_v3.py`` cho chính quy trình đó; module này chỉ ghép ứng dụng HTTP lại với nhau.
 """
 
 from __future__ import annotations
@@ -31,7 +31,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import health, meetings, meetings_v3
+from routers import health, meetings_v3
 from services.dependencies import build_embedding_adapter, build_topic_segmenter
 
 # override=True: .env là nguồn cấu hình chuẩn, thắng các biến cũ còn export trong shell
@@ -84,5 +84,4 @@ app.add_middleware(
 )
 
 app.include_router(health.router)
-app.include_router(meetings.router)
 app.include_router(meetings_v3.router)

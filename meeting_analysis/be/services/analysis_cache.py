@@ -1,7 +1,8 @@
 """Cache kết quả phân tích v3 theo nội dung request (dùng ở ``services/pipeline_v3.py``).
 
-Một bản phân tích có khoá ``analysis_key`` = hash(payload chuẩn hoá + fingerprint pipeline) và
-gồm nhiều mục lưu riêng (dict JSON): ``base`` (lượt nói, chủ đề, nhãn) và mỗi phần kết quả.
+Một bản phân tích có khoá ``analysis_key`` = hash(transcript chuẩn hoá + fingerprint pipeline) và
+gồm nhiều mục lưu riêng (dict JSON): ``base`` (lượt nói, chủ đề, nhãn) và mỗi document kết quả
+(tên ``<document>@<hash đầu vào riêng của document>``).
 Module này không biết nội dung các mục; cách tính và ghép chúng nằm ở ``pipeline_v3``.
 
 ``AnalysisCache`` dựa vào một backend lo ba việc:
@@ -46,7 +47,8 @@ T = TypeVar("T")
 # Khoá đi vào đường dẫn file/tên khoá Redis, nên mọi chỗ nhận khoá từ ngoài đều kiểm theo mẫu này.
 ANALYSIS_KEY_PATTERN = r"^[0-9a-f]{32}$"
 _ANALYSIS_KEY_RE = re.compile(ANALYSIS_KEY_PATTERN)
-_ENTRY_NAME_RE = re.compile(r"^[a-z_]+$")
+# Tên mục: ``base`` hoặc ``<document>@<16 hex>`` (xem ``pipeline_v3.document_entry_name``).
+_ENTRY_NAME_RE = re.compile(r"^[a-z_]+(@[0-9a-f]{16})?$")
 _LOCK_STRIPES = 64
 _SKIPPED_DIRS = frozenset({"tests", "__pycache__"})
 _DEFAULT_REDIS_URL = "redis://localhost:6379/0"

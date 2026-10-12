@@ -11,7 +11,6 @@ export default defineConfig({
     // configuring it just for local development.
     proxy: {
       '/health': 'http://localhost:8000',
-      '/meetings': 'http://localhost:8000',
       '/v3': 'http://localhost:8000',
     },
   },

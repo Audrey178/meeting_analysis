@@ -1,10 +1,13 @@
-"""Schema request/response của HTTP API (xem ``routers/meetings.py``)."""
+"""Schema request của HTTP API (xem ``routers/meetings_v3.py``); ba document trả về nằm ở
+``services/documents.py``."""
 
 from __future__ import annotations
 
 from datetime import date
 
 from pydantic import BaseModel
+
+from services.documents import SourceIn
 
 
 class AttendeePersonIn(BaseModel):
@@ -34,11 +37,10 @@ class AttendeesIn(BaseModel):
 
 
 class AnalyzeRequest(BaseModel):
-    """Dữ liệu đầu vào của API phân tích cuộc họp: một transcript.
+    """Phần transcript của request phân tích cuộc họp (``AnalyzeV3Request`` kế thừa).
 
-    Cùng dạng với JSON transcript gốc mà ``scripts/run_to_TreeSeg.py --input`` nhận
-    (``inputs/sample_transcript.json``) và được chuyển nguyên vẹn cho
-    ``parse_transcript_payload``. Vì vậy ``items`` cố ý để lỏng (``list[dict]``) thay vì
+    Cùng dạng với JSON transcript gốc (``inputs/sample_transcript.json``) và được chuyển
+    nguyên vẹn cho ``parse_transcript_payload``. Vì vậy ``items`` cố ý để lỏng (``list[dict]``) thay vì
     khai lại từng trường, tránh lệch so với parser.
 
     ``meeting_id``/``revision_id`` PHẢI được khai báo (khác ``items``) vì Pydantic âm
@@ -50,8 +52,8 @@ class AnalyzeRequest(BaseModel):
     dùng ``"stt-export"``/``"export-0"`` khi thiếu. Chỉ dạng "native" mới bắt buộc hai
     trường này, và ``_parse_native_payload`` tự báo lỗi rõ ràng. Từng bắt buộc chúng vô
     điều kiện ở đây làm hỏng trường hợp STT export (payload thật giống ``recording_old.json``);
-    lỗi này chỉ phát hiện khi thử payload thật vào endpoint đang chạy, vì mẫu của
-    ``test_api.py`` tình cờ đã có sẵn cả hai.
+    lỗi này chỉ phát hiện khi thử payload thật vào endpoint đang chạy, vì transcript mẫu
+    của test tình cờ đã có sẵn cả hai.
 
     Các trường:
         meeting_id: mã cuộc họp (tùy chọn).
@@ -59,7 +61,7 @@ class AnalyzeRequest(BaseModel):
         meeting_date: ngày họp (tùy chọn), neo để quy hạn chót của việc giao ("tuần sau")
             về ``deadline_date``; thiếu thì vẫn có ``deadline_kind``.
         items: danh sách các dòng transcript ở dạng dict.
-        attendees: danh sách người/đơn vị tham dự (tùy chọn, chỉ v3 dùng); thiếu thì actor
+        attendees: danh sách người/đơn vị tham dự (tùy chọn); thiếu thì actor
             chỉ được quy về người nói trong bản ghi.
     """
 
@@ -68,156 +70,6 @@ class AnalyzeRequest(BaseModel):
     meeting_date: date | None = None
     items: list[dict]
     attendees: AttendeesIn | None = None
-
-
-class SpeakerPointOut(BaseModel):
-    """Một luận điểm của một người nói, kèm bằng chứng để người dùng đối chiếu.
-
-    Các trường:
-        text: nội dung luận điểm.
-        evidence_ids: các turn_id làm bằng chứng.
-        quotes: câu trích nguyên văn ứng với từng ``evidence_ids`` (cùng thứ tự và độ
-            dài); là câu thực sự được trích chứ không phải cả lượt nói (xem
-            ``src.agentic._shared.validate_evidence_with_quotes``).
-        citation_count: số trích dẫn (bằng số turn_id bằng chứng).
-    """
-
-    text: str
-    evidence_ids: list[str]
-    quotes: list[str]
-    citation_count: int
-
-
-class SpeakerSectionOut(BaseModel):
-    """Các luận điểm của một người nói trong một chủ đề (kèm chữ viết tắt và họ tên)."""
-
-    initials: str
-    full_name: str
-    points: list[SpeakerPointOut]
-
-
-class TopicOut(BaseModel):
-    """Một chủ đề của cuộc họp: tiêu đề, tóm tắt và luận điểm theo từng người nói."""
-
-    segment_id: str
-    title: str
-    summary: str
-    speakers: list[SpeakerSectionOut]
-
-
-class ActionItemOut(BaseModel):
-    """Một việc được giao ĐÃ KIỂM CHỨNG (qua Evidence-Check, + Debate/Judge nếu
-    uncertain), kèm đoạn chủ đề nguồn và bằng chứng trích dẫn.
-
-    ``actor`` đi kèm TỪNG item (có thể ``None`` nếu Debate/Judge giữ lại một
-    candidate mà vẫn không xác định được người phụ trách) -- danh sách trả
-    về KHÔNG gộp theo người nữa (xem "M6" trong ``../be/DESIGN.md``: bỏ
-    ``group_task_assignments``, việc gộp hiển thị theo người phụ trách nếu
-    cần là việc của tầng frontend, không phải backend).
-
-    ``text`` chỉ là nội dung việc (không lặp "giao <actor>"), hạn chót tách
-    riêng: ``deadline_raw`` (nguyên văn), ``deadline_date`` (ISO, quy theo ngày họp),
-    ``deadline_kind`` (exact/before/end_of_period/relative/unknown). ``verification``:
-    "rule" (CLEAR ngay), "debate" (qua Debate+Judge), "fallback" (giữ theo luật an toàn
-    khi debate lỗi/không chạy).
-    """
-
-    segment_id: str
-    actor: str | None
-    text: str
-    deadline_raw: str | None = None
-    deadline_date: str | None = None
-    deadline_kind: str = "unknown"
-    status: str = "unknown"
-    confirm_turn_id: str | None = None
-    verification: str = "rule"
-    evidence_ids: list[str]
-    quotes: list[str]
-    citation_count: int
-
-
-class DecisionOut(BaseModel):
-    """Một quyết định/chốt phương án ĐÃ KIỂM CHỨNG (qua Evidence-Check, +
-    Debate/Judge nếu uncertain), kèm đoạn chủ đề nguồn và bằng chứng trích dẫn.
-
-    KHÔNG có đoạn văn tổng hợp hành chính nào đi kèm -- tính năng đó (LLM
-    viết "Kết luận họp" thành một câu mở đầu + bullet đã gộp) đã bị bỏ cùng
-    ``conclusion_agent`` (xem "M6" trong ``../be/DESIGN.md``). Đây là danh
-    sách PHẲNG, mỗi phần tử một quyết định, chưa qua tổng hợp/viết lại.
-    """
-
-    segment_id: str
-    text: str
-    status: str = "unknown"
-    confirm_turn_id: str | None = None
-    verification: str = "rule"
-    evidence_ids: list[str]
-    quotes: list[str]
-    citation_count: int
-
-
-class TurnOut(BaseModel):
-    """Một ``src.utils.contracts.SpeakerTurn`` rút gọn, đủ để frontend hiển thị bảng transcript.
-
-    Và tra ngược ``evidence_ids`` của một luận điểm về nội dung lượt nói được trích.
-    Không phải toàn bộ contract (thông tin thời gian/vai trò giữ nội bộ).
-    """
-
-    turn_id: str
-    speaker: str | None
-    text: str
-
-
-class FailedTopicOut(BaseModel):
-    """Một lời gọi LLM theo chủ đề vẫn lỗi sau các lần retry VÀ sau lượt thử lại cuối.
-
-    Kết quả của agent đó cho chủ đề này bị thiếu trong phản hồi: ``content_agent``
-    thì thiếu luận điểm của người nói, ``action_agent`` thì thiếu việc được giao,
-    ``decision_agent`` thì thiếu quyết định/chốt phương án.
-    """
-
-    segment_id: str
-    agent: str
-    error: str
-
-
-class DebateRecordOut(BaseModel):
-    """Bản ghi một vòng Debate+Judge cho một candidate action/decision bị đánh dấu
-    chưa chắc chắn (uncertain) bởi Evidence-Check -- để người dùng đối chiếu vì
-    sao candidate đó được giữ hoặc bị bỏ (xem
-    ``src.agentic.nodes.debate_judge_agent``).
-    """
-
-    segment_id: str
-    kind: str
-    candidate_text: str
-    reasons: list[str]
-    support_argument: str
-    oppose_argument: str
-    kept: bool
-    reasoning: str
-    verdict: str = "keep"
-    final_text: str = ""
-    deciding_turn_id: str | None = None
-
-
-class AnalyzeResponse(BaseModel):
-    """Kết quả phân tích cuộc họp -- đúng 3 phần output của pipeline (``topics``
-    = Diễn biến họp, ``verified_assignments`` = Giao việc,
-    ``verified_decisions`` = Kết luận họp), cộng transcript, các chủ đề bị
-    lỗi và các candidate đã qua Debate/Judge để audit."""
-
-    meeting_id: str
-    revision_id: str
-    topics: list[TopicOut]
-    verified_assignments: list[ActionItemOut]
-    verified_decisions: list[DecisionOut]
-    turns: list[TurnOut]
-    failed_topics: list[FailedTopicOut] = []
-    debate_records: list[DebateRecordOut] = []
-
-
-# ----- Agentic v3 (src/agentic_v3) — chủ đề song song + Verifier đồng thuận với agent trích xuất -----
 
 
 class TaskIn(BaseModel):
@@ -246,201 +98,19 @@ class TasksIn(BaseModel):
 
 
 class AnalyzeV3Request(AnalyzeRequest):
-    """Đầu vào của ``POST /v3/meetings/analyze``: transcript (như ``AnalyzeRequest``) + người chủ trì.
+    """Đầu vào của ``POST /v3/meetings/tasks|decisions|content``: transcript
+    (như ``AnalyzeRequest``) + người chủ trì, danh sách việc, nguồn.
 
     Các trường thêm:
         chair: tên người chủ trì (tùy chọn). v3 quy tên này về đúng nhãn người nói nếu khớp
             duy nhất một người và đưa vào prompt của agent trích xuất và Verifier, để nhận ra
             lời giao việc/kết luận của chủ trì. None hoặc rỗng thì model tự suy ra từ bản ghi.
-        tasks: danh sách việc cần báo cáo tiến độ (tùy chọn). Có thì v3 chạy agent tiến độ và
-            trả ``task_progress``; việc giao được gắn ``task_id``/``relation``.
+        tasks: danh sách việc cần báo cáo tiến độ (tùy chọn, chỉ document Giao việc dùng). Có thì
+            v3 chạy agent tiến độ; việc giao được gắn ``task_id``/``relation``.
+        source: nguồn transcript/tài liệu (tùy chọn), chỉ chép vào ``source`` của document, không
+            ảnh hưởng kết quả nên không vào khoá cache.
     """
 
     chair: str | None = None
     tasks: TasksIn | None = None
-
-
-class VerifierStepOut(BaseModel):
-    """Một bước tra cứu (ReAct) của Verifier."""
-
-    thought: str
-    action: str
-    argument: str
-    observation: str
-
-
-class ConsensusRoundOut(BaseModel):
-    """Một vòng Verifier gửi feedback -> agent trích xuất trả lời.
-    ``stance``: "accept" | "amend" | "defend", rỗng khi Verifier đã giữ (keep)."""
-
-    candidate_text: str
-    verdict: str
-    feedback: str
-    deciding_turn_id: str | None = None
-    stance: str = ""
-    response: str = ""
-
-
-class VerificationRecordOut(BaseModel):
-    """Bản ghi kiểm chứng một candidate uncertain (thay ``DebateRecordOut`` ở v3).
-    ``decided_by``: "consensus" (đồng thuận), "verifier" (hết vòng, theo Verifier) hoặc "fallback"."""
-
-    item_key: str
-    segment_id: str
-    kind: str
-    candidate_text: str
-    reasons: list[str]
-    steps: list[VerifierStepOut]
-    verdict: str
-    reasoning: str
-    final_text: str = ""
-    deciding_turn_id: str | None = None
-    decided_by: str = "consensus"
-    rounds: list[ConsensusRoundOut] = []
-
-
-class SkippedAgentOut(BaseModel):
-    """Agent trích xuất mà Planner bỏ qua ở một chủ đề (Decisions: không lượt nào có thể là
-    giao/chốt việc)."""
-
-    segment_id: str
-    agent: str
-
-
-class ActorCandidateOut(BaseModel):
-    """Một ứng viên actor (người/đơn vị) kèm điểm, xem ``src/agentic_v3/actors/resolution.py``."""
-
-    name: str
-    actor_type: str
-    score: float
-    reason: str = ""
-    ref_id: str | None = None
-
-
-class ActorAssigneeOut(BaseModel):
-    """Một bên nhận việc: ``role`` = "lead" (chủ trì) | "support" (phối hợp) | "joint" (cùng
-    thực hiện); ``name`` None khi chưa xác định (``flag`` = "ambiguous")."""
-
-    mention: str
-    role: str
-    name: str | None = None
-    actor_type: str = "unknown"
-    flag: str | None = None
-    reason: str = ""
-    ref_id: str | None = None
-    candidates: list[ActorCandidateOut] = []
-
-
-class ActionItemV3Out(ActionItemOut):
-    """Việc giao của v3: ``ActionItemOut`` cộng phần định danh actor.
-
-    ``actor_type``: "person" | "organization" | "unknown". ``actor_flag``: "ambiguous"
-    (có ứng viên nhưng không ai đủ rõ) hoặc "missing" (không nêu actor). ``actor_candidates``
-    giữ mọi ứng viên của bên chính, điểm giảm dần. ``assignees``: mọi bên nhận việc kèm vai
-    trò (chủ trì trước); ``actor`` là tên các bên nối bằng ", ".
-    """
-
-    actor_type: str = "unknown"
-    actor_flag: str | None = None
-    actor_reason: str = ""
-    actor_candidates: list[ActorCandidateOut] = []
-    assignees: list[ActorAssigneeOut] = []
-    task_id: str | None = None
-    relation: str | None = None
-
-
-class ProgressUpdateOut(BaseModel):
-    """Một cập nhật tiến độ của một việc trong một chủ đề (``src/agentic_v3/nodes/progress.py``).
-
-    ``status``: "done" | "in_progress" | "blocked" | "returned" | "deferred" | "mentioned".
-    ``status_flag``: "revised" (Decisions sửa trạng thái agent khai, xem ``proposed_status``),
-    "uncertain" (không xác nhận được, đã hạ về "mentioned") hoặc "kept" (Decisions chỉ xác nhận
-    lượt là báo cáo về việc, giữ trạng thái agent khai). ``verification``:
-    "decisions" (đã qua Decisions) | "unchecked" (Decisions tắt/lỗi) | "rule" (chưa qua bước
-    kiểm). ``p_directive``: xác suất lượt nêu trạng thái là chỉ đạo/kết luận.
-    """
-
-    segment_id: str
-    task_id: str
-    status: str
-    status_turn_id: str | None = None
-    evidence_ids: list[str] = []
-    quotes: list[str] = []
-    summary: str = ""
-    blockers: list[str] = []
-    directive: str = ""
-    deadline_raw: str | None = None
-    deadline_date: str | None = None
-    deadline_kind: str = "unknown"
-    deadline_removed: bool = False
-    proposed_status: str | None = None
-    status_flag: str | None = None
-    status_probabilities: dict[str, float] = {}
-    p_directive: float | None = None
-    verification: str = "rule"
-    reason: str = ""
-
-
-class TaskProgressOut(BaseModel):
-    """Tiến độ một việc sau phiên họp, gộp từ mọi chủ đề.
-
-    ``status`` là trạng thái của cập nhật thắng, hoặc "not_reported" khi không chủ đề nào nói
-    tới việc. ``status_conflict``: có báo cáo "done" đã xác nhận cùng một cập nhật đã xác nhận
-    nêu trạng thái khác (vd. báo cáo xong nhưng bị yêu cầu làm lại); ``uncertain``: cập nhật
-    thắng chưa được xác nhận; ``overdue``: hạn cũ đã qua mà việc chưa xong.
-    """
-
-    task_id: str
-    title: str
-    owner: str
-    previous_status: str | None = None
-    status: str
-    previous_due: str | None = None
-    deadline_raw: str | None = None
-    deadline_date: str | None = None
-    deadline_kind: str = "unknown"
-    deadline_removed: bool = False
-    status_conflict: bool = False
-    uncertain: bool = False
-    overdue: bool = False
-    deciding_update: ProgressUpdateOut | None = None
-    updates: list[ProgressUpdateOut] = []
-
-
-class AnalysisPartOut(BaseModel):
-    """Trạng thái cache của một phần kết quả v3 (development | assignments | decisions | progress).
-
-    ``generation``: lần tính thứ mấy của phần này cho cùng request (1 = lần đầu, tăng mỗi lần
-    chạy lại). ``from_cache``: response này lấy phần đó từ cache, không tính lại. ``status``:
-    "ok" hoặc "incomplete" (có chủ đề lỗi, xem ``failed_topics``; lần gọi ``/analyze`` sau sẽ
-    tính lại phần này).
-    """
-
-    generation: int
-    computed_at: str
-    from_cache: bool
-    status: str
-
-
-class AnalyzeV3Result(BaseModel):
-    """Kết quả cuối của v3: cùng ba phần output như ``AnalyzeResponse``, cộng bản ghi
-    kiểm chứng, các agent đã bỏ qua và tiến độ các việc cần báo cáo (``task_progress``,
-    rỗng khi request không có ``tasks``).
-
-    ``analysis_key`` là khoá cache của request (``GET /v3/meetings/analyses/{analysis_key}``
-    lấy lại kết quả). ``cache_version`` tăng sau mỗi lần ghi cache của bản phân tích: frontend
-    bỏ response có version nhỏ hơn bản đang hiển thị. ``parts`` là trạng thái từng phần."""
-
-    analysis_key: str = ""
-    cache_version: int = 0
-    parts: dict[str, AnalysisPartOut] = {}
-    meeting_id: str
-    revision_id: str
-    topics: list[TopicOut]
-    verified_assignments: list[ActionItemV3Out]
-    verified_decisions: list[DecisionOut]
-    task_progress: list[TaskProgressOut] = []
-    turns: list[TurnOut]
-    failed_topics: list[FailedTopicOut] = []
-    verification_records: list[VerificationRecordOut] = []
-    skipped_agents: list[SkippedAgentOut] = []
+    source: SourceIn | None = None

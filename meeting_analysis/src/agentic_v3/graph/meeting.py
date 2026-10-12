@@ -7,7 +7,7 @@
                                      ▼
                                  finalize -> END
 
-So với v1 (``src/agentic/graph.py``), thời gian không còn tăng theo số chủ đề: v1 chờ
+So với v1 (``src/agentic/graph.py``, đã xóa), thời gian không còn tăng theo số chủ đề: v1 chờ
 chủ đề N xong hẳn (kể cả debate) mới gửi chủ đề N+1, chỉ để mang ``known_names`` sang
 chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ người nói của cả cuộc họp do Planner
 dựng trước (``nodes/planner.py``), nên các chủ đề độc lập với nhau. Số lời gọi LLM đồng thời

@@ -45,7 +45,7 @@ from ..core._shared import (
     read_list_or_empty,
     read_stripped_text,
     split_dict_entries,
-    validate_evidence_by_turn_ids,
+    validate_evidence_by_segment_ids,
 )
 from ..core.nodes.action_agent import _format_meeting_date, _resolve_deadline
 from ..core.schemas import SegmentTask, TopicFailure
@@ -95,7 +95,7 @@ def build_progress_schema(task_ids: Sequence[str]) -> dict:
             "task_id": {"type": "string", "enum": list(task_ids)},
             "status": {"type": "string", "enum": list(UPDATE_STATUSES)},
             "status_turn_id": {"type": ["string", "null"]},
-            "evidence_turn_ids": {"type": "array", "items": {"type": "string"}},
+            "evidence_segment_ids": {"type": "array", "items": {"type": "string"}},
             "deadline": {"type": ["string", "null"]},
             "deadline_date": {"type": ["string", "null"]},
             "deadline_kind": {"type": "string", "enum": _DEADLINE_KINDS},
@@ -182,7 +182,11 @@ def _merge_same_task(updates: list[ProgressUpdate], turns: Sequence[SpeakerTurn]
             if turn_id not in ids:
                 ids.append(turn_id)
                 quotes.append(quote)
-        merged[update.task_id] = replace(base, evidence_ids=tuple(ids), quotes=tuple(quotes))
+        segment_ids = list(base.segment_ids)
+        segment_ids.extend(item_id for item_id in other.segment_ids if item_id not in segment_ids)
+        merged[update.task_id] = replace(
+            base, evidence_ids=tuple(ids), quotes=tuple(quotes), segment_ids=tuple(segment_ids)
+        )
     return list(merged.values())
 
 
@@ -230,8 +234,9 @@ def make_progress_agent(llm: LLMAdapter) -> Callable[[SegmentTask, SpeakerRegist
                 dropped += 1
                 continue
             status_turn_id = read_confirm_turn_id(turns, item.get("status_turn_id"))
-            claimed_ids = read_list_or_empty(item.get("evidence_turn_ids")) + [status_turn_id]
-            evidence_ids, quotes = validate_evidence_by_turn_ids(turns, claimed_ids)
+            evidence_ids, quotes, segment_ids = validate_evidence_by_segment_ids(
+                turns, read_list_or_empty(item.get("evidence_segment_ids")), [status_turn_id]
+            )
             if not evidence_ids:
                 dropped += 1
                 continue
@@ -246,6 +251,7 @@ def make_progress_agent(llm: LLMAdapter) -> Callable[[SegmentTask, SpeakerRegist
                     status_turn_id=status_turn_id,
                     evidence_ids=evidence_ids,
                     quotes=quotes,
+                    segment_ids=segment_ids,
                     summary=read_stripped_text(item.get("summary"))[:_MAX_SUMMARY_CHARS],
                     blockers=_read_blockers(item.get("blockers")),
                     directive=read_stripped_text(item.get("directive"))[:_MAX_SUMMARY_CHARS],

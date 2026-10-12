@@ -1,108 +1,112 @@
-import type {
-  ActionItemOut,
-  ActionItemV3Out,
-  ActorAssigneeOut,
-  ActorType,
-  AssigneeRole,
-  AssignmentRelation,
-} from "../api/types";
-import { groupActionItemsByAssignee, initialsOf, speakerColor, UNASSIGNED_LABEL } from "../lib/format";
+import type { AssignmentTarget, Citation, TaskOut } from "../api/types";
+import { quotesOf, type TranscriptIndex } from "../lib/citations";
+import {
+  formatDue,
+  groupTasksByAssignee,
+  initialsOf,
+  speakerColor,
+  speakerName,
+  targetName,
+  topicNumber,
+  type TargetKind,
+  UNASSIGNED_LABEL,
+} from "../lib/format";
 import { Avatar, CitationCount, EmptyState, EvidenceItem, VerificationTag } from "./agentic/primitives";
 
-const DEADLINE_KIND_PREFIX: Partial<Record<NonNullable<ActionItemOut["deadline_kind"]>, string>> = {
-  before: "trước ",
-  end_of_period: "cuối kỳ · ",
+const ROLE_LABEL: Record<string, string> = { lead: "Chủ trì", support: "Phối hợp", joint: "Cùng thực hiện" };
+const KIND_LABEL: Partial<Record<TargetKind, string>> = { person: "Cá nhân", unit: "Đơn vị" };
+
+/** Gợi ý cần người xem lại (``detection.review_hints``) không trùng với nhãn kiểm chứng/ứng viên. */
+const HINT_LABEL: Record<string, { label: string; title: string }> = {
+  due_unresolved: { label: "hạn chưa quy ra ngày", title: "Hạn nêu trong cuộc họp chưa quy được về một ngày cụ thể" },
+  assignee_missing: { label: "thiếu người nhận", title: "Lời giao việc không nêu ai thực hiện" },
 };
 
-/** "trước 15/11/2026" when the deadline resolved to a date; otherwise the raw phrase. */
-function formatDeadline(item: ActionItemOut): string {
-  if (!item.deadline_date) return item.deadline_raw ?? "";
-  const [year, month, day] = item.deadline_date.split("-");
-  const prefix = (item.deadline_kind && DEADLINE_KIND_PREFIX[item.deadline_kind]) ?? "";
-  return `${prefix}${day}/${month}/${year}`;
+/** Quan hệ với danh sách việc cần báo cáo (khi request có `tasks`). */
+function RelationTag({ task }: { task: TaskOut }) {
+  const relation = task.extensions.relation;
+  if (relation === "follow_up") {
+    return (
+      <span className="tag tag-neutral" title="Tiếp nối/làm lại một việc trong danh sách việc cần báo cáo">
+        Tiếp nối · {task.workflow.dependency_task_ids.join(", ")}
+      </span>
+    );
+  }
+  if (relation === "new") {
+    return (
+      <span className="tag tag-muted" title="Không thuộc việc nào trong danh sách việc cần báo cáo">
+        Việc mới
+      </span>
+    );
+  }
+  return null;
 }
 
-const RELATION_LABEL: Record<AssignmentRelation, { label: string; title: string }> = {
-  new: { label: "Việc mới", title: "Không thuộc việc nào trong danh sách việc cần báo cáo" },
-  follow_up: { label: "Tiếp nối", title: "Tiếp nối/làm lại một việc trong danh sách, cùng bên chủ trì" },
-  reassign: { label: "Giao lại", title: "Việc trong danh sách được giao cho bên khác bên chủ trì/phối hợp cũ" },
-  reschedule: { label: "Đổi hạn", title: "Việc trong danh sách được đặt hạn mới khác hạn cũ" },
-};
-
-/** Quan hệ của việc giao với danh sách việc cần báo cáo (chỉ v3, khi request có `tasks`). */
-function RelationTag({ item }: { item: ActionItemV3Out }) {
-  if (!item.relation) return null;
-  const relation = RELATION_LABEL[item.relation];
-  return (
-    <span className={item.relation === "new" ? "tag tag-muted" : "tag tag-neutral"} title={relation.title}>
-      {relation.label}
-      {item.task_id ? ` · ${item.task_id}` : ""}
-    </span>
-  );
-}
-
-const ROLE_LABEL: Record<AssigneeRole, string> = { lead: "Chủ trì", support: "Phối hợp", joint: "Cùng thực hiện" };
-const ACTOR_TYPE_LABEL: Partial<Record<ActorType, string>> = { person: "Cá nhân", organization: "Đơn vị" };
-
-/** Other parties of the same task, e.g. "cùng Sở Xây dựng (phối hợp)". */
-function OtherAssignees({ item, current }: { item: ActionItemV3Out; current: string }) {
-  const others = (item.assignees ?? []).filter((assignee) => (assignee.name ?? assignee.mention) !== current);
+/** Các bên khác của cùng việc, vd. "cùng: Sở Xây dựng · phối hợp". */
+function OtherAssignees({ task, current }: { task: TaskOut; current: AssignmentTarget | null }) {
+  const { primary, collaborators } = task.extracted.assignment;
+  const others = [primary, ...collaborators].filter((target): target is AssignmentTarget => !!target && target !== current);
   if (others.length === 0) return null;
   const text = others
-    .map((assignee) => `${assignee.name ?? `${assignee.mention} (chưa rõ)`} · ${ROLE_LABEL[assignee.role].toLowerCase()}`)
+    .map((target) => {
+      const role = ROLE_LABEL[target.extensions.resolution?.role ?? ""] ?? "";
+      return `${targetName(target) ?? "chưa rõ"}${role ? ` · ${role.toLowerCase()}` : ""}`;
+    })
     .join("; ");
-  return <span className="tag tag-muted max-w-[320px] truncate" title={text}>cùng: {text}</span>;
-}
-
-/** How the current party was identified when the transcript called it something else,
- * e.g. "Đảng ủy ban" -> "Đảng ủy UBND Thành phố"; the tooltip carries the resolver's or
- * the Verifier's reason (which of two people named Sơn, and why). */
-function ResolvedFrom({ item, current }: { item: ActionItemV3Out; current: string }) {
-  const assignee = (item.assignees ?? []).find((candidate) => candidate.name === current);
-  if (!assignee) return null;
-  const sameText = assignee.mention.trim().toLocaleLowerCase("vi") === current.trim().toLocaleLowerCase("vi");
-  if (sameText && assignee.candidates.length < 2) return null;
   return (
-    <span className="tag tag-outline max-w-[280px] truncate" title={assignee.reason || undefined}>
-      {sameText ? "đã chọn giữa nhiều ứng viên" : `từ “${assignee.mention}”`}
+    <span className="tag tag-muted max-w-[320px] truncate" title={text}>
+      cùng: {text}
     </span>
   );
 }
 
-/** Unresolved parties of a task with their scored candidates, so the reader can pick. */
-function UnresolvedCandidates({ assignees }: { assignees: ActorAssigneeOut[] }) {
-  const unresolved = assignees.filter((assignee) => !assignee.name);
-  if (unresolved.length === 0) return null;
+/** Bên nhận việc được quy từ cách gọi khác ("Đảng ủy ban" -> "Đảng ủy UBND Thành phố"); tooltip là lý do. */
+function ResolvedFrom({ target }: { target: AssignmentTarget | null }) {
+  const resolution = target?.extensions.resolution;
+  const name = targetName(target);
+  if (!resolution?.mention || !name) return null;
+  const sameText = resolution.mention.trim().toLocaleLowerCase("vi") === name.trim().toLocaleLowerCase("vi");
+  if (sameText && resolution.candidates.length < 2) return null;
   return (
-    <>
-      {unresolved.map((assignee) => (
-        <span key={assignee.mention} className="tag tag-accent" title={assignee.reason}>
-          “{assignee.mention}”:{" "}
-          {assignee.candidates.length > 0
-            ? assignee.candidates.map((c) => `${c.name} ${c.score.toFixed(2)}`).join(" · ")
-            : "không có ứng viên"}
-        </span>
-      ))}
-    </>
+    <span className="tag tag-outline max-w-[280px] truncate" title={resolution.reason || undefined}>
+      {sameText ? "đã chọn giữa nhiều ứng viên" : `từ “${resolution.mention}”`}
+    </span>
+  );
+}
+
+/** Bên chưa định danh được kèm các ứng viên có điểm, để người đọc tự chọn. */
+function UnresolvedCandidates({ target }: { target: AssignmentTarget | null }) {
+  const resolution = target?.extensions.resolution;
+  if (!resolution) return null;
+  return (
+    <span className="tag tag-accent" title={resolution.reason}>
+      “{resolution.mention ?? targetName(target)}”:{" "}
+      {resolution.candidates.length > 0
+        ? resolution.candidates.map((c) => `${c.name} ${c.score.toFixed(2)}`).join(" · ")
+        : "không có ứng viên"}
+    </span>
   );
 }
 
 interface TaskAssignmentBlockProps {
-  items: ActionItemOut[];
+  tasks: TaskOut[];
   topicIndexById: Record<string, number>;
   topicTitleById: Record<string, string>;
-  selectedPointKey: string | null;
-  onSelectPoint: (key: string, evidenceIds: string[]) => void;
+  transcript: TranscriptIndex;
+  selectedKey: string | null;
+  onSelect: (key: string, citation: Citation) => void;
 }
 
+// Tab "Giao việc": việc giao mới trong cuộc họp (việc cũ nằm ở tab Tiến độ), gom theo bên nhận việc.
 export function TaskAssignmentBlock({
-  items,
+  tasks,
   topicIndexById,
   topicTitleById,
-  selectedPointKey,
-  onSelectPoint,
+  transcript,
+  selectedKey,
+  onSelect,
 }: TaskAssignmentBlockProps) {
-  const groups = groupActionItemsByAssignee(items);
+  const groups = groupTasksByAssignee(tasks);
 
   if (groups.length === 0) {
     return <EmptyState>Không có việc nào được giao.</EmptyState>;
@@ -115,58 +119,75 @@ export function TaskAssignmentBlock({
         return (
           <section key={`${group.assignee}-${groupIdx}`} className="self-start bg-surface">
             <header className="flex items-center gap-3 border-b border-divider px-4 py-3">
-              <Avatar label={unassigned ? "?" : initialsOf(group.assignee)} color={speakerColor(group.assignee)} muted={unassigned} />
+              <Avatar
+                label={unassigned ? "?" : initialsOf(group.assignee)}
+                color={speakerColor(group.assignee)}
+                muted={unassigned}
+              />
               <div className="min-w-0 flex-1">
                 <div className="font-heading text-[15px] font-extrabold">{group.assignee}</div>
                 <div className="text-[11.5px] text-neutral-700">{group.entries.length} việc</div>
               </div>
-              {group.actorType && ACTOR_TYPE_LABEL[group.actorType] && (
-                <span className="tag tag-neutral">{ACTOR_TYPE_LABEL[group.actorType]}</span>
-              )}
+              {group.kind && KIND_LABEL[group.kind] && <span className="tag tag-neutral">{KIND_LABEL[group.kind]}</span>}
             </header>
             <ol className="m-0 list-none p-1.5">
-              {group.entries.map(({ item, role }, itemIdx) => {
-                const key = `assignment:${groupIdx}:${itemIdx}`;
-                const topicIndex = topicIndexById[item.segment_id];
+              {group.entries.map(({ task, target, role }, itemIdx) => {
+                const key = `tasks:${task.task_id}@${groupIdx}`;
+                const { extracted, extensions } = task;
+                const topicId = extensions.topic_id ?? "";
+                const topicIndex = topicIndexById[topicId];
+                const segmentIds = extracted.references.segment_ids;
+                const parties = (extracted.assignment.primary ? 1 : 0) + extracted.assignment.collaborators.length;
                 return (
                   <li key={key}>
                     <EvidenceItem
-                      selected={key === selectedPointKey}
-                      onSelect={() => onSelectPoint(key, item.evidence_ids)}
-                      quotes={item.quotes}
+                      selected={key === selectedKey}
+                      onSelect={() => onSelect(key, { segmentIds, turnIds: extensions.evidence_ids })}
+                      quotes={quotesOf(transcript, segmentIds)}
                       leading={
                         <span className="w-5 flex-none pt-px text-right font-mono text-[12px] text-neutral-500">
                           {itemIdx + 1}.
                         </span>
                       }
-                      trailing={<CitationCount count={item.citation_count} />}
+                      trailing={<CitationCount count={segmentIds.length} />}
                       meta={
                         <>
-                          {item.deadline_raw && (
-                            <span className="tag tag-outline" title={item.deadline_raw}>
-                              Hạn: {formatDeadline(item)}
+                          {extracted.due && (
+                            <span className="tag tag-outline" title={extracted.due.raw ?? undefined}>
+                              Hạn: {formatDue(extracted.due)}
                             </span>
                           )}
                           {topicIndex !== undefined && (
-                            <span
-                              className="tag tag-muted max-w-[280px] truncate"
-                              title={topicTitleById[item.segment_id]}
-                            >
-                              Chủ đề {String(topicIndex + 1).padStart(2, "0")}
+                            <span className="tag tag-muted max-w-[280px] truncate" title={topicTitleById[topicId]}>
+                              Chủ đề {topicNumber(topicIndex)}
                             </span>
                           )}
-                          {role && (item.assignees?.length ?? 0) > 1 && (
-                            <span className={role === "lead" ? "tag tag-ok" : "tag tag-outline"}>{ROLE_LABEL[role]}</span>
+                          {parties > 1 && (
+                            <span className={role === "lead" ? "tag tag-ok" : "tag tag-outline"}>
+                              {ROLE_LABEL[role] ?? role}
+                            </span>
                           )}
-                          {!unassigned && <ResolvedFrom item={item} current={group.assignee} />}
-                          {!unassigned && <OtherAssignees item={item} current={group.assignee} />}
-                          {unassigned && <UnresolvedCandidates assignees={item.assignees ?? []} />}
-                          <RelationTag item={item} />
-                          <VerificationTag verification={item.verification} />
+                          {!unassigned && <ResolvedFrom target={target} />}
+                          {!unassigned && <OtherAssignees task={task} current={target} />}
+                          {unassigned && <UnresolvedCandidates target={target} />}
+                          <RelationTag task={task} />
+                          <VerificationTag verification={extensions.verification} />
+                          {extracted.detection.review_hints
+                            .filter((hint) => HINT_LABEL[hint])
+                            .map((hint) => (
+                              <span key={hint} className="tag tag-accent" title={HINT_LABEL[hint].title}>
+                                {HINT_LABEL[hint].label}
+                              </span>
+                            ))}
+                          {extensions.assigned_by_speaker && (
+                            <span className="tag tag-muted" title={`Lượt giao: ${extensions.confirm_turn_id ?? "?"}`}>
+                              giao bởi {speakerName(extensions.assigned_by_speaker)}
+                            </span>
+                          )}
                         </>
                       }
                     >
-                      {item.text}
+                      {extracted.content.title}
                     </EvidenceItem>
                   </li>
                 );

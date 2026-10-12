@@ -5,7 +5,7 @@ duyệt người).
 
 Hình dạng graph xem ``graph/meeting.py``/``graph/topic.py``; điểm vào cho tầng dịch vụ là
 ``MeetingAnalyzerV3`` (``runner.py``). Các agent trích xuất và
-luật của v1 được chép vào ``core/`` nên package không import ``src.agentic``.
+luật gốc của v1 (``src.agentic``, nay đã xóa) nằm ở ``core/``.
 """
 
 from .actors.agenda import AgendaTask, TaskAgenda, load_task_agenda, parse_task_agenda, task_path_for

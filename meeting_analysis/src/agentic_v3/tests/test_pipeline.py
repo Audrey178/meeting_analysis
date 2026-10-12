@@ -114,16 +114,14 @@ class FakeLLM:
             return "stance_check"
         if "KIỂM CHỨNG VIÊN" in system_prompt:
             return "verifier"
-        return {"speakers": "content", "action_items": "action", "decisions": "decision", "stance": "proposer"}[
+        return {"discussion_points": "content", "action_items": "action", "decisions": "decision", "stance": "proposer"}[
             next(iter(schema["properties"]))
         ]
 
     def _answer(self, kind: str, user_prompt: str) -> dict:
         if kind == "content":
-            turn_id, speaker = next(
-                (t.turn_id, t.speaker) for t in TURNS if f"[{t.turn_id}|" in user_prompt
-            )
-            return {"speakers": [{"full_name": speaker, "points": [{"evidence_turn_ids": [turn_id], "text": "Ý kiến."}]}]}
+            turn_id = next(t.turn_id for t in TURNS if f"[{t.turn_id}|" in user_prompt)
+            return {"discussion_points": [{"evidence_segment_ids": [turn_id], "text": "Ý kiến."}]}
         if kind == "action":
             with self._lock:
                 if self.fail_action_once:
@@ -131,12 +129,12 @@ class FakeLLM:
                     raise LLMUpstreamError("gateway down")
             if "[T1|" in user_prompt:
                 return {"action_items": [{
-                    "evidence_turn_ids": ["T1", "T2"], "confirm_turn_id": "T1", "status": "assigned",
+                    "evidence_segment_ids": ["T1", "T2"], "confirm_turn_id": "T1", "status": "assigned",
                     "actor": "Hiếu", "text": "Map lại nhãn sang 12 lĩnh vực", "deadline": "trước ngày 25/11",
                 }]}
             if "[T3|" in user_prompt:
                 return {"action_items": [{
-                    "evidence_turn_ids": ["T3"], "confirm_turn_id": "T3", "status": "proposed",
+                    "evidence_segment_ids": ["T3"], "confirm_turn_id": "T3", "status": "proposed",
                     "actor": "Chị Mai", "text": PROPOSAL_TEXT, "deadline": None,
                 }]}
             return {"action_items": []}
@@ -550,7 +548,7 @@ def test_extractors_run_with_v3_prompts():
 def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.DECISION_SYSTEM_PROMPT
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.VERIFY_RUBRICS["decision"]
-    # Content agent biết hai quy tắc để không ghi lại việc giao/kết luận thành luận điểm.
+    # Content agent biết hai quy tắc để không ghi lại việc giao/kết luận thành ý thảo luận.
     assert prompts.CHAIR_ASSIGNMENT_RULE in prompts.CONTENT_SYSTEM_PROMPT
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.CONTENT_SYSTEM_PROMPT
 

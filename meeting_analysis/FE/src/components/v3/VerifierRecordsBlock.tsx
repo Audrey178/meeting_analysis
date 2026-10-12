@@ -1,5 +1,6 @@
 import { useState } from "react";
-import type { VerificationRecordOut } from "../../api/types";
+import type { Citation, VerificationRecordOut } from "../../api/types";
+import { topicNumber } from "../../lib/format";
 import { EmptyState } from "../agentic/primitives";
 
 type Filter = "all" | "keep" | "revise" | "drop" | "no_consensus";
@@ -28,8 +29,8 @@ const KIND_LABEL = { action: "Việc giao", decision: "Kết luận" } as const;
 interface VerifierRecordsBlockProps {
   records: VerificationRecordOut[];
   topicIndexById: Record<string, number>;
-  selectedPointKey: string | null;
-  onSelectPoint: (key: string, evidenceIds: string[]) => void;
+  selectedKey: string | null;
+  onSelect: (key: string, citation: Citation) => void;
 }
 
 function matches(record: VerificationRecordOut, filter: Filter): boolean {
@@ -40,7 +41,7 @@ function matches(record: VerificationRecordOut, filter: Filter): boolean {
 
 // Audit view của v3: mỗi mục bị Evidence-Check nghi ngờ, chuỗi tra cứu của Verifier
 // (tool + kết quả), các vòng feedback với agent trích xuất và cách ra quyết định cuối.
-export function VerifierRecordsBlock({ records, topicIndexById, selectedPointKey, onSelectPoint }: VerifierRecordsBlockProps) {
+export function VerifierRecordsBlock({ records, topicIndexById, selectedKey, onSelect }: VerifierRecordsBlockProps) {
   const [filter, setFilter] = useState<Filter>("all");
 
   if (records.length === 0) {
@@ -78,7 +79,8 @@ export function VerifierRecordsBlock({ records, topicIndexById, selectedPointKey
         .filter((record) => matches(record, filter))
         .map((record) => {
           const style = VERDICT_STYLE[record.verdict] ?? VERDICT_STYLE.unresolved;
-          const key = `verify:${record.item_key}`;
+          // Bản ghi thuộc document chứa mục được kiểm: việc giao -> tasks, kết luận -> decisions.
+          const key = `${record.kind === "action" ? "tasks" : "decisions"}:verify:${record.item_key}`;
           const topicIndex = topicIndexById[record.segment_id];
           const deciding = record.deciding_turn_id;
           return (
@@ -87,7 +89,7 @@ export function VerifierRecordsBlock({ records, topicIndexById, selectedPointKey
                 <span className={style.className}>{style.label}</span>
                 <span className="tag tag-neutral">{KIND_LABEL[record.kind]}</span>
                 {topicIndex !== undefined && (
-                  <span className="tag tag-muted">Chủ đề {String(topicIndex + 1).padStart(2, "0")}</span>
+                  <span className="tag tag-muted">Chủ đề {topicNumber(topicIndex)}</span>
                 )}
                 <span className="ml-auto text-[11.5px] text-neutral-700">
                   quyết định: {DECIDED_BY_LABEL[record.decided_by] ?? record.decided_by}
@@ -155,8 +157,8 @@ export function VerifierRecordsBlock({ records, topicIndexById, selectedPointKey
                   {deciding && (
                     <button
                       type="button"
-                      onClick={() => onSelectPoint(key, [deciding])}
-                      className={`btn btn-ghost flex-none font-mono text-[11px] ${selectedPointKey === key ? "bg-accent-100" : ""}`}
+                      onClick={() => onSelect(key, { segmentIds: [], turnIds: [deciding] })}
+                      className={`btn btn-ghost flex-none font-mono text-[11px] ${selectedKey === key ? "bg-accent-100" : ""}`}
                       title="Tô lượt nói Verifier dựa vào trên transcript"
                     >
                       {deciding} →
