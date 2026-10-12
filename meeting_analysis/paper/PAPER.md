@@ -1,4 +1,6 @@
-# Từ bản ghi đến biên bản: cắt chủ đề DialSTART kết hợp pipeline đa tác tử Agentic‑v3 có kiểm chứng ReAct và vòng đồng thuận cho cuộc họp tiếng Việt
+# DiVA: Cắt chủ đề hội thoại và đa tác tử có kiểm chứng đồng thuận để sinh biên bản họp tiếng Việt
+
+*English title:* **DiVA: Dialogue Segmentation and Verified Agents for Grounded Vietnamese Meeting Minutes**
 
 *Báo cáo phương pháp đề xuất (bản thảo), dự án `meeting_analysis`. Cập nhật: 12/10/2026.*
 
@@ -13,7 +15,8 @@ việc** (ai làm gì, hạn khi nào) và **Kết luận họp**. Cuộc họp 
 cho đơn vị thay vì cho cá nhân. Những đặc điểm này làm cách gọi một LLM trên toàn bản ghi vừa
 đắt vừa khó kiểm chứng.
 
-Phương pháp đề xuất gồm hai thành phần nối tiếp:
+Phương pháp đề xuất, gọi là **DiVA** (*Dialogue segmentation + Verified Agents*), gồm hai thành phần
+nối tiếp:
 
 1. **DialSTART‑VN**: bộ cắt chủ đề dựa trên mạch lạc lượt‑cặp (DialSTART, Gao et al., 2023),
    huấn luyện lại trên backbone tiếng Việt. Chúng tôi thêm một bộ chọn ranh giới không cần
