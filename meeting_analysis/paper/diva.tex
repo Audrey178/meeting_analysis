@@ -30,6 +30,7 @@
 \renewcommand{\tablename}{Bảng}
 \newcommand{\pchot}{p_{\text{chốt}}}
 \newcommand{\diva}{\textsc{DiVA}}
+\newcommand{\code}[1]{{\fontencoding{T1}\selectfont\texttt{#1}}}
 
 \title{DiVA: Sinh biên bản họp tiếng Việt có căn cứ\\
 bằng cắt chủ đề hội thoại và đa tác tử kiểm chứng}
@@ -46,11 +47,13 @@ Biên bản họp vì thế là căn cứ về \emph{trách nhiệm}: ai làm g�
 nhất điều gì, và việc giao lần trước đã tiến triển ra sao. Một hệ thống tự động soạn biên bản phải đúng
 về những điểm này, không chỉ trôi chảy về câu chữ. Chúng tôi phát biểu bài toán \emph{sinh biên bản họp
 có căn cứ} từ bản ghi giọng nói tiếng Việt, gồm bốn phần: diễn biến, giao việc, kết luận và tiến độ các
-việc đã giao. Chúng tôi đề xuất \diva{}, một kiến trúc \emph{kiểm chứng chọn lọc} gồm: bộ cắt chủ đề dựa
-trên độ mạch lạc, không cần biết trước số chủ đề; bộ phân loại hành vi lời nói đã hiệu chỉnh xác suất,
-dùng để định tuyến; và tác tử kiểm chứng tra cứu toàn bộ cuộc họp rồi đi tới đồng thuận với tác tử trích
-xuất. Thực nghiệm trên họp cơ quan nhà nước, họp doanh nghiệp/dự án và phiên họp Quốc hội cho thấy: bộ
-chọn ranh giới nâng điểm cắt chủ đề trên dữ liệu thật từ 0,39 lên 0,64; bộ phân loại nhận ra lời giao
+việc đã giao. Chúng tôi đề xuất \diva{}, một framework \emph{kiểm chứng chọn lọc} điều phối bằng
+LangGraph, kết hợp ba lớp mô hình: (i) bộ cắt chủ đề DialSTART huấn luyện lại trên BERT tiếng Việt, không
+cần biết trước số chủ đề; (ii) một \emph{mô hình quyết định} (decision model), loại mô hình mới nhận một
+câu hỏi khai báo bằng ngôn ngữ tự nhiên cùng tập lựa chọn và trả về phân bố xác suất đã hiệu chỉnh thay vì
+sinh văn bản, dùng làm lớp định tuyến; và (iii) các tác tử LLM sinh, trong đó tác tử kiểm chứng ReAct tra
+cứu toàn bộ cuộc họp rồi đi tới đồng thuận với tác tử trích xuất. Thực nghiệm trên họp cơ quan nhà nước, họp doanh nghiệp/dự án và phiên họp Quốc hội cho thấy: bộ
+chọn ranh giới nâng điểm cắt chủ đề trên dữ liệu thật từ 0,39 lên 0,64; mô hình quyết định nhận ra lời giao
 việc tốt hơn hẳn luật từ khoá (F1 0,89 so với 0,68), với ECE 0,04, nên chỉ khoảng 20\% số lượt nói cần
 đến bước kiểm chứng đắt tiền; và trên một cuộc họp có danh sách việc, hệ thống xác định đúng trạng thái
 cả 4 việc.
@@ -98,21 +101,31 @@ cuộc họp.
 
 \paragraph{Cách tiếp cận.} \diva{} coi việc soạn biên bản là \emph{trích xuất có căn cứ} và tổ chức kiểm
 chứng theo \emph{mức độ nghi ngờ}. Cuộc họp được cắt thành chủ đề và xử lý song song. Mỗi mục trích ra
-phải chỉ được câu nói làm căn cứ. Một bộ phân loại hành vi lời nói rẻ, đã hiệu chỉnh, quyết định mục nào
+phải chỉ được câu nói làm căn cứ. Một mô hình quyết định rẻ, đã hiệu chỉnh, phân loại hành vi lời nói và quyết định mục nào
 chắc chắn và mục nào mơ hồ. Chỉ mục mơ hồ mới được chuyển cho một tác tử kiểm chứng, tác tử này tra cứu
 toàn bộ cuộc họp và tranh luận có giới hạn với tác tử đã trích ra mục đó. Khi không thống nhất được hoặc
 hệ thống gặp lỗi, mục được giữ lại kèm dấu hiệu cho người duyệt thay vì bị xoá. Kiến trúc không gắn với
 một loại tổ chức: thông tin riêng của từng cuộc họp (người điều hành, danh sách thành viên và đơn vị,
 danh sách việc cũ) là đầu vào tuỳ chọn.
 
+\paragraph{Mô hình quyết định làm lớp định tuyến.} Điểm mới về công nghệ của \diva{} là dùng một
+\emph{mô hình quyết định} (decision model) thay cho cả luật từ khoá lẫn việc nhờ LLM sinh ``trả lời một
+nhãn''. Với mô hình quyết định, người thiết kế chỉ \emph{khai báo} câu hỏi: hướng dẫn và các lựa chọn, mỗi
+lựa chọn kèm mô tả bằng ngôn ngữ tự nhiên (ví dụ ``giao việc: giao việc cho người/đơn vị cụ thể, hoặc một
+người nhận làm việc''). Mô hình trả về phân bố xác suất trên các lựa chọn, không sinh văn bản tự do. Ba
+tính chất của loại mô hình này quyết định thiết kế của \diva{}: xác suất được hiệu chỉnh nên ngưỡng có
+nghĩa thực tế; cùng đầu vào cho cùng kết quả nên có thể lưu cache; và đủ nhanh (khoảng 0,3 giây mỗi lời
+gọi) để chạy trên từng lượt nói. Định nghĩa nhãn mới chỉ cần viết thêm một câu hỏi, không cần huấn luyện.
+
 \paragraph{Đóng góp.}
 \begin{enumerate}
   \item Phát biểu bài toán sinh biên bản họp có căn cứ cho các cuộc họp ra quyết định, gồm bốn đầu ra và
         các yêu cầu chung: trích dẫn được, định danh người/đơn vị và vai trò, chuẩn hoá hạn chót, phân
         biệt quyết định với đề xuất (\S\ref{sec:problem}).
-  \item \diva{}, một kiến trúc kiểm chứng chọn lọc. Một bộ phân loại hành vi lời nói đã hiệu chỉnh vừa
-        quyết định có cần trích xuất hay không, vừa định tuyến mục nghi ngờ sang cơ chế đồng thuận giữa
-        tác tử trích xuất và tác tử kiểm chứng có công cụ tra cứu (\S\ref{sec:method}).
+  \item \diva{}, một framework kiểm chứng chọn lọc trên LangGraph, trong đó một \emph{mô hình quyết
+        định} đóng vai trò lớp định tuyến ở ba vị trí: cổng chọn tác tử, phân loại sơ bộ candidate, và
+        kiểm trạng thái tiến độ; chỉ phần mơ hồ mới được chuyển sang cơ chế đồng thuận giữa tác tử trích
+        xuất và tác tử kiểm chứng có công cụ tra cứu (\S\ref{sec:method}, \S\ref{sec:stack}).
   \item Một phương pháp cắt chủ đề cho cuộc họp tiếng Việt, không cần biết trước số chủ đề, giữ mỗi đoạn
         trong giới hạn xử lý của LLM (\S\ref{sec:seg}).
   \item Phân tích thực nghiệm trên ba bối cảnh họp (cơ quan nhà nước, doanh nghiệp/dự án, Quốc hội) cho
@@ -224,6 +237,12 @@ dùng phản hồi để cải thiện đầu ra. Định tuyến theo độ tin
 hướng: định tuyến bằng bộ phân loại đã hiệu chỉnh, và tranh luận \emph{có neo bằng chứng, có ngân sách,
 có quy tắc an toàn}, chỉ dành cho phần mơ hồ.
 
+\paragraph{Đầu ra có cấu trúc và mô hình quyết định.} Cách phổ biến để dùng LLM làm bộ phân loại là ép
+đầu ra theo một JSON schema rồi đọc nhãn mô hình sinh ra. Cách này cho \emph{một} nhãn chứ không cho độ tin
+cậy đáng tin; xác suất của mạng nơ-ron hiện đại vốn thường bị hiệu chỉnh kém \citep{guo2017calibration}.
+Mô hình quyết định đi theo hướng khác: đầu ra là phân bố trên một tập lựa chọn được khai báo. \diva{} khai
+thác đúng tính chất này để biến ngưỡng xác suất thành chính sách định tuyến giữa các tác tử.
+
 %======================================================================
 \section{Phương pháp \diva{}}
 \label{sec:method}
@@ -237,13 +256,13 @@ có quy tắc an toàn}, chỉ dành cho phần mơ hồ.
   dec/.style={draw, diamond, aspect=2, align=center, inner sep=0pt, fill=white},
   arr/.style={-{Latex[length=2mm]}}]
   \node[box] (asr) at (-0.4,0) {Bản ghi\\giọng nói};
-  \node[box] (seg) at (1.6,0) {Cắt chủ đề\\(\S\ref{sec:seg})};
-  \node[box] (ext) at (5.6,0) {Trích xuất theo chủ đề\\diễn biến $\cdot$ giao việc\\kết luận $\cdot$ tiến độ};
-  \node[dec] (tri) at (8.9,0) {Phân loại\\hành vi\\lời nói};
-  \node[box] (ok)  at (11.6,0.95) {Chấp nhận};
-  \node[box] (ver) at (11.6,-0.95) {Kiểm chứng tra cứu\\+ đồng thuận};
-  \node[box] (out) at (14.2,0) {Biên bản\\+ vết\\kiểm chứng};
-  \node[box, fill=gray!10, minimum height=1.8em] (reg) at (5.6,2.4)
+  \node[box] (seg) at (1.6,0) {Cắt chủ đề\\(\S\ref{sec:seg})\\{\scriptsize\itshape\color{blue!50!black} PyTorch, ViBERT}};
+  \node[box] (ext) at (5.6,0) {Trích xuất theo chủ đề\\diễn biến $\cdot$ giao việc\\kết luận $\cdot$ tiến độ\\{\scriptsize\itshape\color{blue!50!black} LLM sinh (gemma)}};
+  \node[dec] (tri) at (8.9,0) {Mô hình\\quyết định\\{\scriptsize\itshape\color{blue!50!black} Decisions API}};
+  \node[box] (ok)  at (11.6,1.15) {Chấp nhận};
+  \node[box] (ver) at (11.6,-1.15) {Kiểm chứng tra cứu\\+ đồng thuận\\{\scriptsize\itshape\color{blue!50!black} ReAct, GPT-4o-mini}};
+  \node[box] (out) at (14.2,0) {Biên bản\\+ vết\\kiểm chứng\\{\scriptsize\itshape\color{blue!50!black} FastAPI, Redis}};
+  \node[box, fill=gray!10, minimum height=1.8em] (reg) at (5.6,2.75)
        {Danh bạ toàn cuộc họp: người nói, người điều hành, đơn vị, việc cũ};
   \draw[arr] (asr) -- (seg);
   \draw[arr] (seg) -- node[below, font=\scriptsize]{$K$ chủ đề} (ext);
@@ -253,6 +272,7 @@ có quy tắc an toàn}, chỉ dành cho phần mơ hồ.
   \draw[arr] (ok.east) -| (out.north);
   \draw[arr] (ver.east) -| (out.south);
   \draw[arr, dashed] (reg) -- (ext);
+  \node[above=1pt of reg, font=\scriptsize\itshape, text=blue!50!black] {điều phối map--reduce bằng LangGraph};
   \begin{scope}[on background layer]
     \node[draw, dashed, rounded corners, fill=blue!4, inner xsep=5pt, inner ysep=4pt,
           fit=(ext) (tri) (ok) (ver),
@@ -302,18 +322,47 @@ là giao việc, kể cả khi không có chữ ``giao''; cùng câu đó của 
 \emph{lời một người nói mình sẽ làm việc gì mà không ai phản đối là tự nhận việc}. Kết quả được ghép theo
 thứ tự chủ đề và gộp mục trùng giữa các chủ đề.
 
-\subsection{Định tuyến theo hành vi lời nói đã hiệu chỉnh}
+\subsection{Mô hình quyết định}
+\label{sec:decision}
+
+Một mô hình quyết định $\mathcal{M}$ nhận đầu vào văn bản $x$ và một \emph{câu hỏi khai báo}
+$q=(\text{hướng dẫn},\{(c_j,\text{mô tả}_j)\}_{j=1}^{m})$, rồi trả về phân bố
+$\mathcal{M}(x,q)\in\Delta^{m-1}$ trên các lựa chọn $c_1,\dots,c_m$. Khác với LLM sinh, mô hình không
+sinh văn bản, nên không cần phân tích đầu ra và không có lỗi định dạng. \diva{} dùng bốn câu hỏi
+(Bảng~\ref{tab:questions}), đều viết bằng tiếng Việt, với đầu vào là lượt cần xét kèm 2 lượt ngữ cảnh
+đứng trước. Lượt dài hơn 2.500 ký tự được cắt theo câu thành nhiều cửa sổ, cửa sổ trước làm ngữ cảnh cho
+cửa sổ sau. Kết quả được nhớ theo nội dung đầu vào, nên cổng chọn tác tử và bước phân loại sơ bộ dùng
+chung lời gọi khi xét cùng một lượt.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.24\linewidth}L{0.68\linewidth}@{}}
+\toprule
+\textbf{Câu hỏi} & \textbf{Lựa chọn và vai trò} \\
+\midrule
+Hành vi lời nói & giao việc, kết luận, đề xuất, bác bỏ, thảo luận, khác. Cổng chọn tác tử và phân loại
+sơ bộ (\S\ref{sec:routing}). \\
+Kiểu việc & báo cáo tại họp / làm ra sản phẩm. Chọn câu hỏi kiểm tiến độ (\S\ref{sec:progress}). \\
+Trạng thái việc & báo cáo xong, đang làm, vướng mắc, yêu cầu làm lại, hoãn, chỉ nhắc, không liên quan. \\
+Trạng thái báo cáo & đã báo cáo, chưa có báo cáo, xin hoãn, yêu cầu báo cáo lại, chỉ nhắc, không liên quan. \\
+\bottomrule
+\end{tabular}
+\caption{Bốn câu hỏi khai báo cho mô hình quyết định.}
+\label{tab:questions}
+\end{table}
+
+\subsection{Định tuyến theo hành vi lời nói}
 \label{sec:routing}
 
-Bộ phân loại $h$ gán cho mỗi lượt nói (kèm 2 lượt ngữ cảnh) một phân bố trên sáu hành vi: \emph{giao
-việc} (gồm cả tự nhận việc), \emph{kết luận}, \emph{đề xuất}, \emph{bác bỏ}, \emph{thảo luận},
-\emph{khác}, xét theo nghĩa và theo vai người nói. Xác suất ``chốt'' là
+Gọi $h(\cdot\mid u)=\mathcal{M}(u,q_{\text{hành vi}})$ là phân bố trên sáu hành vi của lượt $u$: \emph{giao
+việc} (gồm cả tự nhận việc), \emph{kết luận}, \emph{đề xuất}, \emph{bác bỏ}, \emph{thảo luận}, \emph{khác}.
+Hướng dẫn của câu hỏi yêu cầu xét theo nghĩa và theo vai người nói. Xác suất ``chốt'' là
 \begin{equation}
 \pchot(u)=h(\text{giao việc}\mid u)+h(\text{kết luận}\mid u).
 \end{equation}
 Vì xác suất này được hiệu chỉnh tốt (\S\ref{sec:rq2}), hai ngưỡng $\tau_{\text{thấp}}=0{,}2$ và
 $\tau_{\text{cao}}=0{,}8$ chia lượt nói thành ba vùng có ý nghĩa thực tế: \emph{rõ là không chốt},
-\emph{mơ hồ}, \emph{rõ là chốt}. Bộ phân loại được dùng ở hai chỗ:
+\emph{mơ hồ}, \emph{rõ là chốt}. Câu hỏi này được dùng ở hai chỗ:
 \begin{itemize}
   \item \textbf{Cổng trích xuất.} Tác tử giao việc và kết luận chỉ chạy trên chủ đề có ít nhất một lượt
         với $\pchot\ge\tau_{\text{thấp}}$. Ngưỡng thấp có chủ đích: chạy thừa chỉ tốn chi phí, bỏ nhầm
@@ -369,7 +418,7 @@ tự đoán.
 \label{sec:progress}
 
 Khi có danh sách việc cũ, tác tử tiến độ trích trạng thái từng việc được nhắc tới, rồi trạng thái được
-kiểm bằng bộ phân loại. Quan sát then chốt là có \textbf{hai kiểu việc}: \emph{việc báo cáo} (``báo cáo
+kiểm bằng mô hình quyết định. Quan sát then chốt là có \textbf{hai kiểu việc}: \emph{việc báo cáo} (``báo cáo
 tình hình các dự án'', ``cập nhật số liệu doanh thu'') xong khi nội dung đã được trình bày tại cuộc họp,
 còn \emph{việc làm ra sản phẩm} (tờ trình, hồ sơ, bản thiết kế, tính năng phần mềm) xong khi sản phẩm đã
 có. Với việc báo cáo, tình trạng của \emph{đối tượng} được báo cáo (``dự án đang làm thủ tục'') là nội
@@ -384,12 +433,59 @@ lại}, kèm cờ mâu thuẫn), và cùng loại thì lời muộn hơn thắng
 \emph{đổi hạn}, giúp cập nhật sổ theo dõi hay công cụ quản lý công việc.
 
 %======================================================================
+\section{Hiện thực hoá và tech stack}
+\label{sec:stack}
+%======================================================================
+
+\diva{} được hiện thực thành một dịch vụ hoàn chỉnh. Bảng~\ref{tab:stack} liệt kê công nghệ ở từng lớp.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.26\linewidth}L{0.66\linewidth}@{}}
+\toprule
+\textbf{Lớp} & \textbf{Công nghệ} \\
+\midrule
+Cắt chủ đề & PyTorch, HuggingFace Transformers; DialSTART trên \code{vibert4news-base-cased} \\
+Điều phối tác tử & LangGraph: \code{StateGraph}, subgraph theo chủ đề, \code{Send} cho map--reduce, reducer cộng dồn \\
+LLM sinh & gemma tự triển khai (endpoint tương thích OpenAI) cho gán nhãn chủ đề và trích xuất; GPT-4o-mini với JSON schema strict cho tác tử kiểm chứng \\
+Mô hình quyết định & OpenAI Decisions API (\code{gpt-6-luna}) \\
+Công cụ tra cứu & BM25 trên âm tiết và cặp âm tiết tiếng Việt, không cần CSDL vector \\
+Dịch vụ & FastAPI; Redis cho cache kết quả và khoá chạy-một-lần; Docker Compose \\
+Giao diện & React 19, TypeScript, Vite, Tailwind CSS \\
+\bottomrule
+\end{tabular}
+\caption{Tech stack của \diva{}.}
+\label{tab:stack}
+\end{table}
+
+\paragraph{Điều phối bằng LangGraph.} Pipeline là một đồ thị trạng thái hai tầng. Đồ thị cha dựng danh
+bạ cuộc họp rồi phát mỗi chủ đề vào một subgraph bằng \code{Send}; các subgraph chạy song song và trả
+kết quả qua reducer cộng dồn; nút tổng hợp sắp lại theo thứ tự chủ đề. Trong subgraph, các tác tử trích
+xuất là các nhánh song song, và mỗi candidate mơ hồ lại được \code{Send} riêng sang tác tử kiểm chứng.
+Một semaphore dùng chung bọc mọi lời gọi LLM để giới hạn tải bất kể số chủ đề.
+
+\paragraph{ReAct không cần tool calling.} Tác tử kiểm chứng được dựng trên giao diện sinh JSON một lượt:
+mỗi bước mô hình trả \{suy nghĩ, hành động, tham số, lượt quyết định, kết luận\}, mã nguồn chạy công cụ và
+đưa observation vào bước sau. Nhờ vậy tác tử chạy được trên mọi nhà cung cấp tương thích OpenAI, kể cả
+mô hình mở không hỗ trợ tool calling. Thứ tự trường trong schema được dùng như một ràng buộc suy luận:
+lượt quyết định đứng trước kết luận.
+
+\paragraph{Phân vai mô hình.} Mỗi loại mô hình làm đúng việc nó giỏi: mô hình mã hoá chuyên biệt cho cắt
+chủ đề (nhanh, chạy cục bộ), mô hình quyết định cho các câu hỏi phân loại cần xác suất, LLM mở tự triển
+khai cho phần trích xuất chiếm nhiều token, và một LLM khác họ cho bước kiểm chứng để giảm thiên lệch tự
+đồng ý.
+
+\paragraph{Vận hành.} Kết quả được cache theo hash của nội dung yêu cầu cùng dấu vân tay của mã nguồn và
+cấu hình, nên đổi prompt là tự vô hiệu cache cũ; từng phần biên bản có thể chạy lại riêng mà không cắt lại
+chủ đề. Giao diện cho người duyệt bấm vào từng mục để xem câu nói làm căn cứ và vết kiểm chứng.
+
+%======================================================================
 \section{Thiết lập thực nghiệm}
 %======================================================================
 
 \paragraph{Câu hỏi nghiên cứu.}
 \textbf{RQ1}: Có cắt được chủ đề cuộc họp thật mà không cần biết trước số chủ đề?
-\textbf{RQ2}: Bộ phân loại đã hiệu chỉnh có định tuyến kiểm chứng tốt hơn luật từ khoá, trên các bối cảnh
+\textbf{RQ2}: Mô hình quyết định có định tuyến kiểm chứng tốt hơn luật từ khoá, trên các bối cảnh
 họp khác nhau?
 \textbf{RQ3}: Có thể bỏ qua trích xuất ở chủ đề không có giao việc/kết luận mà không mất nội dung?
 \textbf{RQ4}: Theo dõi tiến độ có đúng không, và yếu tố nào quyết định độ chính xác?
@@ -421,9 +517,9 @@ Họp dài & 1 cuộc họp thật, 1.259 lượt nói, 14 chủ đề \\
 điểm tổng hợp $S=\tfrac14(\mathrm{F1}_{2k}+\mathrm{F1}_{5k}+2-2P_k)$. Hành vi lời nói: P, R, F1 và sai số
 hiệu chỉnh ECE \citep{guo2017calibration}. Tiến độ: số việc có trạng thái khớp gold. Thời gian chạy.
 
-\paragraph{Mô hình.} Bộ cắt chủ đề dùng backbone BERT tiếng Việt (vibert4news). Các tác tử trích xuất dùng
-LLM mở (gemma); tác tử kiểm chứng dùng gpt-4o-mini; bộ phân loại hành vi lời nói là một API phân loại trả
-về phân bố xác suất. $R=3$ vòng đồng thuận, tối đa 3 lần tra cứu mỗi vòng.
+\paragraph{Mô hình.} Theo Bảng~\ref{tab:stack}. Các so sánh ở RQ2--RQ4 dùng cùng mô hình quyết định với
+các câu hỏi ở Bảng~\ref{tab:questions}; đường cơ sở là bộ luật từ khoá của hệ thống trước. $R=3$ vòng
+đồng thuận, tối đa 3 lần tra cứu mỗi vòng.
 
 %======================================================================
 \section{Kết quả và phân tích}
@@ -469,8 +565,8 @@ lượt phát biểu chứa nhiều chủ đề, nên mọi phương pháp cắt
 \textbf{Phương pháp} & \textbf{P} & \textbf{R} & \textbf{F1} \\
 \midrule
 Luật từ khoá & 0,774 & 0,610 & 0,682 \\
-Bộ phân loại, $p\ge0{,}5$ & \textbf{0,863} & \textbf{0,928} & \textbf{0,894} \\
-Bộ phân loại, $p\ge0{,}8$ & 0,923 & 0,816 & 0,866 \\
+Mô hình quyết định, $p\ge0{,}5$ & \textbf{0,863} & \textbf{0,928} & \textbf{0,894} \\
+Mô hình quyết định, $p\ge0{,}8$ & 0,923 & 0,816 & 0,866 \\
 \bottomrule
 \end{tabular}
 \caption{Nhận diện lượt chốt (giao việc/kết luận) trên 869 lượt nói của tập tổng hợp.}
@@ -492,14 +588,14 @@ $p\ge0{,}8$ & 49 & 92 & chấp nhận \\
 \label{tab:zones}
 \end{table}
 
-Bộ phân loại vượt luật từ khoá rõ rệt (Bảng~\ref{tab:turnact}), với ECE 0,040: khi bộ phân loại nói 90\%
+Mô hình quyết định vượt luật từ khoá rõ rệt (Bảng~\ref{tab:turnact}), với ECE 0,040: khi mô hình nói 90\%
 thì thực tế đúng xấp xỉ 90\%. Tính chất này cho phép dùng ngưỡng như một chính sách vận hành.
 Bảng~\ref{tab:zones} cho thấy chỉ khoảng 20\% lượt nói thật sự mơ hồ, với tỉ lệ đúng gần như tung đồng
 xu; đây đúng là phần nên dành cho bước kiểm chứng đắt tiền.
 
 Lợi ích lớn nhất nằm ở \textbf{lời giao việc khẩu ngữ}, vốn phổ biến trong họp doanh nghiệp và dự án:
 tỉ lệ nhận ra tăng từ 51\% lên 91\%. Câu ``Anh Phong gửi giúp em trong tuần này được không ạ?'' bị luật
-từ khoá bỏ qua vì là câu hỏi, còn bộ phân loại cho $p=0{,}95$; lời đáp ``Được, thứ Sáu này anh gửi cả
+từ khoá bỏ qua vì là câu hỏi, còn mô hình quyết định cho $p=0{,}95$; lời đáp ``Được, thứ Sáu này anh gửi cả
 hai'' cũng được nhận là tự nhận việc ($p=0{,}99$). Hai loại còn khó là \emph{việc chưa có người nhận} và
 \emph{quyết định bị thay thế sau đó}; cả hai cần ngữ cảnh rộng hơn vài lượt, đó là lý do tác tử kiểm chứng
 được tra cứu toàn bộ cuộc họp.
@@ -531,7 +627,8 @@ kết luận, khoảng 18\% trên dữ liệu tổng hợp.
 Trên cuộc họp có danh sách việc (3 việc thật giao từ trước và 1 việc giả lập không được nhắc tới),
 \diva{} xác định đúng trạng thái \textbf{4/4 việc} ở cả 4 lần chạy. Việc giả lập được đánh dấu đúng là
 \emph{không được báo cáo}; yêu cầu ``làm lại tờ trình'' được xếp là \emph{tiếp nối} việc cũ, còn các việc
-phát sinh trong cuộc họp là \emph{việc mới}. Ba yếu tố quyết định độ chính xác:
+phát sinh trong cuộc họp là \emph{việc mới}. Cả cuộc họp tốn 20 lời gọi mô hình quyết định, so với 13
+khi không có danh sách việc. Ba yếu tố quyết định độ chính xác:
 
 \paragraph{Chất lượng danh sách việc đầu vào.} Ở phiên bản danh sách đầu tiên, 3/6 ``việc cũ'' thực ra
 phát sinh ngay trong cuộc họp. Hệ thống chỉ khớp 3/6, và mỗi lần chạy khớp một bộ 3 việc khác nhau. Định
@@ -539,13 +636,13 @@ nghĩa thế nào là ``việc cũ'' là quyết định của người dùng, k
 
 \paragraph{Câu hỏi kiểm phải hợp với kiểu việc.} Với việc ``báo cáo tình hình các dự án'', câu hỏi chung
 xếp lượt trả lời là ``đang làm'' (0,92) vì các dự án đang làm thủ tục; câu hỏi dành cho việc báo cáo xếp
-đúng là ``đã báo cáo'' (0,99). Bộ phân loại kiểu việc tách được việc báo cáo (1,00) khỏi việc làm ra sản
+đúng là ``đã báo cáo'' (0,99). Câu hỏi kiểu việc tách được việc báo cáo (1,00) khỏi việc làm ra sản
 phẩm (tờ trình 0,35; tiếp thu góp ý 0,03).
 
-\paragraph{Phân công giữa tác tử và bộ phân loại.} Câu ``đã giải trình, tiếp thu'' nằm trong một đoạn dài
-nói về đề án ``tiếp tục hoàn thiện'' bị bộ phân loại xếp ``đang làm'', và ba cách viết lại câu hỏi đều
+\paragraph{Phân công giữa LLM sinh và mô hình quyết định.} Câu ``đã giải trình, tiếp thu'' nằm trong một đoạn dài
+nói về đề án ``tiếp tục hoàn thiện'' bị mô hình quyết định xếp ``đang làm'', và ba cách viết lại câu hỏi đều
 không sửa được mà không làm hỏng trường hợp khác. Vì vậy tác tử, vốn đọc cả chủ đề, quyết ``xong hay đang
-làm''; bộ phân loại chỉ quyết lượt nói là báo cáo, chỉ đạo hay chỉ nhắc tới, và ngăn một kiến nghị của
+làm''; mô hình quyết định chỉ quyết lượt nói là báo cáo, chỉ đạo hay chỉ nhắc tới, và ngăn một kiến nghị của
 thành viên biến việc đã xong thành ``phải làm lại''.
 
 Ngoài ra, LLM mở vẫn có thể cho kết quả khác nhau giữa các lần chạy với cùng đầu vào, và cắt chủ đề khác
@@ -571,7 +668,7 @@ nội dung; ở mọi bối cảnh, sót một việc được giao thường đ
 
 \paragraph{Tổng quát hoá giữa các bối cảnh.} Phần lớn khác biệt giữa các bối cảnh nằm ở \emph{đầu vào
 tuỳ chọn} (người điều hành, danh sách thành viên và đơn vị, danh sách việc cũ) và ở văn phong, chứ không ở
-kiến trúc. Bộ phân loại hành vi lời nói xét theo nghĩa và vai người nói nên xử lý được cả chỉ đạo theo thứ
+kiến trúc. Câu hỏi hành vi lời nói của mô hình quyết định xét theo nghĩa và vai người nói nên xử lý được cả chỉ đạo theo thứ
 bậc lẫn tự nhận việc khẩu ngữ. Những điểm còn phụ thuộc bối cảnh là quy tắc ``ai có thẩm quyền giao việc''
 (rõ ở cơ quan nhà nước, mờ hơn ở nhóm dự án) và cách đặt tên đơn vị.
 
@@ -587,7 +684,7 @@ tuỳ kiểu việc. Kết quả nên được báo cáo riêng theo từng bố
 
 Chúng tôi phát biểu bài toán sinh biên bản họp tiếng Việt có căn cứ cho các cuộc họp ra quyết định và
 phân công, trong đó đúng \emph{trách nhiệm} quan trọng hơn đẹp câu chữ, và đề xuất \diva{}. \diva{} cắt
-cuộc họp thành chủ đề, xử lý song song, và dùng một bộ phân loại hành vi lời nói đã hiệu chỉnh để quyết
+cuộc họp thành chủ đề, xử lý song song bằng LangGraph, và dùng một mô hình quyết định đã hiệu chỉnh để quyết
 định nơi cần trích xuất và nơi cần kiểm chứng; việc kiểm chứng dành cho một tác tử tra cứu toàn cuộc họp,
 làm việc theo cơ chế đồng thuận có quy tắc an toàn. Thực nghiệm thành phần trên ba bối cảnh họp cho thấy
 hiệu chỉnh xác suất là điều kiện để định tuyến hiệu quả, từ khoá không đủ để nhận ra lời giao việc tiếng
@@ -603,7 +700,7 @@ chứng được rằng vòng đồng thuận không khiến một bên nhượn
 nhà nước}: dữ liệu thật có nhãn (cắt chủ đề, tiến độ) đều là họp cơ quan nhà nước hoặc Quốc hội; bối cảnh
 doanh nghiệp và dự án hiện chỉ được đánh giá trên dữ liệu tổng hợp. \textbf{Dữ liệu đánh giá nhỏ}: 3 cuộc
 họp cho cắt chủ đề và 1 cuộc họp cho tiến độ, đều do một người gán nhãn; các khác biệt nhỏ có thể nằm
-trong vùng nhiễu. \textbf{Lệch giữa dữ liệu tổng hợp và thật}: bộ cắt chủ đề và ngưỡng của bộ phân loại
+trong vùng nhiễu. \textbf{Lệch giữa dữ liệu tổng hợp và thật}: bộ cắt chủ đề và ngưỡng của mô hình quyết định
 được chọn phần lớn trên dữ liệu tổng hợp; ngưỡng cho phần tiến độ chưa được hiệu chỉnh riêng.
 \textbf{Đơn vị là lượt nói}: không tách được lượt nói chứa nhiều chủ đề, và khi bộ tách người nói gộp
 nhiều người vào một nhãn thì vai người nói có thể bị hiểu sai. \textbf{Thiên lệch tự đồng ý}: tác tử trả
