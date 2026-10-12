@@ -16,8 +16,8 @@ from typing import Annotated, TypedDict
 from ..core.schemas import (
     ActionItemCandidate,
     DecisionCandidate,
+    DiscussionPoint,
     SegmentTask,
-    SpeakerSection,
     TopicFailure,
 )
 from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
@@ -50,7 +50,7 @@ class TopicOutput(TypedDict):
     """Các khoá subgraph trả về graph cha; cùng tên và reducer với ``MeetingStateV3``."""
 
     labels: Annotated[list[TopicLabel], operator.add]
-    meeting_development: Annotated[list[SpeakerSection], operator.add]
+    meeting_development: Annotated[list[DiscussionPoint], operator.add]
     verified_assignments: Annotated[list[ActionItemCandidate], operator.add]
     verified_decisions: Annotated[list[DecisionCandidate], operator.add]
     verification_records: Annotated[list[VerificationRecord], operator.add]

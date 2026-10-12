@@ -224,11 +224,11 @@ def _task(turns):
 def test_progress_agent_validates_task_ids_turns_and_merges_duplicates():
     turns = (TURNS[4], TURNS[5])
     llm = _ScriptedLLM({"updates": [
-        {"task_id": "T9", "status": "done", "status_turn_id": "T5", "evidence_turn_ids": ["T5"]},
-        {"task_id": "T1", "status": "in_progress", "status_turn_id": "T5", "evidence_turn_ids": ["T5"],
+        {"task_id": "T9", "status": "done", "status_turn_id": "T5", "evidence_segment_ids": ["T5"]},
+        {"task_id": "T1", "status": "in_progress", "status_turn_id": "T5", "evidence_segment_ids": ["T5"],
          "deadline": None, "deadline_removed": True, "summary": "Đạt 55%.", "blockers": ["", "thiếu vốn", "a", "b"]},
-        {"task_id": "T1", "status": "weird", "status_turn_id": "T99", "evidence_turn_ids": ["T6"]},
-        {"task_id": "T2", "status": "done", "status_turn_id": "T1", "evidence_turn_ids": []},
+        {"task_id": "T1", "status": "weird", "status_turn_id": "T99", "evidence_segment_ids": ["T6"]},
+        {"task_id": "T2", "status": "done", "status_turn_id": "T1", "evidence_segment_ids": []},
     ]})
     registry = build_speaker_registry(TURNS, agenda=AGENDA)
 
@@ -559,7 +559,7 @@ class RecordingActionLLM:
 
     def generate_json(self, *, system_prompt, user_prompt, schema):
         self.calls.append({"system_prompt": system_prompt, "schema": schema})
-        item = {"evidence_turn_ids": ["A"], "confirm_turn_id": "A", "status": "assigned", "actor": "Hiếu",
+        item = {"evidence_segment_ids": ["A"], "confirm_turn_id": "A", "status": "assigned", "actor": "Hiếu",
                 "deadline": None, "deadline_date": None, "deadline_kind": "unknown"}
         return {"action_items": [
             {**item, "text": "Làm tiếp việc cũ", "task_id": "T1"},
@@ -618,7 +618,7 @@ class FakeProgressLLM(FakeLLM):
         if kind == "progress":
             if "[T5|" in user_prompt:
                 return {"updates": [{
-                    "task_id": "T1", "status": "in_progress", "status_turn_id": "T5", "evidence_turn_ids": ["T5"],
+                    "task_id": "T1", "status": "in_progress", "status_turn_id": "T5", "evidence_segment_ids": ["T5"],
                     "deadline": None, "deadline_date": None, "deadline_kind": "unknown", "deadline_removed": False,
                     "summary": "Đạt khoảng 55% khối lượng.", "blockers": [], "directive": None,
                 }]}

@@ -226,15 +226,15 @@ class FakeLLM:
         if "KIỂM CHỨNG VIÊN" in system_prompt:
             self.verifier_prompts.append(user_prompt)
             return self.verifier_script.pop(0)
-        if first_field == "speakers":
+        if first_field == "discussion_points":
             turn = next(t for t in TURNS if f"[{t.turn_id}|" in user_prompt)
-            return {"speakers": [{"full_name": turn.speaker, "points": [{"evidence_turn_ids": [turn.turn_id], "text": "Ý kiến."}]}]}
+            return {"discussion_points": [{"evidence_segment_ids": [turn.turn_id], "text": "Ý kiến."}]}
         if first_field == "decisions":
             return {"decisions": []}
         if "[T1|" in user_prompt:
-            return {"action_items": [{"evidence_turn_ids": ["T1"], "confirm_turn_id": "T1", "status": "assigned",
+            return {"action_items": [{"evidence_segment_ids": ["T1"], "confirm_turn_id": "T1", "status": "assigned",
                                       "actor": "Sở Tài chính", "text": "Chủ trì cân đối vốn đầu tư công", "deadline": None}]}
-        return {"action_items": [{"evidence_turn_ids": ["T3"], "confirm_turn_id": "T3", "status": "assigned",
+        return {"action_items": [{"evidence_segment_ids": ["T3"], "confirm_turn_id": "T3", "status": "assigned",
                                   "actor": "anh Sơn", "text": "Rà soát lại danh mục dự án", "deadline": "trong tuần sau"}]}
 
 

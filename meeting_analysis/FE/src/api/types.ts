@@ -1,9 +1,11 @@
-// Mirrors be/api.py's pydantic schemas.
-// Keep these two files in sync by hand — there's no shared schema source yet.
+// Mirrors be/schemas.py (request) and be/services/documents.py (three result documents).
+// Keep these files in sync by hand — there's no shared schema source yet.
+
+// ----- Request: POST /v3/meetings/{tasks|decisions|content} -----
 
 export interface TranscriptItem {
-  id: string;
-  text: string;
+  id: string | number;
+  text?: string;
   speaker?: string | null;
   speaker_role?: string | null;
   start_ms?: number | null;
@@ -11,93 +13,15 @@ export interface TranscriptItem {
   [key: string]: unknown;
 }
 
-/** Danh sách người/đơn vị tham dự (cùng dạng file `<transcript>.attendees.json`); chỉ v3 dùng. */
+/** Danh sách người/đơn vị tham dự (cùng dạng file `<transcript>.attendees.json`). */
 export interface AttendeesIn {
   people: { id: string; full_name: string; position?: string; org_id?: string | null }[];
   organizations: { id: string; name: string; functions?: string[]; aliases?: string[] }[];
 }
 
-export interface AnalyzeRequest {
-  meeting_id?: string;
-  revision_id?: string;
-  /** YYYY-MM-DD; optional -- anchors deadline normalization ("tuần sau" -> date). */
-  meeting_date?: string;
-  items: TranscriptItem[];
-  /** Lets the backend resolve actors to listed people/organizations. */
-  attendees?: AttendeesIn;
-}
+export type TaskStatus = "not_started" | "in_progress" | "done" | "blocked";
 
-export interface SpeakerPointOut {
-  text: string;
-  evidence_ids: string[];
-  quotes: string[];
-  citation_count: number;
-}
-
-export interface SpeakerSectionOut {
-  initials: string;
-  full_name: string;
-  points: SpeakerPointOut[];
-}
-
-export interface TopicOut {
-  segment_id: string;
-  title: string;
-  summary: string;
-  speakers: SpeakerSectionOut[];
-}
-
-// Verified (post Evidence-Check, + Debate/Judge if it was uncertain) action
-// item. `actor` rides on EACH item now -- the backend no longer groups these
-// by person (that was `group_task_assignments`, removed in M6); grouping for
-// display, if wanted, is a frontend concern now (see TaskAssignmentBlock.tsx).
-/** How a verified item got into the result: rule CLEAR, Debate+Judge, or kept by the safety fallback. */
-/** v3 adds "consensus" (Verifier and extractor agreed) and "verifier" (no agreement, Verifier's last ruling). */
-export type Verification = "rule" | "debate" | "fallback" | "consensus" | "verifier";
-
-export interface ActionItemOut {
-  segment_id: string;
-  actor: string | null;
-  /** Task content only -- never repeats "giao <actor>" or the deadline. */
-  text: string;
-  /** Deadline exactly as said in the transcript ("trước ngày 15 tháng 11"). */
-  deadline_raw?: string | null;
-  /** deadline_raw resolved against the meeting date (ISO "YYYY-MM-DD"), null if unresolvable. */
-  deadline_date?: string | null;
-  deadline_kind?: "exact" | "before" | "end_of_period" | "relative" | "unknown";
-  status?: "assigned" | "self_committed" | "proposed" | "reported" | "unknown";
-  /** Turn where the task was assigned/accepted (also part of evidence_ids). */
-  confirm_turn_id?: string | null;
-  verification?: Verification;
-  evidence_ids: string[];
-  quotes: string[];
-  citation_count: number;
-}
-
-// Verified decision/chốt phương án. No synthesized administrative paragraph
-// any more (that was `conclusion_agent`, an LLM step, removed in M6) -- this
-// is the flat, unmerged list of confirmed decisions.
-export interface DecisionOut {
-  segment_id: string;
-  text: string;
-  status?: "agreed" | "proposed" | "reported" | "unknown";
-  confirm_turn_id?: string | null;
-  verification?: Verification;
-  evidence_ids: string[];
-  quotes: string[];
-  citation_count: number;
-}
-
-export interface TurnOut {
-  turn_id: string;
-  speaker: string | null;
-  text: string;
-}
-
-// ----- Agentic v3 (src/agentic_v3): POST /v3/meetings/analyze -> AnalyzeV3Result -----
-// Mirrors be/schemas.py (AnalyzeV3Request, AnalyzeV3Result & co). Keep in sync by hand.
-
-/** Một việc cần báo cáo tiến độ (cùng dạng file `<transcript>.tasks.json`); chỉ v3 dùng.
+/** Một việc cần báo cáo tiến độ (cùng dạng file `<transcript>.tasks.json`).
  * owner/support/reporter: mã người/đơn vị trong attendees (vd. "P1", "O2") hoặc tên tự do. */
 export interface TaskIn {
   id: string;
@@ -111,18 +35,298 @@ export interface TaskIn {
   source?: string;
 }
 
-export type TaskStatus = "not_started" | "in_progress" | "done" | "blocked";
-
 export interface TasksIn {
   tasks: TaskIn[];
 }
 
-export interface AnalyzeV3Request extends AnalyzeRequest {
-  /** Người chủ trì (tuỳ chọn); v3 đưa vào prompt để nhận ra lời giao việc/kết luận của chủ trì. */
-  chair?: string | null;
-  /** Việc cần báo cáo tiến độ (tuỳ chọn); có thì kết quả có `task_progress`. */
-  tasks?: TasksIn;
+export interface SourceIn {
+  transcript_version_id?: string | null;
+  transcript_uri?: string | null;
+  document_uris?: string[];
 }
+
+export interface AnalyzeV3Request {
+  meeting_id?: string;
+  revision_id?: string;
+  /** YYYY-MM-DD; neo để quy hạn tương đối ("tuần sau") về ngày, và `ngay_hop` của biên bản. */
+  meeting_date?: string;
+  items: TranscriptItem[];
+  /** Quy actor về đúng người/đơn vị trong danh sách. */
+  attendees?: AttendeesIn;
+  /** Người chủ trì; đưa vào prompt để nhận ra lời giao việc/kết luận của chủ trì. */
+  chair?: string | null;
+  /** Việc cần báo cáo tiến độ; chỉ document Giao việc dùng. */
+  tasks?: TasksIn;
+  source?: SourceIn;
+}
+
+// ----- Khung chung của ba document -----
+
+export type DocumentKind = "content" | "decisions" | "tasks";
+
+/** Mã item transcript gốc (số khi xuất từ STT). */
+export type ItemId = string | number;
+
+export interface SegmentRef {
+  segment_id: ItemId;
+  turn_id: string;
+  text: string;
+  /** Mã người nói của item (`speaker_id`, hoặc `ref_id` của bản xuất STT). */
+  speaker_id: string | null;
+}
+
+export interface GenerationWarning {
+  code: string;
+  topic_id: string;
+  agent: string;
+  message: string;
+}
+
+export interface Generation {
+  /** "partial": có chủ đề lỗi (xem `warnings`); request sau sẽ tính lại. */
+  status: "complete" | "partial";
+  generated_at: string;
+  coverage: { is_complete: boolean; processed_segment_count: number; total_segment_count: number };
+  warnings: GenerationWarning[];
+  confidence: number | null;
+}
+
+export interface DocumentAudit {
+  verification_records?: VerificationRecordOut[];
+  skipped_agents?: { segment_id: string; agent: string }[];
+  failed_topics?: { segment_id: string; agent: string; error: string }[];
+}
+
+export interface DocumentExtensions {
+  /** analysis_key: khoá của transcript (nền chung của ba document). */
+  input_fingerprint: string;
+  /** Tên mục cache: `GET /v3/meetings/analyses/{input_fingerprint}/{document_key}`. */
+  document_key: string;
+  model: string | null;
+  citation_namespace: string;
+  task_identity_strategy: string | null;
+  /** Tăng sau mỗi lần ghi cache; response có số nhỏ hơn bản đang hiển thị là response cũ. */
+  artifact_version_id: number;
+  audit: DocumentAudit;
+  [key: string]: unknown;
+}
+
+interface DocumentBase {
+  schema_version: string;
+  meeting_id: string;
+  /** Lần tính thứ mấy của document (1 = lần đầu). */
+  artifact_revision: number;
+  source: SourceIn;
+  generation: Generation;
+  extensions: DocumentExtensions;
+}
+
+// ----- Giao việc -----
+
+export interface AssignmentResolution {
+  mention: string | null;
+  /** lead = chủ trì / người nhận chính, support = phối hợp, joint = cùng thực hiện. */
+  role: "lead" | "support" | "joint" | string;
+  /** "ambiguous" | "missing" | null */
+  flag: string | null;
+  reason: string;
+  candidates: { name: string; actor_type: string; score: number; reason: string; ref_id: string | null }[];
+}
+
+interface TargetBase {
+  extensions: { resolution: AssignmentResolution | null };
+}
+
+export type AssignmentTarget =
+  | (TargetBase & { target_type: "unit"; unit_id: string | null; unit_name: string | null })
+  | (TargetBase & { target_type: "person"; person_id: string | null; person_name: string | null })
+  | (TargetBase & { target_type: "unknown"; name: string | null });
+
+export interface Due {
+  raw: string | null;
+  /** YYYY-MM-DD */
+  date: string | null;
+  kind: "exact" | "before" | "end_of_period" | "relative" | "unknown" | string;
+}
+
+export type UpdateStatus = "done" | "in_progress" | "blocked" | "returned" | "deferred" | "mentioned";
+
+export interface ProgressStep {
+  topic_id: string;
+  status: UpdateStatus;
+  status_turn_id: string | null;
+  summary: string;
+  blockers: string[];
+  directive: string;
+  due: Due | null;
+  deadline_removed: boolean;
+  /** Trạng thái agent khai, khi bị Decisions sửa/hạ. */
+  proposed_status: string | null;
+  /** "revised" | "uncertain" | "kept" | null */
+  status_flag: string | null;
+  /** "decisions" | "unchecked" | "rule" */
+  verification: string;
+  reason: string;
+  p_directive: number | null;
+  /** Cập nhật quyết định trạng thái của việc. */
+  deciding: boolean;
+  segment_ids: ItemId[];
+  turn_ids: string[];
+}
+
+export interface TaskProgress {
+  previous_status: string | null;
+  /** UpdateStatus hoặc "not_reported". */
+  status: string;
+  previous_due: string | null;
+  status_conflict: boolean;
+  uncertain: boolean;
+  overdue: boolean;
+  summary: string;
+  blockers: string[];
+  directive: string;
+  deadline_removed: boolean;
+  updates: ProgressStep[];
+}
+
+/** v3 thêm "consensus" (Verifier và agent trích xuất đồng thuận) và "verifier" (theo Verifier). */
+export type Verification = "rule" | "debate" | "fallback" | "consensus" | "verifier";
+
+export interface ReferenceExtensions {
+  source_event_id: string | null;
+  /** turn_id của các lượt chứa item được trích. */
+  evidence_ids: string[];
+  source_segment_refs: SegmentRef[];
+}
+
+export interface TaskOut {
+  task_id: string;
+  source_uri: string | null;
+  extracted: {
+    content: { title: string; description: string };
+    assignment: {
+      primary: AssignmentTarget | null;
+      collaborators: AssignmentTarget[];
+      assigned_by_speaker_id: string | null;
+    };
+    due: Due | null;
+    priority: string | null;
+    detection: {
+      /** explicit = giao/nhận rõ; inferred = đề xuất/báo cáo đã qua kiểm chứng; backlog = việc cũ. */
+      mode: "explicit" | "inferred" | "backlog";
+      clarity: "clear" | "unclear";
+      review_hints: string[];
+    };
+    references: { segment_ids: ItemId[]; confidence: number | null; extensions: ReferenceExtensions };
+    /** Chỉ có ở việc cũ (backlog). */
+    progress: TaskProgress | null;
+  };
+  workflow: {
+    review_status: string;
+    execution_status: string;
+    required_confirmations: string[];
+    dependency_task_ids: string[];
+    source_presence: "present" | "absent";
+    [key: string]: unknown;
+  };
+  extensions: ReferenceExtensions & {
+    topic_id: string | null;
+    status: string | null;
+    verification: Verification | string | null;
+    confirm_turn_id: string | null;
+    /** "new" | "follow_up" | "backlog"; null khi request không có `tasks`. */
+    relation: "new" | "follow_up" | "backlog" | string | null;
+    /** Việc cũ: lời giao lại ("reassign") / dời hạn ("reschedule") đã gộp vào. */
+    merged_relations: string[];
+    assigned_by_speaker: string | null;
+  };
+}
+
+export interface TasksDocument extends DocumentBase {
+  document_type: "meeting_tasks";
+  data: { tasks: TaskOut[] };
+}
+
+// ----- Kết luận -----
+
+export interface DecisionsHeader {
+  ngay_hop: string;
+  chu_tri: string;
+  thanh_phan: string;
+  so_nguoi_tham_gia: number | null;
+  so_nguoi_co_mat: number | null;
+  [key: string]: unknown;
+}
+
+export interface DecisionItem {
+  so_thu_tu: number;
+  noi_dung: string;
+  segment_ids: ItemId[];
+  original_segment_ids: ItemId[];
+  turn_ids: string[];
+  extensions: {
+    decision_id: string;
+    topic_id: string;
+    status: string;
+    verification: Verification | string;
+    confirm_turn_id: string | null;
+    source_segment_refs: SegmentRef[];
+  };
+}
+
+export interface DecisionsDocument extends DocumentBase {
+  document_type: "meeting_decisions";
+  data: { header: DecisionsHeader; items: DecisionItem[] };
+}
+
+// ----- Diễn biến -----
+
+export interface DiscussionPoint {
+  point_id: string;
+  text: string;
+  /** Người nói của các lượt được trích, theo thứ tự lên tiếng. */
+  speakers: string[];
+  /** `speaker_ids[i]` là mã người nói của `speakers[i]`. */
+  speaker_ids: (string | null)[];
+  segment_ids: ItemId[];
+  turn_ids: string[];
+  source_segment_refs: SegmentRef[];
+}
+
+export interface ContentTopic {
+  topic_id: string;
+  order: number;
+  extracted: {
+    content: { title: string; summary: string };
+    /** Item và lượt nói đầu/cuối của chủ đề. */
+    span: { segment_ids: ItemId[]; turn_ids: string[] };
+    discussion_points: DiscussionPoint[];
+  };
+  extensions: { segmentation_method: string | null; boundary_score: number | null };
+}
+
+export interface TranscriptTurn {
+  turn_id: string;
+  speaker: string | null;
+  speaker_id: string | null;
+  segment_ids: ItemId[];
+  text: string;
+}
+
+export interface ContentDocument extends DocumentBase {
+  document_type: "meeting_content";
+  data: { topics: ContentTopic[]; turns: TranscriptTurn[] };
+}
+
+export interface DocumentOf {
+  content: ContentDocument;
+  decisions: DecisionsDocument;
+  tasks: TasksDocument;
+}
+
+export type MeetingDocument = DocumentOf[DocumentKind];
+
+// ----- Bản ghi Verifier (extensions.audit.verification_records) -----
 
 export interface VerifierStepOut {
   thought: string;
@@ -158,131 +362,8 @@ export interface VerificationRecordOut {
   rounds: ConsensusRoundOut[];
 }
 
-export type ActorType = "person" | "organization" | "unknown";
-/** lead = chủ trì / người nhận chính, support = phối hợp, joint = cùng thực hiện. */
-export type AssigneeRole = "lead" | "support" | "joint";
-
-export interface ActorCandidateOut {
-  name: string;
-  actor_type: ActorType;
-  score: number;
-  reason: string;
-  ref_id: string | null;
-}
-
-/** One party receiving the task; `name` is null when unresolved (`flag` = "ambiguous"). */
-export interface ActorAssigneeOut {
-  mention: string;
-  role: AssigneeRole;
-  name: string | null;
-  actor_type: ActorType;
-  flag: string | null;
-  reason: string;
-  ref_id: string | null;
-  candidates: ActorCandidateOut[];
-}
-
-/** v3 action item: v1 fields + actor identification. `actor` = every party's name joined by ", ". */
-export interface ActionItemV3Out extends ActionItemOut {
-  actor_type?: ActorType;
-  /** "ambiguous" (some party unresolved) | "missing" (no actor at all). */
-  actor_flag?: string | null;
-  actor_reason?: string;
-  actor_candidates?: ActorCandidateOut[];
-  assignees?: ActorAssigneeOut[];
-  /** Mã việc cũ mà việc giao này tiếp nối (khi request có `tasks`). */
-  task_id?: string | null;
-  /** "new" | "follow_up" | "reassign" | "reschedule"; null khi request không có `tasks`. */
-  relation?: AssignmentRelation | null;
-}
-
-export type AssignmentRelation = "new" | "follow_up" | "reassign" | "reschedule";
-
-export type UpdateStatus = "done" | "in_progress" | "blocked" | "returned" | "deferred" | "mentioned";
-
-/** Một cập nhật tiến độ của một việc trong một chủ đề. */
-export interface ProgressUpdateOut {
-  segment_id: string;
-  task_id: string;
-  status: UpdateStatus;
-  status_turn_id: string | null;
-  evidence_ids: string[];
-  quotes: string[];
-  summary: string;
-  blockers: string[];
-  directive: string;
-  deadline_raw: string | null;
-  deadline_date: string | null;
-  deadline_kind: string;
-  deadline_removed: boolean;
-  /** Trạng thái agent khai, khi bị Decisions sửa/hạ. */
-  proposed_status: string | null;
-  /** "revised" | "uncertain" | "kept" (Decisions chỉ xác nhận là báo cáo, giữ trạng thái agent khai) | null */
-  status_flag: string | null;
-  status_probabilities: Record<string, number>;
-  p_directive: number | null;
-  /** "decisions" (đã qua Decisions) | "unchecked" (Decisions tắt/lỗi) | "rule" (chưa qua bước kiểm) */
-  verification: string;
-  reason: string;
-}
-
-/** Tiến độ một việc sau phiên họp; `status` = "not_reported" khi không chủ đề nào nói tới. */
-export interface TaskProgressOut {
-  task_id: string;
-  title: string;
-  owner: string;
-  previous_status: string | null;
-  status: UpdateStatus | "not_reported";
-  previous_due: string | null;
-  deadline_raw: string | null;
-  deadline_date: string | null;
-  deadline_kind: string;
-  deadline_removed: boolean;
-  status_conflict: boolean;
-  uncertain: boolean;
-  overdue: boolean;
-  deciding_update: ProgressUpdateOut | null;
-  updates: ProgressUpdateOut[];
-}
-
-/** Một phần kết quả v3 chạy lại được riêng (`POST /v3/meetings/analyze/{part}`). */
-export type V3Part = "development" | "assignments" | "decisions" | "progress";
-
-/** Trạng thái cache của một phần kết quả. */
-export interface V3PartMeta {
-  /** Lần tính thứ mấy của phần này cho cùng request (1 = lần đầu, tăng mỗi lần chạy lại). */
-  generation: number;
-  /** ISO 8601 (UTC). */
-  computed_at: string;
-  /** Response này lấy phần đó từ cache, không tính lại. */
-  from_cache: boolean;
-  /** "incomplete": có chủ đề lỗi (xem `failed_topics`). */
-  status: "ok" | "incomplete" | string;
-}
-
-export interface AnalyzeV3Result {
-  /** Khoá cache của request: `GET /v3/meetings/analyses/{analysis_key}` lấy lại kết quả. */
-  analysis_key: string;
-  /** Tăng sau mỗi lần ghi cache; response có version nhỏ hơn bản đang hiển thị là response cũ. */
-  cache_version: number;
-  /** Trạng thái từng phần; không có "progress" khi request không có `tasks`. */
-  parts: Partial<Record<V3Part, V3PartMeta>>;
-  meeting_id: string;
-  revision_id: string;
-  topics: TopicOut[];
-  verified_assignments: ActionItemV3Out[];
-  verified_decisions: DecisionOut[];
-  /** Tiến độ từng việc cần báo cáo; rỗng khi request không có `tasks`. */
-  task_progress?: TaskProgressOut[];
-  turns: TurnOut[];
-  failed_topics: { segment_id: string; agent: string; error: string }[];
-  verification_records: VerificationRecordOut[];
-  /** Extractor agents the Planner skipped (Decisions found no assign/decide turn in the topic). */
-  skipped_agents: { segment_id: string; agent: string }[];
-}
-
-/** Một đoạn bằng chứng để tô trên transcript: turn + (tùy chọn) span ký tự trong turn. */
-export interface EvidenceRef {
-  turn_id: string;
-  span: [number, number] | null;
+/** Bằng chứng đang chọn để tô trên transcript: item (mức chính) và lượt nói (tô cả lượt khi không có item). */
+export interface Citation {
+  segmentIds: ItemId[];
+  turnIds: string[];
 }

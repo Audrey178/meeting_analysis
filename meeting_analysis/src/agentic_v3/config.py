@@ -3,6 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
+
+VerifierMode = Literal["on", "keep_uncertain", "drop_uncertain"]
+VERIFIER_MODES: tuple[VerifierMode, ...] = ("on", "keep_uncertain", "drop_uncertain")
 
 
 @dataclass(frozen=True)
@@ -27,6 +31,11 @@ class V3Config:
         max_concurrency: số task LangGraph chạy song song mỗi superstep (số chủ đề
             xử lý cùng lúc). Số lời gọi LLM đồng thời thực sự do
             ``LLMConcurrencyGate`` giới hạn, không phải giá trị này.
+        verifier_mode: candidate UNCERTAIN sau evidence-check đi đâu. ``on`` (production): gửi
+            Verifier. ``keep_uncertain``/``drop_uncertain``: không chạy Verifier, giữ hết/bỏ hết
+            -- chỉ dùng cho ablation đo Verifier tăng precision/cứu recall bao nhiêu.
+        evidence_check: True (production) thì luật 0 token tách candidate CLEAR/UNCERTAIN. Tắt
+            (ablation) thì mọi candidate coi là UNCERTAIN và đi theo ``verifier_mode``.
     """
 
     skip_agents_without_commit: bool = True
@@ -35,6 +44,8 @@ class V3Config:
     search_top_k: int = 5
     consensus_max_rounds: int = 3
     max_concurrency: int = 16
+    verifier_mode: VerifierMode = "on"
+    evidence_check: bool = True
 
     def __post_init__(self) -> None:
         """Kiểm tra giá trị hợp lệ.
@@ -52,6 +63,8 @@ class V3Config:
             raise ValueError("search_top_k phải >= 1")
         if self.max_concurrency < 1:
             raise ValueError("max_concurrency phải >= 1")
+        if self.verifier_mode not in VERIFIER_MODES:
+            raise ValueError(f"verifier_mode phải là một trong {VERIFIER_MODES}")
 
 
-__all__ = ["V3Config"]
+__all__ = ["VERIFIER_MODES", "V3Config", "VerifierMode"]

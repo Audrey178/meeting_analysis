@@ -1,0 +1,18 @@
+# Fdb version 4
+["pdflatex"] 1791789628.66305 "acl_latex.tex" "acl_latex.pdf" "acl_latex" 1791789628.77455 2
+  "/etc/texmf/web2c/texmf.cnf" 1781592284.95939 475 c0e671620eb5563b2130f56340a5fde8 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr10.tfm" 1136768653 1296 45809c5a464d5f32c8f98ba97c1bb47f ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/article.cls" 1705352648 20144 147463a6a579f4597269ef9565205cfe ""
+  "/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo" 1705352648 8464 59874a3b0776c73e2a138b025d8473dd ""
+  "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
+  "/usr/share/texmf/web2c/texmf.cnf" 1707919699 40399 f2c302f7d2af602abb742093540a5834 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1781853673 6800789 fcf92d1089ea63ff67961262c1d863a6 ""
+  "acl.sty" 1791789628.56206 11615 e2c027f483aa40e577ed34264c8b0655 ""
+  "acl_latex.aux" 1791789628.66273 32 3985256e7290058c681f74d7a3565a19 "pdflatex"
+  "acl_latex.tex" 1791789628.56147 14533 4d7a67dc2e542758e09a819e713f7b45 ""
+  "xcolor.sty" 0 -1 0 ""
+  (generated)
+  "acl_latex.aux"
+  "acl_latex.log"
+  "acl_latex.pdf"
+  (rewritten before read)

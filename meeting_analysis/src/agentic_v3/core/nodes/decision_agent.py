@@ -22,7 +22,7 @@ from .._shared import (
     read_list_or_empty,
     read_stripped_text,
     split_dict_entries,
-    validate_evidence_by_turn_ids,
+    validate_evidence_by_segment_ids,
 )
 from ..schemas import DecisionCandidate, SegmentTask, TopicFailure
 from ....utils.llm_call_log import llm_call
@@ -50,14 +50,15 @@ Với mỗi kết luận, khai trung thực:
   "reported" (báo cáo/nhận định). Không chắc thì chọn "proposed" -- mục sẽ
   được kiểm lại, không bị mất.
 - confirm_turn_id: turn_id của lượt nói CHỐT (người chủ trì kết luận hoặc lượt
-  đồng ý cuối cùng). Phải là một trong evidence_turn_ids.
+  đồng ý cuối cùng). Phải là lượt chứa một trong evidence_segment_ids.
 
 text: một câu súc tích nêu NỘI DUNG kết luận. Mỗi kết luận chỉ xuất hiện MỘT
 lần -- nếu cùng một kết luận được nhắc nhiều lần, gộp thành một mục.
 
-Mỗi phần tử PHẢI kèm evidence_turn_ids: danh sách các turn_id của những turn
-chứa phát biểu đó. Chọn evidence_turn_ids TRƯỚC khi viết text -- không viết
-trước rồi mới tìm bằng chứng khớp. KHÔNG chép lại nội dung turn.
+Mỗi phần tử PHẢI kèm evidence_segment_ids: mã các câu chứa phát biểu đó (số trong
+ngoặc nhọn đứng trước mỗi câu, "<130> Nội dung..." có mã "130"). Chọn
+evidence_segment_ids TRƯỚC khi viết text -- không viết trước rồi mới tìm bằng
+chứng khớp. KHÔNG chép lại nội dung câu.
 
 turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" bên trong ngoặc vuông đầu mỗi dòng
 bản ghi -- KHÔNG bao gồm dấu ngoặc vuông, KHÔNG bao gồm tên người nói,
@@ -79,12 +80,12 @@ DECISION_SCHEMA: dict = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "evidence_turn_ids": {"type": "array", "items": {"type": "string"}},
+                    "evidence_segment_ids": {"type": "array", "items": {"type": "string"}},
                     "confirm_turn_id": {"type": ["string", "null"]},
                     "status": {"type": "string", "enum": ["agreed", "proposed", "reported"]},
                     "text": {"type": "string"},
                 },
-                "required": ["evidence_turn_ids", "confirm_turn_id", "status", "text"],
+                "required": ["evidence_segment_ids", "confirm_turn_id", "status", "text"],
             },
         },
     },
@@ -153,8 +154,9 @@ def make_decision_agent(llm: LLMAdapter):
             text = read_stripped_text(item.get("text"))
             confirm_turn_id = read_confirm_turn_id(task["turns"], item.get("confirm_turn_id"))
             # Lượt chốt luôn là bằng chứng, kể cả khi model quên liệt kê nó.
-            claimed_ids = read_list_or_empty(item.get("evidence_turn_ids")) + [confirm_turn_id]
-            evidence_ids, quotes = validate_evidence_by_turn_ids(task["turns"], claimed_ids)
+            evidence_ids, quotes, segment_ids = validate_evidence_by_segment_ids(
+                task["turns"], read_list_or_empty(item.get("evidence_segment_ids")), [confirm_turn_id]
+            )
             if not text or not evidence_ids:
                 dropped += 1
                 continue
@@ -167,6 +169,7 @@ def make_decision_agent(llm: LLMAdapter):
                     quotes=quotes,
                     status=status if status in _DECISION_STATUSES else "unknown",
                     confirm_turn_id=confirm_turn_id,
+                    segment_ids=segment_ids,
                 )
             )
         if dropped:

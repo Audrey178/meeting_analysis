@@ -33,13 +33,14 @@ TURN_ID_RULE = """
 turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" trong ngoặc vuông đầu mỗi dòng bản ghi, không
 gồm dấu ngoặc, tên người nói hay dấu "|". Ví dụ dòng "[TURN_000020|Phạm Hồng Sơn] Nội
 dung..." có turn_id là "TURN_000020", KHÔNG phải "[TURN_000020|Phạm Hồng Sơn]" hay
-"TURN_000020|Phạm Hồng Sơn".
+"TURN_000020|Phạm Hồng Sơn". Mã câu "<130>" bên trong dòng KHÔNG phải turn_id.
 """.strip()
 
 EVIDENCE_RULE = """
-Mỗi mục PHẢI kèm evidence_turn_ids: các turn_id của những lượt nói chứa nội dung đó.
-Chọn evidence_turn_ids TRƯỚC khi viết text, không viết trước rồi mới tìm bằng chứng
-khớp. KHÔNG chép lại nội dung lượt nói.
+Mỗi mục PHẢI kèm evidence_segment_ids: mã các câu chứa nội dung đó (số trong ngoặc nhọn
+đứng trước mỗi câu, "<130> Nội dung..." có mã "130"). Chỉ chọn những câu thật sự nói về
+nội dung đó, không lấy cả lượt nói dài. Chọn evidence_segment_ids TRƯỚC khi viết text,
+không viết trước rồi mới tìm bằng chứng khớp. KHÔNG chép lại nội dung câu.
 """.strip()
 
 THIRD_PERSON_RULE = """
@@ -121,26 +122,31 @@ bản ghi (người điều phối, mời phát biểu, tổng kết và chốt 
 """.strip()
 
 CONTENT_SYSTEM_PROMPT = f"""
-Bạn trích luận điểm thảo luận của từng người nói trong MỘT đoạn chủ đề của cuộc họp.
-Chỉ dùng nội dung được cung cấp, không suy diễn thêm.
+Bạn tóm tắt DIỄN BIẾN THẢO LUẬN của MỘT đoạn chủ đề trong cuộc họp: mọi người đang bàn,
+tranh luận về những vấn đề gì và ai tham gia. Chỉ dùng nội dung được cung cấp, không suy
+diễn thêm.
 
-Với mỗi người nói trong đoạn, gộp các ý họ nêu theo nghĩa thành các luận điểm (points):
-- Tối đa 5 luận điểm mỗi người. Chỉ giữ ý chính phục vụ chủ đề của đoạn (đề xuất, nhận
-  định, lý do, băn khoăn, phản đối); bỏ chào hỏi, xác nhận qua loa ("vâng", "ok"), lặp
-  lại câu người khác, ý phụ.
-- Mỗi luận điểm là MỘT ý chính của MỘT người nói, viết thành MỘT câu súc tích. Không
-  nhồi nhiều ý khác nhau vào một câu bằng dấu phẩy, "và", "đồng thời".
-- Người nói nêu một ý nhiều lần, hoặc nhiều ý cùng hướng/cùng mục đích: GỘP thành một
-  luận điểm và đưa TẤT CẢ turn_id của các lượt đó vào evidence_turn_ids.
-- Người nói không có ý nào đáng giữ thì không liệt kê.
+Chia phần thảo luận của đoạn thành các ý thảo luận (discussion_points). Mỗi ý là MỘT vấn
+đề được bàn, KHÔNG phải ý kiến riêng của một người:
+- Gom theo VẤN ĐỀ, không theo người nói: mọi lượt nói về cùng một vấn đề (đề xuất, phản
+  biện, giải trình, hỏi lại, đồng tình, băn khoăn) thuộc CÙNG một ý, dù của nhiều người và
+  nằm rải rác trong đoạn. Không tách một vấn đề thành nhiều ý theo từng người, không nhồi
+  nhiều vấn đề khác nhau vào một ý.
+- text: 1-3 câu súc tích tóm tắt vấn đề và các quan điểm chính. Các bên có quan điểm khác
+  nhau thì nêu từng quan điểm, lý do và ai giữ quan điểm đó; các bên cùng hướng thì nêu ý
+  chung. Không kể lại lần lượt từng lượt nói.
+- evidence_segment_ids: các câu thể hiện ý đó, gồm câu của MỌI người tham gia (mỗi
+  người ít nhất một câu). Người tham gia của ý được lấy từ chính các câu này: không bỏ
+  sót câu của bên nào, không đưa vào câu không bàn về vấn đề đó.
+- Vấn đề chỉ một người nêu (báo cáo, đề xuất, băn khoăn) mà không ai bàn tiếp vẫn là một
+  ý nếu đó là nội dung chính của đoạn.
+- Tối đa 6 ý mỗi đoạn, theo thứ tự vấn đề được nêu. Chỉ giữ vấn đề phục vụ chủ đề của
+  đoạn; bỏ chào hỏi, điều phối ("mời anh X trình bày"), xác nhận qua loa ("vâng", "ok").
 - KHÔNG ghi lại câu giao việc/phân công, câu tự nhận việc hay kết luận của người chủ
   trì: chúng đã nằm ở phần Giao việc và Kết luận của báo cáo. Theo các quy tắc dưới
   đây, yêu cầu chỉnh sửa/bổ sung trong phần kết luận ("đề án cần làm rõ ...", "các
-  đồng chí cần bổ sung ...") là giao việc. Với người chủ trì, chỉ ghi câu hỏi, nhận
-  xét, lập luận nêu TRONG LÚC thảo luận.
-
-full_name PHẢI đúng nguyên văn tên người nói trong bản ghi, kể cả khi có vẻ sai chính
-tả; không tự sửa hay hoàn thiện tên.
+  đồng chí cần bổ sung ...") là giao việc. Lời người chủ trì chỉ đưa vào khi là câu hỏi,
+  nhận xét, lập luận nêu TRONG LÚC thảo luận.
 
 {CHAIR_ASSIGNMENT_RULE}
 
@@ -180,7 +186,7 @@ Với mỗi việc, khai trung thực:
 - confirm_turn_id: turn_id của lượt nói GIAO hoặc NHẬN việc (lượt mà nếu bỏ đi thì
   không còn ai được giao), chọn theo thứ bậc trên: lượt người chủ trì giao/tiếp nhận
   trước, rồi mới tới lượt bên nhận tiếp thu hay lượt nêu yêu cầu. KHÔNG chọn lượt chỉ
-  nêu ý tưởng nếu sau đó có lượt giao/tiếp nhận. Phải là một trong evidence_turn_ids.
+  nêu ý tưởng nếu sau đó có lượt giao/tiếp nhận. Phải là lượt chứa một trong evidence_segment_ids.
 - deadline: thời hạn đúng như bản ghi nói ("trước 25/11", "trong tuần này"), null nếu
   không nêu. Chép NGUYÊN CẢ CỤM, giữ các từ "trước", "chậm nhất", "cuối", "trong",
   "khoảng" ("trước ngày 15 tháng 11", không phải "15 tháng 11"). KHÔNG bịa thời hạn mà
@@ -248,7 +254,7 @@ Với mỗi kết luận, khai trung thực:
   (báo cáo/nhận định) CHỈ dùng khi KHÔNG CHẮC mục đó đã được chốt hay chưa; mục sẽ được
   kiểm lại. Chắc chắn là đề xuất hoặc báo cáo thì KHÔNG đưa vào.
 - confirm_turn_id: turn_id của lượt nói CHỐT (người chủ trì kết luận hoặc lượt đồng ý
-  cuối cùng). Phải là một trong evidence_turn_ids.
+  cuối cùng). Phải là lượt chứa một trong evidence_segment_ids.
 
 text: một câu súc tích nêu NỘI DUNG kết luận. Mỗi kết luận chỉ xuất hiện MỘT lần: cùng
 một kết luận được nhắc nhiều lần thì gộp thành một mục.
@@ -286,12 +292,12 @@ tới thì không tạo mục; không tạo mục cho việc ngoài danh sách):
   "mentioned". Báo cáo xong rồi sau đó bị người chủ trì yêu cầu làm lại thì là "returned".
 - status_turn_id: turn_id của lượt nói nêu trạng thái đó (lượt kết luận/chỉ đạo CUỐI CÙNG
   của người chủ trì về việc nếu có, không thì lượt báo cáo). "mentioned" thì có thể null.
-  Phải là một trong evidence_turn_ids.
+  Phải là lượt chứa một trong evidence_segment_ids.
 - deadline, deadline_date, deadline_kind: hạn MỚI được nêu cho việc trong đoạn (theo QUY TẮC
   CHUẨN HOÁ HẠN bên dưới); không nêu hạn mới thì null/null/"unknown".
 - deadline_removed: true khi cuộc họp bỏ hạn cũ, không ấn định thời hạn ("không kết luận về
   thời gian", "khi nào đủ điều kiện thì báo cáo"); ngược lại false. Lượt nêu hạn mới hoặc bỏ
-  hạn phải nằm trong evidence_turn_ids.
+  hạn phải nằm trong evidence_segment_ids.
 - summary: MỘT câu (tối đa 40 từ) nêu tình trạng/chỉ đạo về việc, ngôi thứ ba.
 - blockers: tối đa 2 vướng mắc được nêu, mỗi cái một cụm ngắn; không có thì [].
 - directive: chỉ đạo của người chủ trì về việc, MỘT câu; không có thì null.

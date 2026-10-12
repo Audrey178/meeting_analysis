@@ -100,6 +100,25 @@ def load_pipeline_config():
     return load_config(str(_DEFAULT_CONFIG_PATH) if _DEFAULT_CONFIG_PATH.is_file() else None)
 
 
+def build_meeting_turns(payload: dict) -> tuple[str, str, tuple, object]:
+    """Đọc transcript -> stage01-03 dựng lượt nói (chưa cắt chủ đề).
+
+    Tách khỏi ``segment_meeting`` để benchmark (``eval/bench/run.py``) dựng đúng cùng dãy lượt
+    nói rồi tự cắt chủ đề theo gold hoặc gộp cả cuộc họp thành một chủ đề.
+
+    Đầu vào: payload - transcript dạng dict (``AnalyzeV3Request.model_dump()``).
+    Đầu ra: (meeting_id, revision_id, lượt nói theo thứ tự, cấu hình pipeline đã nạp).
+    Lỗi: ``ValueError`` nếu transcript không hợp lệ.
+    """
+
+    meeting_id, revision_id, raw_items = parse_transcript_payload(payload)
+    config = load_pipeline_config()
+    effective = resolve_effective_transcript(raw_items)
+    evidence = build_evidence_items(meeting_id, effective)
+    turns = build_speaker_turns(evidence, config.turn_builder)
+    return meeting_id, revision_id, tuple(turns), config
+
+
 def segment_meeting(
     payload: dict,
     *,
@@ -118,12 +137,7 @@ def segment_meeting(
     Lỗi: ``LLMUpstreamError`` nếu bước embedding lỗi; ``ValueError`` nếu transcript không hợp lệ.
     """
 
-    meeting_id, revision_id, raw_items = parse_transcript_payload(payload)
-    config = load_pipeline_config()
-
-    effective = resolve_effective_transcript(raw_items)
-    evidence = build_evidence_items(meeting_id, effective)
-    turns = build_speaker_turns(evidence, config.turn_builder)
+    meeting_id, revision_id, turns, config = build_meeting_turns(payload)
 
     # Đo trên dòng "người nói: nội dung" giống TreeSeg, vì đó là thứ vào prompt.
     item_chars = [len(f"{turn.speaker}: {turn.text_exact}") + 1 for turn in turns]

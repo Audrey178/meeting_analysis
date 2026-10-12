@@ -1,4 +1,4 @@
-"""Kiểu dữ liệu riêng của v3. Candidate, luận điểm và lỗi dùng lại nguyên kiểu của
+"""Kiểu dữ liệu riêng của v3. Candidate, ý thảo luận và lỗi dùng lại nguyên kiểu của
 ``.core.schemas`` (chép từ ``src.agentic.schemas`` của v1, đã xóa) để tầng trình bày (``be/services``) serialize chung.
 
 ``verification`` của candidate trong v3 có thêm hai giá trị ngoài ``Verification``
@@ -17,7 +17,7 @@ from .core.schemas import (
     ActionItemCandidate,
     CandidateKind,
     DecisionCandidate,
-    SpeakerSection,
+    DiscussionPoint,
     TopicFailure,
 )
 from ..utils.contracts import SpeakerTurn, TopicLabel
@@ -243,6 +243,7 @@ class ProgressUpdate:
         verification: "decisions" (đã qua Decisions), "unchecked" (Decisions tắt/lỗi, giữ
             nguyên điều agent khai) hoặc "rule" (mặc định khi mới trích, chưa qua bước kiểm).
         reason: lý do sửa/hạ trạng thái (để audit).
+        segment_ids: mã các dòng transcript thô (item) được trích dẫn.
     """
 
     segment_id: str
@@ -264,6 +265,7 @@ class ProgressUpdate:
     p_directive: float | None = None
     verification: str = "rule"
     reason: str = ""
+    segment_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -325,7 +327,7 @@ class MeetingReport:
 
     Các trường:
         labels: nhãn chủ đề theo thứ tự ``segments``.
-        meeting_development: luận điểm theo người nói (Diễn biến họp).
+        meeting_development: các ý thảo luận, mỗi ý gắn những người tham gia (Diễn biến họp).
         assignments: việc được giao đã kiểm chứng (Giao việc).
         decisions: quyết định đã kiểm chứng (Kết luận họp).
         verification_records: bản ghi kiểm chứng (kèm các vòng trao đổi).
@@ -336,7 +338,7 @@ class MeetingReport:
     """
 
     labels: tuple[TopicLabel, ...]
-    meeting_development: tuple[SpeakerSection, ...]
+    meeting_development: tuple[DiscussionPoint, ...]
     assignments: tuple[ActionItemCandidate, ...]
     decisions: tuple[DecisionCandidate, ...]
     verification_records: tuple[VerificationRecord, ...]

@@ -26,7 +26,7 @@ from .._shared import (
     read_stripped_text,
     split_dict_entries,
     strip_assignment_prefix,
-    validate_evidence_by_turn_ids,
+    validate_evidence_by_segment_ids,
 )
 from ..deadline import UNKNOWN_DEADLINE, NormalizedDeadline, normalize_deadline
 from ..schemas import ActionItemCandidate, SegmentTask, TopicFailure
@@ -54,7 +54,7 @@ Với mỗi việc, khai trung thực:
   (mới là đề xuất/yêu cầu chưa ai chấp nhận), "reported" (báo cáo việc đã/đang
   làm). Việc người/đơn vị tự nói SẼ làm là "self_committed". Không chắc thì chọn "proposed" -- việc sẽ được kiểm lại, không bị mất.
 - confirm_turn_id: turn_id của lượt nói GIAO hoặc NHẬN việc (lượt mà nếu bỏ đi
-  thì không còn ai được giao). Phải là một trong evidence_turn_ids.
+  thì không còn ai được giao). Phải là lượt chứa một trong evidence_segment_ids.
 - deadline: thời hạn đúng như bản ghi nói ("trước 25/11", "trong tuần này"),
   null nếu không nêu. Chép NGUYÊN CẢ CỤM, giữ các từ "trước", "chậm nhất",
   "cuối", "trong", "khoảng" ("trước ngày 15 tháng 11", không phải "15 tháng 11").
@@ -94,9 +94,10 @@ Mỗi việc chỉ xuất hiện MỘT lần: nếu cùng một việc được 
 có trong "Việc đã được giao ở các chủ đề trước" thì KHÔNG lấy lại, trừ khi đoạn
 này giao thêm phần việc mới.
 
-Mỗi phần tử PHẢI kèm evidence_turn_ids: danh sách các turn_id của những turn
-chứa phát biểu đó. Chọn evidence_turn_ids TRƯỚC khi viết text -- không viết
-trước rồi mới tìm bằng chứng khớp. KHÔNG chép lại nội dung turn.
+Mỗi phần tử PHẢI kèm evidence_segment_ids: mã các câu chứa phát biểu đó (số trong
+ngoặc nhọn đứng trước mỗi câu, "<130> Nội dung..." có mã "130"). Chọn
+evidence_segment_ids TRƯỚC khi viết text -- không viết trước rồi mới tìm bằng
+chứng khớp. KHÔNG chép lại nội dung câu.
 
 turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" bên trong ngoặc vuông đầu mỗi dòng
 bản ghi -- KHÔNG bao gồm dấu ngoặc vuông, KHÔNG bao gồm tên người nói,
@@ -123,7 +124,7 @@ ACTION_SCHEMA: dict = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "evidence_turn_ids": {"type": "array", "items": {"type": "string"}},
+                    "evidence_segment_ids": {"type": "array", "items": {"type": "string"}},
                     "confirm_turn_id": {"type": ["string", "null"]},
                     "status": {
                         "type": "string",
@@ -139,7 +140,7 @@ ACTION_SCHEMA: dict = {
                     },
                 },
                 "required": [
-                    "evidence_turn_ids", "confirm_turn_id", "status", "actor", "text",
+                    "evidence_segment_ids", "confirm_turn_id", "status", "actor", "text",
                     "deadline", "deadline_date", "deadline_kind",
                 ],
             },
@@ -287,8 +288,9 @@ def make_action_agent(llm: LLMAdapter):
             text = read_stripped_text(item.get("text"))
             confirm_turn_id = read_confirm_turn_id(task["turns"], item.get("confirm_turn_id"))
             # Lượt chốt luôn là bằng chứng, kể cả khi model quên liệt kê nó.
-            claimed_ids = read_list_or_empty(item.get("evidence_turn_ids")) + [confirm_turn_id]
-            evidence_ids, quotes = validate_evidence_by_turn_ids(task["turns"], claimed_ids)
+            evidence_ids, quotes, segment_ids = validate_evidence_by_segment_ids(
+                task["turns"], read_list_or_empty(item.get("evidence_segment_ids")), [confirm_turn_id]
+            )
             if not text or not evidence_ids:
                 dropped += 1
                 continue
@@ -313,6 +315,7 @@ def make_action_agent(llm: LLMAdapter):
                     deadline_kind=deadline.deadline_kind,
                     status=status if status in _ACTION_STATUSES else "unknown",
                     confirm_turn_id=confirm_turn_id,
+                    segment_ids=segment_ids,
                     task_id=task_id if task_id and task_id != NEW_TASK_ID else None,
                 )
             )

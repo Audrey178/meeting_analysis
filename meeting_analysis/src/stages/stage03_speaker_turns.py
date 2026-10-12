@@ -104,6 +104,10 @@ def build_speaker_turns(
                 end_ms=known_max([item.end_ms for item in group]),
                 speaker_role=group[0].speaker_role,
                 speaker_track=group[0].speaker_track,
+                source_items=tuple(
+                    (item.source_item_id, item.text_exact if item.text_exact is not None else item.text)
+                    for item in group
+                ),
             )
         )
     return tuple(turns)

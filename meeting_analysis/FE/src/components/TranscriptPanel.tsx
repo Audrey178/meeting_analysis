@@ -1,13 +1,16 @@
-import { useEffect, useMemo, useRef } from "react";
-import type { EvidenceRef, TranscriptItem, TurnOut } from "../api/types";
+import { Fragment, useEffect, useMemo, useRef } from "react";
+import type { Citation, TranscriptItem, TranscriptTurn } from "../api/types";
+import { itemKey, itemText } from "../lib/citations";
 import { initialsOf, speakerColor, speakerName } from "../lib/format";
 import { Avatar } from "./agentic/primitives";
 
 interface TranscriptPanelProps {
-  turns: TurnOut[] | null;
+  /** Lượt nói của document Diễn biến (mỗi lượt gồm các item liền nhau cùng người nói); null khi chưa có. */
+  turns: TranscriptTurn[] | null;
+  /** Item của request: xem trước khi chưa có lượt nói, và nội dung từng item để tô mức item. */
   items: TranscriptItem[] | null;
-  /** Bằng chứng đang chọn: turn + (tùy chọn) span ký tự. Span null = tô cả turn (pipeline agentic). */
-  selectedEvidence: EvidenceRef[] | null;
+  /** Bằng chứng đang chọn: item được trích (tô từng dòng), hoặc chỉ lượt nói (tô cả lượt). */
+  selected: Citation | null;
 }
 
 // Dạng native có speaker; STT export có speaker_name.
@@ -16,49 +19,33 @@ function itemSpeaker(item: TranscriptItem): string | null {
   return value && value.trim() ? value.trim() : null;
 }
 
-/** Cắt text thành các mảnh, đánh dấu mảnh nằm trong một span được chọn (span gộp nếu chồng nhau). */
-function highlight(text: string, spans: [number, number][]) {
-  if (spans.length === 0) return [{ text, hit: false }];
-  const sorted = [...spans].sort((a, b) => a[0] - b[0]);
-  const merged: [number, number][] = [];
-  for (const [start, end] of sorted) {
-    const last = merged[merged.length - 1];
-    if (last && start <= last[1]) last[1] = Math.max(last[1], end);
-    else merged.push([Math.max(0, start), Math.min(text.length, end)]);
-  }
-  const parts: { text: string; hit: boolean }[] = [];
-  let cursor = 0;
-  for (const [start, end] of merged) {
-    if (start > cursor) parts.push({ text: text.slice(cursor, start), hit: false });
-    parts.push({ text: text.slice(start, end), hit: true });
-    cursor = end;
-  }
-  if (cursor < text.length) parts.push({ text: text.slice(cursor), hit: false });
-  return parts;
-}
-
-export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPanelProps) {
-  const tracing = turns !== null && selectedEvidence !== null;
+export function TranscriptPanel({ turns, items, selected }: TranscriptPanelProps) {
+  const tracing = turns !== null && selected !== null;
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const evidenceByTurn = useMemo(() => {
-    const map = new Map<string, [number, number][]>();
-    for (const ref of selectedEvidence ?? []) {
-      const spans = map.get(ref.turn_id) ?? [];
-      if (ref.span) spans.push(ref.span);
-      map.set(ref.turn_id, spans);
-    }
-    return map;
-  }, [selectedEvidence]);
+  const textOfItem = useMemo(() => new Map((items ?? []).map((item) => [itemKey(item.id), itemText(item)])), [items]);
+  const selectedItems = useMemo(() => new Set((selected?.segmentIds ?? []).map(itemKey)), [selected]);
+  const selectedTurns = useMemo(() => new Set(selected?.turnIds ?? []), [selected]);
 
-  // Cuộn tới turn bằng chứng đầu tiên mỗi khi đổi lựa chọn.
+  /** Lượt nói được tô: chứa item được trích, hoặc được chọn cả lượt. */
+  const hitTurns = useMemo(() => {
+    const hits = new Set<string>();
+    for (const turn of turns ?? []) {
+      if (selectedTurns.has(turn.turn_id) || turn.segment_ids.some((id) => selectedItems.has(itemKey(id)))) {
+        hits.add(turn.turn_id);
+      }
+    }
+    return hits;
+  }, [turns, selectedItems, selectedTurns]);
+
+  // Cuộn tới lượt bằng chứng đầu tiên mỗi khi đổi lựa chọn.
   useEffect(() => {
     if (!tracing || !turns) return;
-    const first = turns.find((turn) => evidenceByTurn.has(turn.turn_id));
+    const first = turns.find((turn) => hitTurns.has(turn.turn_id));
     if (!first) return;
     const node = scrollRef.current?.querySelector<HTMLElement>(`[data-turn-id="${CSS.escape(first.turn_id)}"]`);
     node?.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, [tracing, turns, evidenceByTurn]);
+  }, [tracing, turns, hitTurns]);
 
   const speakers = useMemo(() => {
     const names = new Set<string>();
@@ -69,6 +56,24 @@ export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPa
     }
     return names.size;
   }, [turns, items]);
+
+  /** Nội dung lượt nói: từng item, item được trích tô đậm; thiếu nội dung item thì in cả lượt. */
+  function renderTurnText(turn: TranscriptTurn, hit: boolean) {
+    const parts = turn.segment_ids.map((id) => ({ key: itemKey(id), text: textOfItem.get(itemKey(id)) }));
+    if (parts.length === 0 || parts.some((part) => part.text === undefined)) return turn.text;
+    return parts.map((part, index) => (
+      <Fragment key={part.key}>
+        {index > 0 && " "}
+        {hit && selectedItems.has(part.key) ? (
+          <mark className="bg-accent-300 text-text" title={`dòng ${part.key}`}>
+            {part.text}
+          </mark>
+        ) : (
+          <span title={`dòng ${part.key}`}>{part.text}</span>
+        )}
+      </Fragment>
+    ));
+  }
 
   return (
     <div className="flex min-h-0 flex-col border-r-2 border-divider bg-surface">
@@ -83,7 +88,8 @@ export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPa
         )}
         {tracing && (
           <span className="ml-auto bg-accent-100 px-2 py-0.5 text-[11px] font-semibold text-accent-800">
-            {evidenceByTurn.size} lượt khớp
+            {selectedItems.size > 0 ? `${selectedItems.size} dòng · ` : ""}
+            {hitTurns.size} lượt khớp
           </span>
         )}
       </div>
@@ -91,51 +97,37 @@ export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPa
       <div ref={scrollRef} className="flex-1 overflow-y-auto">
         {turns ? (
           turns.map((turn, index) => {
-            const spans = evidenceByTurn.get(turn.turn_id);
-            const hit = tracing && spans !== undefined;
+            const hit = tracing && hitTurns.has(turn.turn_id);
             const previous = index > 0 ? turns[index - 1] : null;
             const sameSpeaker = previous?.speaker === turn.speaker;
             return (
-              <div key={turn.turn_id}>
-                <div
-                  data-turn-id={turn.turn_id}
-                  className={`flex gap-3 border-l-2 px-4 transition-opacity ${sameSpeaker ? "pt-0.5 pb-2.5" : "pt-3 pb-2.5"} ${
-                    hit ? "border-l-accent bg-accent-100" : `border-l-transparent ${tracing ? "opacity-40" : ""}`
-                  }`}
-                >
-                  <div className="w-6 flex-none">
-                    {!sameSpeaker && (
-                      <Avatar
-                        size="sm"
-                        label={turn.speaker ? initialsOf(turn.speaker) : "?"}
-                        color={speakerColor(turn.speaker)}
-                        muted={!turn.speaker}
-                      />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    {!sameSpeaker && (
-                      <div className="mb-0.5 flex items-baseline gap-2">
-                        <span className="truncate text-[12px] font-semibold" style={{ color: speakerColor(turn.speaker) }}>
-                          {turn.speaker ? speakerName(turn.speaker) : "Không rõ người nói"}
-                        </span>
-                        <span className="ml-auto flex-none font-mono text-[10px] text-neutral-500">{turn.turn_id}</span>
-                      </div>
-                    )}
-                    <div className="text-[12.5px] leading-relaxed">
-                      {hit && spans && spans.length > 0
-                        ? highlight(turn.text, spans).map((part, partIdx) =>
-                            part.hit ? (
-                              <mark key={partIdx} className="bg-accent-300 text-text">
-                                {part.text}
-                              </mark>
-                            ) : (
-                              <span key={partIdx}>{part.text}</span>
-                            ),
-                          )
-                        : turn.text}
+              <div
+                key={turn.turn_id}
+                data-turn-id={turn.turn_id}
+                className={`flex gap-3 border-l-2 px-4 transition-opacity ${sameSpeaker ? "pt-0.5 pb-2.5" : "pt-3 pb-2.5"} ${
+                  hit ? "border-l-accent bg-accent-100" : `border-l-transparent ${tracing ? "opacity-40" : ""}`
+                }`}
+              >
+                <div className="w-6 flex-none">
+                  {!sameSpeaker && (
+                    <Avatar
+                      size="sm"
+                      label={turn.speaker ? initialsOf(turn.speaker) : "?"}
+                      color={speakerColor(turn.speaker)}
+                      muted={!turn.speaker}
+                    />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  {!sameSpeaker && (
+                    <div className="mb-0.5 flex items-baseline gap-2">
+                      <span className="truncate text-[12px] font-semibold" style={{ color: speakerColor(turn.speaker) }}>
+                        {turn.speaker ? speakerName(turn.speaker) : "Không rõ người nói"}
+                      </span>
+                      <span className="ml-auto flex-none font-mono text-[10px] text-neutral-500">{turn.turn_id}</span>
                     </div>
-                  </div>
+                  )}
+                  <div className="text-[12.5px] leading-relaxed">{renderTurnText(turn, hit)}</div>
                 </div>
               </div>
             );
@@ -143,10 +135,9 @@ export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPa
         ) : items && items.length > 0 ? (
           items.map((item, index) => {
             const speaker = itemSpeaker(item);
-            const text = item.text ?? (typeof item.segment === "string" ? item.segment : "");
             const sameSpeaker = index > 0 && itemSpeaker(items[index - 1]) === speaker;
             return (
-              <div key={item.id ?? index} className={`flex gap-3 px-4 ${sameSpeaker ? "pt-0.5 pb-2" : "pt-3 pb-2"}`}>
+              <div key={itemKey(item.id ?? index)} className={`flex gap-3 px-4 ${sameSpeaker ? "pt-0.5 pb-2" : "pt-3 pb-2"}`}>
                 <div className="w-6 flex-none">
                   {!sameSpeaker && (
                     <Avatar size="sm" label={speaker ? initialsOf(speaker) : "?"} color={speakerColor(speaker)} muted={!speaker} />
@@ -158,7 +149,7 @@ export function TranscriptPanel({ turns, items, selectedEvidence }: TranscriptPa
                       {speaker ? speakerName(speaker) : "Không rõ người nói"}
                     </div>
                   )}
-                  <div className="text-[12.5px] leading-relaxed text-neutral-800">{text}</div>
+                  <div className="text-[12.5px] leading-relaxed text-neutral-800">{itemText(item)}</div>
                 </div>
               </div>
             );

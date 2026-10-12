@@ -102,6 +102,9 @@ class SpeakerTurn:
     end_ms: int | None
     speaker_role: str | None = None
     speaker_track: str | None = None
+    # (item_id, nguyên văn) của từng dòng transcript thô trong lượt, theo thứ tự: agent trích
+    # dẫn theo item_id (``segment_ids`` ở API), turn_id được suy ra từ item.
+    source_items: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

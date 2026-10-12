@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { checkHealth } from "./api/client";
-import type { AttendeesIn, EvidenceRef, TasksIn, TranscriptItem, V3Part } from "./api/types";
+import type { AttendeesIn, Citation, DocumentKind, TasksIn, TranscriptItem } from "./api/types";
 import { ErrorBanner } from "./components/ErrorBanner";
 import { InputScreen } from "./components/InputScreen";
 import { NavBar } from "./components/NavBar";
+import { ResultView } from "./components/ResultView";
 import { RunningScreen } from "./components/RunningScreen";
 import { TranscriptPanel } from "./components/TranscriptPanel";
-import { useV3Analysis } from "./hooks/useV3Analysis";
-import { V3ResultView } from "./components/v3/V3ResultView";
-import { selectionBelongsToPart } from "./lib/v3Selection";
+import { DOCUMENT_KINDS, useMeetingDocuments } from "./hooks/useMeetingDocuments";
+import { buildTranscriptIndex } from "./lib/citations";
 
 interface Transcript {
   meeting_id?: string;
@@ -17,11 +17,12 @@ interface Transcript {
 }
 
 export default function App() {
-  const v3 = useV3Analysis();
+  const v3 = useMeetingDocuments();
   const { status } = v3;
 
   const [apiHealthy, setApiHealthy] = useState<boolean | null>(null);
-  const [selected, setSelected] = useState<{ key: string; evidence: EvidenceRef[] } | null>(null);
+  // Mục đang chọn; khoá mở đầu bằng tên document chứa mục ("content:", "tasks:", "decisions:").
+  const [selected, setSelected] = useState<{ key: string; citation: Citation } | null>(null);
   const [pendingItems, setPendingItems] = useState<TranscriptItem[] | null>(null);
   const [draftItems, setDraftItems] = useState<TranscriptItem[] | null>(null);
 
@@ -44,7 +45,7 @@ export default function App() {
   ) {
     setSelected(null);
     setPendingItems(transcript.items);
-    void v3.run({
+    v3.run({
       meeting_id: transcript.meeting_id,
       revision_id: transcript.revision_id,
       items: transcript.items,
@@ -62,34 +63,34 @@ export default function App() {
   }
 
   function handleRetry() {
-    if (v3.request) void v3.run(v3.request);
+    if (v3.request) v3.run(v3.request);
   }
 
-  // Chạy lại một phần v3: các phần khác giữ nguyên, chỉ bỏ chọn nếu mục đang chọn thuộc phần đó.
-  function handleReloadPart(part: V3Part) {
-    void v3.reloadPart(part).then((applied) => {
-      if (applied) setSelected((prev) => (prev && selectionBelongsToPart(part, prev.key) ? null : prev));
+  // Tính lại một document: các document khác giữ nguyên; khoá mục theo vị trí nên bỏ chọn nếu mục
+  // đang chọn thuộc document đó (cùng khoá có thể trỏ sang mục khác).
+  function handleReload(kind: DocumentKind) {
+    void v3.reload(kind).then((applied) => {
+      if (applied) setSelected((prev) => (prev?.key.startsWith(`${kind}:`) ? null : prev));
     });
   }
 
   function handleRefreshAll() {
     if (!v3.request) return;
     setSelected(null);
-    void v3.run(v3.request, { refresh: true });
+    v3.run(v3.request, { refreshBase: true });
   }
 
-  function handleSelect(key: string, evidence: EvidenceRef[]) {
-    setSelected((prev) => (prev?.key === key ? null : { key, evidence }));
+  function handleSelect(key: string, citation: Citation) {
+    setSelected((prev) => (prev?.key === key ? null : { key, citation }));
   }
 
-  // Kết quả chỉ có turn_id làm bằng chứng (tô cả lượt nói).
-  function handleSelectTurns(key: string, evidenceIds: string[]) {
-    handleSelect(key, evidenceIds.map((turn_id) => ({ turn_id, span: null })));
-  }
-
-  const meetingId = v3.data?.meeting_id ?? v3.request?.meeting_id;
-  const revisionId = v3.data?.revision_id ?? v3.request?.revision_id;
-  const turns = v3.data?.turns ?? null;
+  const requestItems = v3.request?.items ?? null;
+  const transcript = useMemo(() => buildTranscriptIndex(requestItems ?? []), [requestItems]);
+  const loaded = DOCUMENT_KINDS.map((kind) => v3.docs[kind].data).find(Boolean);
+  const meetingId = loaded?.meeting_id ?? v3.request?.meeting_id;
+  const revisionId = v3.request?.revision_id;
+  const turns = v3.docs.content.data?.data.turns ?? null;
+  const firstError = DOCUMENT_KINDS.map((kind) => v3.docs[kind].error).find(Boolean);
 
   return (
     <div className="flex h-screen flex-col">
@@ -104,8 +105,8 @@ export default function App() {
       <div className="grid min-h-0 flex-1 grid-cols-[480px_minmax(0,1fr)]">
         <TranscriptPanel
           turns={turns}
-          items={turns ? null : (pendingItems ?? v3.request?.items ?? (status === "idle" ? draftItems : null))}
-          selectedEvidence={selected?.evidence ?? null}
+          items={pendingItems ?? requestItems ?? (status === "idle" ? draftItems : null)}
+          selected={selected?.citation ?? null}
         />
 
         {status === "idle" && <InputScreen onStart={handleStart} onPreview={setDraftItems} />}
@@ -115,18 +116,17 @@ export default function App() {
         )}
 
         {status === "error" && (
-          <ErrorBanner message={v3.error ?? "Lỗi không xác định."} onRetry={handleRetry} onEditInput={handleReset} />
+          <ErrorBanner message={firstError ?? "Lỗi không xác định."} onRetry={handleRetry} onEditInput={handleReset} />
         )}
 
-        {status === "success" && v3.data && (
-          <V3ResultView
-            data={v3.data}
+        {status === "success" && (
+          <ResultView
+            docs={v3.docs}
+            transcript={transcript}
             elapsedMs={v3.elapsedMs}
-            selectedPointKey={selected?.key ?? null}
-            onSelectPoint={handleSelectTurns}
-            reloading={v3.reloading}
-            partErrors={v3.partErrors}
-            onReloadPart={handleReloadPart}
+            selectedKey={selected?.key ?? null}
+            onSelect={handleSelect}
+            onReload={handleReload}
             onRefreshAll={handleRefreshAll}
           />
         )}

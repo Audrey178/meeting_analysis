@@ -20,7 +20,7 @@ class _ScriptedLLM:
 
     def generate_json(self, *, system_prompt, user_prompt, schema):
         self.user_prompts.append(user_prompt)
-        base = {"evidence_turn_ids": ["T1"], "confirm_turn_id": "T1", "status": "assigned",
+        base = {"evidence_segment_ids": ["T1"], "confirm_turn_id": "T1", "status": "assigned",
                 "actor": "Thiện", "text": "Làm phần Billing"}
         return {"action_items": [{**base, **self.item}]}
 

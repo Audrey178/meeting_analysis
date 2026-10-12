@@ -1,4 +1,4 @@
-import type { AnalysisStatus } from "../hooks/useV3Analysis";
+import type { AnalysisStatus } from "../hooks/useMeetingDocuments";
 
 const STATUS_LABEL: Record<AnalysisStatus, string> = {
   idle: "chưa phân tích",

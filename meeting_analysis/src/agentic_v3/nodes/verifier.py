@@ -379,6 +379,27 @@ def _keeps_original_content(original: str, revised: str) -> bool:
     return shared / min(len(original_terms), len(revised_terms)) >= _AMEND_MIN_RETAINED
 
 
+def _evidence_with_turn(candidate, turn_id: str, meeting_turns) -> dict:
+    """Thêm lượt chốt mới (nằm ngoài bằng chứng) vào ``evidence_ids``/``quotes``/``segment_ids``.
+
+    Giữ bất biến "lượt chốt nằm trong bằng chứng" như ``validate_evidence_by_segment_ids``
+    khi Verifier dời ``confirm_turn_id`` sang một lượt khác của cuộc họp.
+
+    Đầu vào: candidate; turn_id - lượt chốt mới (đã kiểm là lượt thật);
+        meeting_turns - lượt nói cả cuộc họp.
+    Đầu ra: dict các trường bằng chứng mới, theo thứ tự bản ghi.
+    """
+
+    kept = set(candidate.evidence_ids) | {turn_id}
+    ordered = [turn for turn in meeting_turns if turn.turn_id in kept]
+    cited = set(candidate.segment_ids) | {item_id for turn in ordered if turn.turn_id == turn_id for item_id, _ in turn.source_items}
+    return {
+        "evidence_ids": tuple(turn.turn_id for turn in ordered),
+        "quotes": tuple(turn.text_exact for turn in ordered),
+        "segment_ids": tuple(item_id for turn in ordered for item_id, _ in turn.source_items if item_id in cited),
+    }
+
+
 def _apply_proposal(candidate, kind: str, response: dict, meeting_turns):
     """Áp phần sửa (amend) hoặc lượt chốt (defend) agent trích xuất gửi lại lên candidate.
 
@@ -395,6 +416,8 @@ def _apply_proposal(candidate, kind: str, response: dict, meeting_turns):
     confirm_turn_id = read_confirm_turn_id(meeting_turns, response.get("confirm_turn_id"))
     if confirm_turn_id:
         changes["confirm_turn_id"] = confirm_turn_id
+        if confirm_turn_id not in candidate.evidence_ids:
+            changes.update(_evidence_with_turn(candidate, confirm_turn_id, meeting_turns))
     if response.get("stance") == "amend":
         actor = read_stripped_text(response.get("revised_actor"))
         if kind == "action" and actor and not is_non_identifying_actor(actor):

@@ -2,16 +2,22 @@
 (gán nhãn -> trích xuất -> Evidence-Check -> Verifier ReAct <-> agent trích xuất tới khi
 đồng thuận), trả kết quả trong MỘT request (không có bước duyệt người).
 
-Kết quả được cache theo nội dung request (``analysis_cache.py``) và tách làm hai tầng:
+Kết quả được cache (``analysis_cache.py``) theo hai tầng, cùng một ``analysis_key`` = hash phần
+transcript của request (``meeting_id``, ``revision_id``, ``items``):
 
-    base   segment_meeting (stage01-03 + cắt chủ đề, ``services/segmentation.py``)
-           + MeetingAnalyzerV3.label_segments (nhãn mọi chủ đề)
-    phần   development | assignments | decisions | progress, mỗi phần một lần
-           MeetingAnalyzerV3.analyze(parts={phần}, labels=nhãn của base)
+    base        segment_meeting (stage01-03 + cắt chủ đề, ``services/segmentation.py``)
+                + MeetingAnalyzerV3.label_segments (nhãn mọi chủ đề)
+    document    content | decisions | tasks, mỗi document một lần MeetingAnalyzerV3.analyze trên
+                nhãn của base, lưu ở mục ``"<document>@<hash>"`` (hash các trường request còn lại
+                mà document phụ thuộc, xem ``document_entry_name``):
+                    content    phần development (Diễn biến)
+                    decisions  phần decisions (Kết luận)
+                    tasks      phần assignments + progress (Giao việc + tiến độ việc cũ)
 
-Nhãn thuộc base vì nằm trong prompt của cả bốn agent và giao diện gắn mọi mục vào chủ đề
-theo nó; chạy lại một phần không bao giờ đổi base. ``run_meeting_analysis_v3`` lấy từ cache
-phần nào đã có và chỉ tính phần còn thiếu (hoặc phần được yêu cầu chạy lại).
+Nhãn thuộc base vì nằm trong prompt của mọi agent và mọi mục được gắn vào chủ đề theo nó;
+tính lại một document không bao giờ đổi base. Mỗi lần tính, ``services/documents.py`` dựng nội
+dung document (``data``, ``audit``, độ phủ) thẳng từ ``MeetingReport`` và mục cache lưu đúng nội
+dung đó; khi trả response chỉ bọc thêm khung (``build_document``).
 
 ``MeetingAnalyzerV3`` và ``AnalysisCache`` sống suốt vòng đời ứng dụng (``app.state``) để mọi
 request dùng chung một ``LLMConcurrencyGate`` và một chỗ chạy-một-lần.
@@ -20,12 +26,15 @@ request dùng chung một ``LLMConcurrencyGate`` và một chỗ chạy-một-l�
 from __future__ import annotations
 
 import dataclasses
+import hashlib
+import json
 import os
 import sys
-from collections.abc import Collection, Mapping
+from collections.abc import Collection, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Literal
 
 _BE_DIR = Path(__file__).resolve().parent.parent
 _REPO_ROOT = _BE_DIR.parent
@@ -35,22 +44,14 @@ for _dir in (_BE_DIR, _REPO_ROOT):
 
 from experiments.dialstart import DialStartSegmenter
 
-from src.agentic_v3 import (
-    AGENT_OF_PART,
-    ANALYSIS_PARTS,
-    ActionItemV3,
-    AnalysisPart,
-    MeetingAnalyzerV3,
-    MeetingReport,
-    V3Config,
-)
+from src.agentic_v3 import AnalysisPart, MeetingAnalyzerV3, V3Config
 from src.agentic_v3.actors.agenda import TaskAgenda, parse_task_agenda
 from src.agentic_v3.actors.attendees import AttendeeRoster, parse_attendee_roster
-from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate, SpeakerSection
 from src.utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from src.utils.ports import EmbeddingAdapter
 
 from services.analysis_cache import AnalysisCache, build_analysis_backend, fingerprint_pipeline
+from services.documents import MeetingContext, build_document, build_document_entry
 from services.segmentation import load_pipeline_config, segment_meeting
 
 
@@ -223,29 +224,6 @@ def build_analyzer_v3() -> MeetingAnalyzerV3:
     )
 
 
-def _serialize_speaker_section(section: SpeakerSection) -> dict:
-    """Chuyển một ``SpeakerSection`` thành dict JSON cho phản hồi API.
-
-    Đầu vào: section - các luận điểm của một người nói trong một chủ đề.
-    Đầu ra: dict gồm ``initials``, ``full_name`` và ``points`` (mỗi điểm có text,
-        evidence_ids, quotes, citation_count).
-    """
-
-    return {
-        "initials": section.initials,
-        "full_name": section.full_name,
-        "points": [
-            {
-                "text": point.text,
-                "evidence_ids": list(point.evidence_ids),
-                "quotes": list(point.quotes),
-                "citation_count": point.citation_count,
-            }
-            for point in section.points
-        ],
-    }
-
-
 def read_meeting_date(payload: dict) -> str | None:
     """Lấy ngày họp ISO "YYYY-MM-DD" từ payload (``AnalyzeV3Request.model_dump()`` cho ra ``date``).
 
@@ -257,211 +235,6 @@ def read_meeting_date(payload: dict) -> str | None:
     if value is None:
         return None
     return value.isoformat() if hasattr(value, "isoformat") else str(value)
-
-
-def _serialize_action_item(item: ActionItemCandidate) -> dict:
-    """Chuyển một ``ActionItemCandidate`` (đã kiểm chứng) thành dict JSON cho phản hồi API.
-
-    Đầu vào: item - một việc được giao, đã qua Evidence-Check (+ Debate/Judge
-        nếu uncertain).
-    Đầu ra: dict gồm ``segment_id``, ``actor``, ``text``, ``deadline_raw``/``deadline_date``/
-        ``deadline_kind``, ``evidence_ids``,
-        ``quotes``, ``citation_count``. Không gộp theo người: ``actor`` đi kèm TỪNG item
-        thay vì nằm ở một object cha.
-    """
-
-    return {
-        "segment_id": item.segment_id,
-        "actor": item.actor,
-        "text": item.text,
-        "deadline_raw": item.deadline_raw,
-        "deadline_date": item.deadline_date,
-        "deadline_kind": item.deadline_kind,
-        "status": item.status,
-        "confirm_turn_id": item.confirm_turn_id,
-        "verification": item.verification,
-        "evidence_ids": list(item.evidence_ids),
-        "quotes": list(item.quotes),
-        "citation_count": len(item.evidence_ids),
-    }
-
-
-def _serialize_decision(item: DecisionCandidate) -> dict:
-    """Chuyển một ``DecisionCandidate`` (đã kiểm chứng) thành dict JSON cho phản hồi API.
-
-    Đầu vào: item - một quyết định/chốt phương án, đã qua Evidence-Check (+
-        Debate/Judge nếu uncertain).
-    Đầu ra: dict gồm ``segment_id``, ``text``, ``evidence_ids``, ``quotes``,
-        ``citation_count``.
-    """
-
-    return {
-        "segment_id": item.segment_id,
-        "text": item.text,
-        "status": item.status,
-        "confirm_turn_id": item.confirm_turn_id,
-        "verification": item.verification,
-        "evidence_ids": list(item.evidence_ids),
-        "quotes": list(item.quotes),
-        "citation_count": len(item.evidence_ids),
-    }
-
-
-def _group_meeting_development_by_topic(
-    segments, labels_by_segment: dict, meeting_development: list[SpeakerSection]
-) -> list[dict]:
-    """Ghép ``meeting_development`` (danh sách phẳng) với tiêu đề/tóm tắt chủ đề để trả JSON.
-    Đầu vào:
-        segments: các đoạn chủ đề của cuộc họp, theo đúng thứ tự.
-        labels_by_segment: bảng tra segment_id -> TopicLabel (từ stage07).
-        meeting_development: các ``SpeakerSection`` của báo cáo (phẳng, mọi chủ đề trộn chung).
-    Đầu ra: list[dict], mỗi phần tử một chủ đề, theo đúng thứ tự ``segments``.
-    """
-
-    sections_by_segment: dict[str, list[SpeakerSection]] = {}
-    for section in meeting_development:
-        sections_by_segment.setdefault(section.segment_id, []).append(section)
-
-    return [
-        {
-            "segment_id": segment.segment_id,
-            "title": label.title if label else "",
-            "summary": label.summary if label else "",
-            "speakers": [
-                _serialize_speaker_section(section)
-                for section in sections_by_segment.get(segment.segment_id, [])
-            ],
-        }
-        for segment in segments
-        for label in [labels_by_segment.get(segment.segment_id)]
-    ]
-
-
-def _serialize_verification_record(record) -> dict:
-    """Chuyển ``VerificationRecord`` thành dict JSON."""
-
-    return {
-        "item_key": record.item_key,
-        "segment_id": record.segment_id,
-        "kind": record.kind,
-        "candidate_text": record.candidate_text,
-        "reasons": list(record.reasons),
-        "steps": [
-            {"thought": s.thought, "action": s.action, "argument": s.argument, "observation": s.observation}
-            for s in record.steps
-        ],
-        "verdict": record.verdict,
-        "reasoning": record.reasoning,
-        "final_text": record.final_text,
-        "deciding_turn_id": record.deciding_turn_id,
-        "decided_by": record.decided_by,
-        "rounds": [
-            {
-                "candidate_text": r.candidate_text,
-                "verdict": r.verdict,
-                "feedback": r.feedback,
-                "deciding_turn_id": r.deciding_turn_id,
-                "stance": r.stance,
-                "response": r.response,
-            }
-            for r in record.rounds
-        ],
-    }
-
-
-def _serialize_candidate(candidate) -> dict:
-    """Một ``ActorCandidate`` thành dict theo ``ActorCandidateOut``."""
-
-    return {
-        "name": candidate.name,
-        "actor_type": candidate.actor_type,
-        "score": candidate.score,
-        "reason": candidate.reason,
-        "ref_id": candidate.ref_id,
-    }
-
-
-def _serialize_action_item_v3(item) -> dict:
-    """Việc giao v3 = dict của ``_serialize_action_item`` cộng phần định danh actor (nếu item là ``ActionItemV3``).
-
-    Đầu vào: item - ActionItemCandidate hoặc ActionItemV3.
-    Đầu ra: dict theo ``ActionItemV3Out``.
-    """
-
-    serialized = _serialize_action_item(item)
-    if isinstance(item, ActionItemV3):
-        serialized.update(
-            actor_type=item.actor_type,
-            actor_flag=item.actor_flag,
-            actor_reason=item.actor_reason,
-            actor_candidates=[_serialize_candidate(c) for c in item.actor_candidates],
-            assignees=[
-                {
-                    "mention": a.mention,
-                    "role": a.role,
-                    "name": a.name,
-                    "actor_type": a.actor_type,
-                    "flag": a.flag,
-                    "reason": a.reason,
-                    "ref_id": a.ref_id,
-                    "candidates": [_serialize_candidate(c) for c in a.candidates],
-                }
-                for a in item.assignees
-            ],
-            relation=item.relation,
-        )
-    serialized["task_id"] = item.task_id
-    return serialized
-
-
-def _serialize_progress_update(update) -> dict:
-    """Chuyển ``ProgressUpdate`` thành dict theo ``ProgressUpdateOut``."""
-
-    return {
-        "segment_id": update.segment_id,
-        "task_id": update.task_id,
-        "status": update.status,
-        "status_turn_id": update.status_turn_id,
-        "evidence_ids": list(update.evidence_ids),
-        "quotes": list(update.quotes),
-        "summary": update.summary,
-        "blockers": list(update.blockers),
-        "directive": update.directive,
-        "deadline_raw": update.deadline_raw,
-        "deadline_date": update.deadline_date,
-        "deadline_kind": update.deadline_kind,
-        "deadline_removed": update.deadline_removed,
-        "proposed_status": update.proposed_status,
-        "status_flag": update.status_flag,
-        "status_probabilities": dict(update.status_probabilities),
-        "p_directive": update.p_directive,
-        "verification": update.verification,
-        "reason": update.reason,
-    }
-
-
-def _serialize_task_progress(progress) -> dict:
-    """Chuyển ``TaskProgress`` thành dict theo ``TaskProgressOut``."""
-
-    return {
-        "task_id": progress.task_id,
-        "title": progress.title,
-        "owner": progress.owner,
-        "previous_status": progress.previous_status,
-        "status": progress.status,
-        "previous_due": progress.previous_due,
-        "deadline_raw": progress.deadline_raw,
-        "deadline_date": progress.deadline_date,
-        "deadline_kind": progress.deadline_kind,
-        "deadline_removed": progress.deadline_removed,
-        "status_conflict": progress.status_conflict,
-        "uncertain": progress.uncertain,
-        "overdue": progress.overdue,
-        "deciding_update": (
-            _serialize_progress_update(progress.deciding_update) if progress.deciding_update else None
-        ),
-        "updates": [_serialize_progress_update(update) for update in progress.updates],
-    }
 
 
 def read_attendee_roster(payload: dict) -> AttendeeRoster | None:
@@ -522,19 +295,33 @@ _FINGERPRINT_ENV = (
 )
 _DEFAULT_CACHE_DIR = _REPO_ROOT / "outputs" / "v3_cache"
 
-# Kind của bản ghi Verifier thuộc từng phần (Diễn biến và Tiến độ không qua Verifier).
-_RECORD_KIND_OF_PART = {"assignments": "action", "decisions": "decision"}
-_PART_TITLES = {"development": "Diễn biến", "assignments": "Giao việc", "decisions": "Kết luận", "progress": "Tiến độ"}
 # Số lần làm lại khi nền bị request khác thay ngay trong lúc đang tính.
 _MAX_BASE_ATTEMPTS = 3
 
-
-class PartNotApplicableError(Exception):
-    """Phần được yêu cầu không có trong bản phân tích (Tiến độ khi request không có ``tasks``)."""
+DocumentKind = Literal["content", "decisions", "tasks"]
+DOCUMENT_KINDS: tuple[DocumentKind, ...] = ("content", "decisions", "tasks")
+_DOCUMENT_TITLES: dict[DocumentKind, str] = {"content": "Diễn biến", "decisions": "Kết luận", "tasks": "Giao việc"}
+# Phần kết quả (``MeetingAnalyzerV3.analyze``) của từng document; Tiến độ chỉ có khi request có ``tasks``.
+_PARTS_OF_DOCUMENT: dict[DocumentKind, tuple[AnalysisPart, ...]] = {
+    "content": ("development",),
+    "decisions": ("decisions",),
+    "tasks": ("assignments", "progress"),
+}
+# Trường của request tạo nên transcript: khoá của bản phân tích (nền chung của mọi document).
+_TRANSCRIPT_FIELDS = ("meeting_id", "revision_id", "items")
+# Trường còn lại của request mà từng document phụ thuộc, đi vào tên mục cache của document.
+# Content/Decisions không nhận ``tasks``: chúng chạy không có danh sách việc (danh sách việc
+# nằm trong prompt của mọi agent, nên nhận vào thì kết quả đổi theo mà khoá không đổi).
+_DOCUMENT_INPUT_FIELDS: dict[DocumentKind, tuple[str, ...]] = {
+    "content": ("chair", "meeting_date", "attendees"),
+    "decisions": ("chair", "meeting_date", "attendees"),
+    "tasks": ("chair", "meeting_date", "attendees", "tasks"),
+}
+DOCUMENT_KEY_PATTERN = r"^(content|decisions|tasks)@[0-9a-f]{16}$"
 
 
 class PartReloadFailedError(Exception):
-    """Chạy lại một phần mà có chủ đề lỗi, trong khi bản đang lưu của phần đó đầy đủ: giữ bản cũ."""
+    """Chạy lại một document mà có chủ đề lỗi, trong khi bản đang lưu của nó đầy đủ: giữ bản cũ."""
 
 
 class AnalysisConflictError(Exception):
@@ -556,14 +343,56 @@ def build_analysis_cache_v3() -> AnalysisCache:
     return AnalysisCache(build_analysis_backend(_DEFAULT_CACHE_DIR), fingerprint)
 
 
-def applicable_parts(agenda: TaskAgenda | None) -> tuple[AnalysisPart, ...]:
-    """Các phần của một bản phân tích: Tiến độ chỉ có khi request có danh sách việc.
+def transcript_payload(payload: Mapping) -> dict:
+    """Phần transcript của request (``meeting_id``, ``revision_id``, ``items``): nguồn của khoá bản phân tích."""
 
-    Đầu vào: agenda - kết quả ``read_task_agenda``.
-    Đầu ra: tuple phần theo thứ tự ``ANALYSIS_PARTS``.
+    return {field: payload.get(field) for field in _TRANSCRIPT_FIELDS}
+
+
+def document_entry_name(document: DocumentKind, payload: Mapping) -> str:
+    """Tên mục cache của ``document``: ``"<document>@<16 hex>"``, hash từ các trường request nó phụ thuộc.
+
+    Đầu vào: document - content | decisions | tasks; payload - ``AnalyzeV3Request.model_dump()``.
+    Đầu ra: str khớp ``DOCUMENT_KEY_PATTERN``.
     """
 
-    return tuple(part for part in ANALYSIS_PARTS if part != "progress" or agenda is not None)
+    inputs = {field: payload.get(field) for field in _DOCUMENT_INPUT_FIELDS[document]}
+    canonical = json.dumps(inputs, sort_keys=True, ensure_ascii=False, separators=(",", ":"), default=str)
+    return f"{document}@{hashlib.sha256(canonical.encode('utf-8')).hexdigest()[:16]}"
+
+
+def document_parts(document: DocumentKind, agenda: TaskAgenda | None) -> tuple[AnalysisPart, ...]:
+    """Các phần kết quả của ``document``: Tiến độ chỉ có khi request có danh sách việc.
+
+    Đầu vào: document; agenda - kết quả ``read_task_agenda``.
+    Đầu ra: tuple phần.
+    """
+
+    return tuple(part for part in _PARTS_OF_DOCUMENT[document] if part != "progress" or agenda is not None)
+
+
+def _transcript_items(payload: Mapping) -> list[dict]:
+    """Mã gốc (giữ kiểu: số khi xuất từ STT) và ``speaker_id`` của từng item transcript, theo thứ tự.
+
+    Lượt nói chỉ giữ mã item dạng chuỗi (``SpeakerTurn.source_items``); document trích dẫn bằng mã gốc.
+    ``speaker_id`` lấy từ trường ``speaker_id``, thiếu thì từ ``ref_id`` (mã người nói của bản xuất STT).
+    """
+
+    return [
+        {"id": item.get("id", item.get("item_id")), "speaker_id": item.get("speaker_id") or _first_ref_id(item.get("ref_id"))}
+        for item in payload.get("items") or ()
+        if isinstance(item, Mapping)
+    ]
+
+
+def _first_ref_id(value: object) -> str | None:
+    """Mã đầu tiên của ``ref_id`` (chuỗi hoặc mảng chuỗi), None nếu không có."""
+
+    if isinstance(value, str):
+        return value.strip() or None
+    if isinstance(value, Sequence) and not isinstance(value, (bytes, bytearray)):
+        return next((entry.strip() for entry in value if isinstance(entry, str) and entry.strip()), None)
+    return None
 
 
 def _now_iso() -> str:
@@ -572,18 +401,21 @@ def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def _as_tuple(value):
+    """List JSON (kể cả lồng nhau, vd. ``source_items``) đổi lại thành tuple như trong dataclass."""
+
+    return tuple(_as_tuple(element) for element in value) if isinstance(value, list) else value
+
+
 def _restore_dataclass(cls, data: Mapping):
-    """Dựng lại dataclass phẳng (``SpeakerTurn``/``TopicSegment``/``TopicLabel``) từ dict JSON.
+    """Dựng lại dataclass phẳng (``SpeakerTurn``/``TopicSegment``/``TopicLabel``) từ dict JSON."""
 
-    JSON biến tuple thành list, nên mọi list được đổi lại thành tuple như trong dataclass gốc.
-    """
-
-    return cls(**{name: tuple(value) if isinstance(value, list) else value for name, value in data.items()})
+    return cls(**{name: _as_tuple(value) for name, value in data.items()})
 
 
 @dataclasses.dataclass(frozen=True)
 class _MeetingBase:
-    """Nền chung của mọi phần: mục ``base`` đã lưu (có ``version``) và đối tượng dựng từ nó.
+    """Nền chung của mọi document: mục ``base`` đã lưu (có ``version``) và đối tượng dựng từ nó.
 
     Các trường: entry - mục cache; turns, segments, labels - lượt nói, chủ đề, nhãn.
     """
@@ -607,96 +439,32 @@ class _MeetingBase:
         )
 
 
-def _build_part_data(part: AnalysisPart, report: MeetingReport, base: _MeetingBase) -> dict:
-    """Phần ``part`` của response, từ ``MeetingReport`` của lần tính riêng phần đó.
+@dataclasses.dataclass(frozen=True)
+class DocumentResult:
+    """Kết quả một lần lấy document: nền và các mục document cùng nền.
 
-    Ba danh sách dùng chung giữa các phần (``failed_topics``, ``skipped_agents``,
-    ``verification_records``) chỉ giữ mục của phần này, để khi ghép, chạy lại một phần không
-    xoá hay nhân đôi mục của phần khác.
-
-    Đầu vào: part - phần; report - kết quả ``analyze(parts={part})``; base - nền đã dùng.
-    Đầu ra: dict JSON (các khoá của ``AnalyzeV3Result`` thuộc phần này).
+    Các trường:
+        key: analysis_key (khoá của nền).
+        base_entry: mục ``base``.
+        entries: document -> mục của nó.
+        entry_names: document -> tên mục cache (``"<document>@<hash>"``).
+        fresh: các document vừa tính trong request này (không lấy từ cache).
     """
 
-    agent = AGENT_OF_PART[part]
-    record_kind = _RECORD_KIND_OF_PART.get(part)
-    data: dict = {
-        "failed_topics": [
-            {"segment_id": f.segment_id, "agent": f.agent, "error": f.error} for f in report.failures if f.agent == agent
-        ],
-        "skipped_agents": [
-            {"segment_id": s.segment_id, "agent": s.agent} for s in report.skipped_agents if s.agent == agent
-        ],
-        "verification_records": [
-            _serialize_verification_record(r) for r in report.verification_records if r.kind == record_kind
-        ],
-    }
-    if part == "development":
-        labels_by_segment = {label.segment_id: label for label in base.labels}
-        data["topics"] = _group_meeting_development_by_topic(
-            base.segments, labels_by_segment, list(report.meeting_development)
-        )
-    elif part == "assignments":
-        data["verified_assignments"] = [_serialize_action_item_v3(item) for item in report.assignments]
-    elif part == "decisions":
-        data["verified_decisions"] = [_serialize_decision(item) for item in report.decisions]
-    else:
-        data["task_progress"] = [_serialize_task_progress(progress) for progress in report.task_progress]
-    return data
-
-
-def _build_result(key: str, base_entry: dict, entries: Mapping[str, dict], fresh: Collection[str]) -> dict:
-    """Ghép nền và các phần thành dict theo ``AnalyzeV3Result``.
-
-    Đầu vào: key - analysis_key; base_entry - mục ``base``; entries - phần -> mục của phần (theo
-        thứ tự ``ANALYSIS_PARTS``); fresh - các phần vừa tính trong request này.
-    Đầu ra: dict theo ``AnalyzeV3Result``; ``cache_version`` là version lớn nhất trong các mục.
-    """
-
-    order = {segment["segment_id"]: index for index, segment in enumerate(base_entry["segments"])}
-
-    def gather(field: str) -> list[dict]:
-        items = [item for entry in entries.values() for item in entry["data"][field]]
-        return sorted(items, key=lambda item: order.get(item["segment_id"], len(order)))
-
-    def part_field(part: str, field: str) -> list[dict]:
-        return entries[part]["data"][field] if part in entries else []
-
-    return {
-        "analysis_key": key,
-        "cache_version": max(entry["version"] for entry in (base_entry, *entries.values())),
-        "parts": {
-            part: {
-                "generation": entry["generation"],
-                "computed_at": entry["computed_at"],
-                "from_cache": part not in fresh,
-                "status": entry["status"],
-            }
-            for part, entry in entries.items()
-        },
-        "meeting_id": base_entry["meeting_id"],
-        "revision_id": base_entry["revision_id"],
-        "topics": part_field("development", "topics"),
-        "verified_assignments": part_field("assignments", "verified_assignments"),
-        "verified_decisions": part_field("decisions", "verified_decisions"),
-        "task_progress": part_field("progress", "task_progress"),
-        "turns": [
-            {"turn_id": turn["turn_id"], "speaker": turn["speaker"], "text": turn["text_exact"]}
-            for turn in base_entry["turns"]
-        ],
-        "failed_topics": gather("failed_topics"),
-        "verification_records": gather("verification_records"),
-        "skipped_agents": gather("skipped_agents"),
-    }
+    key: str
+    base_entry: dict
+    entries: dict[DocumentKind, dict]
+    entry_names: dict[DocumentKind, str]
+    fresh: frozenset[DocumentKind]
 
 
 class _MeetingAnalysisRun:
-    """Một request phân tích v3: lấy hoặc tính nền, rồi lấy hoặc tính từng phần, đều qua cache.
+    """Một request phân tích v3: lấy hoặc tính nền, rồi lấy hoặc tính từng document, đều qua cache.
 
     Ba bất biến:
-    1. Mọi phần trong một response được tính trên cùng một nền (cùng ranh giới chủ đề và nhãn).
+    1. Mọi document trong một response được tính trên cùng một nền (cùng ranh giới chủ đề và nhãn).
     2. Mỗi mục của một bản phân tích có tối đa một lần tính đang chạy; request trùng chờ chung.
-    3. Chỉ ghi cache khi tính xong; chạy lại một phần mà lỗi thì bản đầy đủ đang lưu còn nguyên.
+    3. Chỉ ghi cache khi tính xong; chạy lại một document mà lỗi thì bản đầy đủ đang lưu còn nguyên.
 
     Đầu vào khi tạo: payload - ``AnalyzeV3Request.model_dump()``; analyzer, cache - dùng chung
         của ứng dụng; embedding_adapter, topic_segmenter - cho bước cắt chủ đề.
@@ -714,38 +482,40 @@ class _MeetingAnalysisRun:
     ) -> None:
         self.roster = read_attendee_roster(payload)
         self.agenda = read_task_agenda(payload, self.roster)
-        self.parts = applicable_parts(self.agenda)
         self.payload = payload
-        self.key = cache.key_for(payload)
+        self.key = cache.key_for(transcript_payload(payload))
+        self.entry_names = {document: document_entry_name(document, payload) for document in DOCUMENT_KINDS}
         self.analyzer = analyzer
         self.cache = cache
         self.embedding_adapter = embedding_adapter
         self.topic_segmenter = topic_segmenter
 
-    def execute(self, *, refresh: bool, reload_part: AnalysisPart | None) -> dict:
-        """Trả kết quả đủ mọi phần, tính lại những gì được yêu cầu hoặc còn thiếu.
+    def execute(
+        self,
+        documents: Collection[DocumentKind],
+        *,
+        refresh_base: bool,
+        refresh: Collection[DocumentKind],
+    ) -> DocumentResult:
+        """Các document ``documents`` trên cùng một nền, tính lại những gì được yêu cầu hoặc còn thiếu.
 
-        Đầu vào: refresh - tính lại tất cả, kể cả nền; reload_part - phần cần tính lại (None nếu
-            không có).
-        Đầu ra: dict theo ``AnalyzeV3Result``.
-        Lỗi: PartNotApplicableError, PartReloadFailedError, AnalysisConflictError; lỗi của bước
-            cắt chủ đề (``LLMUpstreamError``, ``ValueError``).
+        Đầu vào: documents - document cần lấy; refresh_base - tính lại nền (cắt chủ đề + nhãn), mọi
+            document trên nền cũ hết dùng được; refresh - document phải tính lại dù đã có.
+        Đầu ra: DocumentResult.
+        Lỗi: PartReloadFailedError, AnalysisConflictError; lỗi của bước cắt chủ đề
+            (``LLMUpstreamError``, ``ValueError``).
         """
 
-        if reload_part is not None and reload_part not in self.parts:
-            raise PartNotApplicableError(
-                f"Không có phần {_PART_TITLES[reload_part]}: request không có danh sách việc cần báo cáo."
-            )
-        force = frozenset(self.parts) if refresh else frozenset(part for part in (reload_part,) if part)
+        force = frozenset(refresh)
         for _ in range(_MAX_BASE_ATTEMPTS):
-            base = self._ensure_base(refresh=refresh)
-            entries, fresh = self._ensure_parts(base, force)
-            result = self._assemble(base, entries, fresh)
+            base = self._ensure_base(refresh=refresh_base)
+            entries, fresh = self._ensure_documents(base, documents, force)
+            result = self._latest(base, entries, fresh)
             if result is not None:
                 return result
-            # Request khác vừa chạy lại toàn bộ nên nền đã đổi: đọc lại theo nền mới; các phần của
-            # nền đó do chính request kia tính (chờ chung qua ``run_once``).
-            refresh, force = False, frozenset()
+            # Request khác vừa tính lại nền: đọc lại theo nền mới; document của nền đó do chính
+            # request kia tính (chờ chung qua ``run_once``).
+            refresh_base, force = False, frozenset()
         raise AnalysisConflictError("Bản phân tích đang được chạy lại toàn bộ; thử lại sau.")
 
     def _ensure_base(self, *, refresh: bool) -> _MeetingBase:
@@ -781,8 +551,8 @@ class _MeetingAnalysisRun:
             {
                 "meeting_id": meeting.meeting_id,
                 "revision_id": meeting.revision_id,
-                "parts": list(self.parts),
                 "computed_at": _now_iso(),
+                "items": _transcript_items(self.payload),
                 "turns": [dataclasses.asdict(turn) for turn in meeting.turns],
                 "segments": [dataclasses.asdict(segment) for segment in meeting.segments],
                 "labels": [dataclasses.asdict(label) for label in labels],
@@ -790,51 +560,57 @@ class _MeetingAnalysisRun:
         )
         return _MeetingBase(entry, tuple(meeting.turns), tuple(meeting.segments), tuple(labels))
 
-    def _ensure_parts(self, base: _MeetingBase, force: frozenset[str]) -> tuple[dict[str, dict], frozenset[str]]:
-        """Mọi phần trên ``base``, song song: phần trong ``force`` luôn tính lại, phần khác lấy cache.
+    def _ensure_documents(
+        self, base: _MeetingBase, documents: Collection[DocumentKind], force: frozenset[str]
+    ) -> tuple[dict[DocumentKind, dict], frozenset[DocumentKind]]:
+        """Các document trên ``base``, song song: document trong ``force`` luôn tính lại, còn lại lấy cache.
 
-        Phần lỗi thì lỗi được raise sau khi các phần kia xong (và đã lưu).
+        Document lỗi thì lỗi được raise sau khi các document kia xong (và đã lưu).
 
-        Đầu ra: (phần -> mục theo thứ tự ``self.parts``, các phần vừa tính).
+        Đầu ra: (document -> mục theo thứ tự ``documents``, các document vừa tính).
         """
 
-        with ThreadPoolExecutor(max_workers=len(self.parts), thread_name_prefix="v3-part") as pool:
-            futures = {part: pool.submit(self._ensure_part, base, part, part in force) for part in self.parts}
-            outcomes = {part: future.result() for part, future in futures.items()}
-        entries = {part: entry for part, (entry, _) in outcomes.items()}
-        fresh = frozenset(part for part, (_, computed) in outcomes.items() if computed)
+        with ThreadPoolExecutor(max_workers=len(documents), thread_name_prefix="v3-doc") as pool:
+            futures = {
+                document: pool.submit(self._ensure_document, base, document, document in force)
+                for document in documents
+            }
+            outcomes = {document: future.result() for document, future in futures.items()}
+        entries = {document: entry for document, (entry, _) in outcomes.items()}
+        fresh = frozenset(document for document, (_, computed) in outcomes.items() if computed)
         return entries, fresh
 
-    def _ensure_part(self, base: _MeetingBase, part: AnalysisPart, force: bool) -> tuple[dict, bool]:
-        """Mục của ``part``: từ cache nếu dùng lại được và không bị ép tính lại.
+    def _ensure_document(self, base: _MeetingBase, document: DocumentKind, force: bool) -> tuple[dict, bool]:
+        """Mục của ``document``: từ cache nếu dùng lại được và không bị ép tính lại.
 
         Đầu ra: (mục, True nếu vừa được tính).
         """
 
-        seen = self.cache.version(self.key, part) or 0
+        name = self.entry_names[document]
+        seen = self.cache.version(self.key, name) or 0
         if not force:
-            entry = self._load_part(base, part)
+            entry = self._load_document(base, name)
             if entry is not None:
                 return entry, False
         newer_than = seen if force else 0
-        # Version nền nằm trong tên lần tính: lần chạy lại toàn bộ (nền mới) không được chờ chung
-        # lần tính cùng phần trên nền cũ.
+        # Version nền nằm trong tên lần tính: lần tính lại nền không được chờ chung lần tính cùng
+        # document trên nền cũ.
         return self.cache.run_once(
-            self.key, (part, base.version), lambda: self._compute_part(base, part, newer_than, seen)
+            self.key, (name, base.version), lambda: self._compute_document(base, document, newer_than, seen)
         )
 
-    def _load_part(self, base: _MeetingBase, part: AnalysisPart) -> dict | None:
-        """Mục đã lưu của ``part`` nếu dùng lại được: cùng nền và không có chủ đề lỗi."""
+    def _load_document(self, base: _MeetingBase, name: str) -> dict | None:
+        """Mục đã lưu ``name`` nếu dùng lại được: cùng nền và không có chủ đề lỗi."""
 
-        entry = self.cache.load(self.key, part)
+        entry = self.cache.load(self.key, name)
         if entry is None or entry["base_version"] != base.version or entry["status"] != "ok":
             return None
         return entry
 
-    def _compute_part(
-        self, base: _MeetingBase, part: AnalysisPart, newer_than: int, seen: int
+    def _compute_document(
+        self, base: _MeetingBase, document: DocumentKind, newer_than: int, seen: int
     ) -> tuple[dict, bool]:
-        """Tính ``part`` trên nhãn của ``base`` rồi lưu.
+        """Tính ``document`` trên nhãn của ``base`` rồi lưu.
 
         Trước khi tính, dùng luôn mục dùng lại được có version > ``newer_than`` (request khác vừa
         tính trong lúc request này chờ, như ``_compute_base``). Không lưu nếu nền đã bị thay trong
@@ -847,9 +623,11 @@ class _MeetingAnalysisRun:
         Lỗi: PartReloadFailedError.
         """
 
-        entry = self._load_part(base, part)
+        name = self.entry_names[document]
+        entry = self._load_document(base, name)
         if entry is not None and entry["version"] > newer_than:
             return entry, entry["version"] > seen
+        parts = document_parts(document, self.agenda)
         report = self.analyzer.analyze(
             meeting_id=base.entry["meeting_id"],
             revision_id=base.entry["revision_id"],
@@ -858,36 +636,53 @@ class _MeetingAnalysisRun:
             turns=base.turns,
             segments=base.segments,
             attendee_roster=self.roster,
-            task_agenda=self.agenda,
-            parts=(part,),
+            task_agenda=self.agenda if document == "tasks" else None,
+            parts=parts,
             labels=base.labels,
         )
-        data = _build_part_data(part, report, base)
-        failures = data["failed_topics"]
+        content = build_document_entry(
+            document,
+            report,
+            MeetingContext(
+                meeting_id=base.entry["meeting_id"],
+                turns=base.turns,
+                segments=base.segments,
+                labels=base.labels,
+                items=base.entry["items"],
+                meeting_date=read_meeting_date(self.payload),
+                chair=self.payload.get("chair"),
+                roster=self.roster,
+                agenda=self.agenda if document == "tasks" else None,
+            ),
+        )
+        failures = report.failures
         with self.cache.lock(self.key):
-            previous = self.cache.load(self.key, part) or {}
+            previous = self.cache.load(self.key, name) or {}
             entry = {
                 "base_version": base.version,
                 "generation": previous.get("generation", 0) + 1,
                 "computed_at": _now_iso(),
-                "status": "incomplete" if failures else "ok",
-                "data": data,
+                "status": "ok" if content["complete"] else "incomplete",
+                "source": self.payload.get("source"),
+                **content,
             }
             if self.cache.version(self.key, "base") not in (None, base.version):
                 # Nền đã bị thay trong lúc tính: không lưu, ``execute`` làm lại theo nền mới.
                 return {**entry, "version": 0}, True
             if failures and previous.get("base_version") == base.version and previous.get("status") == "ok":
-                failed = ", ".join(f"{f['segment_id']}: {f['error']}" for f in failures)
+                failed = ", ".join(f"{f.segment_id}: {f.error}" for f in failures)
                 raise PartReloadFailedError(
-                    f"Chạy lại phần {_PART_TITLES[part]} lỗi ở {len(failures)} chủ đề ({failed}); "
+                    f"Chạy lại phần {_DOCUMENT_TITLES[document]} lỗi ở {len(failures)} chủ đề ({failed}); "
                     "giữ nguyên kết quả trước."
                 )
-            return self.cache.save(self.key, part, entry), True
+            return self.cache.save(self.key, name, entry), True
 
-    def _assemble(self, base: _MeetingBase, entries: dict[str, dict], fresh: frozenset[str]) -> dict | None:
-        """Ghép response, ưu tiên mục mới hơn mà request khác vừa ghi cho cùng nền.
+    def _latest(
+        self, base: _MeetingBase, entries: dict[DocumentKind, dict], fresh: frozenset[DocumentKind]
+    ) -> DocumentResult | None:
+        """Các mục cùng nền, ưu tiên mục mới hơn mà request khác vừa ghi.
 
-        Đầu ra: dict theo ``AnalyzeV3Result``, hoặc None nếu nền đã bị thay trong lúc tính.
+        Đầu ra: DocumentResult, hoặc None nếu nền đã bị thay trong lúc tính.
         """
 
         with self.cache.lock(self.key):
@@ -896,42 +691,50 @@ class _MeetingAnalysisRun:
             if any(entry["base_version"] != base.version for entry in entries.values()):
                 return None
             latest, latest_fresh = dict(entries), set(fresh)
-            for part, entry in entries.items():
-                stored_version = self.cache.version(self.key, part)
+            for document, entry in entries.items():
+                name = self.entry_names[document]
+                stored_version = self.cache.version(self.key, name)
                 if stored_version is None or stored_version <= entry["version"]:
                     continue
-                stored = self.cache.load(self.key, part)
+                stored = self.cache.load(self.key, name)
                 if stored is not None and stored["base_version"] == base.version:
-                    latest[part] = stored
-                    latest_fresh.add(part)
-            return _build_result(self.key, base.entry, latest, latest_fresh)
+                    latest[document] = stored
+                    latest_fresh.add(document)
+            return DocumentResult(
+                key=self.key,
+                base_entry=base.entry,
+                entries=latest,
+                entry_names={document: self.entry_names[document] for document in latest},
+                fresh=frozenset(latest_fresh),
+            )
 
 
-def run_meeting_analysis_v3(
+def run_meeting_document_v3(
     payload: dict,
+    document: DocumentKind,
     *,
     analyzer: MeetingAnalyzerV3,
     embedding_adapter: EmbeddingAdapter,
     cache: AnalysisCache,
     topic_segmenter: DialStartSegmenter | None = None,
     refresh: bool = False,
-    reload_part: AnalysisPart | None = None,
+    refresh_base: bool = False,
 ) -> dict:
-    """Phân tích một cuộc họp bằng v3, dùng lại mọi phần đã cache cho cùng request.
+    """Một document (Giao việc, Kết luận hoặc Diễn biến) của cuộc họp, dùng lại cache nếu có.
 
     Đầu vào:
-        payload: transcript dạng dict (``AnalyzeV3Request.model_dump()``); ``chair`` (tùy
-            chọn) là tên người chủ trì.
+        payload: ``AnalyzeV3Request.model_dump()``.
+        document: content | decisions | tasks.
         analyzer: ``MeetingAnalyzerV3`` dùng chung của ứng dụng.
         embedding_adapter, topic_segmenter: như ``segmentation.segment_meeting``.
         cache: ``AnalysisCache`` dùng chung của ứng dụng.
-        refresh: True thì tính lại tất cả, kể cả cắt chủ đề và nhãn.
-        reload_part: phần cần tính lại trên nền đã có (các phần khác lấy cache); None thì không.
-    Đầu ra: dict theo ``AnalyzeV3Result`` (đủ mọi phần, kèm ``analysis_key``/``cache_version``/``parts``).
+        refresh: tính lại document này trên nền đã có.
+        refresh_base: tính lại cả nền (cắt chủ đề + nhãn); các document khác trên nền cũ sẽ được
+            tính lại khi được yêu cầu.
+    Đầu ra: dict theo model document tương ứng (``services/documents.py``).
     Lỗi: ``LLMUpstreamError`` nếu bước embedding lỗi; ``ValueError`` nếu transcript, danh sách
-        tham dự hoặc danh sách việc không hợp lệ; ``PartNotApplicableError`` nếu chạy lại Tiến độ
-        mà request không có danh sách việc; ``PartReloadFailedError`` nếu chạy lại một phần mà
-        có chủ đề lỗi (bản cũ được giữ); ``AnalysisConflictError`` nếu nền bị thay liên tục.
+        tham dự hoặc danh sách việc không hợp lệ; ``PartReloadFailedError`` nếu tính lại mà có chủ
+        đề lỗi (bản cũ được giữ); ``AnalysisConflictError`` nếu nền bị thay liên tục.
     """
 
     run = _MeetingAnalysisRun(
@@ -941,39 +744,55 @@ def run_meeting_analysis_v3(
         embedding_adapter=embedding_adapter,
         topic_segmenter=topic_segmenter,
     )
-    return run.execute(refresh=refresh, reload_part=reload_part)
+    result = run.execute((document,), refresh_base=refresh_base, refresh=(document,) if refresh else ())
+    return build_document(
+        document,
+        analysis_key=result.key,
+        document_key=result.entry_names[document],
+        meeting_id=result.base_entry["meeting_id"],
+        entry=result.entries[document],
+        source=payload.get("source"),
+    )
 
 
-def load_cached_analysis_v3(key: str, cache: AnalysisCache) -> dict | None:
-    """Kết quả đã cache của bản ``key``, không tính gì (dùng khi trang web tải lại).
+def load_cached_document_v3(key: str, document_key: str, cache: AnalysisCache) -> dict | None:
+    """Document đã cache, không tính gì.
 
-    Đầu vào: key - analysis_key (đã kiểm dạng); cache - cache dùng chung.
-    Đầu ra: dict theo ``AnalyzeV3Result``, hoặc None nếu chưa có đủ mọi phần trên cùng một nền.
+    Đầu vào: key - analysis_key; document_key - ``"<document>@<hash>"`` (cả hai đã kiểm dạng);
+        cache - cache dùng chung.
+    Đầu ra: dict document, hoặc None nếu nền hoặc document không còn (hay không cùng nền).
     """
 
     with cache.lock(key):
         base_entry = cache.load(key, "base")
-        if base_entry is None:
-            return None
-        entries = {}
-        for part in base_entry["parts"]:
-            entry = cache.load(key, part)
-            if entry is None or entry["base_version"] != base_entry["version"]:
-                return None
-            entries[part] = entry
-        return _build_result(key, base_entry, entries, fresh=())
+        entry = cache.load(key, document_key)
+    if base_entry is None or entry is None or entry["base_version"] != base_entry["version"]:
+        return None
+    document = document_key.split("@", 1)[0]
+    return build_document(
+        document,
+        analysis_key=key,
+        document_key=document_key,
+        meeting_id=base_entry["meeting_id"],
+        entry=entry,
+        source=None,
+    )
 
 
 __all__ = [
+    "DOCUMENT_KEY_PATTERN",
+    "DOCUMENT_KINDS",
     "AnalysisConflictError",
-    "PartNotApplicableError",
+    "DocumentKind",
     "PartReloadFailedError",
-    "applicable_parts",
     "build_analysis_cache_v3",
     "build_analyzer_v3",
     "build_v3_config_from_env",
-    "load_cached_analysis_v3",
+    "document_entry_name",
+    "document_parts",
+    "load_cached_document_v3",
     "read_attendee_roster",
     "read_task_agenda",
-    "run_meeting_analysis_v3",
+    "run_meeting_document_v3",
+    "transcript_payload",
 ]

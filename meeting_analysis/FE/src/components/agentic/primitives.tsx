@@ -54,8 +54,8 @@ const VERIFICATION_TAG: Record<Verification, { label: string; className: string;
   },
 };
 
-export function VerificationTag({ verification }: { verification?: Verification }) {
-  const tag = VERIFICATION_TAG[verification ?? "rule"];
+export function VerificationTag({ verification }: { verification?: Verification | string | null }) {
+  const tag = VERIFICATION_TAG[(verification ?? "rule") as Verification];
   if (!tag) return null;
   return (
     <span className={tag.className} title={tag.title}>
@@ -66,7 +66,7 @@ export function VerificationTag({ verification }: { verification?: Verification 
 
 export function CitationCount({ count }: { count: number }) {
   return (
-    <span className="flex-none font-mono text-[11px] text-neutral-600" title="Số lượt nói làm bằng chứng">
+    <span className="flex-none font-mono text-[11px] text-neutral-600" title="Số dòng transcript được trích làm bằng chứng">
       {count} trích dẫn
     </span>
   );

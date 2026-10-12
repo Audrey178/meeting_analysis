@@ -1,5 +1,5 @@
 """Unit test cho các luật 0 token của ``src.agentic_v3.core``: Evidence-Check, làm sạch
-output ("giao <actor>", luận điểm giao việc), gộp trùng và luật áp lên verdict
+output ("giao <actor>", ý thảo luận chỉ là câu giao việc), gộp trùng và luật áp lên verdict
 của judge.
 
 Các ca lấy từ lỗi thật judge eval đã gắn cờ (``eval/results/dialtreeseg_v1``),
@@ -16,6 +16,7 @@ from src.agentic_v3.core._shared import (
     merge_duplicate_decisions,
     strip_assignment_prefix,
 )
+from src.agentic_v3.core.nodes.content_agent import _build_discussion_points_from_llm_result
 from src.agentic_v3.core.nodes.debate_judge_agent import _resolve_verdict
 from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate
 from src.utils.contracts import SpeakerTurn
@@ -163,6 +164,25 @@ def test_is_assignment_point() -> None:
     assert is_assignment_point("Phân công Nam tích hợp SMS.")
     assert not is_assignment_point("Đề nghị không giao cho xã thực hiện vì thiếu nhân lực.")
     assert not is_assignment_point("Giao diện tra cứu cần responsive.")
+
+
+def test_discussion_point_tags_speakers_of_cited_turns_in_speaking_order() -> None:
+    task = {"segment_id": "S1", "turns": TURNS}
+    result = {"discussion_points": [
+        {"evidence_segment_ids": ["T6", "T2", "[T4|Hiếu]", "T6"], "text": "Có nên dùng LLM tự host."},
+        {"evidence_segment_ids": ["T99"], "text": "Ý không có trích dẫn hợp lệ."},
+        {"evidence_segment_ids": ["T3"], "text": "Giao Hiếu map lại nhãn."},
+        "không phải dict",
+    ]}
+
+    points, dropped = _build_discussion_points_from_llm_result(task, result)
+
+    assert [(p.segment_id, p.text) for p in points] == [("S1", "Có nên dùng LLM tự host.")]
+    assert points[0].speakers == ("Chị Mai", "Hiếu", "Anh Tuấn")
+    assert points[0].evidence_ids == ("T2", "T4", "T6")
+    assert points[0].quotes == tuple(t.text_exact for t in (TURNS[1], TURNS[3], TURNS[5]))
+    # Ý không trích dẫn và mục sai kiểu bị đếm; câu giao việc bị bỏ mà không đếm.
+    assert dropped == 2
 
 
 # ----- Gộp trùng -----

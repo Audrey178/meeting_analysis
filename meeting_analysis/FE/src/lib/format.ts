@@ -1,69 +1,98 @@
-import type { ActionItemV3Out, ActorType, AssigneeRole } from "../api/types";
+import type { AssignmentTarget, Due, TaskOut } from "../api/types";
 
 export const UNASSIGNED_LABEL = "Chưa rõ người phụ trách";
 
+export type TargetKind = AssignmentTarget["target_type"];
+
+/** Tên hiển thị của một bên nhận việc (đơn vị, người, hoặc cách gọi trong bản ghi khi chưa rõ). */
+export function targetName(target: AssignmentTarget | null): string | null {
+  if (!target) return null;
+  if (target.target_type === "unit") return target.unit_name;
+  if (target.target_type === "person") return target.person_name;
+  return target.name;
+}
+
+/** Bên nhận việc chưa định danh được (resolver gắn cờ mơ hồ/thiếu). */
+export function isUnresolved(target: AssignmentTarget | null): boolean {
+  return !target || !targetName(target) || (target.target_type === "unknown" && Boolean(target.extensions.resolution?.flag));
+}
+
 export interface AssigneeEntry {
-  item: ActionItemV3Out;
-  /** Role of THIS group's party in the item; undefined for v1 items (no assignees). */
-  role?: AssigneeRole;
+  task: TaskOut;
+  target: AssignmentTarget | null;
+  /** Vai của bên này trong việc: lead (chủ trì), support (phối hợp), joint (cùng thực hiện). */
+  role: string;
 }
 
 export interface AssigneeGroup {
   assignee: string;
-  /** Person/organization when every entry agrees; undefined for v1 items and the unassigned bucket. */
-  actorType?: ActorType;
+  /** Đơn vị/người khi mọi mục cùng loại; undefined với nhóm "chưa rõ". */
+  kind?: TargetKind;
   entries: AssigneeEntry[];
 }
 
 const groupKey = (name: string) => name.trim().normalize("NFC").toLowerCase();
 
-// Grouping-by-actor moved here from the backend (was `group_action_items_by_actor`
-// in src/agentic/_shared.py, removed in M6 -- see be/DESIGN.md). Groups by EXACT
-// match only (normalized: NFC + trim + lowercase), never by substring/fuzzy match --
-// a real bug found in ground-truth data once merged an item actually assigned to
-// "Sơn" into the meeting's dominant speaker "Phạm Hồng Sơn" by matching on a shared
-// substring. First-seen order is preserved, the "unassigned" bucket goes last (it is
-// a warning, not a person).
-//
-// v3 items carry `assignees` (one task can go to several parties: chủ trì + phối hợp),
-// so a task shows up under EVERY resolved party, tagged with that party's role.
-// Unresolved parties (name null) land once per task in the "unassigned" bucket.
-// Items without `assignees` (v1, or v3 with no actor) group by `actor`.
-export function groupActionItemsByAssignee(items: ActionItemV3Out[]): AssigneeGroup[] {
+// Gom việc theo bên nhận việc. Chỉ gom khi tên KHỚP HẲN (chuẩn hoá NFC + trim + chữ thường), không
+// gom theo chuỗi con/mờ -- từng gặp lỗi gom việc giao "Sơn" vào người nói "Phạm Hồng Sơn" vì trùng
+// chuỗi con. Một việc có thể giao nhiều bên (chủ trì + phối hợp) nên hiện dưới MỌI bên đã định
+// danh, kèm vai của bên đó; bên chưa định danh được vào nhóm "chưa rõ" (một lần mỗi việc), đặt
+// cuối vì đó là cảnh báo, không phải một người. Giữ thứ tự xuất hiện đầu tiên.
+export function groupTasksByAssignee(tasks: TaskOut[]): AssigneeGroup[] {
   const order: string[] = [];
   const groups = new Map<string, AssigneeGroup>();
 
-  function add(key: string, display: string, entry: AssigneeEntry, actorType?: ActorType) {
+  function add(key: string, display: string, entry: AssigneeEntry, kind?: TargetKind) {
     let group = groups.get(key);
     if (!group) {
-      group = { assignee: display, actorType, entries: [] };
+      group = { assignee: display, kind, entries: [] };
       groups.set(key, group);
       order.push(key);
     }
-    if (group.entries.some((existing) => existing.item === entry.item)) return;
-    if (group.actorType !== actorType) group.actorType = undefined;
+    if (group.entries.some((existing) => existing.task === entry.task)) return;
+    if (group.kind !== kind) group.kind = undefined;
     group.entries.push(entry);
   }
 
-  for (const item of items) {
-    const assignees = item.assignees ?? [];
-    if (assignees.length === 0) {
-      const actor = (item.actor ?? "").trim();
-      add(actor ? groupKey(actor) : "", actor || UNASSIGNED_LABEL, { item });
-      continue;
-    }
-    for (const assignee of assignees) {
-      if (assignee.name) add(groupKey(assignee.name), assignee.name, { item, role: assignee.role }, assignee.actor_type);
-      else add("", UNASSIGNED_LABEL, { item, role: assignee.role });
-    }
+  for (const task of tasks) {
+    const { primary, collaborators } = task.extracted.assignment;
+    const targets = primary ? [primary, ...collaborators] : [null];
+    targets.forEach((target, index) => {
+      const role = target?.extensions.resolution?.role ?? (index === 0 ? "lead" : "support");
+      const entry = { task, target, role };
+      const name = targetName(target);
+      if (isUnresolved(target) || !name) add("", UNASSIGNED_LABEL, entry);
+      else add(groupKey(name), name, entry, target!.target_type);
+    });
   }
 
   const sorted = [...order.filter((key) => key !== ""), ...order.filter((key) => key === "")];
   return sorted.map((key) => groups.get(key)!);
 }
 
-// Same convention as the backend's make_speaker_initials: first letter of the
-// first and last word ("Phạm Hồng Sơn" -> "PS"); a parenthesised role is ignored.
+/** "2026-01-31" -> "31/01/2026". */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const [year, month, day] = iso.split("-");
+  return day && month ? `${day}/${month}/${year}` : iso;
+}
+
+const DUE_KIND_PREFIX: Record<string, string> = { before: "trước ", end_of_period: "cuối kỳ · " };
+
+/** "trước 15/11/2026" khi hạn quy được về ngày; không thì nguyên văn. */
+export function formatDue(due: Due | null): string {
+  if (!due) return "";
+  if (!due.date) return due.raw ?? "";
+  return `${DUE_KIND_PREFIX[due.kind] ?? ""}${formatDate(due.date)}`;
+}
+
+/** Số thứ tự chủ đề hai chữ số ("03"). */
+export function topicNumber(index: number): string {
+  return String(index + 1).padStart(2, "0");
+}
+
+// First letter of the first and last word ("Phạm Hồng Sơn" -> "PS"); a
+// parenthesised role is ignored.
 export function initialsOf(name: string): string {
   const words = name.replace(/\(.*?\)/g, "").trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return "?";

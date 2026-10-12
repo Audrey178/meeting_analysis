@@ -61,43 +61,34 @@ class TopicFailure:
 
 
 @dataclass(frozen=True, slots=True)
-class SpeakerPoint:
-    """Một luận điểm của một người nói trong một đoạn chủ đề.
-
-    Các trường:
-        text: nội dung luận điểm (ngôi thứ ba).
-        evidence_ids: các turn_id làm bằng chứng cho luận điểm.
-        quotes: nguyên văn lượt nói ứng với từng phần tử của ``evidence_ids``
-            (cùng thứ tự và độ dài). Luôn do luật điền
-            (``_shared.validate_evidence_by_turn_ids``), không tin trực tiếp từ LLM.
-    """
-
-    text: str
-    evidence_ids: tuple[str, ...]
-    quotes: tuple[str, ...]
-
-    @property
-    def citation_count(self) -> int:
-        """Số trích dẫn của luận điểm (bằng số turn_id bằng chứng)."""
-
-        return len(self.evidence_ids)
-
-
-@dataclass(frozen=True, slots=True)
-class SpeakerSection:
-    """Toàn bộ luận điểm của MỘT người nói trong MỘT đoạn chủ đề.
+class DiscussionPoint:
+    """Một ý thảo luận trong một đoạn chủ đề: điều các bên đang bàn/tranh luận và ai tham gia.
 
     Các trường:
         segment_id: mã đoạn chủ đề.
-        initials: chữ viết tắt của người nói (ví dụ "PS").
-        full_name: họ tên đầy đủ, đã đối chiếu với người nói thật của đoạn.
-        points: các luận điểm của người này.
+        text: tóm tắt ý thảo luận (ngôi thứ ba), nêu vấn đề và các quan điểm.
+        speakers: người nói tham gia ý này, theo thứ tự lên tiếng. Luôn do luật điền từ
+            người nói của các lượt trong ``evidence_ids``, không tin trực tiếp từ LLM.
+        evidence_ids: các turn_id làm bằng chứng cho ý thảo luận.
+        quotes: nguyên văn lượt nói ứng với từng phần tử của ``evidence_ids``
+            (cùng thứ tự và độ dài). Luôn do luật điền
+            (``_shared.validate_evidence_by_segment_ids``), không tin trực tiếp từ LLM.
+        segment_ids: mã các dòng transcript thô (item) model trích dẫn, theo thứ tự bản ghi;
+            ``evidence_ids`` là các lượt nói chứa chúng.
     """
 
     segment_id: str
-    initials: str
-    full_name: str
-    points: tuple[SpeakerPoint, ...]
+    text: str
+    speakers: tuple[str, ...]
+    evidence_ids: tuple[str, ...]
+    quotes: tuple[str, ...]
+    segment_ids: tuple[str, ...] = ()
+
+    @property
+    def citation_count(self) -> int:
+        """Số trích dẫn của ý thảo luận (bằng số turn_id bằng chứng)."""
+
+        return len(self.evidence_ids)
 
 
 # Trạng thái do agent trích xuất TỰ KHAI cho từng candidate. Đây là tín hiệu
@@ -123,6 +114,8 @@ class DecisionCandidate:
         confirm_turn_id: lượt nói thể hiện việc chốt; đã kiểm là thuộc đoạn
             này (None nếu agent không nêu hoặc nêu sai).
         verification: đường kiểm chứng đã đi qua (xem ``Verification``).
+        segment_ids: mã các dòng transcript thô (item) được trích dẫn; ``evidence_ids`` là
+            các lượt nói chứa chúng.
     """
 
     segment_id: str
@@ -132,6 +125,7 @@ class DecisionCandidate:
     status: DecisionStatus = "unknown"
     confirm_turn_id: str | None = None
     verification: Verification = "rule"
+    segment_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -153,6 +147,7 @@ class ActionItemCandidate:
         verification: đường kiểm chứng đã đi qua (xem ``Verification``).
         task_id: mã việc trong danh sách việc cần báo cáo mà việc giao này tiếp nối
             (chỉ v3, khi phiên họp có file ``*.tasks.json``); None nếu là việc mới.
+        segment_ids: mã các dòng transcript thô (item) được trích dẫn.
     """
 
     segment_id: str
@@ -167,6 +162,7 @@ class ActionItemCandidate:
     confirm_turn_id: str | None = None
     verification: Verification = "rule"
     task_id: str | None = None
+    segment_ids: tuple[str, ...] = ()
 
 
 # ---------------------------------------------------------------------------
@@ -225,8 +221,7 @@ JudgeVerdict = Literal["keep", "revise", "drop"]
 __all__ = [
     "SegmentTask",
     "TopicFailure",
-    "SpeakerPoint",
-    "SpeakerSection",
+    "DiscussionPoint",
     "DecisionCandidate",
     "ActionItemCandidate",
     "ActionStatus",

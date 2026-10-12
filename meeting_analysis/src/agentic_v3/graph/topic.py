@@ -223,8 +223,14 @@ def _strip_actor_roles(item, state: TopicState):
     return replace(item, actor=", ".join(mention.text for mention in mentions))
 
 
+_EVIDENCE_CHECK_OFF = "evidence-check tắt (ablation): chưa kiểm căn cứ bằng luật."
+
+
 def evidence_check(
-    state: TopicState, turn_judge: TurnActJudge | None = None, progress_judge: ProgressActJudge | None = None
+    state: TopicState,
+    turn_judge: TurnActJudge | None = None,
+    progress_judge: ProgressActJudge | None = None,
+    v3_config: V3Config | None = None,
 ) -> dict:
     """Tách candidate thô của chủ đề thành CLEAR (vào kết quả) / UNCERTAIN (đi Verifier).
 
@@ -236,9 +242,15 @@ def evidence_check(
     kiểm bằng ``progress_judge`` trên lượt nêu trạng thái (``nodes/progress.py``), không
     đi Verifier.
 
+    Hai núm ablation của ``V3Config`` (production để mặc định): ``evidence_check=False`` coi mọi
+    candidate là UNCERTAIN; ``verifier_mode`` khác ``"on"`` thì giữ hết/bỏ hết candidate UNCERTAIN
+    ngay tại đây thay vì gửi Verifier.
+
     Đầu vào: state - sau khi các agent trích xuất của chủ đề đã xong;
         turn_judge - bộ phân loại lượt chốt (tuỳ chọn);
-        progress_judge - bộ phân loại lượt nêu trạng thái tiến độ (tuỳ chọn).
+        progress_judge - bộ phân loại lượt nêu trạng thái tiến độ (tuỳ chọn);
+        v3_config - cấu hình v3 (None thì mặc định). Không đặt tên ``config``: LangGraph dành tên
+            đó cho ``RunnableConfig`` của node.
     Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR), ``progress_updates`` và
         ``pending_verify`` (ghi đè).
     """
@@ -260,7 +272,11 @@ def evidence_check(
             "registry": state["registry"],
         }
 
+    config = v3_config or V3Config()
     for index, item in enumerate(state.get("action_candidates_raw", [])):
+        if not config.evidence_check:
+            pending.append(_verify_task("action", index, item, (_EVIDENCE_CHECK_OFF,)))
+            continue
         flag = check_action_evidence(_strip_actor_roles(item, state), turns, known_names, turn_judge)
         ambiguity = _ambiguous_actor_reasons(item, state)
         reasons = [*flag.reasons, *ambiguity]
@@ -269,6 +285,9 @@ def evidence_check(
         else:
             pending.append(_verify_task("action", index, item, tuple(reasons)))
     for index, item in enumerate(state.get("decision_candidates_raw", [])):
+        if not config.evidence_check:
+            pending.append(_verify_task("decision", index, item, (_EVIDENCE_CHECK_OFF,)))
+            continue
         flag = check_decision_evidence(item, turns, turn_judge)
         if flag.verdict == "clear":
             clear_decisions.append(item)
@@ -277,6 +296,11 @@ def evidence_check(
     progress_updates = check_progress_updates(
         state.get("progress_updates_raw", []), turns, state["registry"].agenda, progress_judge, turn_judge
     )
+    if config.verifier_mode == "keep_uncertain":
+        clear_actions += [task["candidate"] for task in pending if task["kind"] == "action"]
+        clear_decisions += [task["candidate"] for task in pending if task["kind"] == "decision"]
+    if config.verifier_mode != "on":
+        pending = []
     return {
         "verified_assignments": clear_actions,
         "verified_decisions": clear_decisions,
@@ -336,7 +360,9 @@ def build_topic_graph(
     graph.add_node(
         "progress_agent", _wrap_extractor("progress_agent", make_progress_agent(progress_llm or action_llm), attempts)
     )
-    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge, progress_judge=progress_judge))
+    graph.add_node(
+        "evidence_check", partial(evidence_check, turn_judge=turn_judge, progress_judge=progress_judge, v3_config=config)
+    )
     proposer_llms = {"action": action_llm, "decision": decision_llm}
     graph.add_node("verifier", make_verifier(verifier_llm, proposer_llms, config))
 
