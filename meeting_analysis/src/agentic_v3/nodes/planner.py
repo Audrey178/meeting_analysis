@@ -10,6 +10,9 @@ Lập hai thứ:
    không có cụm giao/nhận/chốt việc nào thì bỏ agent tương ứng. Cue cố ý RỘNG
    (gồm cả "sẽ", "nhận", "làm") vì bỏ nhầm làm mất kết quả (giảm recall), còn
    chạy thừa chỉ tốn một lời gọi. Content agent không bao giờ bị bỏ.
+   Agent tiến độ chạy ở MỌI chủ đề khi phiên họp có danh sách việc cần báo cáo
+   (``SpeakerRegistry.agenda``): agent tự chọn việc nào chủ đề có nhắc, Planner không
+   lọc theo từ khoá.
 """
 
 from __future__ import annotations
@@ -18,12 +21,13 @@ import re
 import unicodedata
 from collections.abc import Sequence
 
-from ...agentic._shared import (
+from ..core._shared import (
     get_turns_of_segment,
     list_distinct_speaker_names,
     match_claimed_name_to_real_speaker,
 )
 from ...utils.contracts import SpeakerTurn, TopicSegment
+from ..actors.agenda import TaskAgenda
 from ..actors.attendees import AttendeeRoster
 from ..schemas import SpeakerRegistry, TopicPlan
 
@@ -31,7 +35,8 @@ from ..schemas import SpeakerRegistry, TopicPlan
 ACTION_CUES: tuple[str, ...] = (
     "giao", "phân công", "phụ trách", "đảm nhận", "đảm nhiệm", "chủ trì", "phối hợp",
     "yêu cầu", "chỉ đạo", "đề nghị", "đề xuất", "kiến nghị", "nhờ", "nhận", "sẽ", "làm", "xử lý", "triển khai",
-    "hoàn thành", "trình", "báo cáo lại", "gửi", "chuẩn bị", "rà soát", "cập nhật",
+    "hoàn thành", "hoàn chỉnh", "trình", "báo cáo lại", "gửi", "chuẩn bị", "rà soát", "cập nhật",
+    "bổ sung", "làm rõ", "đánh giá lại", "xây dựng lại", "nhóm việc",
     "trước ngày", "thời hạn", "hạn chót", "deadline", "trong tuần", "tuần sau", "tháng sau",
 )
 
@@ -40,6 +45,7 @@ DECISION_CUES: tuple[str, ...] = (
     "chốt", "thống nhất", "kết luận", "quyết định", "nhất trí", "đồng ý", "phê duyệt",
     "thông qua", "chấp thuận", "đề xuất", "kiến nghị", "chọn", "áp dụng", "giữ nguyên", "dừng", "tạm dừng",
     "không làm", "bỏ", "giao", "triển khai", "theo phương án", "như vậy",
+    "tinh thần chung", "ghi nhận", "thẩm quyền",
 )
 
 
@@ -64,19 +70,41 @@ def find_cues(text: str, cues: Sequence[str]) -> tuple[str, ...]:
 
 
 def build_speaker_registry(
-    turns: Sequence[SpeakerTurn], roster: AttendeeRoster | None = None
+    turns: Sequence[SpeakerTurn],
+    roster: AttendeeRoster | None = None,
+    *,
+    chair: str | None = None,
+    agenda: TaskAgenda | None = None,
 ) -> SpeakerRegistry:
     """Dựng danh bạ người nói từ toàn bộ lượt nói của cuộc họp, kèm danh sách tham dự.
 
-    Đầu vào: turns - mọi lượt nói, theo thứ tự; roster - danh sách tham dự (None nếu không có).
+    Tên người chủ trì được quy về đúng nhãn người nói nếu khớp duy nhất một người
+    ("Phạm Hồng Sơn" -> "Phạm Hồng Sơn (HNI)"); không khớp thì giữ nguyên tên phiên họp
+    cung cấp (người chủ trì có thể không phát biểu).
+
+    Đầu vào: turns - mọi lượt nói, theo thứ tự; roster - danh sách tham dự (None nếu không có);
+        chair - người chủ trì hoặc None; agenda - danh sách việc cần báo cáo (None nếu không có).
     Đầu ra: SpeakerRegistry.
     """
 
-    return SpeakerRegistry(names=list_distinct_speaker_names(tuple(turns)), roster=roster or AttendeeRoster())
+    turns = tuple(turns)
+    chair = (chair or "").strip() or None
+    if chair:
+        chair = match_claimed_name_to_real_speaker(chair, turns) or chair
+    return SpeakerRegistry(
+        names=list_distinct_speaker_names(turns),
+        roster=roster or AttendeeRoster(),
+        chair=chair,
+        agenda=agenda or TaskAgenda(),
+    )
 
 
 def plan_topic(
-    segment_id: str, turns: Sequence[SpeakerTurn], *, skip_without_cues: bool = True
+    segment_id: str,
+    turns: Sequence[SpeakerTurn],
+    *,
+    skip_without_cues: bool = True,
+    run_progress: bool = False,
 ) -> TopicPlan:
     """Lập kế hoạch agent cho MỘT chủ đề theo cue trong nguyên văn lượt nói.
 
@@ -84,6 +112,7 @@ def plan_topic(
         segment_id: mã chủ đề.
         turns: lượt nói của chủ đề.
         skip_without_cues: False thì luôn chạy đủ ba agent (ablation/tắt tính năng).
+        run_progress: chạy agent tiến độ (khi phiên họp có danh sách việc).
     Đầu ra: TopicPlan.
     """
 
@@ -96,6 +125,7 @@ def plan_topic(
         run_decision=bool(decision_cues) or not skip_without_cues,
         action_cues=action_cues,
         decision_cues=decision_cues,
+        run_progress=run_progress,
     )
 
 
@@ -105,6 +135,8 @@ def plan_meeting(
     *,
     skip_without_cues: bool = True,
     roster: AttendeeRoster | None = None,
+    chair: str | None = None,
+    agenda: TaskAgenda | None = None,
 ) -> tuple[SpeakerRegistry, dict[str, TopicPlan]]:
     """Lập danh bạ người nói và kế hoạch agent cho mọi chủ đề.
 
@@ -113,15 +145,19 @@ def plan_meeting(
         turns_by_id: turn_id -> SpeakerTurn của cả cuộc họp.
         skip_without_cues: xem ``plan_topic``.
         roster: danh sách tham dự (None nếu không có).
+        chair: người chủ trì phiên họp cung cấp, hoặc None (xem ``build_speaker_registry``).
+        agenda: danh sách việc cần báo cáo, hoặc None; có việc thì mọi chủ đề chạy agent tiến độ.
     Đầu ra: (SpeakerRegistry, segment_id -> TopicPlan).
     """
 
-    registry = build_speaker_registry(tuple(turns_by_id.values()), roster)
+    registry = build_speaker_registry(tuple(turns_by_id.values()), roster, chair=chair, agenda=agenda)
+    run_progress = bool(registry.agenda.tasks)
     plans = {
         segment.segment_id: plan_topic(
             segment.segment_id,
             get_turns_of_segment(segment, turns_by_id),
             skip_without_cues=skip_without_cues,
+            run_progress=run_progress,
         )
         for segment in segments
     }
@@ -132,14 +168,16 @@ def format_registry_context(registry: SpeakerRegistry) -> str:
     """Biến danh bạ thành khối ngữ cảnh cho prompt Action agent (ô ``previous_context`` của v1).
 
     Có danh sách tham dự thì thêm người (kèm chức vị, đơn vị) và đơn vị, để agent ghi
-    được actor là đơn vị ("Sở Tài chính") hoặc họ tên đầy đủ thay vì chỉ tên gọi.
+    được actor là đơn vị ("Sở Tài chính") hoặc họ tên đầy đủ thay vì chỉ tên gọi. Có danh
+    sách việc cần báo cáo thì thêm các việc (``format_agenda``), để Action agent ghi được
+    ``task_id`` cho việc giao tiếp nối một việc cũ.
 
     Đầu vào: registry - danh bạ người nói + danh sách tham dự.
     Đầu ra: str cho prompt.
     """
 
     roster = registry.roster
-    if not registry.names and not roster.people and not roster.organizations:
+    if not registry.names and not roster.people and not roster.organizations and not registry.agenda.tasks:
         return "(Không có danh sách người nói.)"
     lines = []
     if registry.names:
@@ -157,6 +195,30 @@ def format_registry_context(registry: SpeakerRegistry) -> str:
             for org in roster.organizations
         ]
         lines.append("Đơn vị tham dự (actor có thể là đơn vị): " + ", ".join(organizations) + ".")
+    if registry.agenda.tasks:
+        lines.append(format_agenda(registry.agenda))
+    return "\n".join(lines)
+
+
+def format_agenda(agenda: TaskAgenda) -> str:
+    """Biến danh sách việc cần báo cáo thành khối văn bản cho prompt.
+
+    Mỗi việc một dòng: mã, tên, bên chủ trì/phối hợp, hạn, trạng thái trước phiên họp.
+
+    Đầu vào: agenda - danh sách việc (không rỗng).
+    Đầu ra: str nhiều dòng.
+    """
+
+    lines = ["Việc cần báo cáo tiến độ trong phiên họp (mã: tên việc):"]
+    for task in agenda.tasks:
+        details = [f"chủ trì: {task.owner.name}"]
+        if task.support:
+            details.append("phối hợp: " + ", ".join(party.name for party in task.support))
+        if task.due:
+            details.append(f"hạn: {task.due}")
+        if task.last_status:
+            details.append(f"trạng thái trước họp: {task.last_status}")
+        lines.append(f"- {task.task_id}: {task.title} ({'; '.join(details)})")
     return "\n".join(lines)
 
 
@@ -165,6 +227,7 @@ __all__ = [
     "DECISION_CUES",
     "build_speaker_registry",
     "find_cues",
+    "format_agenda",
     "format_registry_context",
     "plan_meeting",
     "plan_topic",

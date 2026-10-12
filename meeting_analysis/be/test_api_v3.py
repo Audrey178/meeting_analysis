@@ -2,8 +2,9 @@
 -> TreeSeg -> ``MeetingAnalyzerV3`` -> HTTP, mọi adapter là đồ giả (không gọi mạng).
 
 Kiểm luồng không có candidate nghi ngờ, luồng Verifier gửi feedback -> agent trích xuất
-sửa -> Verifier đồng ý, tất cả trong MỘT request, và danh sách tham dự gửi kèm request
-(tên gọi tắt của đơn vị quy về đúng đơn vị; danh sách sai dạng thì 422).
+sửa -> Verifier đồng ý, tất cả trong MỘT request, danh sách tham dự gửi kèm request
+(tên gọi tắt của đơn vị quy về đúng đơn vị; danh sách sai dạng thì 422), và danh sách việc
+cần báo cáo tiến độ (``task_progress``, ``task_id``/``relation`` của việc giao).
 """
 
 from __future__ import annotations
@@ -32,9 +33,10 @@ class _RoleLLM:
         xuất sửa actor theo feedback, Verifier lần sau giữ.
     """
 
-    def __init__(self, action_status: str = "assigned", actor: str = "Nguyễn Cường") -> None:
+    def __init__(self, action_status: str = "assigned", actor: str = "Nguyễn Cường", task_id: str | None = None) -> None:
         self.action_status = action_status
         self.actor = actor
+        self.task_id = task_id
         self.verifier_calls = 0
         self.user_prompts: list[str] = []
 
@@ -50,7 +52,13 @@ class _RoleLLM:
         if role == "action_items":
             return {"action_items": [{
                 "evidence_turn_ids": [turn_id], "confirm_turn_id": turn_id, "status": self.action_status,
-                "actor": self.actor, "text": "Hoàn thiện tờ trình.", "deadline": None,
+                "actor": self.actor, "text": "Hoàn thiện tờ trình.", "deadline": None, "task_id": self.task_id,
+            }]}
+        if role == "updates":
+            return {"updates": [{
+                "task_id": "T1", "status": "returned", "status_turn_id": turn_id, "evidence_turn_ids": [turn_id],
+                "deadline": None, "deadline_date": None, "deadline_kind": "unknown", "deadline_removed": True,
+                "summary": "Tờ trình phải làm lại.", "blockers": [], "directive": "Chuẩn bị lại tờ trình.",
             }]}
         if role == "decisions":
             return {"decisions": [{"evidence_turn_ids": [turn_id], "confirm_turn_id": turn_id, "status": "agreed", "text": "Chốt phương án."}]}
@@ -153,5 +161,62 @@ def test_v3_malformed_attendees_is_rejected() -> None:
         response = client.post("/v3/meetings/analyze", json={**_payload(), "attendees": bad})
 
         assert response.status_code == 422
+    finally:
+        app.dependency_overrides.clear()
+
+
+_TASKS = {
+    "tasks": [
+        {"id": "T1", "title": "Trình Ban Thường vụ tờ trình đề án", "owner": "O2", "due": "2026-01-31",
+         "last_status": "in_progress"},
+        {"id": "T2", "title": "Lập báo cáo đánh giá môi trường chiến lược", "owner": "P1", "due": "2026-01-10"},
+    ]
+}
+
+
+def test_v3_tasks_produce_progress_and_link_assignments() -> None:
+    try:
+        client = _client_with(_RoleLLM(action_status="assigned", actor="Đảng ủy ban", task_id="T1"))
+        payload = {**_payload(), "meeting_date": "2026-01-15", "attendees": _ATTENDEES, "tasks": _TASKS}
+
+        response = client.post("/v3/meetings/analyze", json=payload)
+
+        assert response.status_code == 200, response.text
+        result = response.json()
+        t1, t2 = result["task_progress"]
+        assert (t1["task_id"], t1["owner"], t1["status"], t1["deadline_removed"]) == (
+            "T1", "Đảng ủy UBND Thành phố", "returned", True,
+        )
+        assert t1["deciding_update"]["verification"] == "unchecked"  # không có Decisions trong test
+        assert (t2["status"], t2["overdue"], t2["updates"]) == ("not_reported", True, [])
+        (assignment,) = result["verified_assignments"]
+        assert (assignment["task_id"], assignment["relation"]) == ("T1", "follow_up")
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_v3_without_tasks_has_no_progress() -> None:
+    try:
+        client = _client_with(_RoleLLM())
+
+        response = client.post("/v3/meetings/analyze", json=_payload())
+
+        assert response.status_code == 200, response.text
+        result = response.json()
+        assert result["task_progress"] == []
+        assert result["verified_assignments"][0]["relation"] is None
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_v3_malformed_tasks_is_rejected() -> None:
+    try:
+        client = _client_with(_RoleLLM())
+        bad = {"tasks": [{"id": "T1", "title": "Trình tờ trình", "owner": "O9"}]}
+
+        response = client.post("/v3/meetings/analyze", json={**_payload(), "attendees": _ATTENDEES, "tasks": bad})
+
+        assert response.status_code == 422
+        assert "O9" in response.json()["detail"]
     finally:
         app.dependency_overrides.clear()

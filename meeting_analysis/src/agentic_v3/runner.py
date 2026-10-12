@@ -11,16 +11,17 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from ..agentic.turn_act import TurnActJudge
+from .core.turn_act import TurnActJudge
 from ..utils.config import TopicLabelerConfig
 from ..utils.contracts import SpeakerTurn, TopicSegment
 from ..utils.ports import LLMAdapter, TopicLabelAdapter
+from .actors.agenda import TaskAgenda
 from .actors.attendees import AttendeeRoster
 from .config import V3Config
 from .graph.meeting import build_graph_v3
 from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
+from .nodes.progress_act import ProgressActJudge
 from .schemas import MeetingReport
-from .infra.throttle import DEFAULT_LLM_CONCURRENCY, LLMConcurrencyGate
 
 
 class MeetingAnalyzerV3:
@@ -37,6 +38,9 @@ class MeetingAnalyzerV3:
             Verifier có gate riêng (dùng khi ``verifier_llm`` trỏ tới backend khác).
         turn_judge: bộ phân loại lượt chốt theo nghĩa cho evidence-check; None thì
             dùng luật từ khoá (``_COMMIT_CUES``/``_HEDGE_CUES``).
+        progress_llm: adapter LLM thô của agent tiến độ; None thì dùng ``action_llm``.
+        progress_judge: Decisions cho lượt nêu trạng thái tiến độ; None thì giữ trạng thái
+            agent khai (``verification="unchecked"``).
     """
 
     def __init__(
@@ -52,6 +56,8 @@ class MeetingAnalyzerV3:
         llm_concurrency: int = DEFAULT_LLM_CONCURRENCY,
         verifier_llm_concurrency: int | None = None,
         turn_judge: TurnActJudge | None = None,
+        progress_llm: LLMAdapter | None = None,
+        progress_judge: ProgressActJudge | None = None,
     ) -> None:
         self.config = config or V3Config()
         self.gate = LLMConcurrencyGate(llm_concurrency)
@@ -65,6 +71,8 @@ class MeetingAnalyzerV3:
             labeler_config or TopicLabelerConfig(),
             self.config,
             turn_judge=turn_judge,
+            progress_llm=self.gate.wrap_llm(progress_llm) if progress_llm is not None else None,
+            progress_judge=progress_judge,
         )
 
     def analyze(
@@ -77,6 +85,7 @@ class MeetingAnalyzerV3:
         turns: Sequence[SpeakerTurn],
         segments: Sequence[TopicSegment],
         attendee_roster: AttendeeRoster | None = None,
+        task_agenda: TaskAgenda | None = None,
     ) -> MeetingReport:
         """Chạy pipeline cho một cuộc họp tới khi có kết quả cuối.
 
@@ -91,6 +100,8 @@ class MeetingAnalyzerV3:
             segments: ranh giới chủ đề phủ kín ``turns`` (CHƯA cần nhãn).
             attendee_roster: danh sách người/đơn vị tham dự (``attendees.load_attendee_roster``
                 theo quy ước đặt tên); None thì actor chỉ quy về người nói trong bản ghi.
+            task_agenda: danh sách việc cần báo cáo tiến độ (``agenda.load_task_agenda``);
+                None thì không chạy agent tiến độ và ``task_progress`` rỗng.
         Đầu ra: MeetingReport.
         """
 
@@ -102,6 +113,7 @@ class MeetingAnalyzerV3:
             "segments": tuple(segments),
             "turns_by_id": {turn.turn_id: turn for turn in turns},
             "attendee_roster": attendee_roster,
+            "task_agenda": task_agenda,
             "labels": [],
             "meeting_development": [],
             "verified_assignments": [],
@@ -109,6 +121,7 @@ class MeetingAnalyzerV3:
             "verification_records": [],
             "topic_failures": [],
             "skipped_agents": [],
+            "progress_updates": [],
             "report": None,
         }
         output = self.graph.invoke(state, {"max_concurrency": self.config.max_concurrency})

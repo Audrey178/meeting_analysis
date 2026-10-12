@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { AttendeesIn, PipelineKind, TranscriptItem } from "../api/types";
+import type { AttendeesIn, PipelineKind, TasksIn, TranscriptItem } from "../api/types";
 import sampleTranscript from "../data/sample-transcript.json";
 
 interface ParsedTranscript {
@@ -9,12 +9,17 @@ interface ParsedTranscript {
 }
 
 interface InputScreenProps {
-  /** ``meetingDate`` is "" when left empty. ``attendees`` is v3-only. */
+  /**
+   * ``meetingDate`` is "" when left empty. ``chair`` is "" when left empty or when the
+   * pipeline does not use it (agentic v1). ``attendees`` and ``tasks`` are v3-only.
+   */
   onStart: (
     transcript: ParsedTranscript,
     pipeline: PipelineKind,
     meetingDate: string,
+    chair: string,
     attendees: AttendeesIn | null,
+    tasks: TasksIn | null,
   ) => void;
   /** Called whenever the pasted JSON parses (or stops parsing), for the transcript preview. */
   onPreview?: (items: TranscriptItem[] | null) => void;
@@ -95,6 +100,42 @@ function parseAttendees(text: string): { attendees: AttendeesIn | null; error: s
   return { attendees: { people, organizations } as AttendeesIn, error: null };
 }
 
+const TASK_STATUSES = ["not_started", "in_progress", "done", "blocked"];
+
+// Danh sách việc cần báo cáo tiến độ cho v3, cùng dạng file `<transcript>.tasks.json`.
+// Mã người/đơn vị (P*/O*) được backend tra trong danh sách tham dự (sai thì 422).
+function parseTasks(text: string): { tasks: TasksIn | null; error: string | null } {
+  if (!text.trim()) return { tasks: null, error: null };
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text);
+  } catch (err) {
+    return { tasks: null, error: err instanceof Error ? err.message : "JSON không hợp lệ." };
+  }
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return { tasks: null, error: "Phải là object { tasks }." };
+  }
+  const tasks = (raw as Record<string, unknown>).tasks;
+  if (!Array.isArray(tasks)) return { tasks: null, error: "tasks phải là mảng." };
+  for (const task of tasks) {
+    if (typeof task?.id !== "string" || typeof task?.title !== "string" || typeof task?.owner !== "string") {
+      return { tasks: null, error: "Mỗi việc cần id, title và owner (chuỗi)." };
+    }
+    if (task.support !== undefined && (!Array.isArray(task.support) || task.support.some((v: unknown) => typeof v !== "string"))) {
+      return { tasks: null, error: `support của ${task.id} phải là mảng chuỗi.` };
+    }
+    if (task.due != null && !/^\d{4}-\d{2}-\d{2}$/.test(task.due)) {
+      return { tasks: null, error: `due của ${task.id} phải là YYYY-MM-DD.` };
+    }
+    if (task.last_status != null && !TASK_STATUSES.includes(task.last_status)) {
+      return { tasks: null, error: `last_status của ${task.id} phải là một trong ${TASK_STATUSES.join(", ")}.` };
+    }
+  }
+  const ids = tasks.map((task) => task.id);
+  if (new Set(ids).size !== ids.length) return { tasks: null, error: "Trùng mã việc." };
+  return { tasks: { tasks } as TasksIn, error: null };
+}
+
 function computeStats(items: TranscriptItem[]) {
   const speakers = new Set(items.map(speakerOf).filter(Boolean));
   const starts = items
@@ -118,25 +159,40 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
   const attendeesFileRef = useRef<HTMLInputElement>(null);
   const [attendeesText, setAttendeesText] = useState("");
   const { attendees, error: attendeesError } = useMemo(() => parseAttendees(attendeesText), [attendeesText]);
+  const tasksFileRef = useRef<HTMLInputElement>(null);
+  const [tasksText, setTasksText] = useState("");
+  const { tasks, error: tasksError } = useMemo(() => parseTasks(tasksText), [tasksText]);
 
   const [pipeline, setPipeline] = useState<PipelineKind>("v3");
   const [meetingDate, setMeetingDate] = useState(todayIso);
+  const [chair, setChair] = useState("");
 
   const { parsed, error } = useMemo(() => tryParse(text), [text]);
   const stats = parsed ? computeStats(parsed.items) : null;
   useEffect(() => {
     onPreview?.(parsed ? parsed.items : null);
   }, [parsed, onPreview]);
+  const speakerNames = useMemo(
+    () => (parsed ? [...new Set(parsed.items.map(speakerOf).filter((s): s is string => Boolean(s)))] : []),
+    [parsed],
+  );
   const meetingDateValid = /^\d{4}-\d{2}-\d{2}$/.test(meetingDate);
-  const usesChair = pipeline === "mrg" || pipeline === "v3";
+  const usesChair = pipeline === "v3";
   const canStart =
     Boolean(parsed && parsed.items.length > 0) &&
     (meetingDateValid || meetingDate === "") &&
-    !(pipeline === "v3" && attendeesError);
+    !(pipeline === "v3" && (attendeesError || tasksError));
 
   function start() {
     if (!parsed) return;
-    onStart(parsed, pipeline, meetingDate, pipeline === "v3" ? attendees : null);
+    onStart(
+      parsed,
+      pipeline,
+      meetingDate,
+      usesChair ? chair.trim() : "",
+      pipeline === "v3" ? attendees : null,
+      pipeline === "v3" && tasks && tasks.tasks.length > 0 ? tasks : null,
+    );
   }
 
   function loadSample() {
@@ -274,6 +330,23 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
                     onChange={(event) => setMeetingDate(event.target.value)}
                   />
                 </div>
+                {usesChair && (
+                  <div className="field">
+                    <label>Chủ trì · tuỳ chọn, giúp nhận ra lời giao việc/kết luận</label>
+                    <input
+                      className="input"
+                      list="speaker-names"
+                      value={chair}
+                      placeholder={speakerNames[0] ? `vd ${speakerNames[0]}` : "vd Nguyễn Văn Hùng"}
+                      onChange={(event) => setChair(event.target.value)}
+                    />
+                    <datalist id="speaker-names">
+                      {speakerNames.map((name) => (
+                        <option key={name} value={name} />
+                      ))}
+                    </datalist>
+                  </div>
+                )}
               </div>
               {pipeline === "v3" && (
                 <div className="field">
@@ -319,6 +392,45 @@ export function InputScreen({ onStart, onPreview }: InputScreenProps) {
                         })()}
                       </span>
                     )}
+                  </div>
+                </div>
+              )}
+              {pipeline === "v3" && (
+                <div className="field">
+                  <label>
+                    Việc cần báo cáo tiến độ · tuỳ chọn -- JSON <code>{"{ tasks }"}</code> (tệp <code>*.tasks.json</code>);
+                    owner/support là mã trong danh sách tham dự hoặc tên
+                  </label>
+                  <textarea
+                    className="input !min-h-[60px]"
+                    rows={4}
+                    value={tasksText}
+                    placeholder='{"tasks": [{"id": "T1", "title": "...", "owner": "O2", "support": ["O7"], "due": "2026-01-31", "last_status": "in_progress"}]}'
+                    onChange={(event) => setTasksText(event.target.value)}
+                    spellCheck={false}
+                  />
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <button type="button" className="btn btn-secondary" onClick={() => tasksFileRef.current?.click()}>
+                      Chọn tệp danh sách việc
+                    </button>
+                    {tasksText && (
+                      <button type="button" className="btn btn-ghost" onClick={() => setTasksText("")}>
+                        Bỏ danh sách việc
+                      </button>
+                    )}
+                    <input
+                      ref={tasksFileRef}
+                      type="file"
+                      accept="application/json"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) void file.text().then(setTasksText);
+                        event.target.value = "";
+                      }}
+                    />
+                    {tasksError && <span className="ml-auto text-[12.5px] text-accent-700">Lỗi: {tasksError}</span>}
+                    {tasks && <span className="ml-auto text-[12px] text-ok">✓ {tasks.tasks.length} việc</span>}
                   </div>
                 </div>
               )}

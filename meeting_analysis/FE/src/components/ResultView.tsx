@@ -7,7 +7,13 @@ import { TopicBlock } from "./TopicBlock";
 import { VerificationBlock } from "./VerificationBlock";
 import { EmptyState } from "./agentic/primitives";
 
-export type ResultTab = "topics" | "assignments" | "conclusion" | "verification" | "raw";
+export type ResultTab = "topics" | "assignments" | "conclusion" | "extra" | "verification" | "raw";
+
+/** Tab thêm sau "Kết luận" (v3 dùng cho "Tiến độ" khi request có danh sách việc). */
+export interface ExtraTab {
+  label: string;
+  render: (ctx: { topicIndexById: Record<string, number> }) => ReactNode;
+}
 
 /** Thay tab "Kiểm chứng" mặc định (Debate+Judge của v1) bằng nội dung khác -- v3 dùng Verifier. */
 export interface VerificationOverride {
@@ -22,6 +28,7 @@ export interface VerificationOverride {
 interface ResultViewProps {
   data: AnalyzeResponse;
   verification?: VerificationOverride;
+  extraTab?: ExtraTab;
   /** Dòng ghi chú thêm dưới thanh tab (vd. agent bị Planner bỏ qua ở v3). */
   notice?: ReactNode;
   elapsedMs: number;
@@ -45,9 +52,58 @@ function StatTile({ value, label, hint }: { value: number | string; label: strin
   );
 }
 
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+function RawJsonView({ data }: { data: AnalyzeResponse }) {
+  const json = useMemo(() => JSON.stringify(data, null, 2), [data]);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(json);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={handleCopy}
+        title={copied ? "Đã sao chép" : "Sao chép JSON"}
+        aria-label="Sao chép JSON"
+        className="absolute top-2 right-2 flex items-center gap-1.5 rounded bg-neutral-700 px-2 py-1 text-[11.5px] text-neutral-100 hover:bg-neutral-600"
+      >
+        {copied ? <CheckIcon /> : <CopyIcon />}
+        {copied ? "Đã sao chép" : "Sao chép"}
+      </button>
+      <pre className="overflow-x-auto bg-neutral-900 p-4 pr-28 text-[12px] leading-relaxed text-neutral-100">{json}</pre>
+    </div>
+  );
+}
+
 export function ResultView({
   data,
   verification,
+  extraTab,
   notice,
   elapsedMs,
   selectedPointKey,
@@ -78,6 +134,7 @@ export function ResultView({
     ["topics", `Diễn biến (${data.topics.length})`],
     ["assignments", `Giao việc (${data.verified_assignments.length})`],
     ["conclusion", `Kết luận (${data.verified_decisions.length})`],
+    ...(extraTab ? [["extra", extraTab.label] as [ResultTab, string]] : []),
     ["verification", `Kiểm chứng (${verification ? verification.count : debates.length})`],
     ["raw", "Raw JSON"],
   ];
@@ -173,6 +230,8 @@ export function ResultView({
           />
         )}
 
+        {tab === "extra" && extraTab && extraTab.render({ topicIndexById })}
+
         {tab === "verification" && verification && verification.render({ topicIndexById })}
 
         {tab === "verification" && !verification && (
@@ -184,11 +243,7 @@ export function ResultView({
           />
         )}
 
-        {tab === "raw" && (
-          <pre className="overflow-x-auto bg-neutral-900 p-4 text-[12px] leading-relaxed text-neutral-100">
-            {JSON.stringify(data, null, 2)}
-          </pre>
-        )}
+        {tab === "raw" && <RawJsonView data={data} />}
       </div>
     </div>
   );

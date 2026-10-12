@@ -42,16 +42,19 @@ thì giữ ứng viên và gắn cờ; còn lại dùng luật chấm điểm (`
 from __future__ import annotations
 
 import logging
+import re
 from collections.abc import Mapping
 from dataclasses import replace
 
-from ...agentic._shared import (
+from ..core._shared import (
+    _content_tokens,
     format_turns_as_transcript,
     is_non_identifying_actor,
     read_confirm_turn_id,
     read_stripped_text,
+    strip_assignment_prefix,
 )
-from ...agentic.nodes.debate_judge_agent import (
+from ..core.nodes.debate_judge_agent import (
     _KIND_LABELS,
     _candidate_text,
     _resolve_verdict,
@@ -182,6 +185,37 @@ PROPOSER_SCHEMA: dict = {
 
 _STANCE_LABELS = {"accept": "đồng ý", "amend": "đã sửa candidate", "defend": "giữ nguyên, phản biện"}
 
+# Kiểm lại "accept" khi lập luận dẫn turn_id mà confirm_turn_id để trống: ``argument`` phải
+# đứng cuối PROPOSER_SCHEMA (xem trên) nên model chọn lập trường TRƯỚC khi lập luận, và hay
+# "accept" rồi viết "...nhưng thực tế tại TURN_x các bên đã thống nhất". Hỏi lại chiều của
+# lập luận bằng một lời gọi ngắn (không gửi bản ghi, chỉ trường enum + turn_id).
+STANCE_CHECK_SYSTEM_PROMPT = """
+Đọc LẬP LUẬN của một agent về một candidate {kind_label} rút từ cuộc họp. Chỉ xác định
+chiều của lập luận, KHÔNG tự đánh giá lại candidate:
+- "keep": lập luận cho rằng bản ghi CÓ lượt nói giao/nhận việc hoặc kết luận/thống nhất
+  làm căn cứ giữ candidate (kể cả khi nó nói kiểm chứng viên đã bỏ sót lượt đó).
+- "drop": lập luận cho rằng KHÔNG có căn cứ (chỉ là ý kiến, thảo luận, đề xuất chưa ai
+  chấp nhận...), đồng ý bỏ candidate.
+turn_id: lượt mà lập luận dẫn làm căn cứ GIỮ (chọn trong các lượt được dẫn), null nếu "drop".
+""".strip()
+
+STANCE_CHECK_SCHEMA: dict = {
+    "type": "object",
+    "properties": {
+        "supports": {"type": "string", "enum": ["keep", "drop"]},
+        "turn_id": {"type": ["string", "null"]},
+    },
+    "required": ["supports", "turn_id"],
+}
+
+_TURN_ID_PATTERN = re.compile(r"\b(?:TURN_\d+|T\d+)\b")
+
+# Tỉ lệ âm tiết nội dung trùng giữa candidate gốc và bản ``amend`` (trên bản ngắn hơn,
+# xem ``_keeps_original_content``). Đo trên 6 bản amend của cuộc họp Cái Mép - Thị Vải và
+# fixture test: 2 bản đổi sang việc khác trùng 0.33-0.36, 5 bản sửa/thu hẹp/mở rộng cùng
+# một việc trùng 0.60-1.0.
+_AMEND_MIN_RETAINED = 0.5
+
 
 def _build_candidate_prompt(task: VerifyTask, candidate) -> str:
     """Phần đầu prompt chung cho Verifier và agent trích xuất: người chủ trì, candidate, cờ
@@ -296,10 +330,61 @@ def _read_stance(response: dict, verdict: str, meeting_turns) -> tuple[str, str 
     return stance, confirm_turn_id, argument
 
 
+def _cited_turn_ids(argument: str, meeting_turns) -> list[str]:
+    """Các turn_id có thật mà lập luận của agent dẫn ra, theo thứ tự xuất hiện, không lặp.
+
+    Đầu vào: argument - lập luận; meeting_turns - lượt nói cả cuộc họp.
+    Đầu ra: list turn_id.
+    """
+
+    cited: list[str] = []
+    for raw in _TURN_ID_PATTERN.findall(argument or ""):
+        turn_id = read_confirm_turn_id(meeting_turns, raw)
+        if turn_id and turn_id not in cited:
+            cited.append(turn_id)
+    return cited
+
+
+def _strip_repeated_actor(text: str, actor: str | None) -> str:
+    """Bỏ mọi tiền tố "<actor>: " lặp ở đầu nội dung việc giao (agent hay chép cả
+    "Đảng ủy, Ban: ..." vào ``revised_text``, sửa nhiều vòng thì lặp nhiều lần).
+
+    Đầu vào: text - nội dung agent viết; actor - người/đơn vị phụ trách.
+    Đầu ra: str đã bỏ tiền tố (không đổi nếu không có).
+    """
+
+    previous = None
+    while text != previous:
+        previous, text = text, strip_assignment_prefix(text, actor)
+    return text
+
+
+def _keeps_original_content(original: str, revised: str) -> bool:
+    """Bản sửa của agent còn giữ nội dung của candidate gốc không.
+
+    ``amend`` là để sửa câu chữ/actor của CÙNG một việc. Hai bản trùng dưới
+    ``_AMEND_MIN_RETAINED`` âm tiết nội dung (tính trên bản NGẮN hơn, để bản thu hẹp
+    "Nghiên cứu mở lại phản ánh" hay bản mở rộng thêm ý không bị phạt) là agent đã chuyển
+    sang việc khác (vd. "nghiên cứu cơ chế ... Luật Đô thị đặc biệt" thành "đánh giá tác
+    động của đề án"), làm mất việc gốc và đẻ ra mục trùng với việc khác.
+
+    Đầu vào: original, revised - nội dung việc trước và sau khi sửa.
+    Đầu ra: bool.
+    """
+
+    original_terms, revised_terms = _content_tokens(original), _content_tokens(revised)
+    if not original_terms or not revised_terms:
+        return True
+    shared = len(original_terms & revised_terms)
+    return shared / min(len(original_terms), len(revised_terms)) >= _AMEND_MIN_RETAINED
+
+
 def _apply_proposal(candidate, kind: str, response: dict, meeting_turns):
     """Áp phần sửa (amend) hoặc lượt chốt (defend) agent trích xuất gửi lại lên candidate.
 
     Chỉ nhận actor định danh được và ``confirm_turn_id`` là lượt nói thật của cuộc họp.
+    Nội dung sửa được bỏ tiền tố actor lặp; bản sửa chuyển sang việc khác
+    (``_keeps_original_content``) thì giữ nội dung gốc, chỉ nhận lượt chốt/actor mới.
 
     Đầu vào: candidate; kind - "action"/"decision"; response - JSON agent trả;
         meeting_turns - lượt nói cả cuộc họp.
@@ -311,12 +396,17 @@ def _apply_proposal(candidate, kind: str, response: dict, meeting_turns):
     if confirm_turn_id:
         changes["confirm_turn_id"] = confirm_turn_id
     if response.get("stance") == "amend":
-        text = read_stripped_text(response.get("revised_text"))
-        if text:
-            changes["text"] = text
         actor = read_stripped_text(response.get("revised_actor"))
         if kind == "action" and actor and not is_non_identifying_actor(actor):
             changes["actor"] = actor
+        text = read_stripped_text(response.get("revised_text"))
+        if kind == "action" and text:
+            for name in {changes.get("actor"), candidate.actor} - {None}:
+                text = _strip_repeated_actor(text, name)
+        if text and _keeps_original_content(candidate.text, text):
+            changes["text"] = text
+        elif text:
+            logger.info("verifier: bỏ bản sửa đổi sang việc khác: %r -> %r", candidate.text, text)
     return replace(candidate, **changes) if changes else candidate
 
 
@@ -458,6 +548,41 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                 )
             )
 
+    def _recheck_accept(task: VerifyTask, candidate, argument: str) -> str | None:
+        """Hỏi lại chiều của lập luận khi agent "accept" việc bỏ nhưng lại dẫn turn_id.
+
+        Chỉ gọi LLM khi lập luận dẫn ít nhất một lượt nói có thật; lỗi LLM thì giữ "accept".
+
+        Đầu vào: task; candidate - bản vừa bị đề nghị bỏ; argument - lập luận của agent.
+        Đầu ra: turn_id căn cứ giữ (thuộc các lượt được dẫn) nếu lập luận thực chất là
+            phản biện, ngược lại None.
+        """
+
+        cited = _cited_turn_ids(argument, task["meeting_turns"])
+        if not cited:
+            return None
+        kind = task["kind"]
+        user_prompt = (
+            f"Candidate: {_candidate_text(candidate, kind)}\n"
+            f"Lập luận của agent: {argument}\nCác lượt được dẫn: {', '.join(cited)}"
+        )
+        try:
+            with llm_call("stance_check", segment_id=task["segment_id"], prompt_chars=len(user_prompt)):
+                result = dict(
+                    proposer_llms[kind].generate_json(
+                        system_prompt=STANCE_CHECK_SYSTEM_PROMPT.format(kind_label=_KIND_LABELS[kind]),
+                        user_prompt=user_prompt,
+                        schema=STANCE_CHECK_SCHEMA,
+                    )
+                )
+        except LLMUpstreamError as exc:
+            logger.warning("verifier: lỗi LLM khi kiểm lại lập trường ở %s: %s", task["item_key"], exc)
+            return None
+        if result.get("supports") != "keep":
+            return None
+        turn_id = read_confirm_turn_id(task["meeting_turns"], result.get("turn_id"))
+        return turn_id if turn_id in cited else cited[0]
+
     def verifier(task: VerifyTask) -> dict:
         """Kiểm chứng MỘT candidate qua các vòng Verifier <-> agent trích xuất tới khi đồng thuận.
 
@@ -494,6 +619,12 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
                                reasoning=f"(Agent trích xuất lỗi LLM khi trả lời feedback: {exc})",
                                deciding_turn_id=None, decided_by="fallback")
             stance, confirm_turn_id, argument = _read_stance(response, verdict, task["meeting_turns"])
+            if stance == "accept" and verdict != "revise":
+                defended = _recheck_accept(task, candidate, argument)
+                if defended:
+                    stance, confirm_turn_id = "defend", defended
+                    argument = f"(Đổi accept thành defend vì lập luận dẫn lượt {defended} làm căn cứ giữ.) {argument}"
+                    response = {**response, "stance": "defend", "confirm_turn_id": defended}
             rounds.append(
                 ConsensusRound(
                     candidate_text, tuple(steps), verdict, feedback, deciding_turn_id,

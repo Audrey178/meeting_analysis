@@ -13,7 +13,7 @@ from __future__ import annotations
 import operator
 from typing import Annotated, TypedDict
 
-from ...agentic.schemas import (
+from ..core.schemas import (
     ActionItemCandidate,
     DecisionCandidate,
     SegmentTask,
@@ -21,9 +21,11 @@ from ...agentic.schemas import (
     TopicFailure,
 )
 from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
+from ..actors.agenda import TaskAgenda
 from ..actors.attendees import AttendeeRoster
 from ..schemas import (
     MeetingReport,
+    ProgressUpdate,
     SkippedAgent,
     SpeakerRegistry,
     TopicPlan,
@@ -53,6 +55,7 @@ class TopicOutput(TypedDict):
     verification_records: Annotated[list[VerificationRecord], operator.add]
     topic_failures: Annotated[list[TopicFailure], operator.add]
     skipped_agents: Annotated[list[SkippedAgent], operator.add]
+    progress_updates: Annotated[list[ProgressUpdate], operator.add]  # đã kiểm (evidence_check)
 
 
 class TopicState(TopicInput, TopicOutput):
@@ -66,6 +69,7 @@ class TopicState(TopicInput, TopicOutput):
     task: SegmentTask
     action_candidates_raw: Annotated[list[ActionItemCandidate], operator.add]
     decision_candidates_raw: Annotated[list[DecisionCandidate], operator.add]
+    progress_updates_raw: Annotated[list[ProgressUpdate], operator.add]
     pending_verify: tuple[VerifyTask, ...]
 
 
@@ -73,7 +77,8 @@ class MeetingStateV3(TopicOutput):
     """State của graph cha.
 
     Nhóm đầu vào: ``meeting_id``, ``revision_id``, ``meeting_date``, ``segments``, ``turns_by_id``,
-    ``attendee_roster`` (danh sách tham dự, None nếu không có).
+    ``attendee_roster`` (danh sách tham dự, None nếu không có), ``task_agenda`` (danh sách việc
+    cần báo cáo tiến độ, None nếu không có).
     Nhóm Planner: ``registry``, ``plans``.
     Nhóm kết quả cộng dồn từ các chủ đề: các khoá của ``TopicOutput``.
     Kết quả cuối: ``report``.
@@ -86,6 +91,7 @@ class MeetingStateV3(TopicOutput):
     segments: tuple[TopicSegment, ...]
     turns_by_id: dict[str, SpeakerTurn]
     attendee_roster: AttendeeRoster | None
+    task_agenda: TaskAgenda | None
     registry: SpeakerRegistry
     plans: dict[str, TopicPlan]
     report: MeetingReport | None

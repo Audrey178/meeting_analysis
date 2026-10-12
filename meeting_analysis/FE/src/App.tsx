@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { checkHealth } from "./api/client";
-import type { AttendeesIn, EvidenceRef, PipelineKind, TranscriptItem } from "./api/types";
+import type { AttendeesIn, EvidenceRef, PipelineKind, TasksIn, TranscriptItem } from "./api/types";
 import { ErrorBanner } from "./components/ErrorBanner";
 import { InputScreen } from "./components/InputScreen";
 import { NavBar } from "./components/NavBar";
@@ -43,7 +43,9 @@ export default function App() {
     transcript: Transcript,
     kind: PipelineKind,
     meetingDate: string,
+    chair: string,
     attendees: AttendeesIn | null,
+    tasks: TasksIn | null,
   ) {
     setSelected(null);
     setPendingItems(transcript.items);
@@ -51,7 +53,13 @@ export default function App() {
     const base = { meeting_id: transcript.meeting_id, revision_id: transcript.revision_id, items: transcript.items };
     const request = meetingDate ? { ...base, meeting_date: meetingDate } : base;
     if (kind === "v3") {
-      void v3.run(attendees ? { ...request, attendees } : request);
+      const v3Request = {
+        ...request,
+        ...(chair ? { chair } : {}),
+        ...(attendees ? { attendees } : {}),
+        ...(tasks ? { tasks } : {}),
+      };
+      void v3.run(v3Request);
     } else {
       void agentic.run(request);
     }

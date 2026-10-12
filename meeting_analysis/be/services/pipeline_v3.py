@@ -24,6 +24,7 @@ for _dir in (_BE_DIR, _REPO_ROOT):
 from experiments.dialstart import DialStartSegmenter
 
 from src.agentic_v3 import ActionItemV3, MeetingAnalyzerV3, MeetingReport, V3Config
+from src.agentic_v3.actors.agenda import TaskAgenda, parse_task_agenda
 from src.agentic_v3.actors.attendees import AttendeeRoster, parse_attendee_roster
 from src.utils.ports import EmbeddingAdapter
 
@@ -101,8 +102,11 @@ def _build_verifier_llm(default_llm):
     return llm, int(os.environ.get("VERIFIER_LLM_CONCURRENCY", "8"))
 
 
-def _build_turn_judge():
-    """Bộ phân loại lượt chốt theo nghĩa (OpenAI Decisions API), hoặc None nếu chưa bật.
+def _build_decisions_client():
+    """Client OpenAI cho Decisions API cùng tên model, hoặc None nếu chưa bật.
+
+    Dùng chung cho bộ phân loại lượt chốt (``_build_turn_judge``) và lượt nêu trạng thái
+    tiến độ (``_build_progress_judge``).
 
     Biến môi trường:
         TURN_ACT_MODEL: model Decisions (vd ``gpt-6-luna``); để trống thì không bật, evidence-check
@@ -112,13 +116,11 @@ def _build_turn_judge():
             vốn trỏ tới gateway chỉ có chat).
         TURN_ACT_TIMEOUT_SECONDS: timeout mỗi lời gọi (mặc định 10; quá hạn thì quay về luật từ khoá).
 
-    Đầu ra: ``DecisionsTurnActJudge`` hoặc None.
+    Đầu ra: (client, model) hoặc None.
     Lỗi: ValueError nếu có ``TURN_ACT_MODEL`` mà không tìm được API key.
     """
 
     from openai import OpenAI
-
-    from src.agentic.turn_act import DecisionsTurnActJudge
 
     model = os.environ.get("TURN_ACT_MODEL", "").strip()
     if not model:
@@ -136,7 +138,40 @@ def _build_turn_judge():
         timeout=float(os.environ.get("TURN_ACT_TIMEOUT_SECONDS", "10")),
         max_retries=2,  # đã gặp "Connection reset by peer" lẻ tẻ khi đo; SDK tự thử lại lỗi mạng/429/5xx
     )
+    return client, model
+
+
+def _build_turn_judge(decisions=None):
+    """Bộ phân loại lượt chốt theo nghĩa (OpenAI Decisions API), hoặc None nếu chưa bật.
+
+    Đầu vào: decisions - kết quả ``_build_decisions_client`` (None thì không bật; evidence-check
+        dùng luật từ khoá như v1).
+    Đầu ra: ``DecisionsTurnActJudge`` hoặc None.
+    """
+
+    from src.agentic_v3.core.turn_act import DecisionsTurnActJudge
+
+    if decisions is None:
+        return None
+    client, model = decisions
     return DecisionsTurnActJudge(client, model=model)
+
+
+def _build_progress_judge(decisions=None):
+    """Bộ phân loại lượt nêu trạng thái tiến độ (Decisions), hoặc None nếu chưa bật.
+
+    Chưa bật thì trạng thái agent tiến độ khai được giữ và đánh dấu ``unchecked``.
+
+    Đầu vào: decisions - kết quả ``_build_decisions_client``.
+    Đầu ra: ``DecisionsProgressActJudge`` hoặc None.
+    """
+
+    from src.agentic_v3.nodes.progress_act import DecisionsProgressActJudge
+
+    if decisions is None:
+        return None
+    client, model = decisions
+    return DecisionsProgressActJudge(client, model=model)
 
 
 def build_analyzer_v3() -> MeetingAnalyzerV3:
@@ -145,7 +180,8 @@ def build_analyzer_v3() -> MeetingAnalyzerV3:
     Một instance LLM dùng chung cho gán nhãn + ba agent trích xuất, như
     ``get_downstream_llm_adapters`` của v1; Verifier có thể trỏ sang backend riêng
     (``_build_verifier_llm``). Số lời gọi đồng thời đọc từ ``V3_LLM_CONCURRENCY`` (mặc định 8).
-    Lượt chốt được xét theo nghĩa khi có ``TURN_ACT_MODEL`` (``_build_turn_judge``).
+    Lượt chốt và lượt nêu trạng thái tiến độ được xét theo nghĩa khi có ``TURN_ACT_MODEL``
+    (``_build_turn_judge``, ``_build_progress_judge``, chung một client).
 
     Đầu ra: MeetingAnalyzerV3.
     """
@@ -156,6 +192,7 @@ def build_analyzer_v3() -> MeetingAnalyzerV3:
     llm = OpenAIChatJSONAdapter()
     verifier_llm, verifier_concurrency = _build_verifier_llm(llm)
     labeler = StructuredLLMTopicLabeler(llm, model_name=getattr(llm, "model_name", "openai"))
+    decisions = _build_decisions_client()
     return MeetingAnalyzerV3(
         content_llm=llm,
         action_llm=llm,
@@ -166,7 +203,8 @@ def build_analyzer_v3() -> MeetingAnalyzerV3:
         config=build_v3_config_from_env(),
         llm_concurrency=int(os.environ.get("V3_LLM_CONCURRENCY", "8")),
         verifier_llm_concurrency=verifier_concurrency,
-        turn_judge=_build_turn_judge(),
+        turn_judge=_build_turn_judge(decisions),
+        progress_judge=_build_progress_judge(decisions),
     )
 
 
@@ -241,8 +279,60 @@ def _serialize_action_item_v3(item) -> dict:
                 }
                 for a in item.assignees
             ],
+            relation=item.relation,
         )
+    serialized["task_id"] = item.task_id
     return serialized
+
+
+def _serialize_progress_update(update) -> dict:
+    """Chuyển ``ProgressUpdate`` thành dict theo ``ProgressUpdateOut``."""
+
+    return {
+        "segment_id": update.segment_id,
+        "task_id": update.task_id,
+        "status": update.status,
+        "status_turn_id": update.status_turn_id,
+        "evidence_ids": list(update.evidence_ids),
+        "quotes": list(update.quotes),
+        "summary": update.summary,
+        "blockers": list(update.blockers),
+        "directive": update.directive,
+        "deadline_raw": update.deadline_raw,
+        "deadline_date": update.deadline_date,
+        "deadline_kind": update.deadline_kind,
+        "deadline_removed": update.deadline_removed,
+        "proposed_status": update.proposed_status,
+        "status_flag": update.status_flag,
+        "status_probabilities": dict(update.status_probabilities),
+        "p_directive": update.p_directive,
+        "verification": update.verification,
+        "reason": update.reason,
+    }
+
+
+def _serialize_task_progress(progress) -> dict:
+    """Chuyển ``TaskProgress`` thành dict theo ``TaskProgressOut``."""
+
+    return {
+        "task_id": progress.task_id,
+        "title": progress.title,
+        "owner": progress.owner,
+        "previous_status": progress.previous_status,
+        "status": progress.status,
+        "previous_due": progress.previous_due,
+        "deadline_raw": progress.deadline_raw,
+        "deadline_date": progress.deadline_date,
+        "deadline_kind": progress.deadline_kind,
+        "deadline_removed": progress.deadline_removed,
+        "status_conflict": progress.status_conflict,
+        "uncertain": progress.uncertain,
+        "overdue": progress.overdue,
+        "deciding_update": (
+            _serialize_progress_update(progress.deciding_update) if progress.deciding_update else None
+        ),
+        "updates": [_serialize_progress_update(update) for update in progress.updates],
+    }
 
 
 def _build_result(meeting, report: MeetingReport) -> dict:
@@ -261,6 +351,7 @@ def _build_result(meeting, report: MeetingReport) -> dict:
         ),
         "verified_assignments": [_serialize_action_item_v3(item) for item in report.assignments],
         "verified_decisions": [_serialize_decision(item) for item in report.decisions],
+        "task_progress": [_serialize_task_progress(progress) for progress in report.task_progress],
         "turns": [{"turn_id": turn.turn_id, "speaker": turn.speaker, "text": turn.text_exact} for turn in meeting.turns],
         "failed_topics": [
             {"segment_id": f.segment_id, "agent": f.agent, "error": f.error} for f in report.failures
@@ -282,6 +373,21 @@ def read_attendee_roster(payload: dict) -> AttendeeRoster | None:
     return parse_attendee_roster(attendees) if attendees else None
 
 
+def read_task_agenda(payload: dict, roster: AttendeeRoster | None) -> TaskAgenda | None:
+    """Đọc danh sách việc cần báo cáo (``tasks``) gửi kèm request, None nếu không có/rỗng.
+
+    Đầu vào: payload - ``AnalyzeV3Request.model_dump()``; roster - danh sách tham dự để tra
+        mã người/đơn vị.
+    Đầu ra: TaskAgenda hoặc None.
+    Lỗi: ValueError nếu danh sách sai dạng (router trả 422).
+    """
+
+    tasks = payload.get("tasks")
+    if not tasks or not tasks.get("tasks"):
+        return None
+    return parse_task_agenda(tasks, roster)
+
+
 def start_meeting_analysis_v3(
     payload: dict,
     *,
@@ -297,9 +403,13 @@ def start_meeting_analysis_v3(
         analyzer: ``MeetingAnalyzerV3`` dùng chung của ứng dụng.
         embedding_adapter, topic_segmenter: như v1 (``run_meeting_analysis_pipeline``).
     Đầu ra: dict theo ``AnalyzeV3Result``.
-    Lỗi: ``LLMUpstreamError`` nếu bước embedding lỗi; ``ValueError`` nếu transcript không hợp lệ.
+    Lỗi: ``LLMUpstreamError`` nếu bước embedding lỗi; ``ValueError`` nếu transcript, danh
+        sách tham dự hoặc danh sách việc không hợp lệ.
     """
 
+    # Đọc danh sách trước khi cắt chủ đề để request sai dạng bị từ chối ngay.
+    roster = read_attendee_roster(payload)
+    agenda = read_task_agenda(payload, roster)
     meeting = segment_meeting(payload, embedding_adapter=embedding_adapter, topic_segmenter=topic_segmenter)
     report = analyzer.analyze(
         meeting_id=meeting.meeting_id,
@@ -308,7 +418,8 @@ def start_meeting_analysis_v3(
         chair=payload.get("chair"),
         turns=meeting.turns,
         segments=meeting.segments,
-        attendee_roster=read_attendee_roster(payload),
+        attendee_roster=roster,
+        task_agenda=agenda,
     )
     return _build_result(meeting, report)
 
@@ -317,5 +428,6 @@ __all__ = [
     "build_analyzer_v3",
     "build_v3_config_from_env",
     "read_attendee_roster",
+    "read_task_agenda",
     "start_meeting_analysis_v3",
 ]

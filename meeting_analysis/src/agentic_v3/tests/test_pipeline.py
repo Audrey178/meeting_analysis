@@ -17,10 +17,10 @@ from src.agentic_v3 import (
     plan_meeting,
 )
 from src.agentic_v3.nodes import prompts
+from src.agentic_v3.nodes.planner import ACTION_CUES, DECISION_CUES, find_cues
 from src.agentic_v3.nodes.verifier import VERIFIER_SCHEMA
 from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.agentic_v3.schemas import SpeakerRegistry
-from src.agentic_v3.nodes.verifier_tools import MeetingTools
 from src.utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from src.utils.ports import LLMUpstreamError
 
@@ -70,8 +70,10 @@ class FakeLLM:
         fail_action_once: True thì lời gọi Action đầu tiên raise ``LLMUpstreamError``.
     """
 
-    def __init__(self, delay: float = 0.0, verifier_script=None, proposer_script=None, fail_action_once: bool = False):
+    def __init__(self, delay: float = 0.0, verifier_script=None, proposer_script=None, fail_action_once: bool = False,
+                 stance_check_script=None):
         self.delay = delay
+        self.stance_check_script = list(stance_check_script or [])
         self.verifier_script = list(verifier_script or [])
         self.proposer_script = list(proposer_script or [])
         self.fail_action_once = fail_action_once
@@ -105,6 +107,8 @@ class FakeLLM:
     def _kind(system_prompt: str, schema: dict) -> str:
         if "stance" in schema["properties"]:
             return "proposer"
+        if "supports" in schema["properties"]:
+            return "stance_check"
         if "KIỂM CHỨNG VIÊN" in system_prompt:
             return "verifier"
         return {"speakers": "content", "action_items": "action", "decisions": "decision", "stance": "proposer"}[
@@ -138,6 +142,8 @@ class FakeLLM:
         with self._lock:
             if kind == "proposer":
                 return self.proposer_script.pop(0) if self.proposer_script else _proposer("accept")
+            if kind == "stance_check":
+                return self.stance_check_script.pop(0)
             answer = self.verifier_script.pop(0)
         if isinstance(answer, Exception):
             raise answer
@@ -168,8 +174,9 @@ def _verifier_final(verdict: str, deciding_turn_id: str | None = None, reasoning
             "deciding_turn_id": deciding_turn_id, "revised_actor": None, "reasoning": reasoning}
 
 
-def _proposer(stance: str, confirm_turn_id: str | None = None, text: str | None = None, actor: str | None = None) -> dict:
-    return {"stance": stance, "argument": "lập luận", "confirm_turn_id": confirm_turn_id,
+def _proposer(stance: str, confirm_turn_id: str | None = None, text: str | None = None, actor: str | None = None,
+              argument: str = "lập luận") -> dict:
+    return {"stance": stance, "argument": argument, "confirm_turn_id": confirm_turn_id,
             "revised_text": text, "revised_actor": actor}
 
 
@@ -347,6 +354,44 @@ def test_accept_that_cites_a_turn_is_treated_as_defend():
     assert "giữ nguyên, phản biện, lượt T4" in second_verifier_prompt
 
 
+def test_accept_whose_argument_defends_a_cited_turn_becomes_defend():
+    argument = "Kiểm chứng viên cho rằng chưa thống nhất, nhưng tại T4 các bên đã đồng ý."
+    llm = FakeLLM(
+        verifier_script=[_verifier_final("drop", reasoning="chỉ là đề xuất"), _verifier_final("keep", "T4")],
+        proposer_script=[_proposer("accept", argument=argument)],
+        stance_check_script=[{"supports": "keep", "turn_id": "T4"}],
+    )
+    report = _start(_analyzer(llm))
+
+    (record,) = report.verification_records
+    assert [(r.verdict, r.stance, r.confirm_turn_id) for r in record.rounds] == [
+        ("drop", "defend", "T4"), ("keep", "", None),
+    ]
+    assert record.verdict == "keep"
+    assert llm.calls.count("stance_check") == 1
+
+
+def test_accept_whose_argument_agrees_to_drop_stays_accept():
+    argument = "T3 chỉ là đề xuất cá nhân, không ai chấp nhận."
+    llm = FakeLLM(
+        verifier_script=[_verifier_final("drop", reasoning="chỉ là đề xuất")],
+        proposer_script=[_proposer("accept", argument=argument)],
+        stance_check_script=[{"supports": "drop", "turn_id": None}],
+    )
+    report = _start(_analyzer(llm))
+
+    (record,) = report.verification_records
+    assert record.rounds[0].stance == "accept" and record.verdict == "drop"
+
+
+def test_accept_without_cited_turn_skips_stance_check():
+    llm = FakeLLM(verifier_script=[_verifier_final("drop")], proposer_script=[_proposer("accept")])
+    report = _start(_analyzer(llm))
+
+    assert report.verification_records[0].verdict == "drop"
+    assert "stance_check" not in llm.calls
+
+
 def test_accept_of_a_revision_with_a_turn_stays_accept():
     llm = FakeLLM(verifier_script=[{**_verifier_final("revise", "T4"), "revised_actor": "Anh Tuấn"}],
                   proposer_script=[_proposer("accept", "T4")])
@@ -408,8 +453,8 @@ def test_chair_is_matched_to_speaker_and_shown_to_extractors_and_verifier():
 
 
 def test_chair_who_never_speaks_is_kept_as_given():
-    assert build_speaker_registry(TURNS, "Chị Lan").chair == "Chị Lan"
-    assert build_speaker_registry(TURNS, "  ").chair is None
+    assert build_speaker_registry(TURNS, chair="Chị Lan").chair == "Chị Lan"
+    assert build_speaker_registry(TURNS, chair="  ").chair is None
 
 
 def test_extractors_run_with_v3_prompts():
@@ -424,6 +469,20 @@ def test_extractors_run_with_v3_prompts():
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["verifier"]
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
     assert action_prompt.startswith("Người chủ trì: (phiên họp không cung cấp)\n")
+
+
+def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
+    assert prompts.CHAIR_CONCLUSION_RULE in prompts.DECISION_SYSTEM_PROMPT
+    assert prompts.CHAIR_CONCLUSION_RULE in prompts.VERIFY_RUBRICS["decision"]
+    # Content agent biết hai quy tắc để không ghi lại việc giao/kết luận thành luận điểm.
+    assert prompts.CHAIR_ASSIGNMENT_RULE in prompts.CONTENT_SYSTEM_PROMPT
+    assert prompts.CHAIR_CONCLUSION_RULE in prompts.CONTENT_SYSTEM_PROMPT
+
+
+def test_chair_directive_without_named_actor_is_an_action_cue():
+    text = "Nó có 2 cái nhóm việc mà các đồng chí cần bổ sung thêm. Đề án cần làm rõ tác động."
+    assert "bổ sung" in find_cues(text.casefold(), ACTION_CUES)
+    assert "tinh thần chung" in find_cues("tinh thần chung là thông qua thường vụ", DECISION_CUES)
 
 
 def test_shared_rules_appear_once_per_extractor_prompt():
@@ -442,3 +501,50 @@ def test_verifier_history_keeps_thoughts_and_turn_comes_before_verdict():
     assert "Suy nghĩ: tìm lượt chốt\nHành động: search_meeting(mở lại phản ánh)" in second_verifier_prompt
     fields = list(VERIFIER_SCHEMA["properties"])
     assert fields.index("deciding_turn_id") < fields.index("verdict")
+
+
+def test_tools_accept_short_turn_ids_from_the_verifier():
+    turns = (
+        _turn("TURN_000009", "Anh Tuấn", "Phải thông qua Ban Thường vụ đúng không?"),
+        _turn("TURN_000030", "Anh Tuấn", "Đề nghị Đảng ủy ban lưu ý các ý kiến góp ý."),
+    )
+    tools = MeetingTools(turns, SpeakerRegistry(("Anh Tuấn",)))
+
+    for alias in ("T30", "000030", "30", "[TURN_000030|Anh Tuấn]"):
+        assert tools.run("get_turn", alias).startswith("[TURN_000030|Anh Tuấn]")
+    assert "LỖI" not in tools.run("lookup_speaker", "Anh Tuấn @T9")
+    assert "LỖI" in tools.run("get_turn", "T31")
+
+
+def test_amend_strips_repeated_actor_and_rejects_switching_to_another_task():
+    from src.agentic_v3.core.schemas import ActionItemCandidate
+    from src.agentic_v3.nodes.verifier import _apply_proposal
+
+    turns = (_turn("T1", "Anh Tuấn", "Đề nghị Đảng ủy, Ban lưu ý các ý kiến góp ý."),)
+    original = ActionItemCandidate(
+        "S1", "Đảng ủy, Ban", "nghiên cứu cơ chế miễn giảm thuế, giá dịch vụ để đưa vào Luật Đô thị đặc biệt",
+        ("T1",), ("",), status="assigned", confirm_turn_id=None,
+    )
+
+    reworded = _apply_proposal(original, "action", {
+        "stance": "amend", "confirm_turn_id": "T1",
+        "revised_text": "Đảng ủy, Ban: Đảng ủy, Ban: nghiên cứu cơ chế miễn giảm thuế, giá dịch vụ "
+                        "để đề xuất đưa vào Luật Đô thị đặc biệt",
+    }, turns)
+    assert reworded.text.startswith("Nghiên cứu cơ chế miễn giảm thuế")
+    assert reworded.confirm_turn_id == "T1"
+
+    switched = _apply_proposal(original, "action", {
+        "stance": "amend", "confirm_turn_id": "T1",
+        "revised_text": "đánh giá tác động của đề án đối với Thành phố trong không gian phát triển mới",
+    }, turns)
+    assert switched.text == original.text
+    assert switched.confirm_turn_id == "T1"
+
+
+def test_assignment_rule_ranks_chair_first_but_does_not_require_one():
+    rule = prompts.CHAIR_ASSIGNMENT_RULE
+    assert "KHÔNG bắt buộc phải có người chủ trì" in rule
+    assert "lưu ý các ý kiến góp ý" in rule
+    assert prompts.VERIFY_ACCEPTANCE_NOTE in prompts.VERIFY_RUBRICS["action"]
+    assert "KHÔNG bỏ vì không nêu cá nhân" in prompts.VERIFY_RUBRICS["action"]

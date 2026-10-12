@@ -7,18 +7,25 @@ quả vẫn là của v1.
 
 Node v1 được dựng lại ở mỗi lần chạy (rẻ: chỉ là một closure) vì dòng người chủ trì đổi
 theo cuộc họp, trong khi graph dùng chung cho mọi cuộc họp chạy song song.
+
+Phiên họp có danh sách việc cần báo cáo thì Action agent nhận thêm ``ACTION_TASK_ID_RULE``
+và trường ``task_id`` trong schema (``with_task_id_field``); không có danh sách thì prompt
+và schema giữ nguyên như khi chưa có tính năng này.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping
+import copy
+from collections.abc import Callable, Mapping, Sequence
 
-from ...agentic.nodes import make_action_agent, make_content_agent, make_decision_agent
-from ...agentic.schemas import SegmentTask
+from ..core.nodes import make_action_agent, make_content_agent, make_decision_agent
+from ..core.nodes.action_agent import NEW_TASK_ID
+from ..core.schemas import SegmentTask
 from ...utils.ports import LLMAdapter
 from ..schemas import SpeakerRegistry
 from .prompts import (
     ACTION_SYSTEM_PROMPT,
+    ACTION_TASK_ID_RULE,
     CONTENT_SYSTEM_PROMPT,
     DECISION_SYSTEM_PROMPT,
     format_chair_line,
@@ -36,21 +43,53 @@ class _V3PromptLLM:
     """``LLMAdapter`` thay system prompt và thêm phần đầu user prompt trước khi gọi LLM thật.
 
     Đầu vào khi tạo: llm - adapter thật; system_prompt - system prompt v3; user_prefix -
-        dòng đặt trước user prompt của v1.
+        dòng đặt trước user prompt của v1; schema_hook - hàm sửa schema của node v1 trước
+        khi gọi (None = giữ nguyên).
     """
 
-    def __init__(self, llm: LLMAdapter, system_prompt: str, user_prefix: str) -> None:
+    def __init__(
+        self,
+        llm: LLMAdapter,
+        system_prompt: str,
+        user_prefix: str,
+        schema_hook: Callable[[Mapping[str, object]], Mapping[str, object]] | None = None,
+    ) -> None:
         self._llm = llm
         self._system_prompt = system_prompt
         self._user_prefix = user_prefix
+        self._schema_hook = schema_hook
 
     def generate_json(self, *, system_prompt: str, user_prompt: str, schema: Mapping[str, object]):
         del system_prompt  # prompt v1, thay bằng bản v3
         return self._llm.generate_json(
             system_prompt=self._system_prompt,
             user_prompt=f"{self._user_prefix}\n\n{user_prompt}",
-            schema=schema,
+            schema=self._schema_hook(schema) if self._schema_hook else schema,
         )
+
+
+def with_task_id_field(schema: Mapping[str, object], task_ids: Sequence[str]) -> dict:
+    """Thêm trường ``task_id`` vào schema Action agent, đứng ngay sau ``text``.
+
+    ``task_id`` là enum các mã việc cộng ``NEW_TASK_ID`` (việc mới). Dùng enum chuỗi, không
+    dùng null trong enum, vì gateway đã chạy ổn với enum chuỗi (schema agent tiến độ).
+
+    Đầu vào: schema - ``ACTION_SCHEMA``; task_ids - mã các việc trong danh sách.
+    Đầu ra: bản sao schema đã thêm trường.
+    """
+
+    schema = copy.deepcopy(dict(schema))
+    item = schema["properties"]["action_items"]["items"]
+    properties: dict[str, object] = {}
+    for field, spec in item["properties"].items():
+        properties[field] = spec
+        if field == "text":
+            properties["task_id"] = {"type": "string", "enum": [*task_ids, NEW_TASK_ID]}
+    item["properties"] = properties
+    required = list(item["required"])
+    required.insert(required.index("text") + 1, "task_id")
+    item["required"] = required
+    return schema
 
 
 def make_extractor(name: str, llm: LLMAdapter) -> Callable[[SegmentTask, SpeakerRegistry], dict]:
@@ -63,10 +102,18 @@ def make_extractor(name: str, llm: LLMAdapter) -> Callable[[SegmentTask, Speaker
     factory, system_prompt = _AGENTS[name]
 
     def extractor(task: SegmentTask, registry: SpeakerRegistry) -> dict:
-        prompted = _V3PromptLLM(llm, system_prompt, format_chair_line(registry.chair))
+        prompt, schema_hook = system_prompt, None
+        task_ids = registry.agenda.task_ids
+        if name == "action_agent" and task_ids:
+            prompt = f"{system_prompt}\n\n{ACTION_TASK_ID_RULE}"
+
+            def schema_hook(schema: Mapping[str, object]) -> dict:
+                return with_task_id_field(schema, task_ids)
+
+        prompted = _V3PromptLLM(llm, prompt, format_chair_line(registry.chair), schema_hook)
         return factory(prompted)(task)
 
     return extractor
 
 
-__all__ = ["make_extractor"]
+__all__ = ["make_extractor", "with_task_id_field"]

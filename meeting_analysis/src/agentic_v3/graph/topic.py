@@ -4,6 +4,7 @@
     START -> label_topic -> content_agent  ------------------\\
                          -> action_agent   (nếu plan cho phép) -> evidence_check
                          -> decision_agent (nếu plan cho phép) -/       │
+                         -> progress_agent (nếu có danh sách việc) /    │
                                                        (candidate UNCERTAIN, Send)
                                                                         ▼
                                                                verifier (0..N) -> END
@@ -19,7 +20,10 @@ của Action agent được thay bằng danh bạ người nói của cả cuộ
 (``planner.format_registry_context``). Lỗi LLM được thử lại ngay trong chủ đề
 (``extract_attempts``) thay vì đợi tới sau chủ đề cuối như v1.
 
-Vì sao ba nhánh nối thẳng vào ``evidence_check`` (không dùng ``add_edge([...], ...)``
+Agent tiến độ (``nodes/progress.py``) chỉ chạy khi phiên họp có danh sách việc cần báo
+cáo; cập nhật của nó được kiểm bằng Decisions trong ``evidence_check`` và không đi Verifier.
+
+Vì sao các nhánh nối thẳng vào ``evidence_check`` (không dùng ``add_edge([...], ...)``
 chờ đủ ba): số nhánh thay đổi theo ``TopicPlan``; mọi nhánh cách điểm phân nhánh
 đúng một bước nên LangGraph ghi kết quả của chúng trong cùng một superstep và
 ``evidence_check`` chạy đúng một lần.
@@ -34,9 +38,9 @@ from functools import partial
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 
-from ...agentic._shared import check_action_evidence, check_decision_evidence
-from ...agentic.schemas import SegmentTask
-from ...agentic.turn_act import TurnActJudge
+from ..core._shared import check_action_evidence, check_decision_evidence
+from ..core.schemas import SegmentTask
+from ..core.turn_act import TurnActJudge
 from ...stages.stage07_topic_labeling import label_topics
 from ...utils.config import TopicLabelerConfig
 from ...utils.ports import LLMAdapter, TopicLabelAdapter
@@ -44,15 +48,18 @@ from ..actors.resolution import list_known_actor_names, resolve_actor, split_ite
 from ..config import V3Config
 from ..nodes.extractors import make_extractor
 from ..nodes.planner import format_registry_context
-from ..schemas import SkippedAgent, VerifyTask
-from .state import TopicInput, TopicOutput, TopicState
+from ..nodes.progress import check_progress_updates, make_progress_agent
+from ..nodes.progress_act import ProgressActJudge
 from ..nodes.verifier import make_verifier
+from ..schemas import SkippedAgent, SpeakerRegistry, VerifyTask
+from .state import TopicInput, TopicOutput, TopicState
 
 # Tên node agent trích xuất -> (khoá kết quả của node v1, khoá trong TopicState).
 _EXTRACTORS = {
     "content_agent": ("meeting_development", "meeting_development"),
     "action_agent": ("action_item_candidates_raw", "action_candidates_raw"),
     "decision_agent": ("decision_candidates_raw", "decision_candidates_raw"),
+    "progress_agent": ("progress_updates_raw", "progress_updates_raw"),
 }
 
 
@@ -64,7 +71,8 @@ def _wrap_extractor(
     Agent trả kết quả rỗng + ``TopicFailure`` khi LLM lỗi (không raise); wrapper gọi
     lại tối đa ``attempts`` lần và chỉ ghi lỗi của lần cuối.
 
-    Đầu vào: name - tên node; agent - ``extractors.make_extractor``; attempts - số lần gọi tối đa.
+    Đầu vào: name - tên node; agent - ``extractors.make_extractor`` (hoặc
+        ``progress.make_progress_agent``); attempts - số lần gọi tối đa.
     Đầu ra: hàm node đọc ``task`` trong TopicState.
     """
 
@@ -128,6 +136,8 @@ def _route_extractors(state: TopicState) -> list[str]:
         targets.append("action_agent")
     if plan.run_decision:
         targets.append("decision_agent")
+    if plan.run_progress:
+        targets.append("progress_agent")
     return targets
 
 
@@ -168,18 +178,24 @@ def _strip_actor_roles(item, state: TopicState):
     return replace(item, actor=", ".join(mention.text for mention in mentions))
 
 
-def evidence_check(state: TopicState, turn_judge: TurnActJudge | None = None) -> dict:
+def evidence_check(
+    state: TopicState, turn_judge: TurnActJudge | None = None, progress_judge: ProgressActJudge | None = None
+) -> dict:
     """Tách candidate thô của chủ đề thành CLEAR (vào kết quả) / UNCERTAIN (đi Verifier).
 
     Luật của v1 (0 token); tên đã biết lấy từ danh bạ cả cuộc họp thay vì ngữ cảnh
     chạy dồn, cộng người và đơn vị trong danh sách tham dự (để "giao Sở Tài chính"
     không bị coi là actor không có căn cứ). Việc mà luật v1 coi là CLEAR nhưng actor
     mơ hồ giữa nhiều ứng viên vẫn đi Verifier. Có ``turn_judge`` thì lượt chốt được
-    xét theo nghĩa thay cho từ khoá (xem ``agentic/turn_act.py``).
+    xét theo nghĩa thay cho từ khoá (xem ``core/turn_act.py``). Cập nhật tiến độ được
+    kiểm bằng ``progress_judge`` trên lượt nêu trạng thái (``nodes/progress.py``), không
+    đi Verifier.
 
     Đầu vào: state - sau khi các agent trích xuất của chủ đề đã xong;
-        turn_judge - bộ phân loại lượt chốt (tuỳ chọn).
-    Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR) và ``pending_verify`` (ghi đè).
+        turn_judge - bộ phân loại lượt chốt (tuỳ chọn);
+        progress_judge - bộ phân loại lượt nêu trạng thái tiến độ (tuỳ chọn).
+    Đầu ra: dict cập nhật ``verified_*`` (phần CLEAR), ``progress_updates`` và
+        ``pending_verify`` (ghi đè).
     """
 
     segment_id = state["segment"].segment_id
@@ -213,9 +229,13 @@ def evidence_check(state: TopicState, turn_judge: TurnActJudge | None = None) ->
             clear_decisions.append(item)
         else:
             pending.append(_verify_task("decision", index, item, flag.reasons))
+    progress_updates = check_progress_updates(
+        state.get("progress_updates_raw", []), turns, state["registry"].agenda, progress_judge, turn_judge
+    )
     return {
         "verified_assignments": clear_actions,
         "verified_decisions": clear_decisions,
+        "progress_updates": progress_updates,
         "pending_verify": tuple(pending),
     }
 
@@ -244,30 +264,35 @@ def build_topic_graph(
     labeler_config: TopicLabelerConfig,
     config: V3Config,
     turn_judge: TurnActJudge | None = None,
+    *,
+    progress_llm: LLMAdapter | None = None,
+    progress_judge: ProgressActJudge | None = None,
 ):
     """Dựng và biên dịch subgraph một chủ đề.
 
     Các adapter nên đã đi qua ``LLMConcurrencyGate`` (graph này không tự giới hạn).
 
     Đầu vào: bốn LLM (content/action/decision/verifier), adapter gán nhãn, cấu hình
-        stage07, cấu hình v3 và bộ phân loại lượt chốt (None thì dùng luật từ khoá).
+        stage07, cấu hình v3 và bộ phân loại lượt chốt (None thì dùng luật từ khoá);
+        progress_llm - LLM của agent tiến độ (None thì dùng ``action_llm``);
+        progress_judge - Decisions cho lượt nêu trạng thái (None thì không kiểm).
     Đầu ra: subgraph đã compile; đầu vào ``TopicInput``, đầu ra ``TopicOutput``.
     """
 
     attempts = config.extract_attempts
     graph = StateGraph(TopicState, input_schema=TopicInput, output_schema=TopicOutput)
     graph.add_node("label_topic", _make_label_node(labeler, labeler_config))
-    graph.add_node("content_agent", _wrap_extractor("content_agent", make_content_agent(content_llm), attempts))
-    graph.add_node("action_agent", _wrap_extractor("action_agent", make_action_agent(action_llm), attempts))
-    graph.add_node("decision_agent", _wrap_extractor("decision_agent", make_decision_agent(decision_llm), attempts))
-    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge))
+    for name, llm in (("content_agent", content_llm), ("action_agent", action_llm), ("decision_agent", decision_llm)):
+        graph.add_node(name, _wrap_extractor(name, make_extractor(name, llm), attempts))
+    graph.add_node(
+        "progress_agent", _wrap_extractor("progress_agent", make_progress_agent(progress_llm or action_llm), attempts)
+    )
+    graph.add_node("evidence_check", partial(evidence_check, turn_judge=turn_judge, progress_judge=progress_judge))
     proposer_llms = {"action": action_llm, "decision": decision_llm}
     graph.add_node("verifier", make_verifier(verifier_llm, proposer_llms, config))
 
     graph.add_edge(START, "label_topic")
-    graph.add_conditional_edges(
-        "label_topic", _route_extractors, ["content_agent", "action_agent", "decision_agent"]
-    )
+    graph.add_conditional_edges("label_topic", _route_extractors, list(_EXTRACTORS))
     for name in _EXTRACTORS:
         graph.add_edge(name, "evidence_check")
     graph.add_conditional_edges("evidence_check", _route_verify, ["verifier", END])
