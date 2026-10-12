@@ -16,6 +16,7 @@ import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
@@ -23,13 +24,38 @@ from main import app
 from services.analysis_cache import AnalysisCache, InMemoryAnalysisStore, LocalAnalysisBackend
 from services.dependencies import get_analysis_cache_v3, get_analyzer_v3, get_embedding_adapter
 from src.agentic_v3 import MeetingAnalyzerV3
+from src.utils.contracts import TopicLabel
 from src.utils.ports import LLMUpstreamError
-from test_api import (
-    _CONFIRMING_TURN_PATTERN,
-    _SAMPLE_TRANSCRIPT,
-    _FakeEmbeddingAdapter,
-    _FakeTopicLabelAdapter,
-)
+
+_SAMPLE_TRANSCRIPT = Path(__file__).resolve().parent.parent / "inputs" / "sample_transcript.json"
+
+# Lượt nói có từ giao/chốt trong transcript mẫu (vd. "...chủ trì hoàn thiện
+# báo cáo... trước ngày 30 tháng 9...").
+_CONFIRMING_TURN_PATTERN = r"trước ngày|thống nhất|giao"
+
+
+class _FakeEmbeddingAdapter:
+    """Embedding giả, tất định theo nội dung, không gọi mạng. Transcript mẫu quá ngắn để
+    TreeSeg tách (dưới ngưỡng ``2*min_size`` lượt) nên luôn ra đúng một chủ đề: test này kiểm
+    nối dây HTTP, không kiểm chất lượng phân cụm."""
+
+    def embed(self, text: str) -> tuple[float, ...]:
+        digest = sum(ord(char) for char in text)
+        return (float(digest % 97), float(digest % 53))
+
+
+class _FakeTopicLabelAdapter:
+    def label_topic(self, segment, prev_segment, prev_topic, turns, evidence, *, prior_issues=()):
+        del prev_segment, prev_topic, turns, evidence, prior_issues
+        text = segment.text or ""
+        return TopicLabel(
+            segment_id=segment.segment_id,
+            title=f"Chủ đề đoạn {segment.segment_id}",
+            summary=text[:200],
+            text=text,
+            evidence_ids=(),
+            method="fake_for_test",
+        )
 
 
 class _RoleLLM:
@@ -117,6 +143,66 @@ def _client_with(llm: _RoleLLM, labeler=None, cache: AnalysisCache | None = None
 
 def _payload() -> dict:
     return json.loads(_SAMPLE_TRANSCRIPT.read_text(encoding="utf-8"))
+
+
+def test_health() -> None:
+    assert TestClient(app).get("/health").json() == {"status": "ok"}
+
+
+def test_v3_accepts_stt_export_payload_without_meeting_id() -> None:
+    """Danh sách item xuất thẳng từ STT (trường ``segment``/``speaker_name``, như
+    ``inputs/recording_old.json``) không có ``meeting_id``/``revision_id``:
+    ``parse_transcript_payload`` tự dùng giá trị mặc định, nên request không được bị 422 vì
+    thiếu hai trường này (từng xảy ra khi ``AnalyzeRequest`` bắt buộc chúng)."""
+
+    try:
+        client = _client_with(_RoleLLM())
+        payload = {
+            "items": [
+                {
+                    "id": 3,
+                    "segment": "Với cả anh Việt thì sang tuần này sẽ",
+                    "speaker_id": "7eeb6971-97a2-46fb-983f-53ac7753a5c2",
+                    "speaker_name": "Phạm Hồng Sơn",
+                    "start_time": 5.80221875,
+                    "end_time": 8.77221875,
+                    "ref_id": ["dd99e490-7385-4bbf-ba75-26859c7280e9"],
+                }
+            ]
+        }
+
+        response = client.post("/v3/meetings/analyze", json=payload)
+
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert (body["meeting_id"], body["revision_id"]) == ("stt-export", "export-0")
+    finally:
+        app.dependency_overrides.clear()
+
+
+def _analyze_with_failing_embedding(*, timed_out: bool):
+    """Gọi ``/v3/meetings/analyze`` khi embedding (TreeSeg, không có dự phòng) lỗi."""
+
+    class _FailingEmbedding:
+        def embed(self, text: str):
+            raise LLMUpstreamError("embedding gateway down", timed_out=timed_out)
+
+    try:
+        client = _client_with(_RoleLLM())
+        app.dependency_overrides[get_embedding_adapter] = _FailingEmbedding
+        return client.post("/v3/meetings/analyze", json=_payload())
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_v3_upstream_timeout_is_504_not_422() -> None:
+    response = _analyze_with_failing_embedding(timed_out=True)
+    assert response.status_code == 504, response.text
+
+
+def test_v3_upstream_failure_is_502_not_422() -> None:
+    response = _analyze_with_failing_embedding(timed_out=False)
+    assert response.status_code == 502, response.text
 
 
 def test_v3_analyze_without_uncertain_candidates() -> None:

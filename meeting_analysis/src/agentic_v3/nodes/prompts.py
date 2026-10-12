@@ -1,7 +1,7 @@
 """Prompt của v3: quy tắc dùng chung và system prompt riêng của ba agent trích xuất.
 
-v3 không sửa prompt của v1 (``src.agentic``, pipeline v1 vẫn dùng). Khi v3 gọi lại các
-node trích xuất của v1, prompt ở đây thay prompt v1 (xem ``extractors.py``). Khác v1:
+Các node trích xuất trong ``core/nodes`` (chép từ v1 ``src.agentic``, nay đã xóa) vẫn mang
+prompt v1; khi v3 gọi chúng, prompt ở đây thay prompt v1 (xem ``extractors.py``). Khác v1:
 
 - Các quy tắc v1 chép lại ở cả ba prompt (cách đọc turn_id, chọn bằng chứng trước,
   ngôi thứ ba) được gom thành hằng số, mỗi prompt ghép đúng một bản.

@@ -1,4 +1,4 @@
-"""Unit test cho các luật 0 token của ``src.agentic``: Evidence-Check, làm sạch
+"""Unit test cho các luật 0 token của ``src.agentic_v3.core``: Evidence-Check, làm sạch
 output ("giao <actor>", luận điểm giao việc), gộp trùng và luật áp lên verdict
 của judge.
 
@@ -8,7 +8,7 @@ rút gọn thành vài lượt nói.
 
 from __future__ import annotations
 
-from src.agentic._shared import (
+from src.agentic_v3.core._shared import (
     check_action_evidence,
     check_decision_evidence,
     is_assignment_point,
@@ -16,8 +16,8 @@ from src.agentic._shared import (
     merge_duplicate_decisions,
     strip_assignment_prefix,
 )
-from src.agentic.nodes.debate_judge_agent import _resolve_verdict
-from src.agentic.schemas import ActionItemCandidate, DecisionCandidate
+from src.agentic_v3.core.nodes.debate_judge_agent import _resolve_verdict
+from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate
 from src.utils.contracts import SpeakerTurn
 
 

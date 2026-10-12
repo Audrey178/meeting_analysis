@@ -1,10 +1,10 @@
-"""Quy trình v3 (``src/agentic_v3``) cho API: cắt chủ đề như v1, rồi mọi chủ đề chạy song song
+"""Quy trình v3 (``src/agentic_v3``) cho API: cắt chủ đề (``segmentation.py``), rồi mọi chủ đề chạy song song
 (gán nhãn -> trích xuất -> Evidence-Check -> Verifier ReAct <-> agent trích xuất tới khi
 đồng thuận), trả kết quả trong MỘT request (không có bước duyệt người).
 
 Kết quả được cache theo nội dung request (``analysis_cache.py``) và tách làm hai tầng:
 
-    base   segment_meeting (stage01-03 + cắt chủ đề, dùng chung với v1)
+    base   segment_meeting (stage01-03 + cắt chủ đề, ``services/segmentation.py``)
            + MeetingAnalyzerV3.label_segments (nhãn mọi chủ đề)
     phần   development | assignments | decisions | progress, mỗi phần một lần
            MeetingAnalyzerV3.analyze(parts={phần}, labels=nhãn của base)
@@ -46,18 +46,12 @@ from src.agentic_v3 import (
 )
 from src.agentic_v3.actors.agenda import TaskAgenda, parse_task_agenda
 from src.agentic_v3.actors.attendees import AttendeeRoster, parse_attendee_roster
+from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate, SpeakerSection
 from src.utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from src.utils.ports import EmbeddingAdapter
 
 from services.analysis_cache import AnalysisCache, build_analysis_backend, fingerprint_pipeline
-from services.pipeline import (
-    _group_meeting_development_by_topic,
-    _serialize_action_item,
-    _serialize_decision,
-    load_pipeline_config,
-    read_meeting_date,
-    segment_meeting,
-)
+from services.segmentation import load_pipeline_config, segment_meeting
 
 
 def _env_flag(name: str, default: bool) -> bool:
@@ -199,8 +193,7 @@ def _build_progress_judge(decisions=None):
 def build_analyzer_v3() -> MeetingAnalyzerV3:
     """Dựng analyzer v3 dùng adapter OpenAI thật (gọi lười, lần đầu có request v3).
 
-    Một instance LLM dùng chung cho gán nhãn + ba agent trích xuất, như
-    ``get_downstream_llm_adapters`` của v1; Verifier có thể trỏ sang backend riêng
+    Một instance LLM dùng chung cho gán nhãn + ba agent trích xuất; Verifier có thể trỏ sang backend riêng
     (``_build_verifier_llm``). Số lời gọi đồng thời đọc từ ``V3_LLM_CONCURRENCY`` (mặc định 8).
     Lượt chốt và lượt nêu trạng thái tiến độ được xét theo nghĩa khi có ``TURN_ACT_MODEL``
     (``_build_turn_judge``, ``_build_progress_judge``, chung một client).
@@ -228,6 +221,120 @@ def build_analyzer_v3() -> MeetingAnalyzerV3:
         turn_judge=_build_turn_judge(decisions),
         progress_judge=_build_progress_judge(decisions),
     )
+
+
+def _serialize_speaker_section(section: SpeakerSection) -> dict:
+    """Chuyển một ``SpeakerSection`` thành dict JSON cho phản hồi API.
+
+    Đầu vào: section - các luận điểm của một người nói trong một chủ đề.
+    Đầu ra: dict gồm ``initials``, ``full_name`` và ``points`` (mỗi điểm có text,
+        evidence_ids, quotes, citation_count).
+    """
+
+    return {
+        "initials": section.initials,
+        "full_name": section.full_name,
+        "points": [
+            {
+                "text": point.text,
+                "evidence_ids": list(point.evidence_ids),
+                "quotes": list(point.quotes),
+                "citation_count": point.citation_count,
+            }
+            for point in section.points
+        ],
+    }
+
+
+def read_meeting_date(payload: dict) -> str | None:
+    """Lấy ngày họp ISO "YYYY-MM-DD" từ payload (``AnalyzeV3Request.model_dump()`` cho ra ``date``).
+
+    Đầu vào: payload - transcript dạng dict.
+    Đầu ra: chuỗi ISO, hoặc None nếu payload không có ngày họp.
+    """
+
+    value = payload.get("meeting_date")
+    if value is None:
+        return None
+    return value.isoformat() if hasattr(value, "isoformat") else str(value)
+
+
+def _serialize_action_item(item: ActionItemCandidate) -> dict:
+    """Chuyển một ``ActionItemCandidate`` (đã kiểm chứng) thành dict JSON cho phản hồi API.
+
+    Đầu vào: item - một việc được giao, đã qua Evidence-Check (+ Debate/Judge
+        nếu uncertain).
+    Đầu ra: dict gồm ``segment_id``, ``actor``, ``text``, ``deadline_raw``/``deadline_date``/
+        ``deadline_kind``, ``evidence_ids``,
+        ``quotes``, ``citation_count``. Không gộp theo người: ``actor`` đi kèm TỪNG item
+        thay vì nằm ở một object cha.
+    """
+
+    return {
+        "segment_id": item.segment_id,
+        "actor": item.actor,
+        "text": item.text,
+        "deadline_raw": item.deadline_raw,
+        "deadline_date": item.deadline_date,
+        "deadline_kind": item.deadline_kind,
+        "status": item.status,
+        "confirm_turn_id": item.confirm_turn_id,
+        "verification": item.verification,
+        "evidence_ids": list(item.evidence_ids),
+        "quotes": list(item.quotes),
+        "citation_count": len(item.evidence_ids),
+    }
+
+
+def _serialize_decision(item: DecisionCandidate) -> dict:
+    """Chuyển một ``DecisionCandidate`` (đã kiểm chứng) thành dict JSON cho phản hồi API.
+
+    Đầu vào: item - một quyết định/chốt phương án, đã qua Evidence-Check (+
+        Debate/Judge nếu uncertain).
+    Đầu ra: dict gồm ``segment_id``, ``text``, ``evidence_ids``, ``quotes``,
+        ``citation_count``.
+    """
+
+    return {
+        "segment_id": item.segment_id,
+        "text": item.text,
+        "status": item.status,
+        "confirm_turn_id": item.confirm_turn_id,
+        "verification": item.verification,
+        "evidence_ids": list(item.evidence_ids),
+        "quotes": list(item.quotes),
+        "citation_count": len(item.evidence_ids),
+    }
+
+
+def _group_meeting_development_by_topic(
+    segments, labels_by_segment: dict, meeting_development: list[SpeakerSection]
+) -> list[dict]:
+    """Ghép ``meeting_development`` (danh sách phẳng) với tiêu đề/tóm tắt chủ đề để trả JSON.
+    Đầu vào:
+        segments: các đoạn chủ đề của cuộc họp, theo đúng thứ tự.
+        labels_by_segment: bảng tra segment_id -> TopicLabel (từ stage07).
+        meeting_development: các ``SpeakerSection`` của báo cáo (phẳng, mọi chủ đề trộn chung).
+    Đầu ra: list[dict], mỗi phần tử một chủ đề, theo đúng thứ tự ``segments``.
+    """
+
+    sections_by_segment: dict[str, list[SpeakerSection]] = {}
+    for section in meeting_development:
+        sections_by_segment.setdefault(section.segment_id, []).append(section)
+
+    return [
+        {
+            "segment_id": segment.segment_id,
+            "title": label.title if label else "",
+            "summary": label.summary if label else "",
+            "speakers": [
+                _serialize_speaker_section(section)
+                for section in sections_by_segment.get(segment.segment_id, [])
+            ],
+        }
+        for segment in segments
+        for label in [labels_by_segment.get(segment.segment_id)]
+    ]
 
 
 def _serialize_verification_record(record) -> dict:
@@ -275,7 +382,7 @@ def _serialize_candidate(candidate) -> dict:
 
 
 def _serialize_action_item_v3(item) -> dict:
-    """Việc giao v3 = dict của v1 cộng phần định danh actor (nếu item là ``ActionItemV3``).
+    """Việc giao v3 = dict của ``_serialize_action_item`` cộng phần định danh actor (nếu item là ``ActionItemV3``).
 
     Đầu vào: item - ActionItemCandidate hoặc ActionItemV3.
     Đầu ra: dict theo ``ActionItemV3Out``.
@@ -816,7 +923,7 @@ def run_meeting_analysis_v3(
         payload: transcript dạng dict (``AnalyzeV3Request.model_dump()``); ``chair`` (tùy
             chọn) là tên người chủ trì.
         analyzer: ``MeetingAnalyzerV3`` dùng chung của ứng dụng.
-        embedding_adapter, topic_segmenter: như v1 (``run_meeting_analysis_pipeline``).
+        embedding_adapter, topic_segmenter: như ``segmentation.segment_meeting``.
         cache: ``AnalysisCache`` dùng chung của ứng dụng.
         refresh: True thì tính lại tất cả, kể cả cắt chủ đề và nhãn.
         reload_part: phần cần tính lại trên nền đã có (các phần khác lấy cache); None thì không.

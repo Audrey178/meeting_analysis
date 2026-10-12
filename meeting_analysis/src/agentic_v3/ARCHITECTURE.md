@@ -11,6 +11,9 @@ trạng thái bằng Decisions API, gộp tiến độ theo việc, quan hệ vi
 
 ## 1. Mục tiêu và khác biệt so với v1
 
+v1 (`src/agentic`, endpoint `POST /meetings/analyze`) đã bị xóa ngày 2026-10-12; v3 là pipeline
+duy nhất. Bảng dưới giữ lại để giải thích lý do thiết kế.
+
 | | v1 (`src/agentic`) | v3 (`src/agentic_v3`) |
 |---|---|---|
 | Thứ tự chủ đề | Tuần tự: chủ đề N xong hẳn mới gửi N+1 | **Song song**: mọi chủ đề cùng lúc (`Send` → subgraph) |
@@ -28,10 +31,8 @@ Lý do chính: nút thắt thời gian của v1 là vòng lặp tuần tự theo
 mang `known_names` sang chủ đề sau. v3 thay ngữ cảnh đó bằng danh bạ dựng sẵn nên các
 chủ đề độc lập với nhau, và tổng thời gian không còn tăng tuyến tính theo số chủ đề.
 
-v3 dùng lại các node trích xuất (phần làm sạch output) và luật hậu kiểm của v1, nhưng
-qua bản CHÉP ở `src/agentic_v3/core/` chứ không import `src.agentic`: hai pipeline sửa
-độc lập, **không sửa gì ở v1**. Prompt của ba agent trích xuất là bản
-riêng của v3 (mục 4.2).
+v3 dùng lại các node trích xuất (phần làm sạch output) và luật hậu kiểm của v1 qua bản
+chép ở `src/agentic_v3/core/`. Prompt của ba agent trích xuất là bản riêng của v3 (mục 4.2).
 
 ---
 
@@ -75,7 +76,7 @@ src/agentic_v3/
 ├── config.py          V3Config
 ├── schemas.py         kiểu dùng chung của v3
 ├── runner.py          MeetingAnalyzerV3 (điểm vào cho be/)
-├── core/              chép từ src/agentic (v1): schemas, deadline, turn_act, _shared,
+├── core/              chép từ src/agentic (v1, đã xóa): schemas, deadline, turn_act, _shared,
 │   └── nodes/         action/content/decision agent, debate_judge_agent
 ├── graph/             điều phối LangGraph
 │   ├── meeting.py     graph cha
@@ -93,7 +94,10 @@ src/agentic_v3/
 │   └── throttle.py
 └── tests/
     ├── test_pipeline.py
-    └── test_actors.py
+    ├── test_actors.py
+    ├── test_progress.py
+    ├── test_rules.py, test_deadline.py, test_action_deadline.py, test_turn_act.py
+    │                  (luật trong core/, chuyển từ test của v1)
 ```
 
 | File | Vai trò |
@@ -118,6 +122,7 @@ src/agentic_v3/
 | `tests/test_pipeline.py` | Test end-to-end với LLM giả (không gọi mạng). |
 | `tests/test_actors.py` | Test định danh actor và danh sách tham dự. |
 | `tests/test_progress.py` | Test danh sách việc, agent tiến độ, kiểm bằng Decisions, gộp theo việc, quan hệ việc giao. |
+| `tests/test_rules.py`, `test_deadline.py`, `test_action_deadline.py`, `test_turn_act.py` | Test luật 0 token trong `core/` (Evidence-Check, gộp trùng, verdict của judge, chuẩn hoá hạn, `DecisionsTurnActJudge`), chuyển từ test của v1. |
 
 ---
 
@@ -537,7 +542,7 @@ thắng biến cũ còn export trong shell.
     không còn đủ).
 
   `attendees`/`tasks` sai dạng (vd. mã đơn vị không có) → 422, kiểm trước khi cắt chủ đề.
-  Cắt chủ đề (stage01–03 + segmenter) dùng chung với v1 qua `segment_meeting`.
+  Cắt chủ đề (stage01–03 + segmenter) qua `segment_meeting` (`be/services/segmentation.py`).
 - **FE**: ô "Chủ trì" ở màn nhập (dùng chung với MA-MRG) gửi kèm `chair`; `useV3Analysis` gọi một lần,
   mỗi tab Diễn biến/Giao việc/Kết luận/Tiến độ có nút chạy lại riêng phần đó (kết quả cũ vẫn
   hiện trong lúc chờ, lỗi hiện ngay trong tab), hàng thống kê có nút "Chạy lại toàn bộ";

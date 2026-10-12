@@ -1,22 +1,21 @@
 import { type ReactNode, useMemo, useState } from "react";
-import type { AnalyzeResponse } from "../api/types";
+import type { AnalyzeV3Result } from "../api/types";
 import { formatDurationMs, groupActionItemsByAssignee } from "../lib/format";
 import { DecisionBlock } from "./DecisionBlock";
 import { TaskAssignmentBlock } from "./TaskAssignmentBlock";
 import { TopicBlock } from "./TopicBlock";
-import { VerificationBlock } from "./VerificationBlock";
 import { EmptyState } from "./agentic/primitives";
 
 export type ResultTab = "topics" | "assignments" | "conclusion" | "extra" | "verification" | "raw";
 
-/** Tab thêm sau "Kết luận" (v3 dùng cho "Tiến độ" khi request có danh sách việc). */
+/** Tab thêm sau "Kết luận" ("Tiến độ" khi request có danh sách việc). */
 export interface ExtraTab {
   label: string;
   render: (ctx: { topicIndexById: Record<string, number> }) => ReactNode;
 }
 
-/** Thay tab "Kiểm chứng" mặc định (Debate+Judge của v1) bằng nội dung khác -- v3 dùng Verifier. */
-export interface VerificationOverride {
+/** Nội dung tab "Kiểm chứng" (bản ghi Verifier). */
+export interface VerificationTab {
   /** Số mục bị nghi ngờ (nhãn tab). */
   count: number;
   /** Số mục được giữ lại (ô thống kê). */
@@ -26,16 +25,16 @@ export interface VerificationOverride {
 }
 
 interface ResultViewProps {
-  data: AnalyzeResponse;
-  verification?: VerificationOverride;
+  data: AnalyzeV3Result;
+  verification: VerificationTab;
   extraTab?: ExtraTab;
-  /** Dòng ghi chú thêm dưới thanh tab (vd. agent bị Planner bỏ qua ở v3). */
+  /** Dòng ghi chú thêm dưới thanh tab (vd. agent bị Planner bỏ qua). */
   notice?: ReactNode;
-  /** Thanh điều khiển đầu nội dung từng tab (v3: nút chạy lại phần đó + trạng thái cache). */
+  /** Thanh điều khiển đầu nội dung từng tab (nút chạy lại phần đó + trạng thái cache). */
   tabToolbars?: Partial<Record<ResultTab, ReactNode>>;
   /** Tab có phần đang chạy lại (nhãn tab thêm dấu "…"). */
   busyTabs?: Partial<Record<ResultTab, boolean>>;
-  /** Nút đặt cạnh thời gian chạy ở hàng thống kê (v3: chạy lại toàn bộ). */
+  /** Nút đặt cạnh thời gian chạy ở hàng thống kê (chạy lại toàn bộ). */
   headerAction?: ReactNode;
   elapsedMs: number;
   selectedPointKey: string | null;
@@ -49,9 +48,9 @@ function countBySegment(items: { segment_id: string }[]): Record<string, number>
   return counts;
 }
 
-function StatTile({ value, label, hint }: { value: number | string; label: string; hint?: string }) {
+function StatTile({ value, label }: { value: number | string; label: string }) {
   return (
-    <div className="flex min-w-[112px] flex-col gap-0.5 px-4 py-3" title={hint}>
+    <div className="flex min-w-[112px] flex-col gap-0.5 px-4 py-3">
       <span className="font-heading text-[26px] leading-none font-extrabold">{value}</span>
       <span className="text-[11.5px] text-neutral-700">{label}</span>
     </div>
@@ -75,7 +74,7 @@ function CheckIcon() {
   );
 }
 
-function RawJsonView({ data }: { data: AnalyzeResponse }) {
+function RawJsonView({ data }: { data: AnalyzeV3Result }) {
   const json = useMemo(() => JSON.stringify(data, null, 2), [data]);
   const [copied, setCopied] = useState(false);
 
@@ -120,7 +119,6 @@ export function ResultView({
   initialTab = "topics",
 }: ResultViewProps) {
   const [tab, setTab] = useState<ResultTab>(initialTab);
-  const debates = data.debate_records ?? [];
 
   const { topicIndexById, topicTitleById } = useMemo(
     () => ({
@@ -137,14 +135,13 @@ export function ResultView({
     0,
   );
   const people = groupActionItemsByAssignee(data.verified_assignments).length;
-  const dropped = debates.filter((record) => (record.verdict ?? (record.kept ? "keep" : "drop")) === "drop").length;
 
   const tabs: [ResultTab, string][] = [
     ["topics", `Diễn biến (${data.topics.length})`],
     ["assignments", `Giao việc (${data.verified_assignments.length})`],
     ["conclusion", `Kết luận (${data.verified_decisions.length})`],
     ...(extraTab ? [["extra", extraTab.label] as [ResultTab, string]] : []),
-    ["verification", `Kiểm chứng (${verification ? verification.count : debates.length})`],
+    ["verification", `Kiểm chứng (${verification.count})`],
     ["raw", "Raw JSON"],
   ];
 
@@ -155,18 +152,10 @@ export function ResultView({
         <StatTile value={pointCount} label="luận điểm" />
         <StatTile value={data.verified_assignments.length} label={`việc giao · ${people} người`} />
         <StatTile value={data.verified_decisions.length} label="kết luận" />
-        {verification ? (
-          <StatTile
-            value={verification.count ? `${verification.kept}/${verification.count}` : "—"}
-            label={verification.statLabel}
-          />
-        ) : (
-          <StatTile
-            value={debates.length ? `${debates.length - dropped}/${debates.length}` : "—"}
-            label="giữ sau tranh luận"
-            hint="Số mục bị nghi ngờ được giữ lại / tổng số mục phải qua Debate+Judge"
-          />
-        )}
+        <StatTile
+          value={verification.count ? `${verification.kept}/${verification.count}` : "—"}
+          label={verification.statLabel}
+        />
         <div className="ml-auto flex items-center gap-3 px-4 text-xs text-neutral-700">
           {headerAction}
           {formatDurationMs(elapsedMs)}
@@ -246,16 +235,7 @@ export function ResultView({
 
         {tab === "extra" && extraTab && extraTab.render({ topicIndexById })}
 
-        {tab === "verification" && verification && verification.render({ topicIndexById })}
-
-        {tab === "verification" && !verification && (
-          <VerificationBlock
-            records={debates}
-            topicIndexById={topicIndexById}
-            selectedPointKey={selectedPointKey}
-            onSelectPoint={onSelectPoint}
-          />
-        )}
+        {tab === "verification" && verification.render({ topicIndexById })}
 
         {tab === "raw" && <RawJsonView data={data} />}
       </div>

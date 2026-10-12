@@ -1,7 +1,7 @@
 """Các stage xác định (deterministic) tích hợp sẵn, mỗi module là một stage.
 
-Đường chạy chính hiện tại (backend, ``be/services/pipeline.py``) chỉ dùng:
-    stage01 -> stage02 -> stage03 -> TreeSeg -> stage07
+Backend (``be/services/segmentation.py``, ``be/services/pipeline_v3.py``) dùng:
+    stage01 -> stage02 -> stage03 -> cắt chủ đề (DialSTART | TreeSeg) -> stage07
 
 Module không phải stage: ``_shared`` chứa hàm dùng chung cho nhiều stage.
 """

@@ -11,8 +11,8 @@ dependencies = [
     # experiments/treeseg_turn_level/treeseg.py and experiments/dialstart:
     # topic segmentation math.
     "numpy>=1.26",
-    # src/agentic/graph.py: Send()-based fan-out (2 parallel agents/segment)
-    # + fan-in (Conclusion agent) orchestration.
+    # src/agentic_v3/graph: Send()-based fan-out (topics and agents in parallel)
+    # + fan-in orchestration.
     # Pinned to a version confirmed installed/tested, not a guess.
     "langgraph>=1.2.11",
 ]

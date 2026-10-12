@@ -20,10 +20,10 @@ export interface AttendeesIn {
 export interface AnalyzeRequest {
   meeting_id?: string;
   revision_id?: string;
-  /** YYYY-MM-DD; optional for agentic/v3 -- anchors deadline normalization ("tuần sau" -> date). */
+  /** YYYY-MM-DD; optional -- anchors deadline normalization ("tuần sau" -> date). */
   meeting_date?: string;
   items: TranscriptItem[];
-  /** v3 only: lets the backend resolve actors to listed people/organizations. */
+  /** Lets the backend resolve actors to listed people/organizations. */
   attendees?: AttendeesIn;
 }
 
@@ -88,40 +88,10 @@ export interface DecisionOut {
   citation_count: number;
 }
 
-export interface DebateRecordOut {
-  segment_id: string;
-  kind: "action" | "decision";
-  candidate_text: string;
-  reasons: string[];
-  support_argument: string;
-  oppose_argument: string;
-  kept: boolean;
-  reasoning: string;
-  /** keep / revise (actor corrected) / drop. */
-  verdict?: "keep" | "revise" | "drop";
-  /** Candidate after the judge's correction ("" when dropped). */
-  final_text?: string;
-  /** Turn the judge relied on (assignment/confirmation), if any. */
-  deciding_turn_id?: string | null;
-}
-
 export interface TurnOut {
   turn_id: string;
   speaker: string | null;
   text: string;
-}
-
-export interface AnalyzeResponse {
-  meeting_id: string;
-  revision_id: string;
-  topics: TopicOut[];
-  verified_assignments: ActionItemOut[];
-  verified_decisions: DecisionOut[];
-  turns: TurnOut[];
-  /** Per-topic LLM calls still failing after retries; that topic's output is missing. */
-  failed_topics?: { segment_id: string; agent: string; error: string }[];
-  /** Candidates that Evidence-Check flagged uncertain and Debate+Judge ruled on. */
-  debate_records?: DebateRecordOut[];
 }
 
 // ----- Agentic v3 (src/agentic_v3): POST /v3/meetings/analyze -> AnalyzeV3Result -----
@@ -310,8 +280,6 @@ export interface AnalyzeV3Result {
   /** Extractor agents the Planner skipped (Decisions found no assign/decide turn in the topic). */
   skipped_agents: { segment_id: string; agent: string }[];
 }
-
-export type PipelineKind = "agentic" | "v3";
 
 /** Một đoạn bằng chứng để tô trên transcript: turn + (tùy chọn) span ký tự trong turn. */
 export interface EvidenceRef {

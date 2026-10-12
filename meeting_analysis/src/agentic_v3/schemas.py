@@ -1,5 +1,5 @@
 """Kiểu dữ liệu riêng của v3. Candidate, luận điểm và lỗi dùng lại nguyên kiểu của
-``.core.schemas`` (chép từ ``src.agentic.schemas``) để tầng trình bày (``be/services``) serialize như v1.
+``.core.schemas`` (chép từ ``src.agentic.schemas`` của v1, đã xóa) để tầng trình bày (``be/services``) serialize chung.
 
 ``verification`` của candidate trong v3 có thêm hai giá trị ngoài ``Verification``
 của v1: ``"consensus"`` (Verifier và agent trích xuất đồng thuận) và ``"verifier"``

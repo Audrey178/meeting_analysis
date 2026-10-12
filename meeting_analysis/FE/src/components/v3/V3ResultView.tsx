@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { AnalyzeResponse, AnalyzeV3Result, V3Part, V3PartMeta } from "../../api/types";
+import type { AnalyzeV3Result, V3Part, V3PartMeta } from "../../api/types";
 import { ResultView, type ResultTab } from "../ResultView";
 import { TaskProgressBlock } from "./TaskProgressBlock";
 import { VerifierRecordsBlock } from "./VerifierRecordsBlock";
@@ -68,9 +68,9 @@ function PartToolbar({ part, meta, busy, error, onReload }: PartToolbarProps) {
   );
 }
 
-// Kết quả v3 dùng lại ResultView của v1 (cùng ba phần output); tab Kiểm chứng đổi sang
-// bản ghi Verifier, thêm tab Tiến độ khi request có danh sách việc cần báo cáo, và ghi
-// chú các agent bị Planner bỏ qua. Mỗi tab của một phần có nút chạy lại riêng phần đó.
+// Kết quả v3 hiển thị bằng ResultView: tab Kiểm chứng là bản ghi Verifier, thêm tab Tiến độ
+// khi request có danh sách việc cần báo cáo, và ghi chú các agent bị Planner bỏ qua. Mỗi tab
+// của một phần có nút chạy lại riêng phần đó.
 export function V3ResultView({
   data,
   elapsedMs,
@@ -81,7 +81,6 @@ export function V3ResultView({
   onReloadPart,
   onRefreshAll,
 }: V3ResultViewProps) {
-  const asV1: AnalyzeResponse = { ...data, debate_records: [] };
   const records = data.verification_records;
   const kept = records.filter((record) => record.verdict === "keep" || record.verdict === "revise" || record.verdict === "unresolved").length;
   const skipped = data.skipped_agents ?? [];
@@ -115,7 +114,7 @@ export function V3ResultView({
 
   return (
     <ResultView
-      data={asV1}
+      data={data}
       elapsedMs={elapsedMs}
       selectedPointKey={selectedPointKey}
       onSelectPoint={onSelectPoint}

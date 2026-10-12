@@ -1,4 +1,4 @@
-"""Các hàm cung cấp adapter (dependency) cho FastAPI: embedding, gán nhãn chủ đề và LLM."""
+"""Các hàm cung cấp dependency cho FastAPI: embedding, bộ cắt chủ đề, analyzer và cache v3."""
 
 from __future__ import annotations
 
@@ -18,8 +18,7 @@ for _dir in (_BE_DIR, _TREESEG_DIR, _REPO_ROOT):
 
 from fastapi import HTTPException, Request
 
-from src.stages.stage07_topic_labeling import StructuredLLMTopicLabeler
-from src.utils.ports import EmbeddingAdapter, LLMAdapter, TopicLabelAdapter
+from src.utils.ports import EmbeddingAdapter
 
 
 def build_embedding_adapter() -> EmbeddingAdapter:
@@ -77,33 +76,6 @@ def get_topic_segmenter(request: Request):
     """
 
     return getattr(request.app.state, "topic_segmenter", None)
-
-
-def get_topic_label_adapter() -> TopicLabelAdapter:
-    """Dựng bộ gán nhãn chủ đề dùng LLM cho một request (tạo mới mỗi request).
-
-    Đầu ra: ``StructuredLLMTopicLabeler`` bọc một ``OpenAIChatJSONAdapter``.
-    """
-
-    from src.utils.openai_adapters import OpenAIChatJSONAdapter
-
-    llm = OpenAIChatJSONAdapter()
-    return StructuredLLMTopicLabeler(llm, model_name=getattr(llm, "model_name", "openai"))
-
-
-def get_downstream_llm_adapters() -> tuple[LLMAdapter, LLMAdapter, LLMAdapter, LLMAdapter]:
-    """Dựng LLM cho bốn agent phía sau (Content, Action, Decision, Debate+Judge).
-
-    Hiện cả bốn dùng CHUNG một instance (tạo mới mỗi request), tức là chấp nhận đánh đổi
-    nêu ở docstring ``build_graph`` (không tách model trích xuất khỏi model kiểm chứng).
-
-    Đầu ra: tuple bốn LLMAdapter theo thứ tự (content, action, decision, debate_judge).
-    """
-
-    from src.utils.openai_adapters import OpenAIChatJSONAdapter
-
-    llm = OpenAIChatJSONAdapter()
-    return llm, llm, llm, llm
 
 
 def get_analyzer_v3(request: Request):

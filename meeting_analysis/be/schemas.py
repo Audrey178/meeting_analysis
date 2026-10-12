@@ -1,4 +1,4 @@
-"""Schema request/response của HTTP API (xem ``routers/meetings.py``)."""
+"""Schema request/response của HTTP API (xem ``routers/meetings_v3.py``)."""
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ class AttendeesIn(BaseModel):
 
 
 class AnalyzeRequest(BaseModel):
-    """Dữ liệu đầu vào của API phân tích cuộc họp: một transcript.
+    """Phần transcript của request phân tích cuộc họp (``AnalyzeV3Request`` kế thừa).
 
     Cùng dạng với JSON transcript gốc (``inputs/sample_transcript.json``) và được chuyển
     nguyên vẹn cho ``parse_transcript_payload``. Vì vậy ``items`` cố ý để lỏng (``list[dict]``) thay vì
@@ -49,8 +49,8 @@ class AnalyzeRequest(BaseModel):
     dùng ``"stt-export"``/``"export-0"`` khi thiếu. Chỉ dạng "native" mới bắt buộc hai
     trường này, và ``_parse_native_payload`` tự báo lỗi rõ ràng. Từng bắt buộc chúng vô
     điều kiện ở đây làm hỏng trường hợp STT export (payload thật giống ``recording_old.json``);
-    lỗi này chỉ phát hiện khi thử payload thật vào endpoint đang chạy, vì mẫu của
-    ``test_api.py`` tình cờ đã có sẵn cả hai.
+    lỗi này chỉ phát hiện khi thử payload thật vào endpoint đang chạy, vì transcript mẫu
+    của test tình cờ đã có sẵn cả hai.
 
     Các trường:
         meeting_id: mã cuộc họp (tùy chọn).
@@ -58,7 +58,7 @@ class AnalyzeRequest(BaseModel):
         meeting_date: ngày họp (tùy chọn), neo để quy hạn chót của việc giao ("tuần sau")
             về ``deadline_date``; thiếu thì vẫn có ``deadline_kind``.
         items: danh sách các dòng transcript ở dạng dict.
-        attendees: danh sách người/đơn vị tham dự (tùy chọn, chỉ v3 dùng); thiếu thì actor
+        attendees: danh sách người/đơn vị tham dự (tùy chọn); thiếu thì actor
             chỉ được quy về người nói trong bản ghi.
     """
 
@@ -77,7 +77,7 @@ class SpeakerPointOut(BaseModel):
         evidence_ids: các turn_id làm bằng chứng.
         quotes: câu trích nguyên văn ứng với từng ``evidence_ids`` (cùng thứ tự và độ
             dài); là câu thực sự được trích chứ không phải cả lượt nói (xem
-            ``src.agentic._shared.validate_evidence_with_quotes``).
+            ``src.agentic_v3.core._shared.validate_evidence_with_quotes``).
         citation_count: số trích dẫn (bằng số turn_id bằng chứng).
     """
 
@@ -180,42 +180,6 @@ class FailedTopicOut(BaseModel):
     error: str
 
 
-class DebateRecordOut(BaseModel):
-    """Bản ghi một vòng Debate+Judge cho một candidate action/decision bị đánh dấu
-    chưa chắc chắn (uncertain) bởi Evidence-Check -- để người dùng đối chiếu vì
-    sao candidate đó được giữ hoặc bị bỏ (xem
-    ``src.agentic.nodes.debate_judge_agent``).
-    """
-
-    segment_id: str
-    kind: str
-    candidate_text: str
-    reasons: list[str]
-    support_argument: str
-    oppose_argument: str
-    kept: bool
-    reasoning: str
-    verdict: str = "keep"
-    final_text: str = ""
-    deciding_turn_id: str | None = None
-
-
-class AnalyzeResponse(BaseModel):
-    """Kết quả phân tích cuộc họp -- đúng 3 phần output của pipeline (``topics``
-    = Diễn biến họp, ``verified_assignments`` = Giao việc,
-    ``verified_decisions`` = Kết luận họp), cộng transcript, các chủ đề bị
-    lỗi và các candidate đã qua Debate/Judge để audit."""
-
-    meeting_id: str
-    revision_id: str
-    topics: list[TopicOut]
-    verified_assignments: list[ActionItemOut]
-    verified_decisions: list[DecisionOut]
-    turns: list[TurnOut]
-    failed_topics: list[FailedTopicOut] = []
-    debate_records: list[DebateRecordOut] = []
-
-
 # ----- Agentic v3 (src/agentic_v3) — chủ đề song song + Verifier đồng thuận với agent trích xuất -----
 
 
@@ -281,7 +245,7 @@ class ConsensusRoundOut(BaseModel):
 
 
 class VerificationRecordOut(BaseModel):
-    """Bản ghi kiểm chứng một candidate uncertain (thay ``DebateRecordOut`` ở v3).
+    """Bản ghi kiểm chứng một candidate uncertain.
     ``decided_by``: "consensus" (đồng thuận), "verifier" (hết vòng, theo Verifier) hoặc "fallback"."""
 
     item_key: str
@@ -422,7 +386,8 @@ class AnalysisPartOut(BaseModel):
 
 
 class AnalyzeV3Result(BaseModel):
-    """Kết quả cuối của v3: cùng ba phần output như ``AnalyzeResponse``, cộng bản ghi
+    """Kết quả cuối của v3: ba phần output (``topics`` = Diễn biến họp,
+    ``verified_assignments`` = Giao việc, ``verified_decisions`` = Kết luận họp), cộng bản ghi
     kiểm chứng, các agent đã bỏ qua và tiến độ các việc cần báo cáo (``task_progress``,
     rỗng khi request không có ``tasks``).
 

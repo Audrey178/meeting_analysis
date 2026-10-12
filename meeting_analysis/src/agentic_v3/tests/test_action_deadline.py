@@ -3,7 +3,7 @@ QUY TẮC CHUẨN HOÁ HẠN, luật ``normalize_deadline`` làm dự phòng, b�
 
 from __future__ import annotations
 
-from src.agentic.nodes.action_agent import (
+from src.agentic_v3.core.nodes.action_agent import (
     ACTION_SYSTEM_PROMPT,
     _strip_deadline_echo,
     make_action_agent,

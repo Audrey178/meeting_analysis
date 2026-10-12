@@ -9,9 +9,9 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from src.agentic._shared import check_action_evidence, check_decision_evidence
-from src.agentic.schemas import ActionItemCandidate, DecisionCandidate
-from src.agentic.turn_act import DecisionsTurnActJudge, TurnActJudgement, render_turn_act_input
+from src.agentic_v3.core._shared import check_action_evidence, check_decision_evidence
+from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate
+from src.agentic_v3.core.turn_act import DecisionsTurnActJudge, TurnActJudgement, render_turn_act_input
 from src.utils.contracts import SpeakerTurn
 
 

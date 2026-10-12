@@ -31,7 +31,7 @@ _HERE = Path(__file__).resolve().parent
 _REPO_ROOT = _HERE.parents[1]
 sys.path.insert(0, str(_REPO_ROOT))
 
-from src.agentic._shared import _confirm_turn_reasons  # noqa: E402
+from src.agentic_v3.core._shared import _confirm_turn_reasons  # noqa: E402
 from src.stages.stage01_effective_transcript import resolve_effective_transcript  # noqa: E402
 from src.stages.stage02_evidence import build_evidence_items  # noqa: E402
 from src.stages.stage03_speaker_turns import build_speaker_turns  # noqa: E402

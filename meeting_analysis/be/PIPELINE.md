@@ -1,22 +1,25 @@
 # Luồng xử lý transcript end-to-end của `be/`
 
-Tài liệu mô tả đường đi của một transcript từ lúc client gọi `POST /meetings/analyze`
-đến khi nhận JSON kết quả (Diễn biến họp / Giao việc / Kết luận họp).
+Tài liệu mô tả đường đi của một transcript từ lúc client gọi `POST /v3/meetings/analyze`
+đến khi nhận JSON kết quả (Diễn biến họp / Giao việc / Kết luận họp / Tiến độ). Tài liệu này
+tập trung vào phần đầu chung (dựng lượt nói, cắt chủ đề, gán nhãn); các agent v3, Verifier,
+tiến độ và cache kết quả xem `src/agentic_v3/ARCHITECTURE.md`.
 
 ```
-HTTP POST /meetings/analyze
-  │  routers/meetings.py        (validate AnalyzeRequest, tiêm adapter, map lỗi -> HTTP)
+HTTP POST /v3/meetings/analyze
+  │  routers/meetings_v3.py     (validate AnalyzeV3Request, tiêm analyzer/adapter/cache, map lỗi -> HTTP)
   ▼
-services/pipeline.py: run_meeting_analysis_pipeline
+services/pipeline_v3.py: run_meeting_analysis_v3   (cache theo request: nền + từng phần)
   │
-  ├─ parse_transcript_payload        payload dict -> (meeting_id, revision_id, RawTranscriptItem[])
-  ├─ stage01 resolve_effective_transcript   dòng thô -> dòng hiệu lực (chồng bản sửa của người duyệt)
-  ├─ stage02 build_evidence_items           dòng hiệu lực -> EvidenceItem có mã ổn định
-  ├─ stage03 build_speaker_turns            evidence -> SpeakerTurn (gộp dòng liên tiếp cùng người nói)
-  ├─ Cắt chủ đề trên SpeakerTurn            DialSTART | TreeSeg -> TopicSegment[]
-  ├─ stage07 label_topics                   mỗi đoạn -> TopicLabel (title + summary), gọi LLM
-  ├─ LangGraph (src/agentic/graph.py)       Content / Action / Decision / Evidence-Check / Debate+Judge
-  └─ Serialize                              MeetingState cuối -> dict theo AnalyzeResponse
+  ├─ nền: services/segmentation.py: segment_meeting
+  │    ├─ parse_transcript_payload        payload dict -> (meeting_id, revision_id, RawTranscriptItem[])
+  │    ├─ stage01 resolve_effective_transcript   dòng thô -> dòng hiệu lực (chồng bản sửa của người duyệt)
+  │    ├─ stage02 build_evidence_items           dòng hiệu lực -> EvidenceItem có mã ổn định
+  │    ├─ stage03 build_speaker_turns            evidence -> SpeakerTurn (gộp dòng liên tiếp cùng người nói)
+  │    └─ Cắt chủ đề trên SpeakerTurn            DialSTART | TreeSeg -> TopicSegment[]
+  │  + MeetingAnalyzerV3.label_segments       mỗi đoạn -> TopicLabel (stage07, gọi LLM)
+  ├─ phần: MeetingAnalyzerV3.analyze        development | assignments | decisions | progress
+  └─ Serialize                              MeetingReport -> dict theo AnalyzeV3Result
 ```
 
 Không có bước dựng atom (stage04–06, stage08 cũ đã bị xóa): cắt chủ đề chạy thẳng trên
@@ -35,40 +38,49 @@ Chạy: `uvicorn --app-dir be main:app`
 3. `lifespan` chạy **một lần** khi khởi động, dựng các thành phần nặng dùng chung cho mọi request:
    - `app.state.embedding_adapter` ← `build_embedding_adapter()` (theo `EMBEDDING_BACKEND`).
    - `app.state.topic_segmenter` ← `build_topic_segmenter()` (theo `TOPIC_SEGMENTER`, nạp checkpoint DialSTART).
-4. Gắn CORS (`ALLOWED_ORIGINS`) và hai router: `health` (`GET /health`) và `meetings`.
+4. Gắn CORS (`ALLOWED_ORIGINS`) và hai router: `health` (`GET /health`) và `meetings_v3`.
 
-Các adapter LLM (gán nhãn chủ đề, agent phía sau) **không** dựng lúc khởi động mà
-tạo mới cho mỗi request trong `services/dependencies.py`.
+`MeetingAnalyzerV3` (LLM của các agent) và `AnalysisCache` **không** dựng lúc khởi động mà
+dựng lười ở request v3 đầu tiên rồi dùng chung (`services/dependencies.py`).
 
-## 2. Tầng HTTP (`routers/meetings.py`, `schemas.py`)
+## 2. Tầng HTTP (`routers/meetings_v3.py`, `schemas.py`)
 
-`POST /meetings/analyze` nhận `AnalyzeRequest`:
+`POST /v3/meetings/analyze` nhận `AnalyzeV3Request`:
 
 | Trường | Kiểu | Ghi chú |
 |---|---|---|
 | `meeting_id` | `str \| None` | Tùy chọn; bắt buộc chỉ với dạng "native" |
 | `revision_id` | `str \| None` | Tùy chọn; như trên |
+| `meeting_date` | `date \| None` | Neo để quy hạn chót tương đối về ngày |
 | `items` | `list[dict]` | Các dòng transcript, để lỏng và chuyển nguyên cho parser |
+| `attendees` | `AttendeesIn \| None` | Danh sách người/đơn vị tham dự |
+| `chair` | `str \| None` | Tên người chủ trì |
+| `tasks` | `TasksIn \| None` | Việc cần báo cáo tiến độ |
 
-FastAPI tiêm 4 dependency:
+FastAPI tiêm 4 dependency, đều dùng chung cho mọi request:
 
-| Dependency | Nguồn | Vòng đời |
-|---|---|---|
-| `get_embedding_adapter` | `app.state.embedding_adapter` | dùng chung |
-| `get_topic_segmenter` | `app.state.topic_segmenter` (None = TreeSeg) | dùng chung |
-| `get_topic_label_adapter` | `StructuredLLMTopicLabeler(OpenAIChatJSONAdapter())` | mỗi request |
-| `get_downstream_llm_adapters` | tuple 4 phần tử, **cùng một** `OpenAIChatJSONAdapter` | mỗi request |
+| Dependency | Nguồn |
+|---|---|
+| `get_embedding_adapter` | `app.state.embedding_adapter` |
+| `get_topic_segmenter` | `app.state.topic_segmenter` (None = TreeSeg) |
+| `get_analyzer_v3` | `MeetingAnalyzerV3` dựng lười (`build_analyzer_v3`) |
+| `get_analysis_cache_v3` | `AnalysisCache` dựng lười (`build_analysis_cache_v3`) |
 
-Endpoint gọi `run_meeting_analysis_pipeline(request.model_dump(), ...)` (hàm đồng bộ,
-chạy lâu vì gọi LLM nhiều lần) và ánh xạ lỗi:
+Endpoint gọi `run_meeting_analysis_v3(request.model_dump(), ...)` (hàm đồng bộ, chạy lâu vì
+gọi LLM nhiều lần) và ánh xạ lỗi:
 
 | Ngoại lệ | Mã HTTP |
 |---|---|
 | `LLMUpstreamError` với `timed_out=True` | 504 |
-| `LLMUpstreamError` khác | 502 |
-| `ValueError` (transcript không hợp lệ) | 422 |
+| `LLMUpstreamError` khác, chạy lại một phần mà lỗi | 502 |
+| Không dùng được cache (Redis) | 503 |
+| Phần không áp dụng / bản phân tích đang chạy lại | 409 |
+| `ValueError` (transcript/danh sách không hợp lệ) | 422 |
 
-## 3. Pipeline (`services/pipeline.py`)
+Các endpoint khác (`POST /v3/meetings/analyze/{part}`, `GET /v3/meetings/analyses/{key}`)
+xem `src/agentic_v3/ARCHITECTURE.md` mục 8.
+
+## 3. Phần đầu chung (`services/segmentation.py`)
 
 ### 3.1 Parse payload — `src/utils/adapters.py::parse_transcript_payload`
 
@@ -161,7 +173,7 @@ lượt nói ─► (1) chấm điểm khe ─► (2) làm mượt ─► (3) de
    tới đỉnh gần nhất, `depth = ½·(đỉnh_trái + đỉnh_phải − 2·score)`. Khe càng "lõm" càng sâu.
 4. **Chọn ranh giới** (`select_boundaries`), lần lượt 4 bước:
 
-   | Bước | Hàm | Tham số (`be/services/pipeline.py`) | Làm gì |
+   | Bước | Hàm | Tham số (`be/services/segmentation.py`) | Làm gì |
    |---|---|---|---|
    | a | `_threshold_edges` | `threshold_std=1.0`, `min_size=4` | Giữ khe có depth > `mean + 1·std`. Duyệt depth giảm dần, bỏ khe tạo ra đoạn < 4 lượt |
    | b | `_drop_short_segments` | `min_segment_chars=_dialstart_min_segment_chars(...)` = tổng ký tự / 15, kẹp [1500, 10000] | Lặp: đoạn ngắn nhất (theo ký tự) còn dưới sàn thì xóa mép có depth thấp hơn, tức gộp vào đoạn bên cạnh |
@@ -212,8 +224,8 @@ Tăng `_TREESEG_MIN_RELATIVE_GAIN` để có ít đoạn to hơn, giảm để c
 | Quyết định vị trí | khe depth cao | điểm có SS hai phía nhỏ nhất |
 | Kích thước tối thiểu | 8 lượt, rồi 10 000 ký tự | 4 lượt |
 | Hậu xử lý | gộp đoạn kề cosine ≥ 0.65 | — |
-| Trần ký tự | 35 000 (`pipeline.py`) | 35 000 (`pipeline.py`) |
-| Tham số nằm ở | hằng số `_DIALSTART_*` trong `pipeline.py` | hằng số `_TREESEG_*` + `width=5`, `min_size=4` trong `pipeline.py` |
+| Trần ký tự | 35 000 (`segmentation.py`) | 35 000 (`segmentation.py`) |
+| Tham số nằm ở | hằng số `_DIALSTART_*` trong `segmentation.py` | hằng số `_TREESEG_*` + `width=5`, `min_size=4` trong `segmentation.py` |
 
 Lỗi gọi embedding (TreeSeg) là bước **duy nhất** trong pipeline không có
 dự phòng; nó nổi lên thành `LLMUpstreamError` và router trả 502/504.
@@ -221,7 +233,7 @@ dự phòng; nó nổi lên thành `LLMUpstreamError` và router trả 502/504.
 
 ### 3.6 Stage07 — gán nhãn chủ đề (`stage07_topic_labeling.py::label_topics`)
 
-Với từng đoạn, theo thứ tự (đoạn và nhãn liền trước được đưa vào làm ngữ cảnh):
+`MeetingAnalyzerV3.label_segments` gọi `label_topics` cho mọi đoạn (song song, qua gate). Với từng đoạn (đoạn và nhãn liền trước được đưa vào làm ngữ cảnh):
 
 1. **LLM** (`StructuredLLMTopicLabeler`) đề xuất `title` + `summary`.
 2. **Kiểm tra cấu trúc** (`_validate_label_structure`) và **grounding guard**
@@ -232,96 +244,24 @@ Với từng đoạn, theo thứ tự (đoạn và nhãn liền trước đượ
 
 Stage này không làm hỏng request khi LLM lỗi. Kết quả: `labels_by_segment[segment_id] -> TopicLabel`.
 
-### 3.7 Graph agent (`src/agentic/graph.py`)
+### 3.7 Agent v3 và đầu ra
 
-`build_graph(content_llm, action_llm, decision_llm, debate_judge_llm)` rồi `graph.invoke(state)`
-với `MeetingState` ban đầu gồm `segments`, `labels_by_segment`, `turns_by_id` và các
-trường điều khiển/kết quả rỗng.
+Sau phần đầu chung, `MeetingAnalyzerV3.analyze` chạy mọi chủ đề song song (trích xuất →
+Evidence-Check → Verifier ⇄ agent trích xuất tới khi đồng thuận, cộng agent tiến độ khi có
+`tasks`), xem `src/agentic_v3/ARCHITECTURE.md`. `services/pipeline_v3.py` chỉ lắp ráp dữ liệu
+(0 token) theo `AnalyzeV3Result` (`schemas.py`):
 
-```
-START / advance_topic ──gửi chủ đề i──► content_agent  ──┐
-                                   ├──► action_agent   ──┼──► check_topic_evidence
-                                   └──► decision_agent ──┘            │
-                                                        candidate UNCERTAIN?
-                                                     có ▼                 │ không
-                                         debate_and_judge_agent (0..N)    │
-                                                        ▼                 ▼
-                                                     advance_topic ◄──────┘
-                                      còn chủ đề → lặp i+1 │ hết → retry_failed_topics → END
-```
-
-**Chủ đề được xử lý tuần tự**; trong một chủ đề, ba agent trích xuất chạy song song (`Send`).
-
-| Node | Loại | Việc làm | Ghi vào |
-|---|---|---|---|
-| `content_agent` | LLM | Trích luận điểm của từng người nói trong đoạn | `meeting_development` (thẳng, không kiểm chứng) |
-| `action_agent` | LLM | Trích phát biểu giao việc (actor + việc + bằng chứng) | `action_item_candidates_raw` |
-| `decision_agent` | LLM | Trích kết luận/chốt phương án | `decision_candidates_raw` |
-| `check_topic_evidence` | Luật, 0 token | Action: UNCERTAIN nếu `actor` là None hoặc không định danh được ("nhóm", "một thành viên"). Decision: UNCERTAIN nếu có từ ngữ đề xuất/hedge. CLEAR → vào kết quả đã kiểm chứng; UNCERTAIN → `DebateTask` | `verified_assignments` / `verified_decisions`, `pending_debate_tasks` |
-| `debate_and_judge_agent` | 3 lời gọi LLM | Agent A ủng hộ, Agent B phản biện, Judge phân xử giữ/bỏ. LLM lỗi → **giữ** candidate | kết quả đã kiểm chứng (nếu giữ), `debate_records` |
-| `advance_topic` | Luật | Khi cả 3 nhánh + mọi debate của chủ đề xong: tăng `next_segment_index`, cộng tên/việc **đã kiểm chứng** vào `known_names` / `known_assignments` | trường điều khiển |
-| `retry_failed_topics` | LLM | Chạy lại **một lần** các lời gọi content/action/decision đã lỗi, áp evidence-check bằng luật (không debate) | kết quả phục hồi, `unrecovered_failures` |
-
-Một số điểm quan trọng:
-
-- **Ngữ cảnh chạy dồn**: `known_names`/`known_assignments` được đưa vào prompt của chủ đề
-  sau (`previous_context`) để quy các cách xưng hô "em"/"anh"/"bọn em" về tên thật đã biết.
-  Đây là lý do không chạy song song mọi chủ đề.
-- **Kiểm chứng trích dẫn** (`_shared.validate_evidence_with_quotes`): chỉ giữ `turn_id`
-  thuộc đúng đoạn đang xét; câu trích chỉ được tin nếu là chuỗi con thật của
-  `text_exact`, ngược lại thay bằng nguyên văn cả lượt nói.
-- **Lỗi LLM không làm hỏng request**: agent trích xuất lỗi trả kết quả rỗng kèm
-  `TopicFailure`; phần không phục hồi được sau retry báo ra ở `failed_topics`.
-- **Chi phí**: `3N + 3M` lời gọi LLM cho graph (N = số chủ đề, M = số candidate
-  UNCERTAIN), cộng N lời gọi (hoặc hơn nếu retry) của stage07.
-- Hiện cả 4 vai trò LLM dùng chung một instance, chấp nhận rủi ro thiên vị tự đồng ý
-  giữa bước trích xuất và bước kiểm chứng để giảm chi phí.
-
-### 3.8 Serialize kết quả
-
-`MeetingState` cuối chính là kết quả; graph không có node "assemble". Tầng `services/`
-chỉ lắp ráp dữ liệu (0 token):
-
-- `topics`: `meeting_development` (phẳng) được nhóm theo `segment_id` và ghép
+- `topics`: các `SpeakerSection` (phẳng) được nhóm theo `segment_id` và ghép
   `title`/`summary` từ stage07, theo đúng thứ tự đoạn.
 - `verified_assignments`, `verified_decisions`: danh sách phẳng; `actor` nằm trên
   từng item, **không** gộp theo người (việc gộp để hiển thị thuộc về frontend).
+- `task_progress`: tiến độ từng việc cần báo cáo (rỗng khi request không có `tasks`).
 - `turns`: lượt nói rút gọn để frontend tra ngược `evidence_ids`.
-- `failed_topics`, `debate_records`: phục vụ audit.
-
-## 4. Đầu ra (`AnalyzeResponse`)
-
-```jsonc
-{
-  "meeting_id": "...",
-  "revision_id": "...",
-  "topics": [                       // Diễn biến họp
-    {
-      "segment_id": "...", "title": "...", "summary": "...",
-      "speakers": [
-        { "initials": "...", "full_name": "...",
-          "points": [ { "text": "...", "evidence_ids": ["turn-..."], "quotes": ["..."], "citation_count": 1 } ] }
-      ]
-    }
-  ],
-  "verified_assignments": [         // Giao việc
-    { "segment_id": "...", "actor": "..." /* hoặc null */, "text": "...", "evidence_ids": [], "quotes": [], "citation_count": 0 }
-  ],
-  "verified_decisions": [           // Kết luận họp
-    { "segment_id": "...", "text": "...", "evidence_ids": [], "quotes": [], "citation_count": 0 }
-  ],
-  "turns": [ { "turn_id": "...", "speaker": "...", "text": "..." } ],
-  "failed_topics": [ { "segment_id": "...", "agent": "action_agent", "error": "..." } ],
-  "debate_records": [
-    { "segment_id": "...", "kind": "action|decision", "candidate_text": "...", "reasons": [],
-      "support_argument": "...", "oppose_argument": "...", "kept": true, "reasoning": "..." }
-  ]
-}
-```
+- `failed_topics`, `verification_records`, `skipped_agents`: phục vụ audit.
 
 `evidence_ids` và `quotes` luôn cùng độ dài, cùng thứ tự.
 
-## 5. Biến môi trường
+## 4. Biến môi trường
 
 | Biến | Mặc định | Dùng ở |
 |---|---|---|
@@ -335,23 +275,27 @@ chỉ lắp ráp dữ liệu (0 token):
 | `OPENAI_TIMEOUT_SECONDS`, `OPENAI_MAX_RETRIES` | xem `src/utils/openai_adapters.py` | timeout/retry của client |
 | `ALLOWED_ORIGINS` | `*` | CORS |
 
-## 6. Kiểm thử
+Biến `V3_*`, `VERIFIER_*`, `TURN_ACT_*` của agent v3 xem `src/agentic_v3/ARCHITECTURE.md` mục 7.2.
 
-`be/test_api.py` chạy một transcript thật qua toàn bộ luồng (stage01–03 → TreeSeg →
-stage07 → graph → HTTP) với mọi adapter được thay bằng fake (không gọi mạng). Nó kiểm
-tra việc nối dây end-to-end, không đánh giá chất lượng đầu ra của model.
+## 5. Kiểm thử
 
-## 7. Bản đồ file
+`be/test_api_v3.py` chạy transcript mẫu qua toàn bộ luồng (stage01–03 → TreeSeg →
+`MeetingAnalyzerV3` → HTTP) với mọi adapter được thay bằng fake (không gọi mạng). Nó kiểm
+tra việc nối dây end-to-end, ánh xạ lỗi và cache, không đánh giá chất lượng đầu ra của model.
+
+## 6. Bản đồ file
 
 | File | Vai trò |
 |---|---|
 | `be/main.py` | Tạo app FastAPI, lifespan, CORS, router |
-| `be/routers/meetings.py` | Endpoint `/meetings/analyze`, ánh xạ lỗi |
+| `be/routers/meetings_v3.py` | Endpoint `/v3/meetings/*`, ánh xạ lỗi |
 | `be/routers/health.py` | `GET /health` |
 | `be/schemas.py` | Schema request/response |
 | `be/services/dependencies.py` | Dựng/cung cấp adapter và bộ cắt chủ đề |
-| `be/services/pipeline.py` | Điều phối pipeline, hằng số cắt chủ đề, serialize |
+| `be/services/segmentation.py` | Phần đầu chung: stage01–03, hằng số và lời gọi cắt chủ đề |
+| `be/services/pipeline_v3.py` | Điều phối v3, cache từng phần, serialize |
+| `be/services/analysis_cache.py` | Cache kết quả (trong bộ nhớ hoặc Redis) |
 | `src/utils/adapters.py` | Parse payload transcript |
 | `src/stages/stage01..03_*.py`, `stage07_topic_labeling.py` | Các stage tiền xử lý và gán nhãn |
-| `src/agentic/graph.py`, `state.py`, `nodes/*` | Graph agent LangGraph |
+| `src/agentic_v3/` | Agent v3 (xem `ARCHITECTURE.md` trong thư mục đó) |
 | `experiments/dialstart`, `treeseg_turn_level` | Các bộ cắt chủ đề |

@@ -1,4 +1,4 @@
-import type { AnalysisStatus } from "../hooks/useAnalysis";
+import type { AnalysisStatus } from "../hooks/useV3Analysis";
 
 const STATUS_LABEL: Record<AnalysisStatus, string> = {
   idle: "chưa phân tích",
@@ -11,8 +11,6 @@ interface NavBarProps {
   status: AnalysisStatus;
   meetingId?: string;
   revisionId?: string;
-  /** Short pipeline name shown next to the meeting id. */
-  pipelineLabel?: string;
   apiHealthy: boolean | null;
   onReset: () => void;
 }
@@ -24,7 +22,7 @@ const STATUS_STYLE: Record<AnalysisStatus, { pill: string; dot: string }> = {
   error: { pill: "bg-accent-100 text-accent-800", dot: "bg-accent" },
 };
 
-export function NavBar({ status, meetingId, revisionId, pipelineLabel, apiHealthy, onReset }: NavBarProps) {
+export function NavBar({ status, meetingId, revisionId, apiHealthy, onReset }: NavBarProps) {
   const style = STATUS_STYLE[status];
 
   return (
@@ -39,7 +37,6 @@ export function NavBar({ status, meetingId, revisionId, pipelineLabel, apiHealth
         <span className="flex min-w-0 items-center gap-2 border-l border-divider pl-4 text-[13px]">
           <span className="truncate font-semibold">{meetingId}</span>
           {revisionId && <span className="text-neutral-600">{revisionId}</span>}
-          {pipelineLabel && <span className="tag tag-muted !py-0">{pipelineLabel}</span>}
         </span>
       )}
       <span className={`ml-auto flex items-center gap-1.5 px-2.5 py-1 font-heading text-[11.5px] font-extrabold ${style.pill}`}>

@@ -1,4 +1,4 @@
-"""Node trích xuất chép từ ``src.agentic.nodes``; v3 chạy chúng với prompt v3 (``..nodes.extractors``)."""
+"""Node trích xuất chép từ ``src.agentic.nodes`` (v1, đã xóa); v3 chạy chúng với prompt v3 (``..nodes.extractors``)."""
 
 from .action_agent import make_action_agent
 from .content_agent import make_content_agent

@@ -288,7 +288,8 @@ def evidence_check(
 def _route_verify(state: TopicState) -> list[Send] | str:
     """Gửi từng candidate UNCERTAIN cho Verifier (song song), hoặc kết thúc subgraph.
 
-    Trả TÊN node (``END``) khi không có gì để gửi, không trả ``[]`` (xem ``src/agentic/graph.py``).
+    Trả TÊN node (``END``) khi không có gì để gửi, không trả ``[]``: đã kiểm chứng ở v1 rằng
+    hàm cạnh có điều kiện trả ``[]`` làm nhánh đó chết im lặng (node đích không bao giờ chạy).
 
     Đầu vào: state - sau ``evidence_check``.
     Đầu ra: list ``Send`` hoặc ``END``.

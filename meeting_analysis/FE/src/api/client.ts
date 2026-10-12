@@ -1,14 +1,8 @@
-import type {
-  AnalyzeRequest,
-  AnalyzeResponse,
-  AnalyzeV3Request,
-  AnalyzeV3Result,
-  V3Part,
-} from "./types";
+import type { AnalyzeV3Request, AnalyzeV3Result, V3Part } from "./types";
 
 // Empty by default: dev uses the Vite proxy (vite.config.ts) for same-origin
 // requests; production deploys should set VITE_API_BASE_URL to wherever
-// `uvicorn api:app` (be/) is reachable.
+// `uvicorn --app-dir be main:app` is reachable.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export class ApiError extends Error {
@@ -40,28 +34,6 @@ export async function checkHealth(): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-export async function analyzeMeeting(payload: AnalyzeRequest): Promise<AnalyzeResponse> {
-  let response: Response;
-  try {
-    response = await fetch(`${API_BASE_URL}/meetings/analyze`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-  } catch {
-    throw new ApiError(
-      `Không kết nối được tới API (${API_BASE_URL || "cùng origin"}). Backend đã chạy chưa?`,
-    );
-  }
-
-  if (!response.ok) {
-    const detail = await parseErrorDetail(response);
-    throw new ApiError(detail, response.status);
-  }
-
-  return (await response.json()) as AnalyzeResponse;
 }
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {

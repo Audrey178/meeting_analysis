@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError, analyzeMeetingV3, getMeetingV3Analysis, reloadMeetingV3Part } from "../api/client";
 import type { AnalyzeV3Request, AnalyzeV3Result, V3Part } from "../api/types";
-import type { AnalysisStatus } from "./useAnalysis";
+
+export type AnalysisStatus = "idle" | "running" | "success" | "error";
 
 export interface V3AnalysisState {
   status: AnalysisStatus;

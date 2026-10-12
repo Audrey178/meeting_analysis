@@ -1,4 +1,4 @@
-"""Unit test cho luật chuẩn hoá hạn chót ``src.agentic.deadline`` (0 token).
+"""Unit test cho luật chuẩn hoá hạn chót ``src.agentic_v3.core.deadline`` (0 token).
 
 Ngày họp neo: 2026-10-08 (thứ Năm); tuần kết thúc Chủ nhật 2026-10-11.
 """
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.agentic.deadline import NormalizedDeadline, normalize_deadline
+from src.agentic_v3.core.deadline import NormalizedDeadline, normalize_deadline
 
 MEETING_DATE = "2026-10-08"
 

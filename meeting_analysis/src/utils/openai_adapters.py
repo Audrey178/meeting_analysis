@@ -306,7 +306,7 @@ def _openai_strict_schema(schema: Mapping[str, object]) -> dict:
     enforcing evidence-first field order (see ``ports.EventAdapter``) has
     that order actually reach the wire request.
 
-    Recurses into nested object/array schemas -- e.g. ``src/agentic``'s
+    Recurses into nested object/array schemas -- e.g. ``src/agentic_v3``'s
     per-evidence-entry schema (``{"evidence": {"type": "array", "items":
     {"type": "object", "properties": {"turn_id", "quote"}, ...}}}``). The
     original version only normalized the TOP-level object, leaving nested
