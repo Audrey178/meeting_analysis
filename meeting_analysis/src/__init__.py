@@ -1,13 +1,5 @@
-"""API công khai của package meeting-analysis: catalog module, cấu hình, contract dữ liệu và các port (adapter)."""
+"""API công khai của package meeting-analysis: cấu hình, contract dữ liệu và các port (adapter)."""
 
-from .utils.catalog import (
-    ACTION_MODULES,
-    MODULE_CATALOG,
-    PIPELINE_MODULES,
-    EngineKind,
-    ModuleSpec,
-    get_module,
-)
 from .utils.config import (
     AtomBuilderConfig,
     AtomConfig,
@@ -102,9 +94,6 @@ def __getattr__(name: str):
 
 
 __all__ = [
-    "ACTION_MODULES",
-    "MODULE_CATALOG",
-    "PIPELINE_MODULES",
     "ActionAdapter",
     "AnalysisAtom",
     "AnalysisWindow",
@@ -119,7 +108,6 @@ __all__ = [
     "CosineSimilarityAdapter",
     "EffectiveTranscriptItem",
     "EmbeddingAdapter",
-    "EngineKind",
     "EntityMention",
     "EventGuardConfig",
     "EventGuardReviewer",
@@ -138,7 +126,6 @@ __all__ = [
     "InputDomainStatus",
     "LLMAdapter",
     "LLMBoundaryTiebreakAdapter",
-    "ModuleSpec",
     "PipelineConfig",
     "Provenance",
     "PublishConfig",
@@ -170,7 +157,6 @@ __all__ = [
     "WindowBuilderConfig",
     "WindowConfig",
     "build_atom_features",
-    "get_module",
     "load_config",
     "to_jsonable",
 ]

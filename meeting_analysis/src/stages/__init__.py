@@ -11,8 +11,7 @@ Nhánh atoms (stage04, stage05, stage06, stage08 và ``segmentation``) hiện KH
 stage của đường chính không kéo theo hàng nghìn dòng code không dùng, và lỗi trong nhánh cũ
 không làm hỏng việc khởi động backend.
 
-Ba module không phải stage: ``_shared`` và ``_speech_acts`` chứa hàm dùng chung cho nhiều
-stage, ``review_markers`` chứa các phép chiếu phục vụ kiểm toán của cả lần chạy.
+Module không phải stage: ``_shared`` chứa hàm dùng chung cho nhiều stage.
 """
 
 from __future__ import annotations
@@ -21,10 +20,6 @@ import importlib
 from typing import Any
 
 from ._shared import LexicalCosineSimilarity
-from .review_markers import (
-    evidence_integrity_review_markers,
-    model_stage_review_markers,
-)
 from .stage01_effective_transcript import resolve_effective_transcript
 from .stage02_evidence import build_evidence_items
 from .stage03_speaker_turns import build_speaker_turns
@@ -73,9 +68,7 @@ __all__ = [
     "StructuredLLMTopicLabeler",
     "build_evidence_items",
     "build_speaker_turns",
-    "evidence_integrity_review_markers",
     "label_topics",
-    "model_stage_review_markers",
     "resolve_effective_transcript",
     # Nhánh atoms (nạp trễ)
     *_LAZY_EXPORTS,
