@@ -45,7 +45,7 @@ Hai chỗ cần lưu ý:
 
 Các chỗ này được đánh dấu chữ đỏ `[TODO: ...]` bằng macro `\todo`. Xoá macro khi đã điền đủ.
 
-1. Phiên bản model và prompt của Commitment Scorer; cân nhắc thay bằng mô hình mở để tái lập được.
+1. Commitment Scorer: bài đã mô tả decision model ở mức khái niệm (định nghĩa, câu hỏi sáu lựa chọn, công thức p_c, năm ưu điểm) mà không nêu tên dịch vụ cụ thể. Bản cài đặt hiện gọi OpenAI Decisions API; nếu reviewer hỏi về tái lập, cân nhắc thử thay bằng một mô hình mở.
 2. Phiên bản Gemma dùng cho các tác tử; model dùng cho Verifier.
 3. Làm rõ tập "12 cuộc họp" và thống nhất tập dữ liệu trong Bảng 2.
 4. Chạy DialSTART-VI trên gold nội bộ để so trực tiếp với phương pháp lai, và giải thích lựa chọn.

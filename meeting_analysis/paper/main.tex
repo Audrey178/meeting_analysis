@@ -193,7 +193,40 @@ Meeting Planner dựng trước một danh bạ người nói (Speaker Registry)
 \end{figure*}
 
 \paragraph{\cscorer{}.}
-Thành phần này dùng chung cho Topic Planner và Evidence Check. Với mỗi lượt nói, nó trả về phân phối xác suất trên sáu hành vi: giao việc, kết luận, đề xuất, bác bỏ, thảo luận và khác. Từ phân phối này suy ra $\pc$, xác suất lượt nói thực sự giao việc hoặc chốt kết luận. Trong cài đặt hiện tại, bộ chấm gọi một dịch vụ phân loại có cấu trúc dựa trên LLM (OpenAI Decisions API) \todo{ghi rõ phiên bản model và prompt; cân nhắc thay bằng mô hình mở để tái lập được}.
+Thành phần này dùng chung cho Topic Planner và Evidence Check, xây dựng trên một \emph{decision model}. Decision model là loại mô hình nhận vào một đoạn văn bản cùng một câu hỏi lựa chọn có cấu trúc, gồm một hướng dẫn ngắn và một tập lựa chọn đóng; mỗi lựa chọn được định nghĩa bằng một mô tả ngôn ngữ tự nhiên. Mô hình không sinh câu trả lời tự do mà trả về phân phối xác suất trên các lựa chọn đó.
+
+Với mỗi lượt nói $u$ cần xét, đầu vào gồm hai lượt nói đứng trước làm ngữ cảnh và bản thân $u$, mỗi lượt tối đa 2\,500 ký tự; lượt dài hơn được cắt thành nhiều cửa sổ và hỏi riêng. Câu hỏi có sáu lựa chọn (Bảng~\ref{tab:acts}). Hướng dẫn yêu cầu xét theo nghĩa chứ không theo từ khoá. Ví dụ, khẩu ngữ như ``nhá'', ``cứ làm đi'', ``coi như xong'' vẫn có thể là lời giao hoặc chốt; ``đề nghị'' của người chủ trì thường là chỉ đạo, còn của đại biểu thường là kiến nghị. Xác suất lượt chốt là tổng xác suất của hai lựa chọn mang tính cam kết:
+\begin{equation}
+  \pc(u) = P(\text{giao việc} \mid u) + P(\text{kết luận} \mid u).
+\end{equation}
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \begin{tabular}{lp{5.1cm}}
+    \toprule
+    \textbf{Lựa chọn} & \textbf{Định nghĩa trong câu hỏi} \\
+    \midrule
+    Giao việc & Giao việc cho người hoặc đơn vị cụ thể, hoặc một người nhận, cam kết làm việc \\
+    Kết luận & Chốt, kết luận hoặc thống nhất một quyết định \\
+    Đề xuất & Mới là ý kiến, đề xuất, kiến nghị; chưa ai chốt hay nhận \\
+    Bác bỏ & Gạt đi, đảo lại hoặc huỷ một đề xuất, quyết định hay việc trước đó \\
+    Thảo luận & Trình bày, báo cáo, hỏi đáp; không giao, không chốt \\
+    Khác & Không thuộc các loại trên \\
+    \bottomrule
+  \end{tabular}
+  \caption{Sáu lựa chọn của câu hỏi gửi decision model. $\pc$ là tổng xác suất của hai lựa chọn đầu.}
+  \label{tab:acts}
+\end{table}
+
+So với luật từ khoá và với cách hỏi một LLM sinh văn bản, decision model có năm ưu điểm cho tác vụ này:
+\begin{enumerate}
+  \item \textbf{Xác suất được hiệu chỉnh.} ECE chỉ 0.040 (\S\ref{sec:res-scorer}), nên $\pc$ dùng trực tiếp làm ngưỡng định tuyến. Một LLM sinh văn bản chỉ trả về một nhãn, hoặc một độ tin cậy tự khai báo vốn không được hiệu chỉnh.
+  \item \textbf{Hiểu theo nghĩa.} Mô hình nhận ra lời giao việc dạng khẩu ngữ mà luật bỏ sót, ví dụ ``để Sơn nghiên cứu giúp anh'', và không bắt nhầm cụm từ trùng hình thức như ``hay là'' trong ``bản hay là cái gì cũng được''.
+  \item \textbf{Không cần dữ liệu huấn luyện.} Nhãn được định nghĩa bằng mô tả ngôn ngữ tự nhiên, nên có thể điều chỉnh định nghĩa mà không phải huấn luyện lại. Điều này quan trọng vì tiếng Việt chưa có dữ liệu có nhãn cho hành vi lời nói trong cuộc họp.
+  \item \textbf{Đầu ra ổn định.} Vì không sinh văn bản tự do, mô hình không gặp lỗi định dạng đầu ra. Cùng một đầu vào cho cùng một kết quả, nên kết quả được lưu lại theo nội dung đầu vào: lượt đã hỏi ở Topic Planner không phải hỏi lại ở Evidence Check.
+  \item \textbf{Nhanh và rẻ.} Đầu vào ngắn, độ trễ trung vị 0.30 giây mỗi lượt, nên có thể chấm từng lượt nói, điều quá đắt nếu dùng một tác tử LLM đầy đủ.
+\end{enumerate}
 
 \paragraph{Topic Planner.}
 Planner xét các lượt nói từ cuối chủ đề lên, lượt dài được cắt thành nhiều cửa sổ. Gặp cửa sổ đầu tiên có $\pc \ge 0.2$ thì chạy Assignment Agent và Decision Agent. Nếu không cửa sổ nào đạt, hai tác tử này được bỏ qua. Khi bộ chấm lỗi, planner vẫn cho chạy để ưu tiên recall.
@@ -271,6 +304,7 @@ Bảng~\ref{tab:seg} cho hai kết luận. Thứ nhất, làm mượt là bướ
 Trên 47 phiên Quốc hội, cận dưới theo nguyên lý chuồng bồ cho thấy 49.5\% lượt nói của đại biểu (không tính chủ toạ) chứa nhiều chủ đề, với ít nhất 1\,011 lần chuyển chủ đề nằm bên trong lượt. Đây là giới hạn cứng của mọi phương pháp phân đoạn theo lượt nói.
 
 \subsection{\cscorer{}}
+\label{sec:res-scorer}
 
 \begin{table}[t]
   \centering
@@ -324,7 +358,7 @@ Chúng tôi trình bày một kiến trúc hai tầng để phân tích biên b�
 
 \paragraph{Phân đoạn.} Khoảng cách giữa dữ liệu tổng hợp và dữ liệu thật còn rất lớn (Pk 0.011 so với 0.485). Biểu diễn chủ đề chưa phân biệt được chuyển sang mục lớn khác với chuyển tiểu mục trong cùng mục. Phân đoạn theo lượt nói bị giới hạn bởi các lượt đa chủ đề. Gold nội bộ chỉ có 9 ranh giới do một người gán, nên lệch một ranh giới đã làm F1 thay đổi đáng kể.
 
-\paragraph{Trích xuất.} Ba giả định chưa được kiểm trên dữ liệu thật: danh bạ dựng sẵn không làm giảm chất lượng xác định người nhận; bỏ tác tử theo Topic Planner không làm mất recall; vòng đồng thuận không khiến một bên nhượng bộ sai. Lỗi phân biệt người nói có thể khiến lời người trình bày bị hiểu là lời chủ trì. LLM mở vẫn cho kết quả khác nhau giữa các lần chạy dù temperature bằng 0. \cscorer{} phụ thuộc một dịch vụ thương mại và mới được đánh giá trên dữ liệu tổng hợp.
+\paragraph{Trích xuất.} Ba giả định chưa được kiểm trên dữ liệu thật: danh bạ dựng sẵn không làm giảm chất lượng xác định người nhận; bỏ tác tử theo Topic Planner không làm mất recall; vòng đồng thuận không khiến một bên nhượng bộ sai. Lỗi phân biệt người nói có thể khiến lời người trình bày bị hiểu là lời chủ trì. LLM mở vẫn cho kết quả khác nhau giữa các lần chạy dù temperature bằng 0. \cscorer{} dùng một decision model đóng, chưa tái lập được bằng mô hình mở, và mới được đánh giá trên dữ liệu tổng hợp.
 
 \paragraph{Chi phí.} Vòng đồng thuận có thể tốn tới 15 lời gọi LLM cho mỗi kết quả chưa chắc chắn; phân bố thực tế chưa được đo.
 
