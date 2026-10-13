@@ -64,7 +64,7 @@ the \emph{Content agent} writes discussion points, whose participant lists are d
 the \emph{Action agent} and the \emph{Decision agent} propose action-item and decision candidates;
 the \emph{Progress agent}, active only when $\mathcal{G}\neq\emptyset$, receives the whole agenda, chooses which tasks the segment talks about, and reports a status and a status turn for each.
 Discussion points are a narrative of what was said rather than claims that can be true or false, so they skip verification.
-A failed call is retried inside the subgraph up to $A$ times (Table~\ref{tab:hparams}), so a transient error delays only its own topic.
+A failed call is retried inside the subgraph up to $A$ times (Table~\ref{tab:hparams}, \S\ref{sec:system}), so a transient error delays only its own topic.
 
 \paragraph{A shared rubric for assignment.}
 Administrative meetings rarely use an explicit ``X will do Y''.
@@ -249,39 +249,3 @@ We set the thresholds on 30 development outputs: they merge 12 pairs, of which 1
 \paragraph{Deadlines, progress and agenda links.}
 Spoken deadlines (``before the 15th of November'', ``next week'', ``end of Q4'') are normalised by rule, anchored at the meeting date $d$, into a date and a kind (\texttt{exact}, \texttt{before}, \texttt{end\_of\_period}, \texttt{relative}, \texttt{unknown}); the date proposed by the Action agent is used only when the rule finds none.
 When an agenda is present, progress updates are reduced to one row per task (directive or conclusion turns override report turns; otherwise the later turn wins), a task with no update is reported as \texttt{not\_reported} rather than removed, and each new action item is related to the agenda as \texttt{new}, \texttt{follow\_up}, \texttt{reassign} or \texttt{reschedule} from its fields, without text matching.
-
-% ---------------------------------------------------------------------
-\subsection{Implementation}
-\label{sec:method:impl}
-
-The pipeline is a LangGraph \citep{langgraph} state graph with two levels of fan-out (segments, then UNCERTAIN candidates), both expressed with \texttt{Send}; per-topic outputs are combined with list-concatenation reducers.
-The graph contains no human-in-the-loop interrupt and runs from start to end in one invocation, so it needs no checkpointer.
-Graph-level parallelism and LLM load are controlled separately: the graph may run up to 16 tasks per superstep, while one process-wide semaphore wrapped around every LLM adapter (labeller, extractors, Verifier) caps concurrent LLM calls.
-All generative roles use the same open-weight backbone, \texttt{gemma-4-26B-A4B-it}, served behind an OpenAI-compatible gateway; the commitment classifier of \S\ref{sec:method:evidence} is a separate hosted endpoint.
-Because each extractor produces exactly one report section, a caller can recompute a single section (e.g.\ only action items) on top of stored topic labels without touching the others.
-Table~\ref{tab:hparams} lists all pipeline hyperparameters.
-
-\begin{table}[t]
-\centering
-\small
-\begin{tabular}{@{}llr@{}}
-\toprule
-Symbol & Meaning & Value \\
-\midrule
-$A$ & attempts per extractor and topic & 2 \\
-$T$ & Verifier tool calls per round & 3 \\
-$R$ & max.\ consensus rounds & 3 \\
-$k$ & turns returned by \texttt{search\_meeting} & 5 \\
-$k_1, b$ & BM25 parameters & 1.2, 0.75 \\
--- & commitment bands of $p_{\text{commit}}$ & 0.2 / 0.8 \\
--- & context turns for the classifier & 2 \\
--- & amendment retention (min.) & 0.5 \\
--- & actor clear: score / margin & 0.6 / 0.2 \\
--- & duplicate: Jaccard / overlap & 0.45 / 0.7 \\
--- & graph tasks per superstep & 16 \\
--- & concurrent LLM calls (default) & 8 \\
-\bottomrule
-\end{tabular}
-\caption{Hyperparameters of \method{} (defaults of the released configuration). With these values a single UNCERTAIN candidate costs at most $R(T{+}3)=18$ LLM calls.}
-\label{tab:hparams}
-\end{table}

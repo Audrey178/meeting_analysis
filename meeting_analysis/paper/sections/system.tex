@@ -1,0 +1,137 @@
+% =====================================================================
+% Section: system implementation and technology stack.
+% Sources: requirements.txt, pyproject.toml, docker-compose.yml, src/stages,
+% src/utils, experiments/dialstart, be/ (FastAPI service), FE/ (React app).
+% =====================================================================
+
+\section{System Implementation and Technology Stack}
+\label{sec:system}
+
+\method{} runs in production as a web service behind an inspection interface.
+This section describes the technologies used at each layer, from raw transcript to user interface (Table~\ref{tab:stack}), and the engineering choices that the method of \S\ref{sec:method} depends on.
+
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{@{}p{0.17\textwidth}p{0.30\textwidth}p{0.46\textwidth}@{}}
+\toprule
+Layer & Technology & Role in \method \\
+\midrule
+Pre-processing      & Python 3.11+, rule-based stages            & Apply human corrections with provenance, freeze lines into evidence items with stable IDs, merge lines into speaker turns \\
+Topic segmentation  & DialSTART \citep{gao2023dialstart} on ViBERT4news \citep{vibert4news}; PyTorch, Hugging Face Transformers & Default segmenter, Vietnamese checkpoint; TreeSeg \citep{gklezakos2024treeseg} with BGE-M3 embeddings \citep{chen2024bgem3} as alternative \\
+Generative LLM      & \texttt{gemma-4-26B-A4B-it} \citep{gemmateam2026gemma4}, OpenAI-compatible gateway, \texttt{openai} SDK & Topic labelling, the four extractors, Verifier and Proposer; strict JSON-schema structured outputs \\
+Commitment classifier & OpenAI Decisions API (multiple-choice, calibrated probabilities) & Commitment-act test of the evidence check; status test for progress updates \\
+Agent orchestration & LangGraph \citep{langgraph}                & Parent graph and topic subgraph, \texttt{Send} fan-out, list reducers \\
+Retrieval tool      & BM25 \citep{robertson2009bm25}, own implementation & \texttt{search\_meeting} over Vietnamese syllables and syllable bigrams \\
+Service layer       & FastAPI, Uvicorn, Pydantic v2              & Three report endpoints (tasks, decisions, content) plus cached read-back \\
+Result cache        & Redis 7.4 (Docker Compose), \texttt{redis-py} & Two-tier cache keyed by transcript hash and pipeline fingerprint; versions, locks, single-flight \\
+User interface      & React 19, TypeScript, Vite, Tailwind CSS 4 & Inspector view: transcript on the left, report on the right, evidence highlighting \\
+Testing             & pytest, fakeredis                          & Unit tests for rules, graph routing, actors, deadlines, API and cache \\
+\bottomrule
+\end{tabular}
+\caption{Technology stack of \method, from transcript to user interface. Every component except the two hosted model endpoints runs on a single machine; the generative backbone is open-weight.}
+\label{tab:stack}
+\end{table*}
+
+% ---------------------------------------------------------------------
+\subsection{From transcript to speaker turns}
+\label{sec:system:preprocess}
+
+The input is a transcript exported by a speech-to-text system or converted from a Word or plain-text minute: a list of lines, each with an identifier, a speaker and timestamps.
+Three deterministic stages prepare it.
+Stage~1 overlays human corrections of text or speaker onto the ASR output and records, per field, whether the value comes from ASR or from a reviewer.
+Stage~2 freezes each line into an evidence item whose identifier depends only on the meeting and the source line, while the normalised content is hashed separately; re-running the pipeline therefore yields the same citation identifiers, and editing a line changes only its content hash.
+Stage~3 merges consecutive lines into a speaker turn only when they share a speaker and lie less than 1.5\,s apart; lines with an unknown speaker or missing timestamps are not merged, because a wrong merge would silently attribute one person's words to another.
+Every item of the final report cites these turn identifiers and, through them, the original line identifiers, which the interface uses to highlight evidence.
+
+% ---------------------------------------------------------------------
+\subsection{Topic segmentation}
+\label{sec:system:segmentation}
+
+The default segmenter is DialSTART \citep{gao2023dialstart}, an unsupervised dialogue topic segmenter that combines a next-sentence-prediction coherence score with the similarity of topic-aware utterance embeddings.
+Both of its BERT encoders \citep{devlin2019bert} start from the Vietnamese checkpoint \texttt{vibert4news-base-cased} \citep{vibert4news}, and the model is trained with the DialSTART objective on Vietnamese data.
+% TODO: describe the training corpus and settings of checkpoint model_vn3 (not documented in the repo).
+For each gap between turns $i$ and $i{+}1$ we compute
+$\mathrm{score}(i)=\sigma\big(\mathrm{NSP}(\text{left context}, t_{i+1}) + \cos(\bar e_{\text{left}}, \bar e_{\text{right}})\big)$
+over windows of two turns on each side, and derive TextTiling depth scores \citep{hearst1997texttiling}.
+Two inference changes make this practical on long meetings: each turn is encoded once and its embedding is averaged per window, instead of re-encoding the window for every gap (equivalent output, about $2\times$ window-size faster); and turns are encoded up to 256 tokens as in training, rather than truncated to 128 characters.
+Because the number of boundaries is unknown at inference time, boundaries are selected by smoothing the gap scores (window 3), keeping depths above mean $+$ one standard deviation, requiring at least 4 turns per segment, and dropping segments shorter than a length floor that scales with the meeting (total characters$/15$, clipped to $[1{,}500, 10{,}000]$).
+On 12 labelled sessions of the Vietnamese National Assembly, removing the smoothing step lowers boundary F1 from 0.418 to 0.297.
+TreeSeg \citep{gklezakos2024treeseg}, a hierarchical segmenter over sentence embeddings, is kept as a configurable alternative and uses BGE-M3 \citep{chen2024bgem3} through \texttt{sentence-transformers} or a hosted embedding API.
+% TODO(results): the 0.418 -> 0.297 figure is copied from a comment in
+% be/services/segmentation.py; re-run the segmentation eval before citing it.
+
+% ---------------------------------------------------------------------
+\subsection{LLM access and structured outputs}
+\label{sec:system:llm}
+
+All generative roles call one open-weight model, \texttt{gemma-4-26B-A4B-it} \citep{gemmateam2026gemma4}, a mixture-of-experts model served behind an OpenAI-compatible endpoint and accessed with the \texttt{openai} Python SDK.
+Every call goes through a single adapter interface, \texttt{generate\_json(system, user, schema)}, which requests strict JSON-schema structured outputs at temperature~0; a looser ``valid JSON'' mode is available for servers without schema-constrained decoding.
+Because every node only depends on this interface, the Verifier can be pointed at a different provider (e.g.\ a hosted DeepSeek model) by configuration, with its own concurrency limit and without code changes.
+The adapter retries transient failures (timeouts, dropped connections, HTTP 5xx) with exponential backoff, up to 4 attempts, 6 for connection errors and 8 for rate limits, with a 60\,s request timeout.
+A context variable labels each call with the agent and segment that made it, so retries and latency can be attributed even though many calls run concurrently.
+Since all segments run in parallel, the number of simultaneous requests could exceed what the gateway tolerates; a process-wide semaphore (\S\ref{sec:system:orchestration}) bounds it.
+
+The commitment classifier of \S\ref{sec:method:evidence} uses the OpenAI Decisions API, which answers a multiple-choice question about an input text with a probability for each choice.
+Results are cached by input text, because several candidates of one topic often point at the same commitment turn, and a 10\,s timeout falls back to the cue lexicon.
+On the development turns its median latency is 0.30\,s (p95 0.41\,s), small compared with a generative call.
+
+% ---------------------------------------------------------------------
+\subsection{Agent orchestration}
+\label{sec:system:orchestration}
+
+The pipeline is a LangGraph \citep{langgraph} \texttt{StateGraph}.
+The parent graph has three nodes (Planner, topic subgraph, Finalize); the topic subgraph is compiled separately with its own input and output schemas, so it receives one segment and returns only its result lists.
+Fan-out happens twice with \texttt{Send}: once per segment and once per UNCERTAIN candidate.
+Results from concurrent branches are combined with list-concatenation reducers and re-sorted in Finalize.
+The graph has no human-in-the-loop interrupt and runs from start to end in one invocation, so it needs no checkpointer, and one compiled graph serves all meetings.
+Graph parallelism and LLM load are controlled separately: LangGraph runs up to 16 tasks per superstep, while a bounded semaphore wrapped around every LLM adapter (labeller, extractors, Verifier) caps concurrent LLM calls at 8 by default, below the client's connection pool of 10.
+Each extractor produces exactly one report section, so a caller can recompute one section on top of stored topic labels without touching the others.
+Table~\ref{tab:hparams} lists the pipeline hyperparameters.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}llr@{}}
+\toprule
+Symbol & Meaning & Value \\
+\midrule
+$A$ & attempts per extractor and topic & 2 \\
+$T$ & Verifier tool calls per round & 3 \\
+$R$ & max.\ consensus rounds & 3 \\
+$k$ & turns returned by \texttt{search\_meeting} & 5 \\
+$k_1, b$ & BM25 parameters & 1.2, 0.75 \\
+-- & commitment bands of $p_{\text{commit}}$ & 0.2 / 0.8 \\
+-- & context turns for the classifier & 2 \\
+-- & amendment retention (min.) & 0.5 \\
+-- & actor clear: score / margin & 0.6 / 0.2 \\
+-- & duplicate: Jaccard / overlap & 0.45 / 0.7 \\
+-- & graph tasks per superstep & 16 \\
+-- & concurrent LLM calls (default) & 8 \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameters of \method{} (defaults of the released configuration). With these values a single UNCERTAIN candidate costs at most $R(T{+}3)=18$ LLM calls.}
+\label{tab:hparams}
+\end{table}
+
+% ---------------------------------------------------------------------
+\subsection{Service layer and caching}
+\label{sec:system:service}
+
+A FastAPI application (served by Uvicorn, request and response models in Pydantic v2) exposes the report as three documents: \emph{tasks} (new action items and progress of agenda tasks), \emph{decisions}, and \emph{content} (topics with discussion points).
+Each is a \texttt{POST} endpoint that returns its document in the same request; a \texttt{GET} endpoint returns a document that has already been computed.
+Every document item carries the identifiers of the transcript lines it cites, together with an audit block built from the verification records.
+
+Results are cached in two tiers under one key, a hash of the normalised transcript together with a \emph{pipeline fingerprint}: a hash of the source code, configuration files and model or endpoint names (never API keys), so editing a prompt invalidates old results even before it is committed.
+The \emph{base} tier holds speaker turns, segments and topic labels and is shared by the three documents; each document is a separate entry that is computed only when requested, on top of the base.
+The default backend is Redis~7.4, run with Docker Compose and append-only persistence; each analysis is a Redis hash with a time-to-live.
+Version counters let the interface discard a response older than the one it shows, locks keep read-modify-write sections consistent, and a single-flight guard makes a duplicate request wait for the running computation instead of starting another, which also holds across several API workers.
+Disk, in-memory (LRU) and disabled backends exist for development.
+
+% ---------------------------------------------------------------------
+\subsection{Inspection interface}
+\label{sec:system:ui}
+
+The web client is written in React~19 and TypeScript, built with Vite and styled with Tailwind CSS~4.
+It follows an inspector layout: the transcript stays pinned on the left and the three documents render on the right.
+Clicking any action item, decision or discussion point highlights the exact transcript lines it cites, so a reader can check each claim against its source; this is the user-facing side of goal G3 (\S\ref{sec:method}).

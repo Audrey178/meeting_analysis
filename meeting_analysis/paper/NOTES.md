@@ -2,9 +2,10 @@
 
 - `main.tex`: khung paper theo template ACL (chỉ mới có phần Method và Phụ lục A).
 - `sections/method.tex`: §Method — luồng agent của `src/agentic_v3`.
+- `sections/system.tex`: §System Implementation and Technology Stack — tiền xử lý, DialSTART, LLM/structured output, LangGraph, FastAPI + Redis, giao diện React (Bảng 2 = bảng công nghệ, Bảng 3 = siêu tham số).
 - `sections/appendix_progress.tex`: Phụ lục A — theo dõi tiến độ việc cũ.
 - `figures/pipeline.tex`: Hình 1 (TikZ), sơ đồ graph cha + subgraph chủ đề.
-- `references.bib`: 10 trích dẫn, metadata đã đối chiếu qua web; BibTeX ghép tay vì sandbox không tới được doi.org/arXiv — cần export lại trước khi nộp.
+- `references.bib`: 17 trích dẫn, metadata đã đối chiếu qua web; BibTeX ghép tay vì sandbox không tới được doi.org/arXiv — cần export lại trước khi nộp.
 - `acl_latex.tex`, `acl.sty`, …: template gốc, giữ nguyên để tham khảo.
 
 Biên dịch: `latexmk -pdf main.tex` (cần TikZ, vntex, algorithmicx).
@@ -17,6 +18,10 @@ Biên dịch: `latexmk -pdf main.tex` (cần TikZ, vntex, algorithmicx).
 - Không có số nào từ tập test.
 
 ## Còn thiếu / cần quyết định
+
+- Dữ liệu và cách train checkpoint DialSTART `model_vn3` (TODO trong §System).
+- Số F1 cắt chủ đề 0.418 → 0.297 lấy từ comment trong `be/services/segmentation.py`, cần chạy lại eval.
+- BGE-M3 (Findings ACL 2024) chưa có trang/DOI; ViBERT4news chỉ cite model card.
 
 - Tên hệ thống: đang để placeholder `\method` = AgenticV3.
 - Tên chính xác của bộ phân loại lượt chốt (hosted endpoint) (mục Evidence check và Implementation).
