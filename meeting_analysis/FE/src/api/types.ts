@@ -93,7 +93,6 @@ export interface Generation {
 
 export interface DocumentAudit {
   verification_records?: VerificationRecordOut[];
-  skipped_agents?: { segment_id: string; agent: string }[];
   failed_topics?: { segment_id: string; agent: string; error: string }[];
 }
 

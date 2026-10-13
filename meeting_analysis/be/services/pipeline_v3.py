@@ -55,15 +55,6 @@ from services.documents import MeetingContext, build_document, build_document_en
 from services.segmentation import load_pipeline_config, segment_meeting
 
 
-def _env_flag(name: str, default: bool) -> bool:
-    """Đọc biến môi trường dạng cờ ("1/true/yes/on" là bật)."""
-
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    return raw.strip().lower() in {"1", "true", "yes", "on"}
-
-
 def build_v3_config_from_env() -> V3Config:
     """Cấu hình v3 từ biến môi trường ``V3_*`` (giá trị thiếu dùng mặc định của ``V3Config``).
 
@@ -72,7 +63,6 @@ def build_v3_config_from_env() -> V3Config:
 
     defaults = V3Config()
     return V3Config(
-        skip_agents_without_commit=_env_flag("V3_SKIP_AGENTS_WITHOUT_COMMIT", defaults.skip_agents_without_commit),
         extract_attempts=int(os.environ.get("V3_EXTRACT_ATTEMPTS", defaults.extract_attempts)),
         verifier_max_tool_calls=int(os.environ.get("V3_VERIFIER_MAX_TOOL_CALLS", defaults.verifier_max_tool_calls)),
         consensus_max_rounds=int(os.environ.get("V3_CONSENSUS_MAX_ROUNDS", defaults.consensus_max_rounds)),
@@ -288,7 +278,6 @@ _FINGERPRINT_ENV = (
     "EMBEDDING_BACKEND",
     "EMBEDDING_MODEL",
     "EMBEDDING_TEXT_PREFIX",
-    "V3_SKIP_AGENTS_WITHOUT_COMMIT",
     "V3_EXTRACT_ATTEMPTS",
     "V3_VERIFIER_MAX_TOOL_CALLS",
     "V3_CONSENSUS_MAX_ROUNDS",

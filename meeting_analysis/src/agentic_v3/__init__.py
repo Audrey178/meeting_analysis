@@ -1,7 +1,6 @@
 """Pipeline agentic v3: mọi chủ đề chạy song song (subgraph + ``Send``) trên danh bạ người
-nói do Planner dựng trước, Planner hỏi Decisions để bỏ agent không cần thiết, Verifier ReAct
-thay Debate+Judge và gửi feedback lại cho agent trích xuất tới khi đồng thuận (không có bước
-duyệt người).
+nói do Planner dựng trước, Verifier ReAct thay Debate+Judge và gửi feedback lại cho agent trích
+xuất tới khi đồng thuận (không có bước duyệt người).
 
 Hình dạng graph xem ``graph/meeting.py``/``graph/topic.py``; điểm vào cho tầng dịch vụ là
 ``MeetingAnalyzerV3`` (``runner.py``). Các agent trích xuất và
@@ -23,7 +22,6 @@ from .schemas import (
     ConsensusRound,
     MeetingReport,
     ProgressUpdate,
-    SkippedAgent,
     SpeakerRegistry,
     TaskProgress,
     VerificationRecord,
@@ -44,7 +42,6 @@ __all__ = [
     "MeetingAnalyzerV3",
     "MeetingReport",
     "ProgressUpdate",
-    "SkippedAgent",
     "SpeakerRegistry",
     "TaskAgenda",
     "TaskProgress",

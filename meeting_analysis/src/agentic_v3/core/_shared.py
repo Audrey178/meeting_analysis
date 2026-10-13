@@ -28,7 +28,7 @@ from dataclasses import replace
 
 from ...utils.contracts import SpeakerTurn, TopicSegment
 from .schemas import ActionItemCandidate, DecisionCandidate, EvidenceFlag
-from .turn_act import COMMIT_CLEAR_MIN, COMMIT_REJECT_MAX, TurnActJudge
+from .turn_act import COMMIT_CLEAR_MIN, COMMIT_REJECT_MAX, TurnActJudge, judge_turn
 
 logger = logging.getLogger(__name__)
 
@@ -328,7 +328,7 @@ def _judged_confirm_turn_reasons(
     """Nhánh có judge của ``_confirm_turn_reasons`` (ném lỗi của judge ra ngoài)."""
 
     index = next((i for i, turn in enumerate(turns) if turn.turn_id == confirm_turn.turn_id), len(turns))
-    judgement = judge.judge(confirm_turn, turns[:index])
+    judgement = judge_turn(judge, confirm_turn, turns[:index])
     p_commit = judgement.p_commit
     if p_commit >= COMMIT_CLEAR_MIN:
         return []

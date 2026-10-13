@@ -166,10 +166,6 @@ export function ResultView({ docs, transcript, elapsedMs, selectedKey, onSelect,
     ],
     [tasksDoc, decisionsDoc],
   );
-  const skipped = [
-    ...(tasksDoc?.extensions.audit.skipped_agents ?? []),
-    ...(decisionsDoc?.extensions.audit.skipped_agents ?? []),
-  ];
 
   const { topicIndexById, topicTitleById } = useMemo(
     () => ({
@@ -248,13 +244,6 @@ export function ResultView({ docs, transcript, elapsedMs, selectedKey, onSelect,
           </button>
         ))}
       </div>
-
-      {skipped.length > 0 && (
-        <div className="border-b border-divider bg-surface px-8 py-2 text-[12.5px] text-neutral-700">
-          Planner bỏ qua {skipped.length} lời gọi agent ở chủ đề không có lượt giao/chốt việc:{" "}
-          {skipped.map((item) => `${item.segment_id} (${AGENT_LABEL[item.agent] ?? item.agent})`).join(", ")}.
-        </div>
-      )}
 
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-6">
         {tabKind && <DocumentToolbar kind={tabKind} slot={docs[tabKind]} onReload={() => onReload(tabKind)} />}

@@ -1,31 +1,4 @@
-"""Xét theo NGHĨA một lượt nói nêu trạng thái gì cho một việc cần báo cáo tiến độ.
 
-Agent tiến độ (``nodes/progress.py``) khai trạng thái kèm lượt nói nêu trạng thái
-(``status_turn_id``); bước này hỏi OpenAI Decisions API đúng lượt đó, cùng chế độ đã đo
-ở ``experiments/009_decisions_api`` cho ``core/turn_act.py``: input ngắn (2 lượt ngữ
-cảnh + lượt cần xét, kèm tên việc), MỘT câu hỏi mỗi lời gọi. Không đổi
-``TURN_ACT_QUESTION`` (đã hiệu chỉnh trên eval/synthetic) mà dùng câu hỏi riêng.
-
-Hai kiểu việc, hỏi hai câu khác nhau (``DecisionsProgressActJudge`` tự chọn theo tên việc):
-- việc làm ra sản phẩm (tờ trình, văn bản, ý kiến được tiếp thu...): ``PROGRESS_ACT_QUESTION``.
-  Câu này chấm theo nội dung lượt nên hay lấy tình trạng của đề án/dự án được nhắc thay cho
-  tình trạng của việc (cuộc họp Cái Mép: câu "đã giải trình, tiếp thu" nằm trong đoạn nói đề án
-  "tiếp tục hoàn thiện" bị xếp "đang làm" 0.89). Vì vậy ``nodes/progress.py`` không để câu hỏi
-  này đổi qua lại giữa các trạng thái báo cáo. Viết lại câu hỏi không chữa được: đưa câu đó
-  lên "xong" 0.63 nhưng kéo lượt "tờ trình phải làm lại" từ 0.87 xuống 0.75.
-- việc chỉ là báo cáo tình hình cho cuộc họp (``TASK_KIND_QUESTION`` với p >= ``REPORT_TASK_MIN``):
-  ``REPORT_ACT_QUESTION``. Việc xong khi lượt nói trình bày nội dung việc yêu cầu. Tình hình của
-  đối tượng được báo cáo (dự án "đang làm thủ tục") là nội dung báo cáo, không phải trạng thái
-  của việc (Cái Mép: lượt trả lời về 3 dự án cảng được ``progress_act`` xếp "đang làm" 0.92,
-  ``report_act`` xếp "đã báo cáo" 0.99).
-
-``STATUS_CLEAR_MIN`` là ngưỡng TẠM, mượn từ ``turn_act.COMMIT_CLEAR_MIN``; chưa được
-hiệu chỉnh cho câu hỏi này -- phải đo lại khi có gold tiến độ.
-
-``render_turn_act_input`` chỉ giữ ``MAX_TURN_CHARS`` ký tự đầu mỗi lượt. Lượt trình bày dài
-thì câu nêu trạng thái có thể nằm sau mốc đó, nên ``judge_turn_windows`` cắt lượt dài thành
-nhiều đoạn và hỏi từng đoạn (input mỗi lời gọi vẫn ngắn).
-"""
 
 from __future__ import annotations
 

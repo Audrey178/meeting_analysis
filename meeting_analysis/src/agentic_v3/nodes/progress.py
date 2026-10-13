@@ -49,7 +49,7 @@ from ..core._shared import (
 )
 from ..core.nodes.action_agent import _format_meeting_date, _resolve_deadline
 from ..core.schemas import SegmentTask, TopicFailure
-from ..core.turn_act import COMMIT_CLEAR_MIN, TurnActJudge
+from ..core.turn_act import COMMIT_CLEAR_MIN, TurnActJudge, judge_turn
 from ...utils.contracts import SpeakerTurn
 from ...utils.llm_call_log import llm_call
 from ...utils.ports import LLMAdapter, LLMUpstreamError
@@ -396,7 +396,7 @@ def _p_commit(turn_judge: TurnActJudge | None, turns: Sequence[SpeakerTurn], ind
     if turn_judge is None:
         return None
     try:
-        return turn_judge.judge(turns[index], turns[:index]).p_commit
+        return judge_turn(turn_judge, turns[index], turns[:index]).p_commit
     except Exception as exc:
         logger.warning("turn_act lỗi ở lượt %s: %s", turns[index].turn_id, exc)
         return None
@@ -504,7 +504,7 @@ def _measure_directive(
         return update
     index = _turn_positions(turns)[update.status_turn_id]
     try:
-        p_directive = turn_judge.judge(turns[index], turns[:index]).p_commit
+        p_directive = judge_turn(turn_judge, turns[index], turns[:index]).p_commit
     except Exception as exc:
         logger.warning("turn_act lỗi khi đo chỉ đạo ở %s/%s: %s", update.segment_id, update.task_id, exc)
         return update

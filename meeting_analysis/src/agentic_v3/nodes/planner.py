@@ -1,38 +1,20 @@
-"""Planner: lập những gì các chủ đề cần trước khi trích xuất.
+"""Planner: dựng ``SpeakerRegistry`` trước khi trích xuất (luật, 0 token, MỘT lần trước khi các
+chủ đề tách song song) -- danh bạ người nói của cả cuộc họp.
 
-1. ``SpeakerRegistry`` (luật, 0 token, MỘT lần trước khi các chủ đề tách song song) -- danh
-   bạ người nói của cả cuộc họp. Thay ngữ cảnh ``known_names``/``known_assignments`` chạy dồn
-   của v1 (lý do duy nhất khiến v1 phải xử lý chủ đề tuần tự). Khác v1: danh bạ thấy cả người
-   chỉ xuất hiện ở chủ đề SAU; đổi lại không còn tên do agent tự gán (có thể sai) lan sang
-   chủ đề sau.
-2. Có chạy Action/Decision agent ở một chủ đề không (``may_assign_or_decide``, trong subgraph
-   của từng chủ đề): hỏi Decisions (``core/turn_act.py``) xem có lượt nào CÓ THỂ là giao/nhận/
-   chốt việc, theo nghĩa chứ không theo từ khoá. Bỏ agent chỉ khi mọi lượt đều rõ là không
-   (p_commit < ``COMMIT_REJECT_MAX``: trên eval/synthetic chỉ 4% lượt vùng này là lượt chốt,
-   và ngưỡng này không làm mất mục gold nào khi mô phỏng). Lượt chốt thường ở cuối chủ đề nên
-   xét từ cuối lên và dừng ở lượt đầu tiên vượt ngưỡng. Lọc riêng theo nhãn thì mất kết luận
-   (p(ket_luan) >= 0.2 bỏ sót 5/166 kết luận, lượt chốt của cả 5 đều được xếp ``giao_viec``),
-   nên cả hai agent dùng chung p_commit.
-   Content agent không bao giờ bị bỏ; agent tiến độ chạy ở MỌI chủ đề khi phiên họp có danh
-   sách việc cần báo cáo (agent tự chọn việc nào chủ đề có nhắc).
+Thay ngữ cảnh ``known_names``/``known_assignments`` chạy dồn của v1 (lý do duy nhất khiến v1
+phải xử lý chủ đề tuần tự). Khác v1: danh bạ thấy cả người chỉ xuất hiện ở chủ đề SAU; đổi lại
+không còn tên do agent tự gán (có thể sai) lan sang chủ đề sau.
 """
 
 from __future__ import annotations
 
-import logging
 from collections.abc import Sequence
 
 from ..core._shared import list_distinct_speaker_names, match_claimed_name_to_real_speaker
-from ..core.turn_act import COMMIT_REJECT_MAX, TurnActJudge, turn_windows
 from ...utils.contracts import SpeakerTurn
 from ..actors.agenda import TaskAgenda
 from ..actors.attendees import AttendeeRoster
-from ..schemas import AnalysisPart, SpeakerRegistry
-
-logger = logging.getLogger(__name__)
-
-# Phần kết quả do Action/Decision agent sinh: Planner có thể bỏ agent của chúng ở một chủ đề.
-COMMIT_PARTS: tuple[AnalysisPart, ...] = ("assignments", "decisions")
+from ..schemas import SpeakerRegistry
 
 
 def build_speaker_registry(
@@ -63,31 +45,6 @@ def build_speaker_registry(
         chair=chair,
         agenda=agenda or TaskAgenda(),
     )
-
-
-def may_assign_or_decide(turns: Sequence[SpeakerTurn], judge: TurnActJudge) -> bool:
-    """Chủ đề có lượt nào CÓ THỂ là giao/nhận/chốt việc không (cần chạy Action/Decision agent).
-
-    Xét từ lượt cuối lên, mỗi lượt kèm các lượt đứng trước trong chủ đề làm ngữ cảnh: với lượt
-    ngắn, input giống hệt lúc evidence-check xét lượt chốt nên judge nhớ kết quả dùng lại được.
-    Lượt dài xét từng đoạn (``turn_windows``), đoạn sau trước. Dừng ở đoạn đầu tiên có p_commit >= ``COMMIT_REJECT_MAX``.
-    Judge lỗi thì trả True: chạy thừa chỉ tốn lời gọi, bỏ nhầm thì mất kết quả.
-
-    Đầu vào: turns - lượt nói của chủ đề, theo thứ tự; judge - bộ phân loại lượt nói.
-    Đầu ra: bool.
-    """
-
-    turns = tuple(turns)
-    for index in reversed(range(len(turns))):
-        for part, context in reversed(turn_windows(turns[index], turns[:index])):
-            try:
-                p_commit = judge.judge(part, context).p_commit
-            except Exception as exc:  # noqa: BLE001 -- lỗi mạng/API bất kỳ: chạy agent cho chắc
-                logger.warning("turn_act lỗi ở lượt %s, vẫn chạy Action/Decision agent: %s", part.turn_id, exc)
-                return True
-            if p_commit >= COMMIT_REJECT_MAX:
-                return True
-    return False
 
 
 def format_registry_context(registry: SpeakerRegistry) -> str:
@@ -149,9 +106,7 @@ def format_agenda(agenda: TaskAgenda) -> str:
 
 
 __all__ = [
-    "COMMIT_PARTS",
     "build_speaker_registry",
     "format_agenda",
     "format_registry_context",
-    "may_assign_or_decide",
 ]

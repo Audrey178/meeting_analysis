@@ -10,9 +10,9 @@ p_commit >= ``COMMIT_CLEAR_MIN`` thì 92% đúng là chốt, < ``COMMIT_REJECT_M
 ``DecisionsTurnActJudge`` gọi OpenAI Decisions API (``client.decisions.create``), cùng
 schema câu hỏi đã đo trong thí nghiệm trên.
 
-``render_turn_act_input`` chỉ giữ ``MAX_TURN_CHARS`` ký tự đầu mỗi lượt. Nơi cần xét cả lượt
-dài (câu chốt có thể nằm sau mốc đó) cắt lượt thành nhiều đoạn bằng ``turn_windows`` và hỏi
-từng đoạn, nên input mỗi lời gọi vẫn ngắn như lúc đo.
+``render_turn_act_input`` chỉ giữ ``MAX_TURN_CHARS`` ký tự đầu mỗi lượt. Lượt dài (câu chốt có
+thể nằm sau mốc đó) được cắt thành nhiều đoạn bằng ``turn_windows`` và hỏi từng đoạn, nên input
+mỗi lời gọi vẫn ngắn như lúc đo; ``judge_turn`` làm việc đó cho nơi cần MỘT kết quả mỗi lượt.
 """
 
 from __future__ import annotations
@@ -173,6 +173,21 @@ def turn_windows(
     return tuple(windows)
 
 
+def judge_turn(judge: TurnActJudge, turn: SpeakerTurn, context: Sequence[SpeakerTurn]) -> TurnActJudgement:
+    """Phân loại cả lượt, kể cả lượt dài hơn ``MAX_TURN_CHARS``: hỏi từng đoạn (``turn_windows``).
+
+    Lượt có câu chốt ở một đoạn bất kỳ là lượt chốt, nên lấy kết quả của đoạn có p_commit cao
+    nhất. Lượt ngắn chỉ có một đoạn: đúng một lời gọi, input như ``judge.judge(turn, context)``.
+
+    Đầu vào: judge - TurnActJudge; turn - lượt cần xét; context - các lượt đứng trước, theo thứ tự.
+    Đầu ra: TurnActJudgement của đoạn có p_commit cao nhất.
+    Lỗi: exception của judge được ném tiếp.
+    """
+
+    judgements = [judge.judge(part, previous) for part, previous in turn_windows(turn, context)]
+    return max(judgements, key=lambda judgement: judgement.p_commit)
+
+
 class DecisionsTurnActJudge:
     """``TurnActJudge`` gọi OpenAI Decisions API, nhớ kết quả theo nội dung input.
 
@@ -215,6 +230,7 @@ __all__ = [
     "TURN_ACT_QUESTION",
     "TurnActJudge",
     "TurnActJudgement",
+    "judge_turn",
     "render_turn_act_input",
     "split_turn_text",
     "tail_turn",
