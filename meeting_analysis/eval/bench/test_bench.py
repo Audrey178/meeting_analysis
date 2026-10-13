@@ -22,6 +22,13 @@ def test_price_free_paid_and_unpriced():
     assert price_usd("gpt-6-luna", stats) is None
 
 
+def test_estimated_spend_prices_unpriced_calls(tmp_path, monkeypatch):
+    ledger = tmp_path / "spend_ledger.jsonl"
+    ledger.write_text("\n".join(json.dumps({"usd_known": usd, "unpriced_paid_calls": n}) for usd, n in [(0.5, 10), (0.25, 30)]))
+    monkeypatch.setattr(run, "SPEND_LEDGER", ledger)
+    assert run.estimated_spent_usd(0.0) == pytest.approx((0.75, 0.75, 40))
+    assert run.estimated_spent_usd(0.01) == pytest.approx((1.15, 0.75, 40))
+
 def test_recording_client_counts_calls_errors_and_usage():
     usage = SimpleNamespace(prompt_tokens=100, completion_tokens=20, prompt_tokens_details=None)
     calls = iter([SimpleNamespace(usage=usage), RuntimeError("timeout")])

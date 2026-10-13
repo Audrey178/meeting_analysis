@@ -1,6 +1,6 @@
 """Chạy một arm của benchmark trên bộ test tổng hợp và chấm phần tự động.
 
-    python eval/bench/run.py --run bench_v1 --arm v3 --budget-usd 2.38 [--repeat 1]
+    python eval/bench/run.py --run bench_v2 --arm v3 --budget-usd 8.04 --unpriced-call-usd <USD> [--repeat 1]
                              [--split dev|heldout|all] [synth_XXX ...]
 
 Ghi vào ``eval/results/<run>/``:
@@ -219,6 +219,17 @@ def total_spent_usd() -> tuple[float, int]:
     return sum(r["usd_known"] for r in rows), sum(r["unpriced_paid_calls"] for r in rows)
 
 
+def estimated_spent_usd(unpriced_call_usd: float) -> tuple[float, float, int]:
+    """Tổng chi ước tính để chặn ngân sách: USD đã biết giá + lời gọi chưa có giá x ``unpriced_call_usd``.
+
+    Đầu vào: unpriced_call_usd - USD ước cho mỗi lời gọi chưa có giá (Decisions), lấy từ dashboard.
+    Đầu ra: (USD ước tính, USD đã biết giá, số lời gọi chưa có giá).
+    """
+
+    known, unpriced = total_spent_usd()
+    return known + unpriced * unpriced_call_usd, known, unpriced
+
+
 def _git(*args: str) -> str:
     return subprocess.run(["git", *args], cwd=_REPO_ROOT, capture_output=True, text=True, check=True).stdout.strip()
 
@@ -244,7 +255,7 @@ def write_or_check_manifest(arm_dir: Path, arm_name: str, arm: dict, analyzer: M
         "v3_config": asdict(analyzer.config) if analyzer is not None else None,
         "fingerprint": fingerprint,
         "git_sha": _git("rev-parse", "HEAD"),
-        "git_dirty": bool(_git("status", "--porcelain", "--", "src", "be", "configs", "experiments/dialstart")),
+        "git_dirty": bool(_git("status", "--porcelain", "--", "src", "be", "configs", "experiments/dialstart", "eval/bench")),
         "models": {name: os.environ.get(name) for name in ("MODEL_NAME", "VERIFIER_MODEL_NAME", "TURN_ACT_MODEL")},
         "temperature": 0.0,
         "started_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -270,6 +281,9 @@ def main() -> None:
     parser.add_argument("--split", choices=("dev", "heldout", "all"), default="dev")
     parser.add_argument("--budget-usd", type=float, required=True,
                         help="trần tổng chi OpenAI của CẢ nghiên cứu (cộng mọi run trong spend_ledger.jsonl)")
+    parser.add_argument("--unpriced-call-usd", type=float, required=True,
+                        help="USD ước cho mỗi lời gọi trả tiền chưa có giá (Decisions) khi chặn ngân sách; "
+                             "0 = bỏ qua chúng như trước")
     args = parser.parse_args()
 
     arm = load_arm(args.arm)
@@ -301,9 +315,10 @@ def main() -> None:
             output = json.loads(out_file.read_text())
             print(f"[{meeting_id}] dùng lại output có sẵn", flush=True)
         else:
-            spent, unpriced = total_spent_usd()
+            spent, known, unpriced = estimated_spent_usd(args.unpriced_call_usd)
             if spent >= args.budget_usd:
-                print(f"DỪNG: đã chi ${spent:.4f} >= trần ${args.budget_usd} (chưa tính {unpriced} lời gọi chưa có giá)")
+                print(f"DỪNG: ước đã chi ${spent:.4f} >= trần ${args.budget_usd} (${known:.4f} đã biết giá "
+                      f"+ {unpriced} lời gọi x ${args.unpriced_call_usd})")
                 break
             payload = json.loads((SYNTH_DIR / "transcripts" / f"{meeting_id}.json").read_text())
             _, revision_id, turns, _ = build_meeting_turns(payload)
@@ -363,9 +378,10 @@ def main() -> None:
               + f"   {touch('assignments'):>7}  {touch('decisions'):>7}  {len(e['negatives_touched']):>5}")
     if seg_rows:
         print(f"{'MEAN':<11}" + "".join(f"{np.mean([r[k] for r in seg_rows.values()]):>8.3f}" for k in keys))
-    spent, unpriced = total_spent_usd()
-    print(f"\nTổng chi OpenAI mọi run: ${spent:.4f} / ${args.budget_usd}"
-          + (f" + {unpriced} lời gọi chưa có giá (đối chiếu dashboard)" if unpriced else ""))
+    spent, known, unpriced = estimated_spent_usd(args.unpriced_call_usd)
+    print(f"\nTổng chi OpenAI mọi run (ước): ${spent:.4f} / ${args.budget_usd}"
+          f" = ${known:.4f} đã biết giá + {unpriced} lời gọi chưa có giá x ${args.unpriced_call_usd}"
+          " (đối chiếu dashboard)")
     if failed:
         print(f"Lỗi: {failed}")
 
