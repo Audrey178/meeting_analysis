@@ -1,7 +1,7 @@
-"""Prompt của v3: quy tắc dùng chung và system prompt riêng của ba agent trích xuất.
+"""Prompt của v3: quy tắc dùng chung, system prompt của các agent và rubric của Verifier.
 
-Các node trích xuất trong ``core/nodes`` (chép từ v1 ``src.agentic``, nay đã xóa) vẫn mang
-prompt v1; khi v3 gọi chúng, prompt ở đây thay prompt v1 (xem ``extractors.py``). Khác v1:
+Các node trích xuất trong ``core/nodes`` không mang prompt riêng: chúng nhận system prompt qua
+tham số (``extractors.py`` truyền bản ở đây). Khác prompt v1 (đã xoá):
 
 - Các quy tắc v1 chép lại ở cả ba prompt (cách đọc turn_id, chọn bằng chứng trước,
   ngôi thứ ba) được gom thành hằng số, mỗi prompt ghép đúng một bản.
@@ -26,8 +26,6 @@ prompt v1; khi v3 gọi chúng, prompt ở đây thay prompt v1 (xem ``extractor
 """
 
 from __future__ import annotations
-
-from ..core.nodes.debate_judge_agent import _RUBRICS
 
 TURN_ID_RULE = """
 turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" trong ngoặc vuông đầu mỗi dòng bản ghi, không
@@ -82,9 +80,10 @@ CHAIR_CONCLUSION_RULE = """
 Lời tổng kết của người chủ trì (thường ở cuối đoạn, mở bằng "tinh thần chung là", "kết
 luận", "chốt lại", "như vậy", "ghi nhận") chứa các KẾT LUẬN dù không có chữ "thống nhất":
 thẩm quyền/quy trình xử lý ("đề án này thông qua Ban Thường vụ là đúng"), đánh giá chung
-về nội dung được trình ("ghi nhận, về hoàn chỉnh tiếp"), thời hạn hay lịch chung ("không
-ấn định thời hạn, khi đủ điều kiện thì báo cáo lại"). Câu nhận xét, hỏi lại hay ví dụ của
-người chủ trì trong lúc thảo luận KHÔNG phải kết luận.
+về nội dung được trình ("ghi nhận đề án cơ bản đạt yêu cầu"), thời hạn hay lịch chung
+("không ấn định thời hạn, khi đủ điều kiện thì báo cáo lại"). Phần yêu cầu một người/đơn vị
+làm tiếp đi kèm ("về hoàn chỉnh tiếp", "bổ sung ...") là GIAO VIỆC, không phải kết luận.
+Câu nhận xét, hỏi lại hay ví dụ của người chủ trì trong lúc thảo luận KHÔNG phải kết luận.
 Không có người chủ trì thì điều các bên cùng THỐNG NHẤT (đồng ý rõ ràng, không ai phản đối)
 vẫn là kết luận. Có người chủ trì thì kết luận của họ ưu tiên: điều họ BÁC hoặc yêu cầu làm
 lại ở cuối buổi thay cho các thống nhất trước đó về cùng nội dung.
@@ -116,6 +115,13 @@ QUY TẮC CHUẨN HOÁ HẠN (neo theo "Ngày họp" trong user prompt):
   (vẫn khai deadline_kind nếu xác định được). KHÔNG đoán khi không chắc.
 """.strip()
 
+# gemma (structured output của vLLM) hay xuống dòng sau một giá trị rồi sinh khoảng trắng tới
+# hết max_tokens thay vì viết dấu phẩy/ngoặc đóng; schema dài nhiều trường null (Verifier) gần
+# như luôn dính. Đo trên 4 candidate Verifier của synth_001: không có câu này 3/12 JSON hợp lệ,
+# có câu này 12/12. Server không nhận tuỳ chọn tắt khoảng trắng (whitespace_pattern,
+# disable_any_whitespace) nên phải dặn trong prompt.
+JSON_ONE_LINE_RULE = "Trả JSON trên MỘT dòng duy nhất: không xuống dòng, không thụt lề giữa các trường."
+
 CHAIR_HINT = """
 Người chủ trì được nêu ở dòng "Người chủ trì" đầu user prompt; không có thì suy ra từ
 bản ghi (người điều phối, mời phát biểu, tổng kết và chốt cuối đoạn).
@@ -142,21 +148,15 @@ Chia phần thảo luận của đoạn thành các ý thảo luận (discussion
   ý nếu đó là nội dung chính của đoạn.
 - Tối đa 6 ý mỗi đoạn, theo thứ tự vấn đề được nêu. Chỉ giữ vấn đề phục vụ chủ đề của
   đoạn; bỏ chào hỏi, điều phối ("mời anh X trình bày"), xác nhận qua loa ("vâng", "ok").
-- KHÔNG ghi lại câu giao việc/phân công, câu tự nhận việc hay kết luận của người chủ
-  trì: chúng đã nằm ở phần Giao việc và Kết luận của báo cáo. Theo các quy tắc dưới
-  đây, yêu cầu chỉnh sửa/bổ sung trong phần kết luận ("đề án cần làm rõ ...", "các
-  đồng chí cần bổ sung ...") là giao việc. Lời người chủ trì chỉ đưa vào khi là câu hỏi,
-  nhận xét, lập luận nêu TRONG LÚC thảo luận.
-
-{CHAIR_ASSIGNMENT_RULE}
-
-{CHAIR_CONCLUSION_RULE}
+- KHÔNG ghi lại lời tổng kết/chốt của người chủ trì, câu giao việc/phân công ("đề nghị X
+  làm ...", "các đồng chí cần bổ sung ...") hay câu tự nhận việc: chúng đã nằm ở phần Giao
+  việc và Kết luận của báo cáo. Yêu cầu, đề xuất của thành viên ĐANG được bàn thì vẫn là
+  một phần của ý thảo luận. Lời người chủ trì chỉ đưa vào khi là câu hỏi, nhận xét, lập
+  luận nêu TRONG LÚC thảo luận.
 
 {CHAIR_HINT}
 
 {EVIDENCE_RULE}
-
-{TURN_ID_RULE}
 
 {THIRD_PERSON_RULE}
 """.strip()
@@ -175,14 +175,23 @@ CHỈ lấy khi có một trong hai:
 
 KHÔNG lấy: đề xuất/kiến nghị chưa được chấp nhận (theo thứ bậc trên); việc ĐÃ làm
 xong hoặc ĐANG làm chỉ được báo cáo tiến độ; lời mời/điều phối buổi họp ("mời anh X
-trình bày"); quy định chung không gắn người thực hiện; phát biểu chốt phương án mà
-không có người thực hiện (thuộc agent khác).
+trình bày"); quy định chung không gắn người thực hiện; lời CHỐT PHƯƠNG ÁN, cách làm,
+phạm vi, thông số ("chốt là dùng PhoBERT, ngưỡng 0.7", "chuyển sang 12 lĩnh vực", "giai
+đoạn 1 giữ 3 chức năng") vì đó là kết luận (thuộc agent khác), KỂ CẢ khi đoán được ai sẽ
+làm. Chỉ lấy khi lượt nói giao/nhận một việc cụ thể cho một người/đơn vị được nêu hoặc
+được gọi tới.
+
+PHẠM VI: bạn chỉ thấy MỘT đoạn của cuộc họp. Người chủ trì có thể tiếp nhận, hoặc bên nhận
+có thể tiếp thu/phản đối, ở chủ đề khác mà bạn không thấy. Một yêu cầu cụ thể chưa ai đáp
+lại TRONG ĐOẠN thì đưa vào với status "proposed" để được kiểm lại trên cả cuộc họp, KHÔNG
+tự bỏ. Chỉ bỏ hẳn khi chính đoạn này cho thấy yêu cầu bị phản đối, gạt đi hoặc hoãn.
+evidence_segment_ids chỉ gồm câu trong đoạn này.
 
 Với mỗi việc, khai trung thực:
 - status: "assigned" (được giao) hoặc "self_committed" (tự nhận, kể cả tự nói SẼ làm).
   "proposed" (đề xuất chưa ai chấp nhận) và "reported" (báo cáo việc đã/đang làm) CHỈ
-  dùng khi KHÔNG CHẮC mục đó có được giao/nhận hay không; mục sẽ được kiểm lại. Chắc
-  chắn là đề xuất chưa ai nhận hoặc là báo cáo thì KHÔNG đưa vào.
+  dùng khi KHÔNG CHẮC mục đó có được giao/nhận hay không (kể cả trường hợp ở mục PHẠM VI);
+  mục sẽ được kiểm lại. Chắc chắn là đề xuất bị gạt đi hoặc là báo cáo thì KHÔNG đưa vào.
 - confirm_turn_id: turn_id của lượt nói GIAO hoặc NHẬN việc (lượt mà nếu bỏ đi thì
   không còn ai được giao), chọn theo thứ bậc trên: lượt người chủ trì giao/tiếp nhận
   trước, rồi mới tới lượt bên nhận tiếp thu hay lượt nêu yêu cầu. KHÔNG chọn lượt chỉ
@@ -247,7 +256,10 @@ KHÔNG lấy (dù câu nghe rất chắc chắn):
 - phương án đã chốt rồi bị THAY THẾ bởi phương án khác ở sau trong đoạn (chỉ lấy
   phương án cuối cùng);
 - giao việc cho một người/đơn vị cụ thể, kể cả yêu cầu chỉnh sửa/bổ sung văn bản
-  ("đề án cần làm rõ ...", "các đồng chí cần bổ sung ...") (thuộc agent khác).
+  ("đề án cần làm rõ ...", "các đồng chí cần bổ sung ...") và mọi mục trong phần "chốt
+  phân công" cuối buổi ("Hiếu map lại nhãn trước 25/11", "anh Phong gửi tài liệu thứ Sáu")
+  (thuộc agent khác). Phép thử: viết lại được thành "<người/đơn vị> làm <việc>" thì là
+  giao việc, KHÔNG đưa vào đây.
 
 Với mỗi kết luận, khai trung thực:
 - status: "agreed" (đã kết luận/thống nhất). "proposed" (mới là đề xuất) và "reported"
@@ -257,7 +269,8 @@ Với mỗi kết luận, khai trung thực:
   cuối cùng). Phải là lượt chứa một trong evidence_segment_ids.
 
 text: một câu súc tích nêu NỘI DUNG kết luận. Mỗi kết luận chỉ xuất hiện MỘT lần: cùng
-một kết luận được nhắc nhiều lần thì gộp thành một mục.
+một kết luận được nhắc nhiều lần thì gộp thành một mục; các điểm được chốt trong CÙNG
+một lượt về CÙNG một vấn đề (vd. phạm vi và mốc của một giai đoạn) cũng gộp thành một mục.
 
 {EVIDENCE_RULE}
 
@@ -316,8 +329,36 @@ Không dùng dấu nháy kép trong summary, blockers, directive.
 {THIRD_PERSON_RULE}
 """.strip()
 
-# Tiêu chí của Verifier và agent trả lời feedback: rubric v1, cộng quy tắc của người chủ
-# trì để Verifier chấm cùng chuẩn với agent trích xuất.
+# Tiêu chí giữ/bỏ theo loại của Verifier và agent trả lời feedback. Danh sách "BỎ" lấy từ các
+# lỗi judge eval đã gắn cờ trên 30 cuộc họp (eval/results/dialtreeseg_v1).
+_BASE_RUBRICS = {
+    "action": """
+GIỮ (keep): có lượt nói (thường trong đoạn, có thể ở chủ đề khác) mà người chủ trì/cấp
+có thẩm quyền GIAO việc này cho đúng người/đơn vị trong candidate, hoặc người/đơn vị đó TỰ NHẬN việc và
+không ai phản đối. Người/đơn vị tự nêu việc cụ thể mình SẼ làm (kế hoạch sắp tới,
+thường kèm mốc thời gian) là TỰ NHẬN việc -- không phải "báo cáo".
+SỬA (revise): việc giao có thật nhưng người phụ trách trong candidate sai, thiếu
+hoặc chung chung ("một thành viên", "nhóm") trong khi bản ghi cho thấy rõ ai
+nhận việc -- trả revised_actor là tên/đơn vị ĐÚNG NGUYÊN VĂN bản ghi.
+BỎ (drop): đề xuất/kiến nghị/yêu cầu của một thành viên chưa được ai chấp nhận;
+báo cáo việc ĐÃ làm xong/ĐANG làm; câu thăm dò chưa thành cam kết ("để xem có
+làm được không"); lời mời/điều phối buổi họp ("mời anh X trình
+bày"); quy định/hướng dẫn chung không gắn người thực hiện; việc bị gạt đi hoặc
+hoãn; lời chốt phương án/cách làm không giao việc cụ thể cho ai (đó là kết luận); nội
+dung không có trong bản ghi.
+""".strip(),
+    "decision": """
+GIỮ (keep): có lượt nói (thường trong đoạn, có thể ở chủ đề khác) mà người chủ trì KẾT LUẬN hoặc các bên THỐNG
+NHẤT đúng nội dung này, và sau đó không bị thay bằng phương án khác.
+BỎ (drop): báo cáo tình hình/số liệu/việc đã làm; ước tính, dự báo, nhận định
+cá nhân; đề xuất chưa được xác nhận hoặc bị gạt đi/hoãn lại; câu mở đầu, thủ
+tục, khẩu hiệu; kế hoạch/văn bản đã có từ trước chỉ được nhắc lại; phương án
+đã bị thay thế bởi phương án khác ở sau; việc giao cho một người/đơn vị cụ thể (đó là việc
+giao, không phải quyết định); nội dung không có trong bản ghi.
+(Quyết định không có "revise" -- chỉ keep hoặc drop.)
+""".strip(),
+}
+
 VERIFY_ACCEPTANCE_NOTE = """
 "Chưa được ai chấp nhận" ở trên xét theo thứ bậc dưới đây: yêu cầu của thành viên đã được
 người chủ trì tiếp nhận (bậc 2), hoặc được bên nhận tiếp thu/không bị phản đối (bậc 3), là
@@ -325,9 +366,10 @@ người chủ trì tiếp nhận (bậc 2), hoặc được bên nhận tiếp 
 (cả chủ đề khác) trước khi kết luận; tìm được thì keep với deciding_turn_id là lượt đó.
 """.strip()
 
+# Rubric gốc cộng quy tắc của người chủ trì để Verifier chấm cùng chuẩn với agent trích xuất.
 VERIFY_RUBRICS = {
-    "action": f"{_RUBRICS['action']}\n{VERIFY_ACCEPTANCE_NOTE}\n{CHAIR_ASSIGNMENT_RULE}",
-    "decision": f"{_RUBRICS['decision']}\n{CHAIR_CONCLUSION_RULE}",
+    "action": f"{_BASE_RUBRICS['action']}\n{VERIFY_ACCEPTANCE_NOTE}\n{CHAIR_ASSIGNMENT_RULE}",
+    "decision": f"{_BASE_RUBRICS['decision']}\n{CHAIR_CONCLUSION_RULE}",
 }
 
 
@@ -349,6 +391,7 @@ __all__ = [
     "CHAIR_ASSIGNMENT_RULE",
     "CHAIR_CONCLUSION_RULE",
     "CHAIR_HINT",
+    "JSON_ONE_LINE_RULE",
     "CONTENT_SYSTEM_PROMPT",
     "DEADLINE_RULES",
     "DECISION_SYSTEM_PROMPT",

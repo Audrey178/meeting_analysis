@@ -1,7 +1,7 @@
 """Chuẩn hoá hạn chót nói tự nhiên tiếng Việt về ngày ISO, neo theo ngày họp (luật, 0 token).
 
-Action Agent tự quy hạn theo QUY TẮC CHUẨN HOÁ HẠN trong prompt (cùng các quy ước dưới đây);
-module này là LUẬT DỰ PHÒNG khi LLM trả ngày sai định dạng hoặc bỏ trống: quy hạn nguyên văn
+Đây là cách quy hạn CHÍNH: Action Agent chỉ dùng ngày LLM tự quy (theo QUY TẮC CHUẨN HOÁ HẠN
+trong prompt, cùng các quy ước dưới đây) khi luật không ra được ngày. Luật quy hạn nguyên văn
 (``deadline_raw``, vd. "trước ngày 15 tháng 11") về ``deadline_date`` ("2026-11-15") và ``deadline_kind``:
 
 - ``exact``: ngày cụ thể ("ngày 15/11", "15-11-2026").

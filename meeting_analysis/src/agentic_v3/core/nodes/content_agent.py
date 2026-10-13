@@ -32,19 +32,6 @@ from ....utils.ports import LLMAdapter, LLMUpstreamError
 
 logger = logging.getLogger(__name__)
 
-# v3 thay prompt này bằng ``nodes/prompts.CONTENT_SYSTEM_PROMPT`` (xem ``nodes/extractors.py``).
-CONTENT_SYSTEM_PROMPT = """
-Bạn tóm tắt các Ý THẢO LUẬN trong MỘT đoạn chủ đề của cuộc họp: mỗi ý là MỘT vấn đề
-mọi người đang bàn/tranh luận, gom lượt nói của mọi người về cùng vấn đề đó (không
-tách theo từng người nói). Chỉ dùng nội dung được cung cấp, không suy diễn thêm.
-
-text: 1-3 câu ở NGÔI THỨ BA, nêu vấn đề và các quan điểm chính (ai giữ quan điểm nào).
-evidence_segment_ids: mã các câu thể hiện ý đó (số trong ngoặc nhọn đứng trước mỗi câu,
-"<130> Nội dung..." có mã "130"), gồm câu của MỌI người tham gia; chọn TRƯỚC khi viết text.
-
-Bỏ chào hỏi, xác nhận qua loa, câu giao việc và kết luận (đã nằm ở phần khác của báo cáo).
-""".strip()
-
 CONTENT_SCHEMA: dict = {
     "type": "object",
     "properties": {
@@ -124,10 +111,11 @@ def _build_discussion_points_from_llm_result(task: SegmentTask, result: dict) ->
     return points, dropped
 
 
-def make_content_agent(llm: LLMAdapter):
-    """Tạo node ``content_agent`` gắn với một LLM cụ thể.
+def make_content_agent(llm: LLMAdapter, system_prompt: str):
+    """Tạo node ``content_agent`` gắn với một LLM và system prompt cụ thể.
 
-    Đầu vào: llm - adapter LLM có ``generate_json``.
+    Đầu vào: llm - adapter LLM có ``generate_json``; system_prompt - system prompt của agent
+        (bản v3 ở ``agentic_v3/nodes/prompts.py``).
     Đầu ra: hàm node ``content_agent(task)`` để đăng ký vào graph.
     """
 
@@ -150,7 +138,7 @@ def make_content_agent(llm: LLMAdapter):
         try:
             with llm_call("content_agent", segment_id=segment_id, prompt_chars=len(user_prompt)):
                 result = llm.generate_json(
-                    system_prompt=CONTENT_SYSTEM_PROMPT,
+                    system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     schema=CONTENT_SCHEMA,
                 )
@@ -173,7 +161,6 @@ def make_content_agent(llm: LLMAdapter):
 
 
 __all__ = [
-    "CONTENT_SYSTEM_PROMPT",
     "CONTENT_SCHEMA",
     "make_content_agent",
 ]

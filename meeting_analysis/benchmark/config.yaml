@@ -1,0 +1,10 @@
+# Model cho từng hàng Bảng 1 (PLAN.md §3, §8).
+# Tải gateway gemma: tối đa 2 cuộc họp song song, 6 lời gọi đồng thời (server đã sập khi tải cao hơn).
+models:
+  gemma:
+    name: google/gemma-4-26B-A4B-it
+    # base_url để trống = OPENAI_BASE_URL trong .env
+    max_concurrency: 6
+    max_output_tokens: 8192
+
+max_parallel_meetings: 2

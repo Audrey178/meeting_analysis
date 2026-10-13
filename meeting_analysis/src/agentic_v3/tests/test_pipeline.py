@@ -479,14 +479,17 @@ def test_extractors_run_with_v3_prompts():
 def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.DECISION_SYSTEM_PROMPT
     assert prompts.CHAIR_CONCLUSION_RULE in prompts.VERIFY_RUBRICS["decision"]
-    # Content agent biết hai quy tắc để không ghi lại việc giao/kết luận thành ý thảo luận.
-    assert prompts.CHAIR_ASSIGNMENT_RULE in prompts.CONTENT_SYSTEM_PROMPT
-    assert prompts.CHAIR_CONCLUSION_RULE in prompts.CONTENT_SYSTEM_PROMPT
+    # Content agent chỉ cần biết bỏ lời giao việc/kết luận, không cần cả hệ quy tắc (và không
+    # có trường turn_id): hai quy tắc dài đó chỉ làm prompt phình và lệch trọng tâm.
+    assert prompts.CHAIR_ASSIGNMENT_RULE not in prompts.CONTENT_SYSTEM_PROMPT
+    assert prompts.CHAIR_CONCLUSION_RULE not in prompts.CONTENT_SYSTEM_PROMPT
+    assert prompts.TURN_ID_RULE not in prompts.CONTENT_SYSTEM_PROMPT
 
 
 def test_shared_rules_appear_once_per_extractor_prompt():
-    for system in (prompts.CONTENT_SYSTEM_PROMPT, prompts.ACTION_SYSTEM_PROMPT, prompts.DECISION_SYSTEM_PROMPT):
+    for system in (prompts.ACTION_SYSTEM_PROMPT, prompts.DECISION_SYSTEM_PROMPT):
         assert system.count(prompts.TURN_ID_RULE) == 1
+    for system in (prompts.CONTENT_SYSTEM_PROMPT, prompts.ACTION_SYSTEM_PROMPT, prompts.DECISION_SYSTEM_PROMPT):
         assert system.count(prompts.THIRD_PERSON_RULE) == 1
         assert all(line == line.rstrip() for line in system.splitlines())
 

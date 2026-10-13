@@ -35,87 +35,6 @@ from ....utils.ports import LLMAdapter, LLMUpstreamError
 
 logger = logging.getLogger(__name__)
 
-ACTION_SYSTEM_PROMPT = """
-Bạn trích các VIỆC ĐƯỢC GIAO/NHẬN trong MỘT đoạn chủ đề của cuộc họp: ai
-(actor) làm việc gì (text), thời hạn nếu có (deadline, deadline_date, deadline_kind).
-
-CHỈ lấy khi có một trong hai:
-- người chủ trì/cấp có thẩm quyền GIAO việc cho một người/đơn vị cụ thể;
-- một người/đơn vị TỰ NHẬN việc và không bị ai phản đối -- kể cả khi họ nêu
-  việc cụ thể đơn vị mình SẼ làm ("Sở sẽ trình kế hoạch trước 31/3", "bên em
-  sẽ cấp giống đợt 2"): đó là cam kết, không phải báo cáo.
-KHÔNG lấy: đề xuất/kiến nghị/yêu cầu của thành viên mà chưa ai chấp nhận;
-việc ĐÃ làm xong hoặc ĐANG làm chỉ được báo cáo tiến độ; lời mời/điều phối buổi họp ("mời
-anh X trình bày"); quy định chung không gắn người thực hiện; phát biểu chốt
-phương án mà không có người thực hiện (thuộc agent khác).
-
-Với mỗi việc, khai trung thực:
-- status: "assigned" (được giao), "self_committed" (tự nhận), "proposed"
-  (mới là đề xuất/yêu cầu chưa ai chấp nhận), "reported" (báo cáo việc đã/đang
-  làm). Việc người/đơn vị tự nói SẼ làm là "self_committed". Không chắc thì chọn "proposed" -- việc sẽ được kiểm lại, không bị mất.
-- confirm_turn_id: turn_id của lượt nói GIAO hoặc NHẬN việc (lượt mà nếu bỏ đi
-  thì không còn ai được giao). Phải là lượt chứa một trong evidence_segment_ids.
-- deadline: thời hạn đúng như bản ghi nói ("trước 25/11", "trong tuần này"),
-  null nếu không nêu. Chép NGUYÊN CẢ CỤM, giữ các từ "trước", "chậm nhất",
-  "cuối", "trong", "khoảng" ("trước ngày 15 tháng 11", không phải "15 tháng 11").
-  KHÔNG bịa thời hạn mà bản ghi không nói.
-- deadline_date, deadline_kind: quy deadline về ngày theo QUY TẮC CHUẨN HOÁ HẠN
-  bên dưới. deadline null thì deadline_date null và deadline_kind "unknown".
-
-QUY TẮC CHUẨN HOÁ HẠN (neo theo "Ngày họp" trong user prompt):
-- deadline_date là ngày "YYYY-MM-DD"; deadline_kind là một trong:
-  "exact" (ngày cụ thể: "ngày 15/11", "15-11-2026"),
-  "before" (hạn chót tới một ngày cụ thể: "trước ngày 15 tháng 11", "chậm nhất thứ Sáu"),
-  "end_of_period" (cuối một kỳ nêu rõ: "cuối tháng", "cuối quý", "quý IV", "cuối tuần", "trong tháng 12"),
-  "relative" (tính lệch từ ngày họp: "tuần sau", "sang tuần", "tháng sau", "trong tuần này",
-  "khoảng 3 tuần", "10 ngày nữa"),
-  "unknown" (không quy được ra ngày: "sau POC", "khi có số liệu", ngày không tồn tại như 31/2).
-- Ngày/tháng viết số luôn theo thứ tự NGÀY/THÁNG. Thiếu năm thì lấy năm của ngày họp;
-  nếu ngày đó đã qua so với ngày họp thì lấy năm sau (quý/tháng đã qua cũng vậy).
-- Tuần kết thúc vào CHỦ NHẬT: "tuần sau"/"sang tuần"/"tuần tới" = Chủ nhật tuần kế;
-  "trong tuần này"/"cuối tuần" = Chủ nhật tuần này; "đầu tuần" = thứ Hai, "giữa tuần" = thứ Tư.
-- "tháng sau"/"sang tháng" = ngày cuối tháng kế; "cuối tháng" = ngày cuối tháng họp;
-  "đầu tháng sau" = ngày 10, "giữa tháng sau" = ngày 20 của tháng kế.
-- "cuối quý" = ngày cuối quý hiện tại; "quý I..IV" = ngày cuối quý đó (31/3, 30/6, 30/9, 31/12);
-  "cuối năm" = 31/12.
-- Khoảng thời gian ("khoảng 3 tuần", "trong 10 ngày", "2 tháng nữa") = ngày họp cộng khoảng đó.
-- "thứ X" = thứ X gần nhất từ ngày họp trở đi; "thứ X tuần sau" = thứ X của tuần kế.
-- "A hoặc B", "từ A đến B" = lấy mốc MUỘN hơn.
-- Không có ngày họp, hoặc mốc gắn với sự kiện chứ không với lịch: deadline_date null
-  (vẫn khai deadline_kind nếu xác định được). KHÔNG đoán khi không chắc.
-
-text: chỉ là NỘI DUNG CÔNG VIỆC, bắt đầu bằng động từ (vd. "Map lại nhãn sang
-12 lĩnh vực và train lại mô hình phân loại"). TUYỆT ĐỐI KHÔNG mở đầu bằng
-"giao", "phân công", tên người phụ trách hay "X sẽ" -- người đã nằm ở actor;
-KHÔNG lặp thời hạn trong text -- thời hạn nằm ở deadline.
-
-Mỗi việc chỉ xuất hiện MỘT lần: nếu cùng một việc được nhắc nhiều lần trong
-đoạn (bàn rồi chốt lại), gộp thành một mục với mọi turn_id liên quan. Việc đã
-có trong "Việc đã được giao ở các chủ đề trước" thì KHÔNG lấy lại, trừ khi đoạn
-này giao thêm phần việc mới.
-
-Mỗi phần tử PHẢI kèm evidence_segment_ids: mã các câu chứa phát biểu đó (số trong
-ngoặc nhọn đứng trước mỗi câu, "<130> Nội dung..." có mã "130"). Chọn
-evidence_segment_ids TRƯỚC khi viết text -- không viết trước rồi mới tìm bằng
-chứng khớp. KHÔNG chép lại nội dung câu.
-
-turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" bên trong ngoặc vuông đầu mỗi dòng
-bản ghi -- KHÔNG bao gồm dấu ngoặc vuông, KHÔNG bao gồm tên người nói,
-KHÔNG bao gồm dấu "|". Ví dụ dòng bản ghi "[TURN_000020|Phạm Hồng Sơn] Nội
-dung..." thì turn_id là "TURN_000020" -- TUYỆT ĐỐI KHÔNG phải
-"[TURN_000020|Phạm Hồng Sơn]" hay "TURN_000020|Phạm Hồng Sơn".
-
-NGÔI THỨ BA -- áp dụng cho actor: KHÔNG BAO GIỜ dùng đại từ ngôi thứ nhất/nhị
-trần trụi ("tôi", "em", "anh", "chị", "mình", "bọn em", "chúng tôi", ...) để
-chỉ một người cụ thể. Nếu bản ghi nêu tên thật, dùng ĐÚNG NGUYÊN VĂN tên đó
--- không tự thêm họ/chức danh, không tự sửa tên. Nếu bản ghi chỉ gọi bằng
-đại từ, xác định người đó dựa vào "Người nói trong đoạn này" và "Bối cảnh từ
-các chủ đề trước" (ai đang nói với ai, ai đã được nhắc tên, ai đã được giao
-việc). Nếu không đủ căn cứ để chắc chắn đó là ai, để actor là null -- KHÔNG
-được để actor là chính đại từ đó hay một cụm chung chung ("một thành viên",
-"nhóm"), và KHÔNG được đoán bừa một cái tên không có căn cứ.
-""".strip()
-
 ACTION_SCHEMA: dict = {
     "type": "object",
     "properties": {
@@ -187,11 +106,12 @@ def _format_meeting_date(meeting_date: str | None) -> str:
 
 
 def _resolve_deadline(item: dict, deadline_raw: str | None, meeting_date: str | None) -> NormalizedDeadline:
-    """Lấy deadline_date/deadline_kind LLM đã quy theo QUY TẮC CHUẨN HOÁ HẠN của prompt.
+    """Quy ``deadline_raw`` về deadline_date/deadline_kind: luật trước, LLM dự phòng.
 
-    LLM trả ngày không phải ISO hợp lệ, hoặc kind lạ/"unknown" mà luật vẫn quy được, thì
-    dùng luật ``normalize_deadline`` làm lưới an toàn. Không có ``deadline_raw`` thì
-    luôn là ``unknown``.
+    Luật ``normalize_deadline`` cài đúng QUY TẮC CHUẨN HOÁ HẠN của prompt và tính lịch tất
+    định, nên khi luật ra được ngày thì dùng luật (LLM hay tính lệch ngày dù đúng định dạng).
+    Luật không ra ngày ("trước Tết", cách nói lạ) thì dùng kết quả LLM nếu hợp lệ. Không có
+    ``deadline_raw`` thì luôn là ``unknown``.
 
     Đầu vào: item - một phần tử ``action_items`` LLM trả; deadline_raw - hạn nguyên văn
         đã làm sạch; meeting_date - ngày họp ISO hoặc None.
@@ -201,6 +121,8 @@ def _resolve_deadline(item: dict, deadline_raw: str | None, meeting_date: str | 
     if not deadline_raw:
         return UNKNOWN_DEADLINE
     fallback = normalize_deadline(deadline_raw, meeting_date)
+    if fallback.deadline_date:
+        return fallback
     kind = item.get("deadline_kind")
     raw_date = read_stripped_text(item.get("deadline_date"))
     try:
@@ -210,8 +132,6 @@ def _resolve_deadline(item: dict, deadline_raw: str | None, meeting_date: str | 
     if kind not in _DEADLINE_KINDS or (raw_date and llm_date is None):
         return fallback
     if kind == "unknown" and fallback.deadline_kind != "unknown":
-        return fallback
-    if llm_date is None and fallback.deadline_date:
         return fallback
     return NormalizedDeadline(llm_date, kind)
 
@@ -230,7 +150,7 @@ def _build_action_user_prompt(task: SegmentTask) -> str:
     speakers = ", ".join(list_distinct_speaker_names(task["turns"])) or "(không rõ)"
     return (
         f"Ngày họp: {_format_meeting_date(task.get('meeting_date'))}\n\n"
-        f"Bối cảnh từ các chủ đề trước: {task['previous_context']}\n\n"
+        f"Bối cảnh cuộc họp:\n{task['previous_context']}\n\n"
         f"Người nói trong đoạn này: {speakers}\n\n"
         f"Tiêu đề đoạn: {task['title']}\n"
         f"Tóm tắt đoạn: {task['summary']}\n\n"
@@ -238,10 +158,11 @@ def _build_action_user_prompt(task: SegmentTask) -> str:
     )
 
 
-def make_action_agent(llm: LLMAdapter):
-    """Tạo node ``action_agent`` gắn với một LLM cụ thể.
+def make_action_agent(llm: LLMAdapter, system_prompt: str):
+    """Tạo node ``action_agent`` gắn với một LLM và system prompt cụ thể.
 
-    Đầu vào: llm - adapter LLM có ``generate_json``.
+    Đầu vào: llm - adapter LLM có ``generate_json``; system_prompt - system prompt của agent
+        (bản v3 ở ``agentic_v3/nodes/prompts.py``).
     Đầu ra: hàm node ``action_agent(task)`` để đăng ký vào graph.
     """
 
@@ -255,9 +176,9 @@ def make_action_agent(llm: LLMAdapter):
         ``text`` được bỏ tiền tố lặp "giao <actor>" (``strip_assignment_prefix``);
         ``status`` lạ thành "unknown" và ``confirm_turn_id`` không thuộc đoạn
         thành None -- cả hai đều khiến Evidence-Check gửi candidate đi debate.
-        LLM tự quy hạn nguyên văn (``deadline_raw``) về ``deadline_date``/``deadline_kind``
-        theo QUY TẮC CHUẨN HOÁ HẠN trong prompt, neo theo ngày họp; kết quả sai định dạng
-        thì dùng luật ``..deadline.normalize_deadline`` (``_resolve_deadline``).
+        Hạn nguyên văn (``deadline_raw``) được quy về ``deadline_date``/``deadline_kind`` bằng
+        luật ``..deadline.normalize_deadline``, neo theo ngày họp; luật không ra ngày thì dùng
+        kết quả LLM quy theo QUY TẮC CHUẨN HOÁ HẠN trong prompt (``_resolve_deadline``).
         Nếu LLM lỗi (``LLMUpstreamError``), trả kết quả rỗng kèm ``TopicFailure`` để
         graph thử lại sau.
 
@@ -273,7 +194,7 @@ def make_action_agent(llm: LLMAdapter):
         try:
             with llm_call("action_agent", segment_id=segment_id, prompt_chars=len(user_prompt)):
                 result = llm.generate_json(
-                    system_prompt=ACTION_SYSTEM_PROMPT,
+                    system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     schema=ACTION_SCHEMA,
                 )
@@ -330,4 +251,4 @@ def make_action_agent(llm: LLMAdapter):
     return action_agent
 
 
-__all__ = ["ACTION_SYSTEM_PROMPT", "ACTION_SCHEMA", "NEW_TASK_ID", "make_action_agent"]
+__all__ = ["ACTION_SCHEMA", "NEW_TASK_ID", "make_action_agent"]

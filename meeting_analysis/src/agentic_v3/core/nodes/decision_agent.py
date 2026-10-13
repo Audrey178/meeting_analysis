@@ -30,48 +30,6 @@ from ....utils.ports import LLMAdapter, LLMUpstreamError
 
 logger = logging.getLogger(__name__)
 
-DECISION_SYSTEM_PROMPT = """
-Bạn trích các KẾT LUẬN/CHỐT PHƯƠNG ÁN trong MỘT đoạn chủ đề của cuộc họp:
-một lựa chọn đã được người chủ trì kết luận hoặc cả nhóm THỐNG NHẤT (vd. chọn
-phương án A thay vì B, thống nhất cách làm, phạm vi, lịch chung).
-
-KHÔNG lấy (dù câu nghe rất chắc chắn):
-- báo cáo tình hình, số liệu, tiến độ, việc đã làm/đang làm;
-- ước tính, dự báo, nhận định, ý kiến của một thành viên;
-- đề xuất/kiến nghị chưa được ai xác nhận, hoặc bị gạt đi/hoãn lại;
-- câu mở đầu, giới thiệu, thủ tục, khẩu hiệu ("giữ vững kỷ cương...");
-- kế hoạch/văn bản đã ban hành từ trước chỉ được nhắc lại;
-- phương án đã chốt rồi bị THAY THẾ bởi phương án khác ở sau trong đoạn --
-  chỉ lấy phương án cuối cùng;
-- giao việc cho một người/đơn vị cụ thể (thuộc agent khác).
-
-Với mỗi kết luận, khai trung thực:
-- status: "agreed" (đã kết luận/thống nhất), "proposed" (mới là đề xuất),
-  "reported" (báo cáo/nhận định). Không chắc thì chọn "proposed" -- mục sẽ
-  được kiểm lại, không bị mất.
-- confirm_turn_id: turn_id của lượt nói CHỐT (người chủ trì kết luận hoặc lượt
-  đồng ý cuối cùng). Phải là lượt chứa một trong evidence_segment_ids.
-
-text: một câu súc tích nêu NỘI DUNG kết luận. Mỗi kết luận chỉ xuất hiện MỘT
-lần -- nếu cùng một kết luận được nhắc nhiều lần, gộp thành một mục.
-
-Mỗi phần tử PHẢI kèm evidence_segment_ids: mã các câu chứa phát biểu đó (số trong
-ngoặc nhọn đứng trước mỗi câu, "<130> Nội dung..." có mã "130"). Chọn
-evidence_segment_ids TRƯỚC khi viết text -- không viết trước rồi mới tìm bằng
-chứng khớp. KHÔNG chép lại nội dung câu.
-
-turn_id CHỈ LÀ phần đứng TRƯỚC dấu "|" bên trong ngoặc vuông đầu mỗi dòng
-bản ghi -- KHÔNG bao gồm dấu ngoặc vuông, KHÔNG bao gồm tên người nói,
-KHÔNG bao gồm dấu "|". Ví dụ dòng bản ghi "[TURN_000020|Phạm Hồng Sơn] Nội
-dung..." thì turn_id là "TURN_000020" -- TUYỆT ĐỐI KHÔNG phải
-"[TURN_000020|Phạm Hồng Sơn]" hay "TURN_000020|Phạm Hồng Sơn".
-
-NGÔI THỨ BA: KHÔNG BAO GIỜ dùng đại từ ngôi thứ nhất/nhị trần trụi ("tôi",
-"em", "anh", "chị", "mình", "bọn em", "chúng tôi", ...) trong text để chỉ
-một người cụ thể -- dùng tên thật nếu bản ghi nêu rõ, hoặc cụm trung tính
-("nhóm phụ trách") nếu không đủ căn cứ.
-""".strip()
-
 DECISION_SCHEMA: dict = {
     "type": "object",
     "properties": {
@@ -113,10 +71,11 @@ def _build_decision_user_prompt(task: SegmentTask) -> str:
     )
 
 
-def make_decision_agent(llm: LLMAdapter):
-    """Tạo node ``decision_agent`` gắn với một LLM cụ thể.
+def make_decision_agent(llm: LLMAdapter, system_prompt: str):
+    """Tạo node ``decision_agent`` gắn với một LLM và system prompt cụ thể.
 
-    Đầu vào: llm - adapter LLM có ``generate_json``.
+    Đầu vào: llm - adapter LLM có ``generate_json``; system_prompt - system prompt của agent
+        (bản v3 ở ``agentic_v3/nodes/prompts.py``).
     Đầu ra: hàm node ``decision_agent(task)`` để đăng ký vào graph.
     """
 
@@ -139,7 +98,7 @@ def make_decision_agent(llm: LLMAdapter):
         try:
             with llm_call("decision_agent", segment_id=segment_id, prompt_chars=len(user_prompt)):
                 result = llm.generate_json(
-                    system_prompt=DECISION_SYSTEM_PROMPT,
+                    system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     schema=DECISION_SCHEMA,
                 )
@@ -183,4 +142,4 @@ def make_decision_agent(llm: LLMAdapter):
     return decision_agent
 
 
-__all__ = ["DECISION_SYSTEM_PROMPT", "DECISION_SCHEMA", "make_decision_agent"]
+__all__ = ["DECISION_SCHEMA", "make_decision_agent"]

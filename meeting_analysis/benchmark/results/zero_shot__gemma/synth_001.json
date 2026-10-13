@@ -1,0 +1,316 @@
+{
+ "meeting_id": "synth_001",
+ "method": "zero_shot",
+ "model": "google/gemma-4-26B-A4B-it",
+ "cache_key": "a4baa8e8691c585d",
+ "git_sha": "0f934992",
+ "finished_at": "2026-10-13T09:10:49+00:00",
+ "status": "ok",
+ "output": {
+  "topics": [
+   {
+    "start_turn": "TURN_000001",
+    "title": "Rà soát tiến độ chung và phạm vi giai đoạn 1"
+   },
+   {
+    "start_turn": "TURN_000009",
+    "title": "Phát triển mô hình phân loại kiến nghị tự động"
+   },
+   {
+    "start_turn": "TURN_000021",
+    "title": "Phát triển cổng tra cứu cho cử tri"
+   },
+   {
+    "start_turn": "TURN_000031",
+    "title": "Phát triển chức năng đánh giá chất lượng câu trả lời"
+   },
+   {
+    "start_turn": "TURN_000039",
+    "title": "Chốt kế hoạch và phân công công việc"
+   }
+  ],
+  "assignments": [
+   {
+    "actor": "Anh Phong",
+    "task": "Gửi danh mục 12 lĩnh vực mới và tài liệu API SMS brandname dùng chung của tỉnh",
+    "deadline": "Thứ Sáu tuần này (trong tuần này)",
+    "evidence_turn_ids": [
+     "TURN_000041"
+    ]
+   },
+   {
+    "actor": "Hiếu",
+    "task": "Map lại nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy",
+    "deadline": "Trước ngày 25 tháng 11",
+    "evidence_turn_ids": [
+     "TURN_000042"
+    ]
+   },
+   {
+    "actor": "Hiếu",
+    "task": "Bóc dữ liệu từ báo cáo giám sát ra thành dữ liệu có nhãn cho phần đánh giá câu trả lời",
+    "deadline": "Trước Tết",
+    "evidence_turn_ids": [
+     "TURN_000048",
+     "TURN_000049"
+    ]
+   },
+   {
+    "actor": "Nam",
+    "task": "Tích hợp SMS brandname, sinh OTP và API tra cứu theo số điện thoại",
+    "deadline": "Trong vòng một tuần sau khi nhận tài liệu từ anh Phong",
+    "evidence_turn_ids": [
+     "TURN_000044"
+    ]
+   },
+   {
+    "actor": "Linh",
+    "task": "Nối cổng tra cứu với API thật, thêm màn hình nhập số điện thoại/OTP, ẩn thông tin cá nhân",
+    "deadline": "Ngày 1 tháng 12",
+    "evidence_turn_ids": [
+     "TURN_000046"
+    ]
+   },
+   {
+    "actor": "Chị Mai",
+    "task": "Cập nhật đặc tả phần tra cứu số điện thoại và phần đánh giá câu trả lời; soạn kịch bản demo gửi anh Phong duyệt",
+    "deadline": "Trước ngày 10 tháng 12",
+    "evidence_turn_ids": [
+     "TURN_000050"
+    ]
+   },
+   {
+    "actor": "Anh Tuấn",
+    "task": "Làm phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi anh Phong",
+    "deadline": "Trong tháng 12",
+    "evidence_turn_ids": [
+     "TURN_000052"
+    ]
+   }
+  ],
+  "decisions": [
+   {
+    "text": "Giai đoạn 1 giữ đúng 3 chức năng chính, ứng dụng di động chuyển sang giai đoạn 2.",
+    "evidence_turn_ids": [
+     "TURN_000007",
+     "TURN_000008"
+    ]
+   },
+   {
+    "text": "Sử dụng mô hình PhoBERT, phân loại theo 12 lĩnh vực mới, ngưỡng độ tin cậy 0.7, dưới ngưỡng thì đưa vào hàng chờ chuyên viên duyệt và có ghi log nhãn sửa. API trả về top 3 nhãn.",
+    "evidence_turn_ids": [
+     "TURN_000018",
+     "TURN_000020"
+    ]
+   },
+   {
+    "text": "Cổng tra cứu cho phép tra cứu bằng mã kiến nghị và số điện thoại (có xác thực OTP qua SMS brandname của tỉnh). Không hiển thị họ tên, địa chỉ người kiến nghị trên trang công khai.",
+    "evidence_turn_ids": [
+     "TURN_000027",
+     "TURN_000028"
+    ]
+   },
+   {
+    "text": "Chức năng đánh giá câu trả lời: AI chỉ đánh dấu các câu trả lời có dấu hiệu chưa đạt kèm lý do để chuyên viên xem xét, không đưa ra kết luận đạt/không đạt.",
+    "evidence_turn_ids": [
+     "TURN_000037"
+    ]
+   }
+  ],
+  "discussion": [
+   {
+    "text": "Anh Tuấn: Báo cáo tiến độ đạt 55%, chậm 2 tuần do nhận dữ liệu muộn.",
+    "speakers": [
+     "Anh Tuấn"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000001"
+    ]
+   },
+   {
+    "text": "Anh Phong: Yêu cầu giữ mốc demo 15/12.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000002"
+    ]
+   },
+   {
+    "text": "Chị Mai: Liệt kê 3 chức năng chính của giai đoạn 1 và đề cập mong muốn có app di động.",
+    "speakers": [
+     "Chị Mai"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000004"
+    ]
+   },
+   {
+    "text": "Linh: Đề xuất làm app di động bằng Flutter song song.",
+    "speakers": [
+     "Linh"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000006"
+    ]
+   },
+   {
+    "text": "Anh Tuấn: Chốt không làm app di động ở giai đoạn 1 để tập trung giao diện web.",
+    "speakers": [
+     "Anh Tuấn"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000007"
+    ]
+   },
+   {
+    "text": "Hiếu: Báo cáo mô hình PhoBERT đạt F1 0.81 nhưng nhầm lẫn giữa các lĩnh vực đất đai/môi trường và chính sách/lao động.",
+    "speakers": [
+     "Hiếu"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000010"
+    ]
+   },
+   {
+    "text": "Chị Mai & Anh Phong: Thông báo danh mục lĩnh vực đã gộp từ 18 xuống 12.",
+    "speakers": [
+     "Chị Mai",
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000011",
+     "TURN_000012"
+    ]
+   },
+   {
+    "text": "Hiếu: Đề xuất ngưỡng tin cậy 0.7 để chuyển sang chuyên viên duyệt tay và lưu log để học lại.",
+    "speakers": [
+     "Hiếu"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000015",
+     "TURN_000017"
+    ]
+   },
+   {
+    "text": "Nam: Hỏi về định dạng API trả về nhãn.",
+    "speakers": [
+     "Nam"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000019"
+    ]
+   },
+   {
+    "text": "Hiếu: Đề xuất trả về top 3 nhãn.",
+    "speakers": [
+     "Hiếu"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000020"
+    ]
+   },
+   {
+    "text": "Linh: Trình bày giao diện tra cứu bằng mã kiến nghị.",
+    "speakers": [
+     "Linh"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000022"
+    ]
+   },
+   {
+    "text": "Anh Phong: Yêu cầu tra cứu được bằng số điện thoại vì người dân không giữ mã kiến nghị.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000023"
+    ]
+   },
+   {
+    "text": "Chị Mai & Nam: Lo ngại về bảo mật thông tin và chi phí SMS.",
+    "speakers": [
+     "Chị Mai",
+     "Nam"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000024",
+     "TURN_000025"
+    ]
+   },
+   {
+    "text": "Anh Phong: Tỉnh có sẵn SMS brandname dùng chung.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000026"
+    ]
+   },
+   {
+    "text": "Anh Phong: Yêu cầu không hiển thị thông tin cá nhân (tên, địa chỉ) trên trang tra cứu.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000028"
+    ]
+   },
+   {
+    "text": "Hiếu: Đề xuất AI chấm điểm câu trả lời theo 3 tiêu chí.",
+    "speakers": [
+     "Hiếu"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000032"
+    ]
+   },
+   {
+    "text": "Anh Phong: Cảnh báo việc AI kết luận đạt/không đạt là nhạy cảm, AI chỉ nên gợi ý.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000033"
+    ]
+   },
+   {
+    "text": "Hiếu: Đồng ý đổi sang hướng đánh dấu dấu hiệu chưa đạt kèm lý do.",
+    "speakers": [
+     "Hiếu"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000034"
+    ]
+   },
+   {
+    "text": "Chị Mai: Gợi ý dùng dữ liệu từ báo cáo giám sát hàng năm để làm dữ liệu nhãn.",
+    "speakers": [
+     "Chị Mai"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000035"
+    ]
+   },
+   {
+    "text": "Anh Phong: Xác nhận có dữ liệu nhưng ở dạng file Word cần bóc tách.",
+    "speakers": [
+     "Anh Phong"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000036"
+    ]
+   }
+  ]
+ },
+ "usage": {
+  "calls": 1,
+  "failed_attempts": 1,
+  "prompt_tokens": 4456,
+  "completion_tokens": 1761,
+  "seconds": 16.1
+ },
+ "input_chars": 12549
+}
