@@ -1,0 +1,380 @@
+% Biên dịch bằng LuaLaTeX (cần cho tiếng Việt):
+%   latexmk -lualatex main.tex
+% Đổi "review" thành "final" cho bản camera-ready, "preprint" cho bản có tên tác giả.
+\documentclass[11pt]{article}
+\usepackage[review]{acl}
+
+\usepackage{microtype}
+\usepackage{babel}
+\babelprovide[import, main]{vietnamese}
+\babelfont{rm}{TeX Gyre Termes}
+\babelfont{sf}{TeX Gyre Heros}
+\babelfont{tt}{TeX Gyre Cursor}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, fit, calc}
+
+% Đánh dấu chỗ còn thiếu dữ liệu; xoá toàn bộ trước khi nộp.
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+% Tên thành phần, dùng thống nhất trong toàn bài.
+\newcommand{\dsvi}{DialSTART-VI}
+\newcommand{\cscorer}{Commitment Scorer}
+\newcommand{\pc}{p_{c}}
+
+\title{Phân tích biên bản họp tiếng Việt bằng phân đoạn chủ đề\\và hệ đa tác tử có kiểm chứng}
+
+\author{Tác giả ẩn danh \\
+  Đơn vị ẩn danh \\
+  \texttt{email@domain}}
+
+\begin{document}
+\maketitle
+
+%======================================================================
+\begin{abstract}
+Chúng tôi đề xuất một hệ thống sinh biên bản họp tiếng Việt từ bản ghi nhận dạng giọng nói (STT), gồm diễn biến theo chủ đề, kết luận, việc được giao và tiến độ công việc, mỗi mục đều trích dẫn về lời nói gốc. Bài toán khó vì một lượt nói thường chứa nhiều chủ đề, chưa có dữ liệu có nhãn cho tiếng Việt, và một lời giao việc thật dùng cùng từ vựng với một đề xuất còn rào đón. Hệ thống gồm hai tầng. Tầng thứ nhất phân đoạn chủ đề bằng \dsvi{}, một biến thể của DialSTART được huấn luyện trên hội thoại tiếng Việt tổng hợp. Tầng thứ hai là một khung đa tác tử xử lý song song từng chủ đề, trong đó một bộ chấm lượt chốt có xác suất hiệu chỉnh quyết định tác tử nào cần chạy và kết quả nào phải qua Verifier kiểu ReAct cùng vòng đồng thuận. Trên 869 lượt nói có nhãn, bộ chấm lượt chốt đạt F1 0.894 so với 0.682 của luật từ khoá, với sai số hiệu chỉnh ECE 0.040.
+\end{abstract}
+
+%======================================================================
+\section{Giới thiệu}
+
+Biên bản họp hành chính cần ba loại kết quả có trích dẫn: diễn biến theo chủ đề, các kết luận, và việc được giao kèm người nhận, hạn chót và tiến độ. Đầu vào là transcript STT tiếng Việt dài từ 5 nghìn đến 260 nghìn ký tự, có lỗi nhận dạng, và nhãn người nói có thể gộp nhiều người.
+
+Bài toán có bốn khó khăn. \emph{Thứ nhất}, chủ đề không trùng với lượt nói: trên 47 phiên họp Quốc hội, ít nhất 49.5\% lượt nói của đại biểu chứa nhiều chủ đề (\S\ref{sec:res-seg}). \emph{Thứ hai}, hầu như chưa có dữ liệu công khai cho phân đoạn chủ đề hội thoại tiếng Việt. \emph{Thứ ba}, ``đã chốt'' khác ``được nhắc'': một đề xuất còn rào đón hay một việc bị bác bỏ dùng cùng từ vựng với một lời giao việc thật. \emph{Thứ tư}, người nhận việc có thể được gọi bằng chức vụ, đơn vị, hoặc chỉ được nêu tên ở một chủ đề khác.
+
+Một cách làm tự nhiên là cho chuỗi tác tử LLM đi tuần tự qua từng chủ đề và mang danh sách tên đã gặp sang chủ đề sau. Cách này tạo phụ thuộc tuần tự giữa các chủ đề, và bước kiểm chứng chỉ nhìn thấy đoạn hiện tại. Chúng tôi thay ngữ cảnh chạy dồn bằng một danh bạ người nói dựng trước, để các chủ đề độc lập với nhau, và cho bước kiểm chứng tra cứu trên toàn cuộc họp.
+
+Đóng góp của bài:
+\begin{itemize}
+  \item \textbf{\dsvi{}}: chuyển DialSTART \citep{gao-etal-2023-unsupervised} sang tiếng Việt bằng dữ liệu hội thoại tổng hợp đã loại bỏ lối tắt ranh giới, kèm hậu xử lý có ràng buộc độ dài theo ngân sách ngữ cảnh của LLM.
+  \item \textbf{\cscorer{}}: bộ chấm xác suất lượt chốt có hiệu chỉnh, dùng chung cho hai việc: bỏ tác tử không cần thiết và định tuyến kiểm chứng.
+  \item \textbf{Kiểm chứng có định tuyến}: chỉ kết quả chưa chắc chắn mới qua Verifier kiểu ReAct \citep{yao-etal-2023-react} và vòng đồng thuận với chính tác tử đã trích xuất.
+\end{itemize}
+
+%======================================================================
+\section{Nghiên cứu liên quan}
+
+\paragraph{Phân đoạn chủ đề hội thoại.}
+Các phương pháp dựa trên độ tương đồng như TextTiling \citep{hearst-1997-text} và TreeSeg \citep{gklezakos-etal-2024-treeseg} bắt mọi thay đổi ngữ nghĩa nhưng không phân biệt cấp độ chủ đề. Hướng dựa trên độ liền mạch giữa cặp lượt nói \citep{xing-carenini-2021-improving, yang-etal-2025-unified} và DialSTART \citep{gao-etal-2023-unsupervised} kết hợp tín hiệu liền mạch với biểu diễn chủ đề của từng lượt. CobSeg \citep{sun-etal-2026-cobseg} mô hình hoá riêng tín hiệu ranh giới từ vựng và ngữ nghĩa. Def-DTS \citep{lee-etal-2025-def} và mục lục nhiều tầng \citep{freisinger-etal-2025-towards} dùng LLM, đổi chi phí trên mỗi lượt lấy độ chính xác. Chúng tôi chọn DialSTART vì mô hình chạy cục bộ, chi phí cố định và huấn luyện lại được trên dữ liệu tiếng Việt tự sinh.
+
+\paragraph{Đánh giá phân đoạn.}
+Pk \citep{beeferman-etal-1999-statistical} là độ đo chuẩn. \citet{coen-2025-f1} cho thấy việc quét ngưỡng làm F1 thay đổi nhiều hơn cả việc đổi phương pháp, và đề xuất coi phân đoạn là bài toán chọn độ mịn. Vì vậy chúng tôi báo cáo thêm $\Delta K$, chênh lệch giữa số đoạn dự đoán và số đoạn gold.
+
+\paragraph{Trích xuất và kiểm chứng bằng LLM.}
+Các hệ thống trích việc cần làm từ cuộc họp thường gọi LLM trên toàn transcript hoặc từng đoạn, và không tách riêng bước kiểm chứng bằng chứng. ReAct \citep{yao-etal-2023-react} xen kẽ suy luận với gọi công cụ. Verifier của chúng tôi áp dụng ReAct với đầu ra JSON thuần, không cần LLM hỗ trợ gọi công cụ, và bổ sung vòng đồng thuận với tác tử đã tạo ra kết quả.
+
+%======================================================================
+\section{Phương pháp}
+
+\subsection{Định nghĩa bài toán}
+
+Transcript là dãy câu $X = (x_1, \dots, x_M)$, mỗi câu có nội dung, người nói và thời điểm. Các câu liền kề của cùng người nói được gộp thành dãy lượt nói $U = (u_1, \dots, u_n)$. Phân đoạn chủ đề tìm tập ranh giới $B \subseteq \{1, \dots, n-1\}$ chia $U$ thành $K$ đoạn liền mạch $S_1, \dots, S_K$. Với mỗi đoạn, hệ thống sinh tiêu đề, tóm tắt và bốn loại kết quả (Bảng~\ref{tab:outputs}). Mọi kết quả được trích dẫn về câu gốc trong $X$.
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{lp{2.3cm}p{2.5cm}}
+    \toprule
+    \textbf{Loại} & \textbf{Thông tin} & \textbf{Ràng buộc bằng chứng} \\
+    \midrule
+    Diễn biến & nội dung, người phát biểu & lượt nói nguồn \\
+    Kết luận & nội dung đã thống nhất & một lượt chốt \\
+    Giao việc & nội dung, người nhận, hạn chót & lượt chốt; người nhận xác định được \\
+    Tiến độ & việc cũ, trạng thái & lượt nêu trạng thái \\
+    \bottomrule
+  \end{tabular}
+  \caption{Bốn loại kết quả và bằng chứng mà mỗi loại bắt buộc phải có.}
+  \label{tab:outputs}
+\end{table}
+
+\subsection{Tổng quan kiến trúc}
+
+Hệ thống gồm hai tầng (Hình~\ref{fig:arch}). Tầng 1 tính một lần cho mỗi transcript và dùng chung cho mọi loại kết quả, nên mọi loại kết quả luôn dựa trên cùng một cách chia chủ đề. Tầng 2 gồm Meeting Planner dựng ngữ cảnh chung, một nhóm Topic Agents cho mỗi chủ đề chạy song song, và Aggregation hợp nhất kết quả.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\footnotesize,
+      box/.style={draw, rounded corners=3pt, text width=2.8cm, minimum height=1.25cm, align=center, inner sep=3pt},
+      key/.style={box, fill=blue!8, draw=blue!60!black, very thick},
+      arr/.style={-{Stealth[length=2mm]}, semithick},
+      layer/.style={draw=gray, rounded corners=5pt, inner sep=7pt}]
+    \node[box] (pre) {\textbf{Preprocessing}\\chuẩn hoá transcript,\\gộp thành lượt nói};
+    \node[box, right=0.5cm of pre] (ds) {\textbf{\dsvi{}}\\điểm liền mạch\\giữa hai lượt nói};
+    \node[box, right=0.5cm of ds] (pp) {\textbf{Post-processing}\\làm mượt, depth score,\\ràng buộc độ dài};
+    \node[box, right=0.5cm of pp] (tl) {\textbf{Topic Labeling}\\LLM, song song,\\kiểm bám nguồn};
+    \node[box, below=1.9cm of pre] (mp) {\textbf{Meeting Planner}\\danh bạ người nói,\\theo luật};
+    \node[key, right=0.5cm of mp] (ta) {\textbf{Topic Agents}\\$N$ chủ đề song song,\\trích xuất, kiểm chứng};
+    \node[box, right=0.5cm of ta] (ag) {\textbf{Aggregation}\\xác định người nhận,\\gộp việc trùng};
+    \node[box, right=0.5cm of ag] (out) {\textbf{Biên bản}\\diễn biến, kết luận,\\giao việc, tiến độ};
+    \node[layer, fit=(pre)(tl), label={[anchor=south west, font=\footnotesize\bfseries]north west:Tầng 1: tiền xử lý và phân đoạn chủ đề}] (l1) {};
+    \node[layer, fit=(mp)(out), label={[anchor=south east, font=\footnotesize\bfseries]north east:Tầng 2: khung trích xuất đa tác tử}] (l2) {};
+    \draw[arr] (pre) -- (ds);
+    \draw[arr] (ds) -- (pp);
+    \draw[arr] (pp) -- (tl);
+    \draw[arr] (mp) -- (ta);
+    \draw[arr] (ta) -- (ag);
+    \draw[arr] (ag) -- (out);
+    \coordinate (gap) at ($(ds.east)!0.5!(pp.west)$);
+    \draw[arr] (gap |- l1.south) -- (gap |- l2.north) node[midway, left, font=\scriptsize] {lượt nói, đoạn, nhãn};
+  \end{tikzpicture}
+  \caption{Kiến trúc hai tầng. Tầng 1 chạy một lần cho mỗi transcript; tầng 2 chạy lại khi đổi loại kết quả cần sinh hoặc danh sách việc cần theo dõi. Khối tô đậm (Topic Agents) được mô tả chi tiết ở Hình~\ref{fig:topic}.}
+  \label{fig:arch}
+\end{figure*}
+
+\subsection{Preprocessing}
+
+Bước tiền xử lý chỉ dùng luật. Nó ưu tiên nội dung và tên người nói đã được hiệu đính thủ công so với bản STT, gán cho mỗi câu một mã bằng chứng không đổi khi nội dung được sửa, và gộp các câu liền kề của cùng người nói, cách nhau không quá một khoảng ngắn, thành một lượt nói.
+
+\subsection{Phân đoạn chủ đề với \dsvi{}}
+\label{sec:dsvi}
+
+\paragraph{Mô hình.}
+\dsvi{} giữ kiến trúc hai nhánh của DialSTART với backbone BERT tiếng Việt vibert4news.\footnote{\url{https://huggingface.co/NlpHUST/vibert4news-base-cased}} Nhánh chủ đề sinh vector $e_i$ cho từng lượt nói (tối đa 256 token). Nhánh liền mạch là một bộ phân loại câu kế tiếp (NSP), chấm mức độ lượt $u_{i+1}$ tiếp nối hợp lý ngữ cảnh trước đó. Điểm của khe $i$, nằm giữa $u_i$ và $u_{i+1}$, với cửa sổ $w = 2$ là
+\begin{equation}
+  s_i = \sigma\Big( \mathrm{NSP}\big(u_{\le i}, u_{i+1}\big) + \cos\big(\bar e_{i-w+1:i},\, \bar e_{i+1:i+w}\big) \Big),
+\end{equation}
+trong đó $\bar e_{a:b}$ là trung bình các vector chủ đề từ $a$ đến $b$, và ngữ cảnh trái giữ 256 token cuối, sát khe. Điểm càng thấp thì hai bên khe càng kém liền mạch.
+
+\paragraph{Dữ liệu huấn luyện tiếng Việt.}
+Vì chưa có dữ liệu có nhãn, chúng tôi dùng LLM sinh các hội thoại đơn chủ đề theo từng lĩnh vực, rồi ghép thành phiên nhiều chủ đề. Bốn lĩnh vực được giữ riêng làm tập kiểm tra ngoài miền, và không tài liệu nguồn nào xuất hiện ở hai tập. Quá trình này phát hiện hai lỗi mà một mô hình dễ khai thác:
+\begin{itemize}
+  \item \textbf{Lối tắt ranh giới.} Ở bản dữ liệu đầu, khoảng 88\% ranh giới trùng với chỗ đổi cặp đại từ nhân xưng. Mô hình đạt Pk khoảng 0.002 ngay epoch đầu mà không học được chủ đề. Chúng tôi giữ một cặp nhân xưng cho cả phiên để loại bỏ tín hiệu này.
+  \item \textbf{Cặp huấn luyện sai nhãn.} Chúng tôi bỏ các cặp dương nằm vắt qua ranh giới, và dùng lượt mở đầu của đoạn kế bên làm mẫu âm khó.
+\end{itemize}
+
+\paragraph{Post-processing.}
+Điểm thô được làm mượt bằng trung bình trượt cửa sổ 3, thu được $\tilde s_i$, rồi đổi thành depth score theo TextTiling \citep{hearst-1997-text}:
+\begin{equation}
+  d_i = \big(h^{L}_i - \tilde s_i\big) + \big(h^{R}_i - \tilde s_i\big),
+\end{equation}
+trong đó $h^{L}_i$ và $h^{R}_i$ là đỉnh gần nhất khi đi từ khe $i$ sang trái và sang phải trong lúc điểm còn tăng. Ranh giới được chọn qua ba bước. (1) Giữ các khe có $d_i > \mu_d + \sigma_d$, xét theo depth giảm dần, sao cho mỗi đoạn có ít nhất 4 lượt. (2) Gộp đoạn ngắn hơn ngưỡng $L_{\min}$ vào đoạn kề, qua mép có depth thấp hơn. Ngưỡng này là $L_{\min} = \mathrm{clip}(L/15, 1500, 10000)$ ký tự, với $L$ là tổng số ký tự. (3) Tách đoạn dài quá 35\,000 ký tự tại khe có depth cao nhất bên trong. Các ràng buộc độ dài tính trên văn bản sẽ đưa vào prompt, nên đây là cầu nối giữa một mô hình phân đoạn thuần ngôn ngữ và ngân sách ngữ cảnh của các tác tử phía sau.
+
+\subsection{Topic Labeling}
+
+Mỗi đoạn được LLM gán tiêu đề và tóm tắt độc lập, các đoạn chạy song song. Nhãn phải qua hai lớp kiểm tra: đúng cấu trúc, và bám nguồn (tên riêng phải có trong đoạn, không dùng cụm từ chung chung). Nếu vẫn không đạt sau số lần thử tối đa, hệ thống lấy nhãn trích trực tiếp từ đầu đoạn.
+
+\subsection{Khung trích xuất đa tác tử}
+
+\paragraph{Meeting Planner.}
+Meeting Planner dựng trước một danh bạ người nói (Speaker Registry) cho cả cuộc họp, chỉ bằng luật. Danh bạ gồm tên người nói, danh sách tham dự kèm chức vụ và đơn vị, người chủ trì, và danh sách việc cần theo dõi. Nhờ danh bạ này, các chủ đề không cần ngữ cảnh của nhau và được xử lý song song (Hình~\ref{fig:topic}).
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\footnotesize,
+      box/.style={draw, rounded corners=3pt, text width=2.55cm, minimum height=1.05cm, align=center, inner sep=3pt},
+      key/.style={box, fill=blue!8, draw=blue!60!black, very thick},
+      arr/.style={-{Stealth[length=2mm]}, semithick},
+      lab/.style={font=\scriptsize, fill=white, inner sep=1pt}]
+    \node[box] (tp) {\textbf{Topic Planner}\\chạy khi $\pc \ge 0.2$};
+    \node[box, right=0.6cm of tp] (ea) {\textbf{Extraction Agents}\\4 tác tử theo loại};
+    \node[box, right=0.6cm of ea] (ec) {\textbf{Evidence Check}\\luật + $\pc$};
+    \node[box, right=2.1cm of ec] (cl) {\textbf{Kết quả chắc chắn}\\sang Aggregation};
+    \node[key, below=1.6cm of ec, minimum height=1.3cm] (vf) {\textbf{Verifier}\\$\le 4$ bước suy luận,\\tra cứu cả cuộc họp};
+    \node[box, left=2.1cm of vf, minimum height=1.3cm] (pa) {\textbf{Extraction Agent}\\accept, amend\\hoặc defend};
+    \node[box, below=1.6cm of cl, minimum height=1.3cm] (rs) {\textbf{Kết quả đã kiểm}\\đồng thuận, Verifier,\\hoặc giữ bản gốc};
+    \draw[arr] (tp) -- (ea);
+    \draw[arr] (ea) -- (ec);
+    \draw[arr] (ec) -- node[lab, above] {chắc chắn} (cl);
+    \draw[arr] (ec) -- node[lab, right] {chưa chắc chắn} (vf);
+    \draw[arr] ([yshift=4pt]vf.west) -- node[lab, above] {chưa giữ} ([yshift=4pt]pa.east);
+    \draw[arr] ([yshift=-4pt]pa.east) -- node[lab, below] {amend, defend} ([yshift=-4pt]vf.west);
+    \draw[arr] (vf) -- node[lab, above] {giữ / hết vòng} (rs);
+    \draw[arr] (pa.south) -- ++(0,-0.5) -| node[lab, pos=0.25, below] {accept} (rs.south);
+  \end{tikzpicture}
+  \caption{Xử lý một chủ đề. Hàng trên là đường đi của kết quả chắc chắn, không tốn thêm lời gọi LLM. Hàng dưới chỉ chạy cho kết quả chưa chắc chắn, mỗi kết quả một nhánh song song; Verifier và tác tử đã trích xuất kết quả đó thương lượng tối đa 3 vòng.}
+  \label{fig:topic}
+\end{figure*}
+
+\paragraph{\cscorer{}.}
+Thành phần này dùng chung cho Topic Planner và Evidence Check. Với mỗi lượt nói, nó trả về phân phối xác suất trên sáu hành vi: giao việc, kết luận, đề xuất, bác bỏ, thảo luận và khác. Từ phân phối này suy ra $\pc$, xác suất lượt nói thực sự giao việc hoặc chốt kết luận. Trong cài đặt hiện tại, bộ chấm gọi một dịch vụ phân loại có cấu trúc dựa trên LLM (OpenAI Decisions API) \todo{ghi rõ phiên bản model và prompt; cân nhắc thay bằng mô hình mở để tái lập được}.
+
+\paragraph{Topic Planner.}
+Planner xét các lượt nói từ cuối chủ đề lên, lượt dài được cắt thành nhiều cửa sổ. Gặp cửa sổ đầu tiên có $\pc \ge 0.2$ thì chạy Assignment Agent và Decision Agent. Nếu không cửa sổ nào đạt, hai tác tử này được bỏ qua. Khi bộ chấm lỗi, planner vẫn cho chạy để ưu tiên recall.
+
+\paragraph{Extraction Agents.}
+Mỗi loại kết quả có một tác tử riêng. Discussion Agent chạy ở mọi chủ đề. Assignment Agent và Decision Agent chạy theo quyết định của Topic Planner. Progress Agent chỉ chạy khi cuộc họp có danh sách việc cần theo dõi. Prompt của mỗi tác tử gồm đoạn hội thoại, nhãn chủ đề, danh bạ người nói và người chủ trì. Đầu ra là JSON theo schema cố định; lỗi định dạng được thử lại tại chỗ tối đa hai lần.
+
+\paragraph{Evidence Check.}
+Mỗi kết quả được xếp vào nhóm \emph{chắc chắn} hoặc \emph{chưa chắc chắn} theo $\pc$ của lượt chốt: $\pc \ge 0.8$ là rõ ràng, $\pc < 0.2$ là không phải lời chốt, và khoảng giữa là chưa rõ. Chỉ trường hợp thứ nhất, cùng với việc mọi kiểm tra khác đều đạt, mới được coi là chắc chắn. Với việc giao, hệ thống kiểm thêm ba điều kiện. Người nhận phải xuất hiện trong đoạn hoặc trong danh bạ. Người nhận phải khớp với đúng một ứng viên. Với việc tự nhận, người nói lượt chốt phải chính là người nhận. Kết quả tiến độ được kiểm riêng trên lượt nêu trạng thái, sau đó được giữ, sửa, hạ xuống mức ``có nhắc'' hoặc bỏ.
+
+\subsection{Verifier và vòng đồng thuận}
+
+Mỗi kết quả chưa chắc chắn được kiểm chứng độc lập và song song. Verifier suy luận theo ReAct, tối đa 4 bước suy nghĩ--công cụ--quan sát, bước cuối bắt buộc đưa ra phán quyết. Verifier có ba công cụ chỉ đọc trên toàn cuộc họp: đọc một lượt nói, tìm kiếm BM25 \citep{robertson-zaragoza-2009-probabilistic}, và tra cứu ứng viên người nhận trong danh bạ.
+
+Nếu Verifier giữ, kết quả được chấp nhận ngay. Nếu Verifier muốn sửa, bỏ, hoặc chưa phân xử được, tác tử đã trích xuất kết quả đó được hỏi lại và chọn một trong ba phản hồi: \emph{accept} (đồng ý với Verifier), \emph{amend} (nộp bản sửa để kiểm ở vòng sau), hoặc \emph{defend} (giữ nguyên và dẫn lượt nói làm căn cứ). Vòng đồng thuận kéo dài tối đa 3 vòng; hết vòng thì theo Verifier. Ba luật an toàn đi kèm:
+\begin{itemize}
+  \item Tác tử chọn accept nhưng lập luận lại dẫn bằng chứng để giữ: hỏi lại một lần, tránh nhượng bộ sai.
+  \item Bản amend giữ lại dưới 50\% âm tiết của nội dung gốc: giữ câu gốc, chỉ nhận lượt chốt và người nhận mới.
+  \item LLM lỗi hoặc vẫn không phân xử được: giữ bản gốc, vì lỗi hạ tầng không được làm mất nội dung đã trích.
+\end{itemize}
+Mỗi kết quả lưu lại nguồn quyết định (đồng thuận, Verifier, hoặc giữ bản gốc) để kiểm tra về sau. Chi phí tối đa cho một kết quả chưa chắc chắn là $3 \times (4 + 1) = 15$ lời gọi LLM.
+
+\subsection{Aggregation}
+
+Bước tổng hợp chỉ dùng luật. (1) Xác định người nhận cho các việc chắc chắn: mỗi ứng viên được chấm theo tên, ngữ cảnh quanh lượt chốt và chức năng; ứng viên được chọn khi đạt ít nhất 0.6 điểm và hơn ứng viên thứ hai ít nhất 0.2. (2) Gộp việc trùng giữa các chủ đề khi hệ số Jaccard $\ge 0.45$ hoặc độ chồng lấp $\ge 0.7$. (3) Gán quan hệ với việc cũ: mới, giao lại, dời hạn, hoặc tiếp nối. (4) Tổng hợp tiến độ theo từng việc: lượt chỉ đạo được ưu tiên hơn lượt báo cáo; cùng loại thì lượt muộn hơn được ưu tiên.
+
+%======================================================================
+\section{Thiết lập thực nghiệm}
+
+\paragraph{Dữ liệu.}
+\emph{Phân đoạn}: 47 phiên họp Quốc hội khoá XIII có ranh giới gold (1\,174 lượt nói), 12 cuộc họp dùng làm benchmark \todo{nêu rõ 12 cuộc họp này có phải là tập con của 47 phiên Quốc hội không, và dùng cùng một tập cho mọi dòng của Bảng~\ref{tab:seg}}, và hai biên bản họp dự án do một người gán nhãn (9 ranh giới). \emph{Bộ chấm lượt chốt}: 869 lượt nói từ 30 transcript tổng hợp (484 dương, 385 âm); lượt nói làm bằng chứng cho việc giao hoặc kết luận trong gold được tính là dương. \emph{Tiến độ}: một biên bản thật có gold cho 4 việc, trong đó 1 việc giả không hề được nhắc, dùng để kiểm trường hợp ``không báo cáo''.
+
+\paragraph{Mô hình.}
+\dsvi{} huấn luyện với batch 32, tối đa 5 epoch, dừng sớm sau 2 epoch không cải thiện Pk trên tập kiểm định. Các tác tử trích xuất và Topic Labeling dùng một LLM mở họ Gemma \todo{phiên bản chính xác}; Verifier dùng \todo{model, ví dụ DeepSeek hoặc GPT-4o-mini}; mọi lời gọi dùng temperature 0. Siêu tham số đầy đủ ở Phụ lục~\ref{app:hparams}.
+
+\paragraph{Độ đo.}
+Phân đoạn: Pk \citep{beeferman-etal-1999-statistical}, F1 ranh giới theo ký tự với dung sai 5\,000 ký tự (F1@5k), và $\Delta K$. Bộ chấm lượt chốt: precision, recall, F1 và sai số hiệu chỉnh ECE \citep{guo-etal-2017-calibration} với 10 bin.
+
+%======================================================================
+\section{Kết quả}
+
+\subsection{Phân đoạn chủ đề}
+\label{sec:res-seg}
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Phương pháp} & \textbf{Pk}$\downarrow$ & \textbf{F1}$\uparrow$ \\
+    \midrule
+    \multicolumn{3}{l}{\emph{(a) Tổng hợp so với gold thật}} \\
+    \dsvi{}, tập tổng hợp & 0.011 & -- \\
+    \dsvi{}, gold thật & 0.485 & -- \\
+    \midrule
+    \multicolumn{3}{l}{\emph{(b) 12 cuộc họp}} \\
+    \dsvi{} + hậu xử lý & -- & \textbf{0.418} \\
+    \quad bỏ làm mượt & -- & 0.297 \\
+    TreeSeg (theo câu) & -- & 0.26--0.37 \\
+    Chia đều & -- & 0.346 \\
+    \midrule
+    \multicolumn{3}{l}{\emph{(c) Gold nội bộ, 2 biên bản}} \\
+    DialSTART + TreeSeg & \textbf{0.224} & 0.486$^\dagger$ \\
+    LLM phân đoạn trực tiếp & 0.48--0.56 & -- \\
+    \bottomrule
+  \end{tabular}
+  \caption{Kết quả phân đoạn chủ đề. Ba nhóm dùng ba tập dữ liệu khác nhau nên chỉ so sánh trong cùng nhóm. $^\dagger$F1@5k.}
+  \label{tab:seg}
+\end{table}
+
+Bảng~\ref{tab:seg} cho hai kết luận. Thứ nhất, làm mượt là bước hậu xử lý quan trọng nhất: nó lấp những chỗ trũng do câu xen ngang và tăng F1 thêm 0.121. Thứ hai, khoảng cách Pk từ 0.011 lên 0.485 cho thấy dữ liệu ghép nối chủ yếu dạy mô hình phát hiện cú nhảy giữa các lĩnh vực. Mô hình chưa học được việc chuyển mục khi cả cuộc họp cùng một dự án và cùng nhóm người nói. \todo{Báo cáo \dsvi{} trên cùng gold nội bộ để so trực tiếp với phương pháp lai, và giải thích vì sao hệ thống dùng \dsvi{} thay vì phương pháp lai có Pk tốt hơn.}
+
+\paragraph{Độ thuần của lượt nói.}
+Trên 47 phiên Quốc hội, cận dưới theo nguyên lý chuồng bồ cho thấy 49.5\% lượt nói của đại biểu (không tính chủ toạ) chứa nhiều chủ đề, với ít nhất 1\,011 lần chuyển chủ đề nằm bên trong lượt. Đây là giới hạn cứng của mọi phương pháp phân đoạn theo lượt nói.
+
+\subsection{\cscorer{}}
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Phương pháp} & \textbf{P}$\uparrow$ & \textbf{R}$\uparrow$ & \textbf{F1}$\uparrow$ \\
+    \midrule
+    Luật từ khoá & 0.774 & 0.610 & 0.682 \\
+    \cscorer{}, $\pc \ge 0.3$ & 0.813 & \textbf{0.959} & 0.880 \\
+    \cscorer{}, $\pc \ge 0.5$ & 0.863 & 0.928 & \textbf{0.894} \\
+    \cscorer{}, $\pc \ge 0.8$ & \textbf{0.923} & 0.816 & 0.866 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Nhận diện lượt chốt trên 869 lượt nói tổng hợp.}
+  \label{tab:scorer}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lccl}
+    \toprule
+    \textbf{Vùng $\pc$} & \textbf{Số lượt} & \textbf{\% dương} & \textbf{Xử lý} \\
+    \midrule
+    $[0, 0.2)$ & 267 & 4 & Verifier \\
+    $[0.2, 0.8)$ & 174 & 45 & Verifier \\
+    $[0.8, 1]$ & 428 & 92 & chắc chắn \\
+    \bottomrule
+  \end{tabular}
+  \caption{Ba vùng xác suất mà Evidence Check dùng để định tuyến. Vùng thấp được gửi Verifier kèm cờ ``không phải lời chốt'', vùng giữa kèm cờ ``chưa rõ''.}
+  \label{tab:zones}
+\end{table}
+
+Bộ chấm vượt luật từ khoá 0.212 F1 (Bảng~\ref{tab:scorer}) và được hiệu chỉnh tốt (ECE 0.040), nên ngưỡng của nó dùng được để định tuyến chứ không chỉ để phân loại. Bảng~\ref{tab:zones} cho thấy ba vùng tách dữ liệu rõ rệt. Vùng giữa có tỷ lệ dương 0.45, đúng là nơi bộ chấm không chắc chắn và thông tin bổ sung từ Verifier có giá trị nhất. Vùng thấp vẫn được gửi Verifier kèm cờ ``không phải lời chốt'', vì 4\% lượt ở đây là lời chốt thật và việc bỏ nhầm chúng không lấy lại được. Cải thiện lớn nhất nằm ở những lời giao việc không dùng từ khoá: tỷ lệ nhận đúng tăng từ 0.51 lên 0.91 trên 338 lượt, trong khi tỷ lệ nhầm đề xuất còn rào đón thành lời chốt chỉ đổi từ 0.09 sang 0.11. Độ trễ trung vị là 0.30 giây mỗi lượt.
+
+\subsection{Hệ thống đầu-cuối}
+
+Trên một biên bản 1\,259 lượt nói và 14 chủ đề, toàn hệ thống chạy khoảng 78 giây, trong đó phân đoạn mất 12 giây; số đo này có trước khi thêm vòng đồng thuận \todo{đo lại với cấu hình cuối, kèm số lời gọi LLM trung bình mỗi chủ đề}. Trên dữ liệu tổng hợp, khoảng 18\% chủ đề không có việc giao lẫn kết luận, nên Topic Planner chỉ tiết kiệm được một phần nhỏ lời gọi tác tử. Với tiến độ, cả bốn lần chạy trên biên bản có gold đều khớp 4/4 việc.
+
+\todo{Đánh giá đầu-cuối còn thiếu: precision/recall của giao việc, kết luận và người nhận trên biên bản thật; so sánh với pipeline tuần tự và với biến thể bỏ Verifier hoặc bỏ vòng đồng thuận; trung bình và độ lệch chuẩn qua ít nhất 3 lần chạy.}
+
+%======================================================================
+\section{Kết luận}
+
+Chúng tôi trình bày một kiến trúc hai tầng để phân tích biên bản họp tiếng Việt. \dsvi{} phân đoạn chủ đề với chi phí cố định. Khung đa tác tử trích xuất song song theo chủ đề và chỉ gửi những trường hợp thực sự không chắc chắn sang Verifier. Trên tập lượt nói có nhãn, \cscorer{} nâng F1 từ 0.682 lên 0.894 so với luật từ khoá, và xác suất hiệu chỉnh của nó là nền tảng cho việc định tuyến kiểm chứng.
+
+%======================================================================
+\section*{Hạn chế}
+
+\paragraph{Phân đoạn.} Khoảng cách giữa dữ liệu tổng hợp và dữ liệu thật còn rất lớn (Pk 0.011 so với 0.485). Biểu diễn chủ đề chưa phân biệt được chuyển sang mục lớn khác với chuyển tiểu mục trong cùng mục. Phân đoạn theo lượt nói bị giới hạn bởi các lượt đa chủ đề. Gold nội bộ chỉ có 9 ranh giới do một người gán, nên lệch một ranh giới đã làm F1 thay đổi đáng kể.
+
+\paragraph{Trích xuất.} Ba giả định chưa được kiểm trên dữ liệu thật: danh bạ dựng sẵn không làm giảm chất lượng xác định người nhận; bỏ tác tử theo Topic Planner không làm mất recall; vòng đồng thuận không khiến một bên nhượng bộ sai. Lỗi phân biệt người nói có thể khiến lời người trình bày bị hiểu là lời chủ trì. LLM mở vẫn cho kết quả khác nhau giữa các lần chạy dù temperature bằng 0. \cscorer{} phụ thuộc một dịch vụ thương mại và mới được đánh giá trên dữ liệu tổng hợp.
+
+\paragraph{Chi phí.} Vòng đồng thuận có thể tốn tới 15 lời gọi LLM cho mỗi kết quả chưa chắc chắn; phân bố thực tế chưa được đo.
+
+\section*{Tuyên bố đạo đức}
+
+Dữ liệu Quốc hội là văn bản công khai. Biên bản họp dự án chứa tên người và nội dung nội bộ \todo{nêu rõ đã có sự đồng ý của người tham dự, cách ẩn danh, và việc dữ liệu có được công bố hay không}. Hệ thống gán việc cho người cụ thể, nên một lỗi xác định người nhận có thể gây hậu quả thực tế. Vì vậy, mọi kết quả đều kèm trích dẫn về lời nói gốc để người dùng đối chiếu trước khi sử dụng.
+
+\bibliography{references}
+
+\appendix
+
+%======================================================================
+\section{Siêu tham số}
+\label{app:hparams}
+
+\begin{table}[h]
+  \centering
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lr}
+    \toprule
+    \textbf{Tham số} & \textbf{Giá trị} \\
+    \midrule
+    \multicolumn{2}{l}{\emph{\dsvi{}}} \\
+    Backbone & vibert4news \\
+    Cửa sổ chủ đề $w$ & 2 \\
+    Số token tối đa mỗi lượt & 256 \\
+    Batch / số epoch / dừng sớm & 32 / 5 / 2 \\
+    \midrule
+    \multicolumn{2}{l}{\emph{Post-processing}} \\
+    Cửa sổ làm mượt & 3 \\
+    Ngưỡng depth & $\mu_d + 1.0\,\sigma_d$ \\
+    Số lượt tối thiểu mỗi đoạn & 4 \\
+    Độ dài tối thiểu (ký tự) & $\mathrm{clip}(L/15, 1500, 10^4)$ \\
+    Độ dài tối đa (ký tự) & 35\,000 \\
+    \midrule
+    \multicolumn{2}{l}{\emph{Khung đa tác tử}} \\
+    Ngưỡng Topic Planner & $\pc \ge 0.2$ \\
+    Ngưỡng Evidence Check & 0.2 / 0.8 \\
+    Số lần thử mỗi tác tử & 2 \\
+    Số bước Verifier mỗi vòng & 4 \\
+    Số vòng đồng thuận & 3 \\
+    Giữ câu gốc khi amend & $< 50\%$ âm tiết \\
+    Chọn người nhận (điểm / cách) & 0.6 / 0.2 \\
+    Gộp việc trùng (Jaccard / chồng) & 0.45 / 0.7 \\
+    Temperature & 0 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Siêu tham số dùng trong mọi thí nghiệm.}
+  \label{tab:hparams}
+\end{table}
+
+\end{document}
