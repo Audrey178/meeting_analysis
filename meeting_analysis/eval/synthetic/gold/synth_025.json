@@ -1,0 +1,171 @@
+{
+  "meeting_id": "synth_025",
+  "n_turns": 35,
+  "total_chars": 11396,
+  "boundaries": [
+    10,
+    18,
+    28
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Thông tin tình hình tai nạn giao thông tháng 10 trên địa bàn tỉnh",
+      "summary": "Tháng 10 xảy ra 27 vụ tai nạn, chết 19 người, giảm 3 vụ so với cùng kỳ; điểm đen trên quốc lộ 1 đoạn qua xã Phước Lộc; nguyên nhân chủ yếu là đi sai làn và sử dụng rượu bia.",
+      "turn_range": [
+        0,
+        10
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000010"
+      ],
+      "chars": 3692,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Thông tin kết quả tuần tra kiểm soát và xử lý vi phạm nồng độ cồn tháng 10",
+      "summary": "Tháng 10 lập biên bản 4.812 trường hợp vi phạm, phạt 11,6 tỷ đồng, trong đó nồng độ cồn 1.096 trường hợp; tỷ lệ vi phạm nồng độ cồn trên số trường hợp kiểm tra giảm từ 7,8% xuống 5,1%.",
+      "turn_range": [
+        10,
+        18
+      ],
+      "turn_ids": [
+        "TURN_000011",
+        "TURN_000018"
+      ],
+      "chars": 2208,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Thông tin tình hình đăng ký xe và định danh biển số tháng 10",
+      "summary": "Tháng 10 đăng ký mới 6.930 xe, 92% thực hiện qua cổng dịch vụ công; hệ thống lỗi kết nối với cơ sở dữ liệu thuế trước bạ 2 ngày; số biển số định danh đã cấp lũy kế 41.200.",
+      "turn_range": [
+        18,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000019",
+        "TURN_000028"
+      ],
+      "chars": 2947,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Thông tin dự báo tình hình giao thông dịp cuối năm và Tết Nguyên đán",
+      "summary": "Dự báo lưu lượng xe tăng 20-25% từ giữa tháng 12, tuyến cao tốc và quốc lộ 1 có nguy cơ ùn tắc; nhắc lại các nội dung đã có trong kế hoạch cao điểm của Ban Giám đốc, không phát sinh nhiệm vụ mới.",
+      "turn_range": [
+        28,
+        35
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000035"
+      ],
+      "chars": 2549,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [],
+  "decisions": [],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "unassigned_task",
+      "text": "Các đội nắm tình hình tai nạn để chủ động trong kế hoạch đã giao (nhắc chung, không giao việc mới)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Toàn lực lượng giữ vững kỷ luật, kỷ cương, không để xảy ra tiêu cực (khẩu hiệu chung)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Thượng úy Mai Anh (Cán bộ tổng hợp)",
+      "point": "Tháng 10 có 27 vụ tai nạn, chết 19 người, giảm 3 vụ so cùng kỳ; nguyên nhân chính là sai làn và nồng độ cồn",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Thiếu tá Khánh (Đội trưởng Đội tuần tra kiểm soát số 1)",
+      "point": "Điểm đen Phước Lộc: đường cong, dân phá dải phân cách, xe máy từ đường nhánh cắt ngang",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Đại úy Sang (Đội trưởng Đội xử lý vi phạm)",
+      "point": "Xử lý 4.812 vi phạm, phạt 11,6 tỷ; tỷ lệ vi phạm nồng độ cồn giảm từ 7,8% xuống 5,1%",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Thiếu tá Nga (Đội trưởng Đội đăng ký xe)",
+      "point": "Đăng ký mới 6.930 xe, 92% qua cổng dịch vụ công, 34% mô tô toàn trình; lỗi kết nối thuế trước bạ 2 ngày",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Trung tá Hưng (Trưởng phòng CSGT)",
+      "point": "Dự báo lưu lượng tăng 20-25% dịp Tết; nhiệm vụ đã có trong kế hoạch của Ban Giám đốc, không giao thêm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Thượng úy Mai Anh (Cán bộ tổng hợp)",
+      "point": "Cao tốc có 3 vụ, chết 2 người do va chạm từ phía sau ban đêm; Tết 2025 có 14 vụ, chết 9 người",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Thiếu tá Nga (Đội trưởng Đội đăng ký xe)",
+      "point": "Khoảng 58.000 mô tô cũ chưa thu hồi đăng ký; 312 ô tô hết niên hạn chưa thu hồi",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    }
+  ],
+  "speakers": {
+    "TP": "Đ/c Trung tá Hưng (Trưởng phòng CSGT)",
+    "D1": "Đ/c Thiếu tá Khánh (Đội trưởng Đội tuần tra kiểm soát số 1)",
+    "D2": "Đ/c Thiếu tá Nga (Đội trưởng Đội đăng ký xe)",
+    "D3": "Đ/c Đại úy Sang (Đội trưởng Đội xử lý vi phạm)",
+    "TH": "Đ/c Thượng úy Mai Anh (Cán bộ tổng hợp)"
+  },
+  "tags": [
+    "no_actions",
+    "aside_interruption"
+  ]
+}

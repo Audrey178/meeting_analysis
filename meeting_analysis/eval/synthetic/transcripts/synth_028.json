@@ -1,0 +1,475 @@
+{
+  "transcript": "Rồi, họp nhanh sprint cuối trước khi phát hành 2.4 nhé. Có ba việc, lỗi đăng nhập vân tay trên Android, tích hợp VietQR, và checklist phát hành. Quân nói lỗi vân tay trước. Dạ. Lỗi này là từ tuần trước bên chăm sóc khách hàng báo lên, người dùng không đăng nhập được bằng vân tay, bấm vào thì ứng dụng báo lỗi rồi văng ra màn hình chính. Em lấy log trên Firebase thì lỗi tập trung ở các máy Samsung chạy Android 14, chiếm khoảng 4% tổng số phiên đăng nhập bằng sinh trắc học trong tuần. Nguyên nhân là khi người dùng thêm hoặc xóa vân tay trong cài đặt máy, thì hệ điều hành tự vô hiệu hóa cái khóa mã hóa mà mình tạo ra lúc bật đăng nhập vân tay, đây là cơ chế bảo mật của Android, đúng thôi. Nhưng mà code của mình không bắt cái ngoại lệ đó, nên ứng dụng bị văng. Trên iOS thì Thảo có kiểm tra rồi, không bị vì bên iOS mình đã xử lý trường hợp này từ trước. Dạ đúng anh, bên iOS khi Face ID hay Touch ID thay đổi thì mình đã tự chuyển về nhập mã PIN rồi hiện thông báo bảo người dùng bật lại sinh trắc học. Chị có thử trên ba máy Samsung ở phòng kiểm thử thì tái hiện được trên hai máy, còn một máy Android 13 thì không bị. Chị thấy ngoài cái văng ứng dụng thì còn một vấn đề là sau khi văng, người dùng mở lại vẫn bị văng tiếp, không có đường nào vào được, phải xóa ứng dụng cài lại, mà cài lại thì phải xác thực lại tài khoản bằng giấy tờ tùy thân, rất phiền. Dạ em đề xuất xử lý giống iOS, là bắt ngoại lệ khóa bị vô hiệu, xóa khóa cũ, chuyển người dùng về màn hình nhập mã PIN, sau khi đăng nhập bằng PIN thì hiện hộp thoại mời bật lại vân tay. Em ước khoảng hai ngày cả code lẫn tự kiểm tra. Ok, chốt xử lý như Quân nói, giống hành vi bên iOS. Quân làm, chị Yến kiểm thử lại trên cả ba máy Samsung và thêm máy Xiaomi nữa cho chắc. Cái này phải có trong bản 2.4. Dạ, thứ Tư em đẩy bản sửa. Ok, thứ Năm chị test xong. Sang VietQR. Anh Sang nói đi. Ừ. Phần VietQR thì chức năng quét mã để chuyển tiền và tạo mã nhận tiền đã xong cả hai nền tảng. Kiểm thử trên môi trường thử nghiệm của ngân hàng đối tác thì ổn. Vấn đề còn lại là trường hợp timeout. Khi người dùng quét mã chuyển tiền, mình gửi lệnh sang ngân hàng, nếu sau 30 giây không có phản hồi thì ứng dụng hiện là giao dịch thất bại. Nhưng mà thực tế có khoảng 0,3% trường hợp ngân hàng vẫn xử lý thành công sau đó, tức là tiền đã trừ mà ứng dụng báo thất bại. Người dùng thấy thất bại lại chuyển lần nữa, thành ra chuyển hai lần. Bên đối soát cuối ngày phát hiện lệch, phải hoàn tiền thủ công. Cái này nghiêm trọng đấy anh, ví điện tử mà trừ tiền hai lần là lên báo luôn. Đúng. Nên anh đề xuất là khi timeout thì không báo thất bại ngay, mà hiện trạng thái đang xử lý, rồi ứng dụng gọi API truy vấn trạng thái giao dịch của ngân hàng mỗi 10 giây trong tối đa 3 phút, có kết quả thì cập nhật. Trong lúc đang xử lý thì chặn không cho chuyển lại cùng số tiền cho cùng người nhận. API truy vấn thì ngân hàng có sẵn rồi, anh làm khoảng ba ngày. Phía giao diện thì em với Quân phải làm thêm màn hình trạng thái đang xử lý, cái này nhỏ thôi anh. Ok. Nhưng mà với rủi ro như vậy thì anh không muốn mở cho tất cả người dùng ngay. Anh chốt là VietQR có trong bản 2.4 nhưng bật theo cờ tính năng, mở cho 10% người dùng trước, theo dõi một tuần, không có lệch đối soát thì mở rộng. Xử lý timeout theo cách anh Sang nói. Anh Sang làm phần truy vấn trạng thái, còn màn hình đang xử lý thì hai bạn làm mỗi người một nền tảng. Ok, anh làm xong thứ Năm. Rồi, cuối cùng là lịch phát hành. Anh đề xuất đóng băng code thứ Sáu tuần này, cuối tuần chị Yến chạy hồi quy, thứ Hai nộp lên cả hai kho. Mọi người có kịp không? Chị thì cần ít nhất hai ngày cho hồi quy vì bản này đụng vào cả đăng nhập lẫn thanh toán, hai luồng nhạy cảm nhất. Chị sẽ làm thứ Bảy và Chủ nhật, nhưng mà cần có kịch bản kiểm thử cho VietQR, hiện chưa có. Với lại bên iOS thì App Store thường duyệt mất một đến hai ngày, nên thứ Hai nộp thì sớm nhất thứ Tư mới lên. Dạ em nghĩ là với Google Play thì mình nên dùng phát hành dần, mở 20% người dùng ba ngày đầu, có lỗi thì dừng được. App Store thì cũng có phát hành theo giai đoạn bảy ngày. Ok, chốt lịch: đóng băng code thứ Sáu, hồi quy cuối tuần, nộp cả hai kho thứ Hai, Google Play phát hành dần 20% trong ba ngày đầu, App Store dùng phát hành theo giai đoạn. Về kịch bản kiểm thử VietQR thì anh Sang viết giúp chị Yến vì anh hiểu các trường hợp lỗi nhất, gửi trước thứ Sáu. Ok anh viết. Ghi chú phát hành thì phần sửa lỗi vân tay thì bạn nào sửa lỗi đăng nhập lúc nãy viết luôn phần đó nhé, phần VietQR thì anh viết, gửi Thảo tổng hợp rồi đưa lên kho. Dạ vâng, em viết phần đó gửi Thảo. Dạ em tổng hợp và nộp lên cả hai kho thứ Hai. Ok, cảm ơn cả nhà, cố gắng tuần này nhé.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi, họp nhanh sprint cuối trước khi phát hành 2.4 nhé. Có ba việc, lỗi đăng nhập vân tay trên Android, tích hợp VietQR, và checklist phát hành. Quân nói lỗi vân tay trước.",
+      "segment_html": "Rồi, họp nhanh sprint cuối trước khi phát hành 2.4 nhé. Có ba việc, lỗi đăng nhập vân tay trên Android, tích hợp VietQR, và checklist phát hành. Quân nói lỗi vân tay trước.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 15.033,
+      "point_id": "7c8653eb-3b24-5fc4-b539-5d2e5908632a",
+      "ref_id": [
+        "c68e6010-5268-5215-a1c0-bd278555b7d2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Dạ. Lỗi này là từ tuần trước bên chăm sóc khách hàng báo lên, người dùng không đăng nhập được bằng vân tay, bấm vào thì ứng dụng báo lỗi rồi văng ra màn hình chính. Em lấy log trên Firebase thì lỗi tập trung ở các máy Samsung chạy Android 14,",
+      "segment_html": "Dạ. Lỗi này là từ tuần trước bên chăm sóc khách hàng báo lên, người dùng không đăng nhập được bằng vân tay, bấm vào thì ứng dụng báo lỗi rồi văng ra màn hình chính. Em lấy log trên Firebase thì lỗi tập trung ở các máy Samsung chạy Android 14,",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 16.033,
+      "end_time": 38.641,
+      "point_id": "86baed8c-6e86-5a93-9ebc-bb1f87ee255e",
+      "ref_id": [
+        "4f3d75e9-fc49-5c7d-86fd-b26e08d867c2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "chiếm khoảng 4% tổng số phiên đăng nhập bằng sinh trắc học trong tuần. Nguyên nhân là khi người dùng thêm hoặc xóa vân tay trong cài đặt máy, thì hệ điều hành tự vô hiệu hóa cái khóa mã hóa mà mình tạo ra lúc bật đăng nhập vân tay,",
+      "segment_html": "chiếm khoảng 4% tổng số phiên đăng nhập bằng sinh trắc học trong tuần. Nguyên nhân là khi người dùng thêm hoặc xóa vân tay trong cài đặt máy, thì hệ điều hành tự vô hiệu hóa cái khóa mã hóa mà mình tạo ra lúc bật đăng nhập vân tay,",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 38.891,
+      "end_time": 61.065,
+      "point_id": "86baed8c-6e86-5a93-9ebc-bb1f87ee255e",
+      "ref_id": [
+        "4f3d75e9-fc49-5c7d-86fd-b26e08d867c2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "đây là cơ chế bảo mật của Android, đúng thôi. Nhưng mà code của mình không bắt cái ngoại lệ đó, nên ứng dụng bị văng. Trên iOS thì Thảo có kiểm tra rồi, không bị vì bên iOS mình đã xử lý trường hợp này từ trước.",
+      "segment_html": "đây là cơ chế bảo mật của Android, đúng thôi. Nhưng mà code của mình không bắt cái ngoại lệ đó, nên ứng dụng bị văng. Trên iOS thì Thảo có kiểm tra rồi, không bị vì bên iOS mình đã xử lý trường hợp này từ trước.",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 61.315,
+      "end_time": 82.185,
+      "point_id": "86baed8c-6e86-5a93-9ebc-bb1f87ee255e",
+      "ref_id": [
+        "4f3d75e9-fc49-5c7d-86fd-b26e08d867c2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Dạ đúng anh, bên iOS khi Face ID hay Touch ID thay đổi thì mình đã tự chuyển về nhập mã PIN rồi hiện thông báo bảo người dùng bật lại sinh trắc học.",
+      "segment_html": "Dạ đúng anh, bên iOS khi Face ID hay Touch ID thay đổi thì mình đã tự chuyển về nhập mã PIN rồi hiện thông báo bảo người dùng bật lại sinh trắc học.",
+      "speaker_name": "Thảo (Lập trình iOS)",
+      "speaker_org_unit": null,
+      "start_time": 83.185,
+      "end_time": 97.967,
+      "point_id": "62299e9b-30ff-58aa-a8b7-0763052e5b91",
+      "ref_id": [
+        "45b62c77-291b-5630-8f2e-6230c89fa243"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Chị có thử trên ba máy Samsung ở phòng kiểm thử thì tái hiện được trên hai máy, còn một máy Android 13 thì không bị. Chị thấy ngoài cái văng ứng dụng thì còn một vấn đề là sau khi văng, người dùng mở lại vẫn bị văng tiếp, không có đường nào vào được,",
+      "segment_html": "Chị có thử trên ba máy Samsung ở phòng kiểm thử thì tái hiện được trên hai máy, còn một máy Android 13 thì không bị. Chị thấy ngoài cái văng ứng dụng thì còn một vấn đề là sau khi văng, người dùng mở lại vẫn bị văng tiếp, không có đường nào vào được,",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 98.967,
+      "end_time": 123.315,
+      "point_id": "57b1362d-766c-57cb-b3cc-914c973717c1",
+      "ref_id": [
+        "36f0621d-efa1-50de-aa61-fe0236ca265a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "phải xóa ứng dụng cài lại, mà cài lại thì phải xác thực lại tài khoản bằng giấy tờ tùy thân, rất phiền.",
+      "segment_html": "phải xóa ứng dụng cài lại, mà cài lại thì phải xác thực lại tài khoản bằng giấy tờ tùy thân, rất phiền.",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 123.565,
+      "end_time": 133.565,
+      "point_id": "57b1362d-766c-57cb-b3cc-914c973717c1",
+      "ref_id": [
+        "36f0621d-efa1-50de-aa61-fe0236ca265a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Dạ em đề xuất xử lý giống iOS, là bắt ngoại lệ khóa bị vô hiệu, xóa khóa cũ, chuyển người dùng về màn hình nhập mã PIN, sau khi đăng nhập bằng PIN thì hiện hộp thoại mời bật lại vân tay. Em ước khoảng hai ngày cả code lẫn tự kiểm tra.",
+      "segment_html": "Dạ em đề xuất xử lý giống iOS, là bắt ngoại lệ khóa bị vô hiệu, xóa khóa cũ, chuyển người dùng về màn hình nhập mã PIN, sau khi đăng nhập bằng PIN thì hiện hộp thoại mời bật lại vân tay. Em ước khoảng hai ngày cả code lẫn tự kiểm tra.",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 134.565,
+      "end_time": 158.043,
+      "point_id": "826912f7-e040-5651-84fc-775ae56bc660",
+      "ref_id": [
+        "64d8c51f-d4c5-56eb-b751-62ced1e09740"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "Ok, chốt xử lý như Quân nói, giống hành vi bên iOS. Quân làm, chị Yến kiểm thử lại trên cả ba máy Samsung và thêm máy Xiaomi nữa cho chắc. Cái này phải có trong bản 2.4.",
+      "segment_html": "Ok, chốt xử lý như Quân nói, giống hành vi bên iOS. Quân làm, chị Yến kiểm thử lại trên cả ba máy Samsung và thêm máy Xiaomi nữa cho chắc. Cái này phải có trong bản 2.4.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 159.043,
+      "end_time": 175.565,
+      "point_id": "49934e2d-9db0-518d-87bd-5ace55356cec",
+      "ref_id": [
+        "94b8e003-4dcf-5420-8e8b-b88fd1e29344"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Dạ, thứ Tư em đẩy bản sửa.",
+      "segment_html": "Dạ, thứ Tư em đẩy bản sửa.",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 176.565,
+      "end_time": 179.609,
+      "point_id": "00f4bfbd-8a0c-5739-8090-647d55064de4",
+      "ref_id": [
+        "beba0469-d40b-51dd-a2ab-328e3d47fc8c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Ok, thứ Năm chị test xong.",
+      "segment_html": "Ok, thứ Năm chị test xong.",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 180.609,
+      "end_time": 183.217,
+      "point_id": "6a8b1439-d03e-52f7-a602-6527abfc03bb",
+      "ref_id": [
+        "e63091e5-90ba-5c84-9648-d3aa4f1f1c72"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Sang VietQR. Anh Sang nói đi.",
+      "segment_html": "Sang VietQR. Anh Sang nói đi.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 184.217,
+      "end_time": 186.826,
+      "point_id": "224b8972-8316-5947-a7c1-585b1c74b342",
+      "ref_id": [
+        "925f3ed5-5f1b-5aa0-9be7-ded5b71262f8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Ừ. Phần VietQR thì chức năng quét mã để chuyển tiền và tạo mã nhận tiền đã xong cả hai nền tảng. Kiểm thử trên môi trường thử nghiệm của ngân hàng đối tác thì ổn. Vấn đề còn lại là trường hợp timeout. Khi người dùng quét mã chuyển tiền,",
+      "segment_html": "Ừ. Phần VietQR thì chức năng quét mã để chuyển tiền và tạo mã nhận tiền đã xong cả hai nền tảng. Kiểm thử trên môi trường thử nghiệm của ngân hàng đối tác thì ổn. Vấn đề còn lại là trường hợp timeout. Khi người dùng quét mã chuyển tiền,",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 187.826,
+      "end_time": 210.0,
+      "point_id": "c0cdc97c-ba47-56b3-ada2-505655c8c34d",
+      "ref_id": [
+        "be55358d-d767-5c0b-b4b8-fa2416f7d09e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "mình gửi lệnh sang ngân hàng, nếu sau 30 giây không có phản hồi thì ứng dụng hiện là giao dịch thất bại. Nhưng mà thực tế có khoảng 0,3% trường hợp ngân hàng vẫn xử lý thành công sau đó, tức là tiền đã trừ mà ứng dụng báo thất bại.",
+      "segment_html": "mình gửi lệnh sang ngân hàng, nếu sau 30 giây không có phản hồi thì ứng dụng hiện là giao dịch thất bại. Nhưng mà thực tế có khoảng 0,3% trường hợp ngân hàng vẫn xử lý thành công sau đó, tức là tiền đã trừ mà ứng dụng báo thất bại.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 210.25,
+      "end_time": 232.859,
+      "point_id": "c0cdc97c-ba47-56b3-ada2-505655c8c34d",
+      "ref_id": [
+        "be55358d-d767-5c0b-b4b8-fa2416f7d09e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Người dùng thấy thất bại lại chuyển lần nữa, thành ra chuyển hai lần. Bên đối soát cuối ngày phát hiện lệch, phải hoàn tiền thủ công.",
+      "segment_html": "Người dùng thấy thất bại lại chuyển lần nữa, thành ra chuyển hai lần. Bên đối soát cuối ngày phát hiện lệch, phải hoàn tiền thủ công.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 233.109,
+      "end_time": 244.848,
+      "point_id": "c0cdc97c-ba47-56b3-ada2-505655c8c34d",
+      "ref_id": [
+        "be55358d-d767-5c0b-b4b8-fa2416f7d09e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Cái này nghiêm trọng đấy anh, ví điện tử mà trừ tiền hai lần là lên báo luôn.",
+      "segment_html": "Cái này nghiêm trọng đấy anh, ví điện tử mà trừ tiền hai lần là lên báo luôn.",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 245.848,
+      "end_time": 253.674,
+      "point_id": "1c4858de-a974-521c-8e30-8b72649653d9",
+      "ref_id": [
+        "b54cf9fc-4c67-5e03-8d37-a58cea9d8802"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "Đúng. Nên anh đề xuất là khi timeout thì không báo thất bại ngay, mà hiện trạng thái đang xử lý, rồi ứng dụng gọi API truy vấn trạng thái giao dịch của ngân hàng mỗi 10 giây trong tối đa 3 phút, có kết quả thì cập nhật.",
+      "segment_html": "Đúng. Nên anh đề xuất là khi timeout thì không báo thất bại ngay, mà hiện trạng thái đang xử lý, rồi ứng dụng gọi API truy vấn trạng thái giao dịch của ngân hàng mỗi 10 giây trong tối đa 3 phút, có kết quả thì cập nhật.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 254.674,
+      "end_time": 275.978,
+      "point_id": "d666e960-5824-5cb8-aee0-793f4d2ef8c1",
+      "ref_id": [
+        "8f21e7c8-80fe-5d12-b81f-7a38b1b1cdae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Trong lúc đang xử lý thì chặn không cho chuyển lại cùng số tiền cho cùng người nhận. API truy vấn thì ngân hàng có sẵn rồi, anh làm khoảng ba ngày.",
+      "segment_html": "Trong lúc đang xử lý thì chặn không cho chuyển lại cùng số tiền cho cùng người nhận. API truy vấn thì ngân hàng có sẵn rồi, anh làm khoảng ba ngày.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 276.228,
+      "end_time": 290.141,
+      "point_id": "d666e960-5824-5cb8-aee0-793f4d2ef8c1",
+      "ref_id": [
+        "8f21e7c8-80fe-5d12-b81f-7a38b1b1cdae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Phía giao diện thì em với Quân phải làm thêm màn hình trạng thái đang xử lý, cái này nhỏ thôi anh.",
+      "segment_html": "Phía giao diện thì em với Quân phải làm thêm màn hình trạng thái đang xử lý, cái này nhỏ thôi anh.",
+      "speaker_name": "Thảo (Lập trình iOS)",
+      "speaker_org_unit": null,
+      "start_time": 291.141,
+      "end_time": 300.707,
+      "point_id": "a3a48df0-9f8d-52e2-a2d9-df8b7c699844",
+      "ref_id": [
+        "2c2f86b5-1c1f-5ed7-8a1f-65463d3a3e47"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "Ok. Nhưng mà với rủi ro như vậy thì anh không muốn mở cho tất cả người dùng ngay. Anh chốt là VietQR có trong bản 2.4 nhưng bật theo cờ tính năng, mở cho 10% người dùng trước, theo dõi một tuần, không có lệch đối soát thì mở rộng.",
+      "segment_html": "Ok. Nhưng mà với rủi ro như vậy thì anh không muốn mở cho tất cả người dùng ngay. Anh chốt là VietQR có trong bản 2.4 nhưng bật theo cờ tính năng, mở cho 10% người dùng trước, theo dõi một tuần, không có lệch đối soát thì mở rộng.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 301.707,
+      "end_time": 323.88,
+      "point_id": "6bfda19d-84ab-53cf-9835-747da390adf1",
+      "ref_id": [
+        "41ef8b67-8353-5308-9fa3-0eed4473a6ab"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Xử lý timeout theo cách anh Sang nói. Anh Sang làm phần truy vấn trạng thái, còn màn hình đang xử lý thì hai bạn làm mỗi người một nền tảng.",
+      "segment_html": "Xử lý timeout theo cách anh Sang nói. Anh Sang làm phần truy vấn trạng thái, còn màn hình đang xử lý thì hai bạn làm mỗi người một nền tảng.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 324.13,
+      "end_time": 337.609,
+      "point_id": "6bfda19d-84ab-53cf-9835-747da390adf1",
+      "ref_id": [
+        "41ef8b67-8353-5308-9fa3-0eed4473a6ab"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Ok, anh làm xong thứ Năm.",
+      "segment_html": "Ok, anh làm xong thứ Năm.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 338.609,
+      "end_time": 341.217,
+      "point_id": "b7ce47f9-4d6e-5d02-9b9e-12fe3bf70908",
+      "ref_id": [
+        "135c1e05-3a47-5142-8eff-20af6577cfbe"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Rồi, cuối cùng là lịch phát hành. Anh đề xuất đóng băng code thứ Sáu tuần này, cuối tuần chị Yến chạy hồi quy, thứ Hai nộp lên cả hai kho. Mọi người có kịp không?",
+      "segment_html": "Rồi, cuối cùng là lịch phát hành. Anh đề xuất đóng băng code thứ Sáu tuần này, cuối tuần chị Yến chạy hồi quy, thứ Hai nộp lên cả hai kho. Mọi người có kịp không?",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 342.217,
+      "end_time": 357.87,
+      "point_id": "5b66cd40-0a26-5d68-b253-75d74f1b96f3",
+      "ref_id": [
+        "52dc8457-0a16-553f-8dc6-31701a25d184"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Chị thì cần ít nhất hai ngày cho hồi quy vì bản này đụng vào cả đăng nhập lẫn thanh toán, hai luồng nhạy cảm nhất. Chị sẽ làm thứ Bảy và Chủ nhật, nhưng mà cần có kịch bản kiểm thử cho VietQR, hiện chưa có.",
+      "segment_html": "Chị thì cần ít nhất hai ngày cho hồi quy vì bản này đụng vào cả đăng nhập lẫn thanh toán, hai luồng nhạy cảm nhất. Chị sẽ làm thứ Bảy và Chủ nhật, nhưng mà cần có kịch bản kiểm thử cho VietQR, hiện chưa có.",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 358.87,
+      "end_time": 379.304,
+      "point_id": "eace8ac3-ec20-5350-aa58-73967d707c85",
+      "ref_id": [
+        "6c3c7039-a4c8-5dcb-a8c8-a79b281adb4d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Với lại bên iOS thì App Store thường duyệt mất một đến hai ngày, nên thứ Hai nộp thì sớm nhất thứ Tư mới lên.",
+      "segment_html": "Với lại bên iOS thì App Store thường duyệt mất một đến hai ngày, nên thứ Hai nộp thì sớm nhất thứ Tư mới lên.",
+      "speaker_name": "Chị Yến (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 379.554,
+      "end_time": 390.424,
+      "point_id": "eace8ac3-ec20-5350-aa58-73967d707c85",
+      "ref_id": [
+        "6c3c7039-a4c8-5dcb-a8c8-a79b281adb4d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Dạ em nghĩ là với Google Play thì mình nên dùng phát hành dần, mở 20% người dùng ba ngày đầu, có lỗi thì dừng được. App Store thì cũng có phát hành theo giai đoạn bảy ngày.",
+      "segment_html": "Dạ em nghĩ là với Google Play thì mình nên dùng phát hành dần, mở 20% người dùng ba ngày đầu, có lỗi thì dừng được. App Store thì cũng có phát hành theo giai đoạn bảy ngày.",
+      "speaker_name": "Thảo (Lập trình iOS)",
+      "speaker_org_unit": null,
+      "start_time": 391.424,
+      "end_time": 407.946,
+      "point_id": "62316c52-24d2-5664-8824-160c7d8b6d01",
+      "ref_id": [
+        "5c03b515-d3a6-53a2-bc28-06e59c8331b3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Ok, chốt lịch: đóng băng code thứ Sáu, hồi quy cuối tuần, nộp cả hai kho thứ Hai, Google Play phát hành dần 20% trong ba ngày đầu, App Store dùng phát hành theo giai đoạn.",
+      "segment_html": "Ok, chốt lịch: đóng băng code thứ Sáu, hồi quy cuối tuần, nộp cả hai kho thứ Hai, Google Play phát hành dần 20% trong ba ngày đầu, App Store dùng phát hành theo giai đoạn.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 408.946,
+      "end_time": 424.598,
+      "point_id": "b02f7185-0c1e-58c1-8a1e-b804aaa20502",
+      "ref_id": [
+        "758b8617-347f-5462-a9c5-5a0a536e6e01"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Về kịch bản kiểm thử VietQR thì anh Sang viết giúp chị Yến vì anh hiểu các trường hợp lỗi nhất, gửi trước thứ Sáu.",
+      "segment_html": "Về kịch bản kiểm thử VietQR thì anh Sang viết giúp chị Yến vì anh hiểu các trường hợp lỗi nhất, gửi trước thứ Sáu.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 424.848,
+      "end_time": 435.717,
+      "point_id": "b02f7185-0c1e-58c1-8a1e-b804aaa20502",
+      "ref_id": [
+        "758b8617-347f-5462-a9c5-5a0a536e6e01"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Ok anh viết.",
+      "segment_html": "Ok anh viết.",
+      "speaker_name": "Anh Sang (Tích hợp thanh toán)",
+      "speaker_org_unit": null,
+      "start_time": 436.717,
+      "end_time": 438.022,
+      "point_id": "f92b9e76-efe2-59b9-bc26-0376062264af",
+      "ref_id": [
+        "01033c71-7441-55b3-83d7-da3721784eef"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Ghi chú phát hành thì phần sửa lỗi vân tay thì bạn nào sửa lỗi đăng nhập lúc nãy viết luôn phần đó nhé, phần VietQR thì anh viết, gửi Thảo tổng hợp rồi đưa lên kho.",
+      "segment_html": "Ghi chú phát hành thì phần sửa lỗi vân tay thì bạn nào sửa lỗi đăng nhập lúc nãy viết luôn phần đó nhé, phần VietQR thì anh viết, gửi Thảo tổng hợp rồi đưa lên kho.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 439.022,
+      "end_time": 455.109,
+      "point_id": "125ccf4e-6b6b-5e3a-8c14-3b34ab1b59e8",
+      "ref_id": [
+        "fbc856d2-2d0b-5b62-8358-3996090cd60d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Dạ vâng, em viết phần đó gửi Thảo.",
+      "segment_html": "Dạ vâng, em viết phần đó gửi Thảo.",
+      "speaker_name": "Quân (Lập trình Android)",
+      "speaker_org_unit": null,
+      "start_time": 456.109,
+      "end_time": 459.587,
+      "point_id": "08abb5d3-d9d6-5df8-bad4-2c0f29f33479",
+      "ref_id": [
+        "5e59353b-0ad0-5d5b-9d1a-c4c921a55bba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Dạ em tổng hợp và nộp lên cả hai kho thứ Hai.",
+      "segment_html": "Dạ em tổng hợp và nộp lên cả hai kho thứ Hai.",
+      "speaker_name": "Thảo (Lập trình iOS)",
+      "speaker_org_unit": null,
+      "start_time": 460.587,
+      "end_time": 465.804,
+      "point_id": "20a21b19-ab1c-5c3b-a489-5c3d798f6f8e",
+      "ref_id": [
+        "1c863b71-ecb0-532b-a1cf-bc3b94a4b764"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Ok, cảm ơn cả nhà, cố gắng tuần này nhé.",
+      "segment_html": "Ok, cảm ơn cả nhà, cố gắng tuần này nhé.",
+      "speaker_name": "Anh Kiên (Trưởng nhóm Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 466.804,
+      "end_time": 471.152,
+      "point_id": "e5a554c0-6fef-50e7-9bda-f24ba18765d6",
+      "ref_id": [
+        "8491ec5c-944c-561c-9278-2a857b740e09"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi, họp nhanh sprint cuối trước khi phát hành 2.4 nhé. Có ba việc, lỗi đăng nhập vân tay trên Android, tích hợp VietQR, và checklist phát hành. Quân nói lỗi vân tay trước. Dạ. Lỗi này là từ tuần trước bên chăm sóc khách hàng báo lên, người dùng không đăng nhập được bằng vân tay, bấm vào thì ứng dụng báo lỗi rồi văng ra màn hình chính. Em lấy log trên Firebase thì lỗi tập trung ở các máy Samsung chạy Android 14, chiếm khoảng 4% tổng số phiên đăng nhập bằng sinh trắc học trong tuần. Nguyên nhân là khi người dùng thêm hoặc xóa vân tay trong cài đặt máy, thì hệ điều hành tự vô hiệu hóa cái khóa mã hóa mà mình tạo ra lúc bật đăng nhập vân tay, đây là cơ chế bảo mật của Android, đúng thôi. Nhưng mà code của mình không bắt cái ngoại lệ đó, nên ứng dụng bị văng. Trên iOS thì Thảo có kiểm tra rồi, không bị vì bên iOS mình đã xử lý trường hợp này từ trước. Dạ đúng anh, bên iOS khi Face ID hay Touch ID thay đổi thì mình đã tự chuyển về nhập mã PIN rồi hiện thông báo bảo người dùng bật lại sinh trắc học. Chị có thử trên ba máy Samsung ở phòng kiểm thử thì tái hiện được trên hai máy, còn một máy Android 13 thì không bị. Chị thấy ngoài cái văng ứng dụng thì còn một vấn đề là sau khi văng, người dùng mở lại vẫn bị văng tiếp, không có đường nào vào được, phải xóa ứng dụng cài lại, mà cài lại thì phải xác thực lại tài khoản bằng giấy tờ tùy thân, rất phiền. Dạ em đề xuất xử lý giống iOS, là bắt ngoại lệ khóa bị vô hiệu, xóa khóa cũ, chuyển người dùng về màn hình nhập mã PIN, sau khi đăng nhập bằng PIN thì hiện hộp thoại mời bật lại vân tay. Em ước khoảng hai ngày cả code lẫn tự kiểm tra. Ok, chốt xử lý như Quân nói, giống hành vi bên iOS. Quân làm, chị Yến kiểm thử lại trên cả ba máy Samsung và thêm máy Xiaomi nữa cho chắc. Cái này phải có trong bản 2.4. Dạ, thứ Tư em đẩy bản sửa. Ok, thứ Năm chị test xong. Sang VietQR. Anh Sang nói đi. Ừ. Phần VietQR thì chức năng quét mã để chuyển tiền và tạo mã nhận tiền đã xong cả hai nền tảng. Kiểm thử trên môi trường thử nghiệm của ngân hàng đối tác thì ổn. Vấn đề còn lại là trường hợp timeout. Khi người dùng quét mã chuyển tiền, mình gửi lệnh sang ngân hàng, nếu sau 30 giây không có phản hồi thì ứng dụng hiện là giao dịch thất bại. Nhưng mà thực tế có khoảng 0,3% trường hợp ngân hàng vẫn xử lý thành công sau đó, tức là tiền đã trừ mà ứng dụng báo thất bại. Người dùng thấy thất bại lại chuyển lần nữa, thành ra chuyển hai lần. Bên đối soát cuối ngày phát hiện lệch, phải hoàn tiền thủ công. Cái này nghiêm trọng đấy anh, ví điện tử mà trừ tiền hai lần là lên báo luôn. Đúng. Nên anh đề xuất là khi timeout thì không báo thất bại ngay, mà hiện trạng thái đang xử lý, rồi ứng dụng gọi API truy vấn trạng thái giao dịch của ngân hàng mỗi 10 giây trong tối đa 3 phút, có kết quả thì cập nhật. Trong lúc đang xử lý thì chặn không cho chuyển lại cùng số tiền cho cùng người nhận. API truy vấn thì ngân hàng có sẵn rồi, anh làm khoảng ba ngày. Phía giao diện thì em với Quân phải làm thêm màn hình trạng thái đang xử lý, cái này nhỏ thôi anh. Ok. Nhưng mà với rủi ro như vậy thì anh không muốn mở cho tất cả người dùng ngay. Anh chốt là VietQR có trong bản 2.4 nhưng bật theo cờ tính năng, mở cho 10% người dùng trước, theo dõi một tuần, không có lệch đối soát thì mở rộng. Xử lý timeout theo cách anh Sang nói. Anh Sang làm phần truy vấn trạng thái, còn màn hình đang xử lý thì hai bạn làm mỗi người một nền tảng. Ok, anh làm xong thứ Năm. Rồi, cuối cùng là lịch phát hành. Anh đề xuất đóng băng code thứ Sáu tuần này, cuối tuần chị Yến chạy hồi quy, thứ Hai nộp lên cả hai kho. Mọi người có kịp không? Chị thì cần ít nhất hai ngày cho hồi quy vì bản này đụng vào cả đăng nhập lẫn thanh toán, hai luồng nhạy cảm nhất. Chị sẽ làm thứ Bảy và Chủ nhật, nhưng mà cần có kịch bản kiểm thử cho VietQR, hiện chưa có. Với lại bên iOS thì App Store thường duyệt mất một đến hai ngày, nên thứ Hai nộp thì sớm nhất thứ Tư mới lên. Dạ em nghĩ là với Google Play thì mình nên dùng phát hành dần, mở 20% người dùng ba ngày đầu, có lỗi thì dừng được. App Store thì cũng có phát hành theo giai đoạn bảy ngày. Ok, chốt lịch: đóng băng code thứ Sáu, hồi quy cuối tuần, nộp cả hai kho thứ Hai, Google Play phát hành dần 20% trong ba ngày đầu, App Store dùng phát hành theo giai đoạn. Về kịch bản kiểm thử VietQR thì anh Sang viết giúp chị Yến vì anh hiểu các trường hợp lỗi nhất, gửi trước thứ Sáu. Ok anh viết. Ghi chú phát hành thì phần sửa lỗi vân tay thì bạn nào sửa lỗi đăng nhập lúc nãy viết luôn phần đó nhé, phần VietQR thì anh viết, gửi Thảo tổng hợp rồi đưa lên kho. Dạ vâng, em viết phần đó gửi Thảo. Dạ em tổng hợp và nộp lên cả hai kho thứ Hai. Ok, cảm ơn cả nhà, cố gắng tuần này nhé.",
+  "metadata": {
+    "meeting_id": "synth_028",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

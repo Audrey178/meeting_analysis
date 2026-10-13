@@ -1,0 +1,909 @@
+{
+  "transcript": "ờ alo alo mọi người nghe rõ không ạ, ok rồi. thì là hôm nay mình họp sprint mười hai nha, có năm cái mục, đồng bộ đơn hàng từ sàn, đồng bộ tồn kho lên sàn, chương trình khuyến mãi, báo cáo doanh thu cửa hàng, với cả báo cáo hiệu quả khuyến mãi. hiếu nói cái đồng bộ đơn trước đi em. dạ vâng. thì cái đồng bộ đơn hàng từ sàn thì hiện tại mình đã kết nối được ba sàn là sô pi, la da da với tích tốc sóp. cơ chế hiện tại là cứ năm phút thì hệ thống gọi a pi của sàn một lần để lấy đơn mới về, xong tạo đơn trong hệ thống, trừ tồn kho tạm của cái kho tổng, rồi đẩy sang bộ phận đóng gói. tuần vừa rồi đồng bộ khoảng mười một nghìn bốn trăm đơn, độ trễ trung bình từ lúc khách đặt trên sàn đến lúc đơn hiện trong hệ thống là khoảng bốn phút. vấn đề là bên tích tốc sóp thì có khoảng hai phần trăm đơn bị trùng, tức là một đơn tạo ra hai lần, do sàn đấy hay gửi lại cái trạng thái đơn, mà mình đang so trùng theo cái mã nội bộ chứ không phải mã đơn của sàn. có hai lần kho đóng gói đóng hai lần một đơn, gửi đi hai kiện, mất tiền ship với hàng. ừ cái này chị biết, tuần trước có một khách ở đà nẵng nhận hai hộp sữa bột, bên chị phải gọi xin lại. thế em sửa thế nào? dạ em đề xuất là thứ nhất chống trùng theo cái mã đơn của sàn cộng với mã sàn, tức là cặp đấy là duy nhất, đơn về lần hai thì chỉ cập nhật trạng thái chứ không tạo mới. thứ hai là chuyển sang nhận uép húc, tức là sàn chủ động bắn thông báo khi có đơn, thay vì cứ năm phút mình hỏi một lần, như thế độ trễ còn dưới một phút. sô pi với tích tốc thì có hỗ trợ uép húc, còn la da da thì em đang kiểm tra lại tài liệu. em bổ sung là trên màn hình danh sách đơn thì em sẽ thêm cột nguồn đơn với mã đơn sàn, để bộ phận chăm sóc khách tra cứu nhanh, chứ hiện tại phải mở từng đơn mới thấy. còn đợt sale mười một mười một thì sao, năm ngoái ngày đấy về một ngày hơn tám nghìn đơn, hệ thống cũ treo luôn. dạ với uép húc thì cao điểm mình nhận được khoảng hai trăm đơn một phút, em đã thử tải giả lập năm trăm đơn một phút thì vẫn chạy, có hàng đợi ở giữa nên không sợ mất đơn. rồi vậy chốt mục này: chống trùng theo mã đơn sàn cộng mã sàn, chuyển sang nhận uép húc cho sô pi và tích tốc, la da da thì tạm giữ quét định kỳ nhưng rút xuống hai phút. phải xong trước ngày năm tháng mười một để kịp chạy thử trước mười một mười một. dạ em làm, chống trùng em đẩy lên trong tuần này luôn, uép húc thì cuối tuần sau. phần cột nguồn đơn thì em làm luôn trong sprint này ạ. tiếp theo là cái đồng bộ tồn kho, nghe thì giống cái đồng bộ đơn nhưng mà là chiều ngược lại, mình đẩy tồn kho lên sàn. hiếu nói tiếp nhé. dạ. thì đồng bộ tồn kho hiện tại là mỗi ba mươi phút hệ thống đẩy số tồn của tất cả các mã hàng lên ba sàn, khoảng bốn nghìn hai trăm mã. vấn đề là trong ba mươi phút đấy thì cửa hàng vẫn bán, sàn khác vẫn bán, nên số trên sàn bị lệch với kho thực. tuần vừa rồi có ba mươi bảy đơn bị bán vượt, tức là khách đặt rồi mà kho hết hàng, phải hủy đơn, mà sàn thì phạt điểm uy tín shop khi hủy đơn do người bán, sô pi đã cảnh báo shop mình một lần rồi. cái này nghiêm trọng hơn cái trùng đơn đấy. shop mà bị sô pi hạ điểm thì mất huy hiệu shop yêu thích, lượt hiển thị giảm hẳn. mà bỉm, sữa là hàng bán chạy, hết hàng nhanh lắm, nhất là mấy mã sữa nhập khẩu. dạ em đề xuất đổi sang đẩy theo sự kiện, tức là mã hàng nào có biến động, bán ở cửa hàng, bán trên sàn, nhập kho, trả hàng, thì đẩy ngay mã đấy lên ba sàn, không chờ ba mươi phút. còn mỗi đêm hai giờ sáng thì đồng bộ toàn bộ một lần để sửa các sai lệch nếu có. em có xem số liệu thì ba mươi bảy đơn bán vượt thì hai mươi chín đơn là các mã có tồn dưới mười, tức là mã sắp hết. em đề xuất là giữ lại một phần tồn kho an toàn, ví dụ chỉ đẩy lên sàn chín mươi lăm phần trăm số tồn thực, hoặc mã nào còn dưới năm cái thì mỗi sàn chỉ hiện một hai cái thôi. giữ năm phần trăm thì được, nhưng mà phần giữ lại đấy để cửa hàng bán chứ đừng để chết hàng. trên màn hình quản lý tồn kho em làm thêm cảnh báo lệch tồn, mã nào số trên sàn khác số trong kho quá hai cái thì tô đỏ cho bộ phận kho kiểm tra. ok chốt: đẩy tồn kho theo sự kiện khi có biến động, đồng bộ toàn bộ lúc hai giờ sáng hằng đêm, giữ tồn an toàn năm phần trăm cho mỗi sàn, có màn hình cảnh báo lệch tồn. em làm cái đẩy theo sự kiện, cái này phức tạp hơn, em cần hai tuần, xong trước ngày tám. em lập danh sách các mã sắp hết hay bị bán vượt để chị thảo xem lại định mức nhập hàng, thứ năm em gửi. mục ba là khuyến mãi, trang trình bày nhé. dạ. thì chức năng tạo chương trình khuyến mãi bây giờ đã có ba loại, là giảm giá theo phần trăm hoặc số tiền, mua x tặng y, ví dụ mua hai bịch bỉm tặng một gói khăn ướt, và combo giá cố định. người quản lý chọn kênh áp dụng là cửa hàng, quét mã ở máy pốt, hay trên sàn, chọn thời gian, chọn cửa hàng. nhưng vấn đề là chồng khuyến mãi, ví dụ tuần trước có chương trình giảm mười phần trăm toàn bộ sữa ở cửa hàng, mà khách cầm thêm thẻ thành viên hạng vàng giảm năm phần trăm, rồi máy pốt lại cộng thêm combo, có hóa đơn giảm gần ba mươi phần trăm, dưới giá vốn. đúng rồi, mấy cửa hàng quận bảy báo là nhân viên cũng không biết cái nào được cộng cái nào không. chị muốn mặc định là không cộng dồn, khách chỉ được hưởng một khuyến mãi có lợi nhất, trừ thẻ thành viên thì được cộng thêm. về kỹ thuật thì em làm được cái bảng quy tắc ưu tiên, mỗi chương trình có một mức ưu tiên và một cờ là có được cộng dồn hay không. máy pốt tính thử tất cả các tổ hợp hợp lệ rồi chọn cái có lợi nhất cho khách. thêm một chặn cứng là tổng giảm không vượt quá giá vốn cộng năm phần trăm. em có ý là hay mình làm tích điểm thành viên dùng chung, khách mua trên sô pi cũng được cộng điểm vào thẻ thành viên của cửa hàng, như thế khách gắn bó hơn. ý thì hay nhưng mà sàn không cho mình lấy số điện thoại khách đâu em, dữ liệu khách trên sàn bị che hết, chính sách của sàn không cho kéo khách ra ngoài. mà làm sai là bị khóa shop. thôi cái này để sau tính, giờ chưa làm. chốt: mặc định không cộng dồn khuyến mãi, chỉ áp dụng chương trình có lợi nhất, riêng ưu đãi thẻ thành viên được cộng thêm; có bảng cấu hình ưu tiên và cờ cộng dồn; chặn cứng tổng giảm không thấp hơn giá vốn cộng năm phần trăm. phần tính khuyến mãi trên máy pốt em làm. còn màn hình cấu hình ưu tiên với cờ cộng dồn thì em làm ạ, xong cùng sprint với anh hiếu. mục bốn là báo cáo doanh thu theo cửa hàng, khoa nói nhé. dạ. báo cáo doanh thu theo cửa hàng thì hiện có doanh thu theo ngày, theo tuần, theo tháng cho hai mươi ba cửa hàng và ba kênh sàn, có so sánh cùng kỳ, top mười mã hàng bán chạy theo cửa hàng. vấn đề thứ nhất là chậm, báo cáo tháng chạy mất khoảng bốn mươi giây vì đang truy vấn thẳng vào cơ sở dữ liệu bán hàng, mà giờ cao điểm truy vấn báo cáo còn làm chậm cả máy pốt ở cửa hàng. vấn đề thứ hai là số liệu lệch với bên kế toán, tháng chín báo cáo của mình ra doanh thu cao hơn sổ kế toán khoảng một phẩy hai tỷ. em kiểm tra thì do cách tính khác nhau, mình tính doanh thu theo ngày đặt đơn, còn kế toán ghi nhận theo ngày giao hàng thành công, và hàng trả lại thì mình chưa trừ, còn kế toán trừ theo ngày khách trả. cái lệch số này làm chị khổ nhất, họp với ban giám đốc mà mỗi bên một số. phải thống nhất một cách tính, theo kế toán là chuẩn, vì đấy là số đi báo cáo thuế. về hiệu năng thì em đề xuất tách một kho dữ liệu báo cáo riêng, mỗi đêm đổ dữ liệu từ cơ sở dữ liệu bán hàng sang, trong ngày thì cập nhật mười lăm phút một lần, báo cáo chỉ truy vấn kho này, không đụng vào cơ sở dữ liệu bán hàng nữa. như thế số trong ngày thì trễ mười lăm phút, chị thảo có chấp nhận được không ạ? trễ mười lăm phút thì được, chị chỉ cần số cuối ngày chính xác. chốt: doanh thu trên báo cáo tính theo ngày giao hàng thành công, hàng trả lại trừ theo ngày khách trả, khớp với cách ghi nhận của kế toán; tách kho dữ liệu báo cáo riêng, cập nhật mười lăm phút một lần. em làm lại công thức và đối soát với kế toán số liệu tháng chín, tháng mười, phải khớp thì mới đưa lên, thứ sáu tuần sau em báo cáo. tách kho dữ liệu thì em làm sau khi xong đồng bộ tồn kho, khoảng giữa tháng. mục cuối là báo cáo hiệu quả khuyến mãi, cái này gần giống báo cáo doanh thu nhưng mà nhìn theo chương trình. khoa nói tiếp. dạ. hiện tại báo cáo hiệu quả khuyến mãi mới chỉ có doanh thu và số đơn trong thời gian chạy chương trình, chưa có so sánh, nên nhìn vào thì chương trình nào cũng thấy tăng. em đề xuất bổ sung ba chỉ số. một là doanh thu tăng thêm so với trung bình bốn tuần trước chương trình, cùng nhóm hàng cùng cửa hàng. hai là chi phí khuyến mãi, tức là tổng tiền giảm giá cộng giá vốn hàng tặng. ba là lợi nhuận gộp sau khuyến mãi, để biết chương trình nào thật sự có lãi. đúng cái chị cần. tháng trước chương trình mua hai tặng một bỉm, doanh thu tăng bốn mươi phần trăm nhưng chị nghi là lỗ vì hàng tặng toàn là gói to. thêm một cái nữa là chị muốn xem khách mới, tức là bao nhiêu khách lần đầu mua trong chương trình. dạ khách mới thì chỉ tính được ở cửa hàng với khách có thẻ thành viên, trên sàn thì không có thông tin khách nên không tính được. phần giao diện em làm dạng bảng xếp hạng chương trình theo lợi nhuận gộp, bấm vào thì ra chi tiết theo cửa hàng. em có thêm ý là sau khi có dữ liệu đủ một năm thì mình có thể làm mô hình học máy dự báo trước hiệu quả của một chương trình, kiểu nhập thông số vào thì ra dự báo doanh thu với lãi lỗ. cái đấy để sau nha, giờ dữ liệu chưa đủ, mà sprint đang kín rồi. ghi lại làm ý tưởng giai đoạn hai. chốt mục này: bổ sung doanh thu tăng thêm so với bốn tuần trước, chi phí khuyến mãi gồm giảm giá và giá vốn hàng tặng, lợi nhuận gộp sau khuyến mãi, số khách mới ở kênh cửa hàng; giao diện bảng xếp hạng theo lợi nhuận gộp. em làm định nghĩa chỉ số với câu truy vấn, gửi chị thảo duyệt định nghĩa trước rồi mới làm. em làm giao diện sau khi anh khoa chốt định nghĩa. ok, thế thôi nha mọi người. chị thảo còn gì không ạ? không, ok cảm ơn cả nhà.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "ờ alo alo mọi người nghe rõ không ạ, ok rồi. thì là hôm nay mình họp sprint mười hai nha, có năm cái mục, đồng bộ đơn hàng từ sàn, đồng bộ tồn kho lên sàn, chương trình khuyến mãi, báo cáo doanh thu cửa hàng, với cả báo cáo hiệu quả khuyến mãi. hiếu nói cái đồng bộ đơn trước đi em.",
+      "segment_html": "ờ alo alo mọi người nghe rõ không ạ, ok rồi. thì là hôm nay mình họp sprint mười hai nha, có năm cái mục, đồng bộ đơn hàng từ sàn, đồng bộ tồn kho lên sàn, chương trình khuyến mãi, báo cáo doanh thu cửa hàng, với cả báo cáo hiệu quả khuyến mãi. hiếu nói cái đồng bộ đơn trước đi em.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 28.076,
+      "point_id": "add2fc25-1894-564e-911d-0fd167dca65a",
+      "ref_id": [
+        "36454699-e9fa-520e-8926-73dace1a9a2b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "dạ vâng. thì cái đồng bộ đơn hàng từ sàn thì hiện tại mình đã kết nối được ba sàn là sô pi, la da da với tích tốc sóp. cơ chế hiện tại là cứ năm phút thì hệ thống gọi a pi của sàn một lần để lấy đơn mới về, xong tạo đơn trong hệ thống,",
+      "segment_html": "dạ vâng. thì cái đồng bộ đơn hàng từ sàn thì hiện tại mình đã kết nối được ba sàn là sô pi, la da da với tích tốc sóp. cơ chế hiện tại là cứ năm phút thì hệ thống gọi a pi của sàn một lần để lấy đơn mới về, xong tạo đơn trong hệ thống,",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 29.076,
+      "end_time": 54.728,
+      "point_id": "2042c674-7ff3-55c6-a24f-35c3688b14f2",
+      "ref_id": [
+        "bfe63559-43ec-5a47-92a3-2857179b91d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "trừ tồn kho tạm của cái kho tổng, rồi đẩy sang bộ phận đóng gói. tuần vừa rồi đồng bộ khoảng mười một nghìn bốn trăm đơn, độ trễ trung bình từ lúc khách đặt trên sàn đến lúc đơn hiện trong hệ thống là khoảng bốn phút.",
+      "segment_html": "trừ tồn kho tạm của cái kho tổng, rồi đẩy sang bộ phận đóng gói. tuần vừa rồi đồng bộ khoảng mười một nghìn bốn trăm đơn, độ trễ trung bình từ lúc khách đặt trên sàn đến lúc đơn hiện trong hệ thống là khoảng bốn phút.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 54.978,
+      "end_time": 75.848,
+      "point_id": "2042c674-7ff3-55c6-a24f-35c3688b14f2",
+      "ref_id": [
+        "bfe63559-43ec-5a47-92a3-2857179b91d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "vấn đề là bên tích tốc sóp thì có khoảng hai phần trăm đơn bị trùng, tức là một đơn tạo ra hai lần, do sàn đấy hay gửi lại cái trạng thái đơn, mà mình đang so trùng theo cái mã nội bộ chứ không phải mã đơn của sàn.",
+      "segment_html": "vấn đề là bên tích tốc sóp thì có khoảng hai phần trăm đơn bị trùng, tức là một đơn tạo ra hai lần, do sàn đấy hay gửi lại cái trạng thái đơn, mà mình đang so trùng theo cái mã nội bộ chứ không phải mã đơn của sàn.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 76.098,
+      "end_time": 98.272,
+      "point_id": "2042c674-7ff3-55c6-a24f-35c3688b14f2",
+      "ref_id": [
+        "bfe63559-43ec-5a47-92a3-2857179b91d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "có hai lần kho đóng gói đóng hai lần một đơn, gửi đi hai kiện, mất tiền ship với hàng.",
+      "segment_html": "có hai lần kho đóng gói đóng hai lần một đơn, gửi đi hai kiện, mất tiền ship với hàng.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 98.522,
+      "end_time": 107.217,
+      "point_id": "2042c674-7ff3-55c6-a24f-35c3688b14f2",
+      "ref_id": [
+        "bfe63559-43ec-5a47-92a3-2857179b91d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "ừ cái này chị biết, tuần trước có một khách ở đà nẵng nhận hai hộp sữa bột, bên chị phải gọi xin lại. thế em sửa thế nào?",
+      "segment_html": "ừ cái này chị biết, tuần trước có một khách ở đà nẵng nhận hai hộp sữa bột, bên chị phải gọi xin lại. thế em sửa thế nào?",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 108.217,
+      "end_time": 120.826,
+      "point_id": "90bd2c03-3004-5819-b8e8-0be59e2aeda1",
+      "ref_id": [
+        "98e66eef-77af-5b41-aa7b-47caf916a4e7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "dạ em đề xuất là thứ nhất chống trùng theo cái mã đơn của sàn cộng với mã sàn, tức là cặp đấy là duy nhất, đơn về lần hai thì chỉ cập nhật trạng thái chứ không tạo mới. thứ hai là chuyển sang nhận uép húc,",
+      "segment_html": "dạ em đề xuất là thứ nhất chống trùng theo cái mã đơn của sàn cộng với mã sàn, tức là cặp đấy là duy nhất, đơn về lần hai thì chỉ cập nhật trạng thái chứ không tạo mới. thứ hai là chuyển sang nhận uép húc,",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 121.826,
+      "end_time": 142.696,
+      "point_id": "c883c968-f289-5a6c-893b-2c83aab37f2b",
+      "ref_id": [
+        "39fd5db9-da94-5c79-a556-ee12d16bfd96"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "tức là sàn chủ động bắn thông báo khi có đơn, thay vì cứ năm phút mình hỏi một lần, như thế độ trễ còn dưới một phút. sô pi với tích tốc thì có hỗ trợ uép húc, còn la da da thì em đang kiểm tra lại tài liệu.",
+      "segment_html": "tức là sàn chủ động bắn thông báo khi có đơn, thay vì cứ năm phút mình hỏi một lần, như thế độ trễ còn dưới một phút. sô pi với tích tốc thì có hỗ trợ uép húc, còn la da da thì em đang kiểm tra lại tài liệu.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 142.946,
+      "end_time": 165.12,
+      "point_id": "c883c968-f289-5a6c-893b-2c83aab37f2b",
+      "ref_id": [
+        "39fd5db9-da94-5c79-a556-ee12d16bfd96"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "em bổ sung là trên màn hình danh sách đơn thì em sẽ thêm cột nguồn đơn với mã đơn sàn, để bộ phận chăm sóc khách tra cứu nhanh, chứ hiện tại phải mở từng đơn mới thấy.",
+      "segment_html": "em bổ sung là trên màn hình danh sách đơn thì em sẽ thêm cột nguồn đơn với mã đơn sàn, để bộ phận chăm sóc khách tra cứu nhanh, chứ hiện tại phải mở từng đơn mới thấy.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 166.12,
+      "end_time": 183.076,
+      "point_id": "fb777f33-020e-5a08-bfb3-33eca2162d53",
+      "ref_id": [
+        "2dbbf0d9-42c0-5d5e-ba22-aa217be162b2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "còn đợt sale mười một mười một thì sao, năm ngoái ngày đấy về một ngày hơn tám nghìn đơn, hệ thống cũ treo luôn.",
+      "segment_html": "còn đợt sale mười một mười một thì sao, năm ngoái ngày đấy về một ngày hơn tám nghìn đơn, hệ thống cũ treo luôn.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 184.076,
+      "end_time": 194.946,
+      "point_id": "1e901fb5-b1b9-5788-99e5-79c2bffbdd6e",
+      "ref_id": [
+        "7a50978e-37db-5e1b-8edd-69d6209bd156"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "dạ với uép húc thì cao điểm mình nhận được khoảng hai trăm đơn một phút, em đã thử tải giả lập năm trăm đơn một phút thì vẫn chạy, có hàng đợi ở giữa nên không sợ mất đơn.",
+      "segment_html": "dạ với uép húc thì cao điểm mình nhận được khoảng hai trăm đơn một phút, em đã thử tải giả lập năm trăm đơn một phút thì vẫn chạy, có hàng đợi ở giữa nên không sợ mất đơn.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 195.946,
+      "end_time": 213.337,
+      "point_id": "dde69524-ede4-5c8d-b7dd-30306940c060",
+      "ref_id": [
+        "c3c951d8-e4fd-5751-bd9d-ff60587afd62"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "rồi vậy chốt mục này: chống trùng theo mã đơn sàn cộng mã sàn, chuyển sang nhận uép húc cho sô pi và tích tốc, la da da thì tạm giữ quét định kỳ nhưng rút xuống hai phút.",
+      "segment_html": "rồi vậy chốt mục này: chống trùng theo mã đơn sàn cộng mã sàn, chuyển sang nhận uép húc cho sô pi và tích tốc, la da da thì tạm giữ quét định kỳ nhưng rút xuống hai phút.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 214.337,
+      "end_time": 231.293,
+      "point_id": "99b3e430-1516-5009-96f0-dc3e8deed118",
+      "ref_id": [
+        "87466050-94b4-57b8-a738-b2e08707824f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "phải xong trước ngày năm tháng mười một để kịp chạy thử trước mười một mười một.",
+      "segment_html": "phải xong trước ngày năm tháng mười một để kịp chạy thử trước mười một mười một.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 231.543,
+      "end_time": 238.935,
+      "point_id": "99b3e430-1516-5009-96f0-dc3e8deed118",
+      "ref_id": [
+        "87466050-94b4-57b8-a738-b2e08707824f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "dạ em làm, chống trùng em đẩy lên trong tuần này luôn, uép húc thì cuối tuần sau.",
+      "segment_html": "dạ em làm, chống trùng em đẩy lên trong tuần này luôn, uép húc thì cuối tuần sau.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 239.935,
+      "end_time": 247.761,
+      "point_id": "ef651201-0570-5c3c-9e16-9317517bf6b4",
+      "ref_id": [
+        "bb9dad4c-621d-56f9-a8de-e2cda834be08"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "phần cột nguồn đơn thì em làm luôn trong sprint này ạ.",
+      "segment_html": "phần cột nguồn đơn thì em làm luôn trong sprint này ạ.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 248.761,
+      "end_time": 253.978,
+      "point_id": "468a0060-51c2-577c-9e22-e10ad4a09135",
+      "ref_id": [
+        "a1d69e17-7c4f-5a52-8c80-21bd05662a94"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "tiếp theo là cái đồng bộ tồn kho, nghe thì giống cái đồng bộ đơn nhưng mà là chiều ngược lại, mình đẩy tồn kho lên sàn. hiếu nói tiếp nhé.",
+      "segment_html": "tiếp theo là cái đồng bộ tồn kho, nghe thì giống cái đồng bộ đơn nhưng mà là chiều ngược lại, mình đẩy tồn kho lên sàn. hiếu nói tiếp nhé.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 254.978,
+      "end_time": 268.457,
+      "point_id": "7187f4da-7ad6-5742-a8d4-5da9224dbd9c",
+      "ref_id": [
+        "586b8a99-4cea-511e-8bc2-bf47fe3682b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "dạ. thì đồng bộ tồn kho hiện tại là mỗi ba mươi phút hệ thống đẩy số tồn của tất cả các mã hàng lên ba sàn, khoảng bốn nghìn hai trăm mã. vấn đề là trong ba mươi phút đấy thì cửa hàng vẫn bán, sàn khác vẫn bán, nên số trên sàn bị lệch với kho thực.",
+      "segment_html": "dạ. thì đồng bộ tồn kho hiện tại là mỗi ba mươi phút hệ thống đẩy số tồn của tất cả các mã hàng lên ba sàn, khoảng bốn nghìn hai trăm mã. vấn đề là trong ba mươi phút đấy thì cửa hàng vẫn bán, sàn khác vẫn bán, nên số trên sàn bị lệch với kho thực.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 269.457,
+      "end_time": 295.109,
+      "point_id": "c54cb693-7b70-53da-b37f-000c52e44ecb",
+      "ref_id": [
+        "9ad601dd-20dd-5877-9b70-14cca09eb7b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "tuần vừa rồi có ba mươi bảy đơn bị bán vượt, tức là khách đặt rồi mà kho hết hàng, phải hủy đơn, mà sàn thì phạt điểm uy tín shop khi hủy đơn do người bán, sô pi đã cảnh báo shop mình một lần rồi.",
+      "segment_html": "tuần vừa rồi có ba mươi bảy đơn bị bán vượt, tức là khách đặt rồi mà kho hết hàng, phải hủy đơn, mà sàn thì phạt điểm uy tín shop khi hủy đơn do người bán, sô pi đã cảnh báo shop mình một lần rồi.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 295.359,
+      "end_time": 315.793,
+      "point_id": "c54cb693-7b70-53da-b37f-000c52e44ecb",
+      "ref_id": [
+        "9ad601dd-20dd-5877-9b70-14cca09eb7b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "cái này nghiêm trọng hơn cái trùng đơn đấy. shop mà bị sô pi hạ điểm thì mất huy hiệu shop yêu thích, lượt hiển thị giảm hẳn. mà bỉm, sữa là hàng bán chạy, hết hàng nhanh lắm, nhất là mấy mã sữa nhập khẩu.",
+      "segment_html": "cái này nghiêm trọng hơn cái trùng đơn đấy. shop mà bị sô pi hạ điểm thì mất huy hiệu shop yêu thích, lượt hiển thị giảm hẳn. mà bỉm, sữa là hàng bán chạy, hết hàng nhanh lắm, nhất là mấy mã sữa nhập khẩu.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 316.793,
+      "end_time": 336.793,
+      "point_id": "3d286d25-f196-5039-b3ee-dc6305d2755c",
+      "ref_id": [
+        "61bb8268-d598-5ade-b8b5-e4ae52d5ce61"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "dạ em đề xuất đổi sang đẩy theo sự kiện, tức là mã hàng nào có biến động, bán ở cửa hàng, bán trên sàn, nhập kho, trả hàng, thì đẩy ngay mã đấy lên ba sàn, không chờ ba mươi phút.",
+      "segment_html": "dạ em đề xuất đổi sang đẩy theo sự kiện, tức là mã hàng nào có biến động, bán ở cửa hàng, bán trên sàn, nhập kho, trả hàng, thì đẩy ngay mã đấy lên ba sàn, không chờ ba mươi phút.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 337.793,
+      "end_time": 356.054,
+      "point_id": "e8419ff1-5389-5139-879a-ebfe90c3645f",
+      "ref_id": [
+        "00eacb0c-1bdd-5f03-9a2e-19abd3d3cabf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "còn mỗi đêm hai giờ sáng thì đồng bộ toàn bộ một lần để sửa các sai lệch nếu có.",
+      "segment_html": "còn mỗi đêm hai giờ sáng thì đồng bộ toàn bộ một lần để sửa các sai lệch nếu có.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 356.304,
+      "end_time": 365.0,
+      "point_id": "e8419ff1-5389-5139-879a-ebfe90c3645f",
+      "ref_id": [
+        "00eacb0c-1bdd-5f03-9a2e-19abd3d3cabf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "em có xem số liệu thì ba mươi bảy đơn bán vượt thì hai mươi chín đơn là các mã có tồn dưới mười, tức là mã sắp hết. em đề xuất là giữ lại một phần tồn kho an toàn, ví dụ chỉ đẩy lên sàn chín mươi lăm phần trăm số tồn thực,",
+      "segment_html": "em có xem số liệu thì ba mươi bảy đơn bán vượt thì hai mươi chín đơn là các mã có tồn dưới mười, tức là mã sắp hết. em đề xuất là giữ lại một phần tồn kho an toàn, ví dụ chỉ đẩy lên sàn chín mươi lăm phần trăm số tồn thực,",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 366.0,
+      "end_time": 389.913,
+      "point_id": "9eff1c1c-9cb4-51e6-818f-936215a9b899",
+      "ref_id": [
+        "036d347a-2a74-596f-a093-71f4107e55d2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "hoặc mã nào còn dưới năm cái thì mỗi sàn chỉ hiện một hai cái thôi.",
+      "segment_html": "hoặc mã nào còn dưới năm cái thì mỗi sàn chỉ hiện một hai cái thôi.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 390.163,
+      "end_time": 397.12,
+      "point_id": "9eff1c1c-9cb4-51e6-818f-936215a9b899",
+      "ref_id": [
+        "036d347a-2a74-596f-a093-71f4107e55d2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "giữ năm phần trăm thì được, nhưng mà phần giữ lại đấy để cửa hàng bán chứ đừng để chết hàng.",
+      "segment_html": "giữ năm phần trăm thì được, nhưng mà phần giữ lại đấy để cửa hàng bán chứ đừng để chết hàng.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 398.12,
+      "end_time": 407.25,
+      "point_id": "89c169fc-7c4a-5ea6-9a6e-9fed65a317fc",
+      "ref_id": [
+        "e41cc909-5a1b-55a2-bfb9-ce2889dc2b99"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "trên màn hình quản lý tồn kho em làm thêm cảnh báo lệch tồn, mã nào số trên sàn khác số trong kho quá hai cái thì tô đỏ cho bộ phận kho kiểm tra.",
+      "segment_html": "trên màn hình quản lý tồn kho em làm thêm cảnh báo lệch tồn, mã nào số trên sàn khác số trong kho quá hai cái thì tô đỏ cho bộ phận kho kiểm tra.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 408.25,
+      "end_time": 423.467,
+      "point_id": "b18d9f8d-85f6-5588-8fd4-1edad40ceaac",
+      "ref_id": [
+        "d81317c4-3193-54f0-b60f-c6e1f5d17aef"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "ok chốt: đẩy tồn kho theo sự kiện khi có biến động, đồng bộ toàn bộ lúc hai giờ sáng hằng đêm, giữ tồn an toàn năm phần trăm cho mỗi sàn, có màn hình cảnh báo lệch tồn.",
+      "segment_html": "ok chốt: đẩy tồn kho theo sự kiện khi có biến động, đồng bộ toàn bộ lúc hai giờ sáng hằng đêm, giữ tồn an toàn năm phần trăm cho mỗi sàn, có màn hình cảnh báo lệch tồn.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 424.467,
+      "end_time": 441.424,
+      "point_id": "e0195f3d-a149-5cf1-a084-eedc1956996e",
+      "ref_id": [
+        "1adbe380-179d-500f-9556-68aee1ca05d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "em làm cái đẩy theo sự kiện, cái này phức tạp hơn, em cần hai tuần, xong trước ngày tám.",
+      "segment_html": "em làm cái đẩy theo sự kiện, cái này phức tạp hơn, em cần hai tuần, xong trước ngày tám.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 442.424,
+      "end_time": 451.12,
+      "point_id": "dcc5e0b7-41a7-5d77-a575-dec12f13aa2b",
+      "ref_id": [
+        "a79bb833-b217-5d06-9488-d3a6bb84fffb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "em lập danh sách các mã sắp hết hay bị bán vượt để chị thảo xem lại định mức nhập hàng, thứ năm em gửi.",
+      "segment_html": "em lập danh sách các mã sắp hết hay bị bán vượt để chị thảo xem lại định mức nhập hàng, thứ năm em gửi.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 452.12,
+      "end_time": 462.989,
+      "point_id": "737f03a3-cd6a-55fe-85cb-1bc7801ffea1",
+      "ref_id": [
+        "a80c787b-5aef-52fb-a920-bb4ecd03110f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "mục ba là khuyến mãi, trang trình bày nhé.",
+      "segment_html": "mục ba là khuyến mãi, trang trình bày nhé.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 463.989,
+      "end_time": 467.902,
+      "point_id": "0b2f28ae-5caf-5e44-b293-bf6bd7ba916a",
+      "ref_id": [
+        "c50dd263-2d19-56e6-bd74-3cfecc19d478"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "dạ. thì chức năng tạo chương trình khuyến mãi bây giờ đã có ba loại, là giảm giá theo phần trăm hoặc số tiền, mua x tặng y, ví dụ mua hai bịch bỉm tặng một gói khăn ướt, và combo giá cố định. người quản lý chọn kênh áp dụng là cửa hàng,",
+      "segment_html": "dạ. thì chức năng tạo chương trình khuyến mãi bây giờ đã có ba loại, là giảm giá theo phần trăm hoặc số tiền, mua x tặng y, ví dụ mua hai bịch bỉm tặng một gói khăn ướt, và combo giá cố định. người quản lý chọn kênh áp dụng là cửa hàng,",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 468.902,
+      "end_time": 492.38,
+      "point_id": "f96f5442-7d36-55a5-9f31-b865c5093b7a",
+      "ref_id": [
+        "59aa36ec-4f34-564b-bb68-721243722b34"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "quét mã ở máy pốt, hay trên sàn, chọn thời gian, chọn cửa hàng. nhưng vấn đề là chồng khuyến mãi, ví dụ tuần trước có chương trình giảm mười phần trăm toàn bộ sữa ở cửa hàng, mà khách cầm thêm thẻ thành viên hạng vàng giảm năm phần trăm,",
+      "segment_html": "quét mã ở máy pốt, hay trên sàn, chọn thời gian, chọn cửa hàng. nhưng vấn đề là chồng khuyến mãi, ví dụ tuần trước có chương trình giảm mười phần trăm toàn bộ sữa ở cửa hàng, mà khách cầm thêm thẻ thành viên hạng vàng giảm năm phần trăm,",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 492.63,
+      "end_time": 514.804,
+      "point_id": "f96f5442-7d36-55a5-9f31-b865c5093b7a",
+      "ref_id": [
+        "59aa36ec-4f34-564b-bb68-721243722b34"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "rồi máy pốt lại cộng thêm combo, có hóa đơn giảm gần ba mươi phần trăm, dưới giá vốn.",
+      "segment_html": "rồi máy pốt lại cộng thêm combo, có hóa đơn giảm gần ba mươi phần trăm, dưới giá vốn.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 515.054,
+      "end_time": 523.315,
+      "point_id": "f96f5442-7d36-55a5-9f31-b865c5093b7a",
+      "ref_id": [
+        "59aa36ec-4f34-564b-bb68-721243722b34"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "đúng rồi, mấy cửa hàng quận bảy báo là nhân viên cũng không biết cái nào được cộng cái nào không. chị muốn mặc định là không cộng dồn, khách chỉ được hưởng một khuyến mãi có lợi nhất, trừ thẻ thành viên thì được cộng thêm.",
+      "segment_html": "đúng rồi, mấy cửa hàng quận bảy báo là nhân viên cũng không biết cái nào được cộng cái nào không. chị muốn mặc định là không cộng dồn, khách chỉ được hưởng một khuyến mãi có lợi nhất, trừ thẻ thành viên thì được cộng thêm.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 524.315,
+      "end_time": 544.75,
+      "point_id": "f5adba3b-d187-5713-bdff-7da7ea16428a",
+      "ref_id": [
+        "2e4605fe-b780-51cc-b0fb-4f4cdf8217e2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "về kỹ thuật thì em làm được cái bảng quy tắc ưu tiên, mỗi chương trình có một mức ưu tiên và một cờ là có được cộng dồn hay không. máy pốt tính thử tất cả các tổ hợp hợp lệ rồi chọn cái có lợi nhất cho khách.",
+      "segment_html": "về kỹ thuật thì em làm được cái bảng quy tắc ưu tiên, mỗi chương trình có một mức ưu tiên và một cờ là có được cộng dồn hay không. máy pốt tính thử tất cả các tổ hợp hợp lệ rồi chọn cái có lợi nhất cho khách.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 545.75,
+      "end_time": 567.489,
+      "point_id": "f0f90342-8cf4-59b5-bd96-eefc771e7437",
+      "ref_id": [
+        "15a76925-c0a1-53cd-bd79-a76364d28e44"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "thêm một chặn cứng là tổng giảm không vượt quá giá vốn cộng năm phần trăm.",
+      "segment_html": "thêm một chặn cứng là tổng giảm không vượt quá giá vốn cộng năm phần trăm.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 567.739,
+      "end_time": 574.696,
+      "point_id": "f0f90342-8cf4-59b5-bd96-eefc771e7437",
+      "ref_id": [
+        "15a76925-c0a1-53cd-bd79-a76364d28e44"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "em có ý là hay mình làm tích điểm thành viên dùng chung, khách mua trên sô pi cũng được cộng điểm vào thẻ thành viên của cửa hàng, như thế khách gắn bó hơn.",
+      "segment_html": "em có ý là hay mình làm tích điểm thành viên dùng chung, khách mua trên sô pi cũng được cộng điểm vào thẻ thành viên của cửa hàng, như thế khách gắn bó hơn.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 575.696,
+      "end_time": 590.913,
+      "point_id": "dd2b75a1-e1e4-5543-b997-211b3c13429f",
+      "ref_id": [
+        "c91a4b4b-a91a-5347-9f5a-4a50f0e9c3e2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "ý thì hay nhưng mà sàn không cho mình lấy số điện thoại khách đâu em, dữ liệu khách trên sàn bị che hết, chính sách của sàn không cho kéo khách ra ngoài. mà làm sai là bị khóa shop. thôi cái này để sau tính, giờ chưa làm.",
+      "segment_html": "ý thì hay nhưng mà sàn không cho mình lấy số điện thoại khách đâu em, dữ liệu khách trên sàn bị che hết, chính sách của sàn không cho kéo khách ra ngoài. mà làm sai là bị khóa shop. thôi cái này để sau tính, giờ chưa làm.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 591.913,
+      "end_time": 613.652,
+      "point_id": "d850497a-2066-5b08-835e-5286a7af7ff6",
+      "ref_id": [
+        "332ce9af-27ac-5bda-b9e3-66a12002dc8f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "chốt: mặc định không cộng dồn khuyến mãi, chỉ áp dụng chương trình có lợi nhất, riêng ưu đãi thẻ thành viên được cộng thêm; có bảng cấu hình ưu tiên và cờ cộng dồn; chặn cứng tổng giảm không thấp hơn giá vốn cộng năm phần trăm.",
+      "segment_html": "chốt: mặc định không cộng dồn khuyến mãi, chỉ áp dụng chương trình có lợi nhất, riêng ưu đãi thẻ thành viên được cộng thêm; có bảng cấu hình ưu tiên và cờ cộng dồn; chặn cứng tổng giảm không thấp hơn giá vốn cộng năm phần trăm.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 614.652,
+      "end_time": 635.522,
+      "point_id": "7e05e404-4c5a-5d52-8e95-19c99592c2ea",
+      "ref_id": [
+        "8c55f721-c142-553c-bd89-d23b481aaddd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "phần tính khuyến mãi trên máy pốt em làm.",
+      "segment_html": "phần tính khuyến mãi trên máy pốt em làm.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 636.522,
+      "end_time": 640.435,
+      "point_id": "e0b596ee-5b08-580c-845c-5510be65382d",
+      "ref_id": [
+        "1a20ed36-b707-5e93-8a33-7458505a3baf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "còn màn hình cấu hình ưu tiên với cờ cộng dồn thì em làm ạ, xong cùng sprint với anh hiếu.",
+      "segment_html": "còn màn hình cấu hình ưu tiên với cờ cộng dồn thì em làm ạ, xong cùng sprint với anh hiếu.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 641.435,
+      "end_time": 650.565,
+      "point_id": "397dce97-040f-5cad-b47b-2d3f965c842c",
+      "ref_id": [
+        "7c40657a-e4eb-5deb-ba01-5eaa16670bea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "mục bốn là báo cáo doanh thu theo cửa hàng, khoa nói nhé.",
+      "segment_html": "mục bốn là báo cáo doanh thu theo cửa hàng, khoa nói nhé.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 651.565,
+      "end_time": 657.217,
+      "point_id": "f039a3cd-7344-5a66-9f88-d218ffb90533",
+      "ref_id": [
+        "6dac7d0d-97d7-50cd-936f-81ea0df66541"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "dạ. báo cáo doanh thu theo cửa hàng thì hiện có doanh thu theo ngày, theo tuần, theo tháng cho hai mươi ba cửa hàng và ba kênh sàn, có so sánh cùng kỳ, top mười mã hàng bán chạy theo cửa hàng. vấn đề thứ nhất là chậm,",
+      "segment_html": "dạ. báo cáo doanh thu theo cửa hàng thì hiện có doanh thu theo ngày, theo tuần, theo tháng cho hai mươi ba cửa hàng và ba kênh sàn, có so sánh cùng kỳ, top mười mã hàng bán chạy theo cửa hàng. vấn đề thứ nhất là chậm,",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 658.217,
+      "end_time": 679.522,
+      "point_id": "edb16474-1a12-51d2-9369-ca05fa6d5674",
+      "ref_id": [
+        "f7d0b68e-a54a-5040-b203-f3c9ce6bc916"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "báo cáo tháng chạy mất khoảng bốn mươi giây vì đang truy vấn thẳng vào cơ sở dữ liệu bán hàng, mà giờ cao điểm truy vấn báo cáo còn làm chậm cả máy pốt ở cửa hàng. vấn đề thứ hai là số liệu lệch với bên kế toán,",
+      "segment_html": "báo cáo tháng chạy mất khoảng bốn mươi giây vì đang truy vấn thẳng vào cơ sở dữ liệu bán hàng, mà giờ cao điểm truy vấn báo cáo còn làm chậm cả máy pốt ở cửa hàng. vấn đề thứ hai là số liệu lệch với bên kế toán,",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 679.772,
+      "end_time": 701.511,
+      "point_id": "edb16474-1a12-51d2-9369-ca05fa6d5674",
+      "ref_id": [
+        "f7d0b68e-a54a-5040-b203-f3c9ce6bc916"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "tháng chín báo cáo của mình ra doanh thu cao hơn sổ kế toán khoảng một phẩy hai tỷ. em kiểm tra thì do cách tính khác nhau, mình tính doanh thu theo ngày đặt đơn, còn kế toán ghi nhận theo ngày giao hàng thành công, và hàng trả lại thì mình chưa trừ, còn kế toán trừ theo ngày khách trả.",
+      "segment_html": "tháng chín báo cáo của mình ra doanh thu cao hơn sổ kế toán khoảng một phẩy hai tỷ. em kiểm tra thì do cách tính khác nhau, mình tính doanh thu theo ngày đặt đơn, còn kế toán ghi nhận theo ngày giao hàng thành công, và hàng trả lại thì mình chưa trừ, còn kế toán trừ theo ngày khách trả.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 701.761,
+      "end_time": 729.152,
+      "point_id": "edb16474-1a12-51d2-9369-ca05fa6d5674",
+      "ref_id": [
+        "f7d0b68e-a54a-5040-b203-f3c9ce6bc916"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "cái lệch số này làm chị khổ nhất, họp với ban giám đốc mà mỗi bên một số. phải thống nhất một cách tính, theo kế toán là chuẩn, vì đấy là số đi báo cáo thuế.",
+      "segment_html": "cái lệch số này làm chị khổ nhất, họp với ban giám đốc mà mỗi bên một số. phải thống nhất một cách tính, theo kế toán là chuẩn, vì đấy là số đi báo cáo thuế.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 730.152,
+      "end_time": 746.239,
+      "point_id": "ac7890f6-abc5-5f2a-a483-d5148eaef716",
+      "ref_id": [
+        "d343f640-0fc6-51ce-ae43-91d548786f0b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "về hiệu năng thì em đề xuất tách một kho dữ liệu báo cáo riêng, mỗi đêm đổ dữ liệu từ cơ sở dữ liệu bán hàng sang, trong ngày thì cập nhật mười lăm phút một lần, báo cáo chỉ truy vấn kho này, không đụng vào cơ sở dữ liệu bán hàng nữa.",
+      "segment_html": "về hiệu năng thì em đề xuất tách một kho dữ liệu báo cáo riêng, mỗi đêm đổ dữ liệu từ cơ sở dữ liệu bán hàng sang, trong ngày thì cập nhật mười lăm phút một lần, báo cáo chỉ truy vấn kho này, không đụng vào cơ sở dữ liệu bán hàng nữa.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 747.239,
+      "end_time": 771.152,
+      "point_id": "f177d461-2f9f-51a2-bf35-3f4d1cc56372",
+      "ref_id": [
+        "f1d45ca8-0b65-5f85-90a3-d9885403d18b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "như thế số trong ngày thì trễ mười lăm phút, chị thảo có chấp nhận được không ạ?",
+      "segment_html": "như thế số trong ngày thì trễ mười lăm phút, chị thảo có chấp nhận được không ạ?",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 772.152,
+      "end_time": 779.978,
+      "point_id": "33a26798-ef84-569b-b2be-d01779c44227",
+      "ref_id": [
+        "cd128028-3377-5944-bb27-b7c50ef13986"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "trễ mười lăm phút thì được, chị chỉ cần số cuối ngày chính xác.",
+      "segment_html": "trễ mười lăm phút thì được, chị chỉ cần số cuối ngày chính xác.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 780.978,
+      "end_time": 787.065,
+      "point_id": "7f851e79-a2b4-5689-8cde-e8c65618e03c",
+      "ref_id": [
+        "1a9eab80-4c00-59fd-be1a-1b43603b3d40"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "chốt: doanh thu trên báo cáo tính theo ngày giao hàng thành công, hàng trả lại trừ theo ngày khách trả, khớp với cách ghi nhận của kế toán; tách kho dữ liệu báo cáo riêng, cập nhật mười lăm phút một lần.",
+      "segment_html": "chốt: doanh thu trên báo cáo tính theo ngày giao hàng thành công, hàng trả lại trừ theo ngày khách trả, khớp với cách ghi nhận của kế toán; tách kho dữ liệu báo cáo riêng, cập nhật mười lăm phút một lần.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 788.065,
+      "end_time": 806.761,
+      "point_id": "2e003b91-477a-5268-994b-2bc28bab7262",
+      "ref_id": [
+        "037f71a1-f0c4-595c-96f7-0e51bb57a909"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "em làm lại công thức và đối soát với kế toán số liệu tháng chín, tháng mười, phải khớp thì mới đưa lên, thứ sáu tuần sau em báo cáo.",
+      "segment_html": "em làm lại công thức và đối soát với kế toán số liệu tháng chín, tháng mười, phải khớp thì mới đưa lên, thứ sáu tuần sau em báo cáo.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 807.761,
+      "end_time": 820.804,
+      "point_id": "fb372fdd-4d7d-526b-a9c4-e0bef737dce6",
+      "ref_id": [
+        "12d8a77f-588b-5e7a-adf9-20c77c51ef82"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "tách kho dữ liệu thì em làm sau khi xong đồng bộ tồn kho, khoảng giữa tháng.",
+      "segment_html": "tách kho dữ liệu thì em làm sau khi xong đồng bộ tồn kho, khoảng giữa tháng.",
+      "speaker_name": "Hiếu (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 821.804,
+      "end_time": 829.196,
+      "point_id": "586fc683-45c1-565e-ad5a-241eb007366c",
+      "ref_id": [
+        "4cd42fd4-091a-5a10-a7bb-936a4d2cd237"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "mục cuối là báo cáo hiệu quả khuyến mãi, cái này gần giống báo cáo doanh thu nhưng mà nhìn theo chương trình. khoa nói tiếp.",
+      "segment_html": "mục cuối là báo cáo hiệu quả khuyến mãi, cái này gần giống báo cáo doanh thu nhưng mà nhìn theo chương trình. khoa nói tiếp.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 830.196,
+      "end_time": 841.5,
+      "point_id": "b620da70-b666-5861-896c-1a359ef25a0e",
+      "ref_id": [
+        "db660c82-820d-5ea7-b619-e89661dbab1a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "dạ. hiện tại báo cáo hiệu quả khuyến mãi mới chỉ có doanh thu và số đơn trong thời gian chạy chương trình, chưa có so sánh, nên nhìn vào thì chương trình nào cũng thấy tăng. em đề xuất bổ sung ba chỉ số.",
+      "segment_html": "dạ. hiện tại báo cáo hiệu quả khuyến mãi mới chỉ có doanh thu và số đơn trong thời gian chạy chương trình, chưa có so sánh, nên nhìn vào thì chương trình nào cũng thấy tăng. em đề xuất bổ sung ba chỉ số.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 842.5,
+      "end_time": 862.065,
+      "point_id": "eb12fb32-e175-57a7-83fc-b7f511187345",
+      "ref_id": [
+        "1ecb37c2-167e-5ef7-8d2d-8440ea9bc950"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "một là doanh thu tăng thêm so với trung bình bốn tuần trước chương trình, cùng nhóm hàng cùng cửa hàng. hai là chi phí khuyến mãi, tức là tổng tiền giảm giá cộng giá vốn hàng tặng. ba là lợi nhuận gộp sau khuyến mãi,",
+      "segment_html": "một là doanh thu tăng thêm so với trung bình bốn tuần trước chương trình, cùng nhóm hàng cùng cửa hàng. hai là chi phí khuyến mãi, tức là tổng tiền giảm giá cộng giá vốn hàng tặng. ba là lợi nhuận gộp sau khuyến mãi,",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 862.315,
+      "end_time": 882.315,
+      "point_id": "eb12fb32-e175-57a7-83fc-b7f511187345",
+      "ref_id": [
+        "1ecb37c2-167e-5ef7-8d2d-8440ea9bc950"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "để biết chương trình nào thật sự có lãi.",
+      "segment_html": "để biết chương trình nào thật sự có lãi.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 882.565,
+      "end_time": 886.478,
+      "point_id": "eb12fb32-e175-57a7-83fc-b7f511187345",
+      "ref_id": [
+        "1ecb37c2-167e-5ef7-8d2d-8440ea9bc950"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "đúng cái chị cần. tháng trước chương trình mua hai tặng một bỉm, doanh thu tăng bốn mươi phần trăm nhưng chị nghi là lỗ vì hàng tặng toàn là gói to. thêm một cái nữa là chị muốn xem khách mới, tức là bao nhiêu khách lần đầu mua trong chương trình.",
+      "segment_html": "đúng cái chị cần. tháng trước chương trình mua hai tặng một bỉm, doanh thu tăng bốn mươi phần trăm nhưng chị nghi là lỗ vì hàng tặng toàn là gói to. thêm một cái nữa là chị muốn xem khách mới, tức là bao nhiêu khách lần đầu mua trong chương trình.",
+      "speaker_name": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "speaker_org_unit": null,
+      "start_time": 887.478,
+      "end_time": 910.522,
+      "point_id": "8183bb7c-05c8-5aea-b030-4b7de490c408",
+      "ref_id": [
+        "86d81943-9e20-572e-bb33-1b8243c861d8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "dạ khách mới thì chỉ tính được ở cửa hàng với khách có thẻ thành viên, trên sàn thì không có thông tin khách nên không tính được.",
+      "segment_html": "dạ khách mới thì chỉ tính được ở cửa hàng với khách có thẻ thành viên, trên sàn thì không có thông tin khách nên không tính được.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 911.522,
+      "end_time": 923.696,
+      "point_id": "ff0a46cb-7350-5668-acaf-b913875d26fc",
+      "ref_id": [
+        "31c00f96-1c80-5d01-b083-cc5831414c5d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "phần giao diện em làm dạng bảng xếp hạng chương trình theo lợi nhuận gộp, bấm vào thì ra chi tiết theo cửa hàng.",
+      "segment_html": "phần giao diện em làm dạng bảng xếp hạng chương trình theo lợi nhuận gộp, bấm vào thì ra chi tiết theo cửa hàng.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 924.696,
+      "end_time": 935.13,
+      "point_id": "6be33401-8a9c-50a8-952e-84800e2135b9",
+      "ref_id": [
+        "330c25de-a974-5dac-8f9d-ff4b6ae4a2ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "em có thêm ý là sau khi có dữ liệu đủ một năm thì mình có thể làm mô hình học máy dự báo trước hiệu quả của một chương trình, kiểu nhập thông số vào thì ra dự báo doanh thu với lãi lỗ.",
+      "segment_html": "em có thêm ý là sau khi có dữ liệu đủ một năm thì mình có thể làm mô hình học máy dự báo trước hiệu quả của một chương trình, kiểu nhập thông số vào thì ra dự báo doanh thu với lãi lỗ.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 936.13,
+      "end_time": 955.696,
+      "point_id": "6042dba8-f575-54d7-87c1-61a96c45d9c0",
+      "ref_id": [
+        "5680c18a-3058-5c70-857a-2c22dd94ca45"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "cái đấy để sau nha, giờ dữ liệu chưa đủ, mà sprint đang kín rồi. ghi lại làm ý tưởng giai đoạn hai.",
+      "segment_html": "cái đấy để sau nha, giờ dữ liệu chưa đủ, mà sprint đang kín rồi. ghi lại làm ý tưởng giai đoạn hai.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 956.696,
+      "end_time": 966.696,
+      "point_id": "0072f523-f0c0-5ac4-a94a-0bff9680e088",
+      "ref_id": [
+        "9bb61b31-5380-532c-8600-0b9e77ae0970"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "chốt mục này: bổ sung doanh thu tăng thêm so với bốn tuần trước, chi phí khuyến mãi gồm giảm giá và giá vốn hàng tặng, lợi nhuận gộp sau khuyến mãi, số khách mới ở kênh cửa hàng; giao diện bảng xếp hạng theo lợi nhuận gộp.",
+      "segment_html": "chốt mục này: bổ sung doanh thu tăng thêm so với bốn tuần trước, chi phí khuyến mãi gồm giảm giá và giá vốn hàng tặng, lợi nhuận gộp sau khuyến mãi, số khách mới ở kênh cửa hàng; giao diện bảng xếp hạng theo lợi nhuận gộp.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 967.696,
+      "end_time": 988.565,
+      "point_id": "8231ed32-2080-5b79-ad1f-91b6b69dd5d7",
+      "ref_id": [
+        "d1b89d8c-e4fe-5a76-ae37-64b405172a3b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "em làm định nghĩa chỉ số với câu truy vấn, gửi chị thảo duyệt định nghĩa trước rồi mới làm.",
+      "segment_html": "em làm định nghĩa chỉ số với câu truy vấn, gửi chị thảo duyệt định nghĩa trước rồi mới làm.",
+      "speaker_name": "Khoa (Phân tích dữ liệu)",
+      "speaker_org_unit": null,
+      "start_time": 989.565,
+      "end_time": 998.261,
+      "point_id": "72a3b7c1-d770-538b-b817-fca379cd1d5f",
+      "ref_id": [
+        "c534926e-8049-5ed3-b499-f1b6476b08e8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "em làm giao diện sau khi anh khoa chốt định nghĩa.",
+      "segment_html": "em làm giao diện sau khi anh khoa chốt định nghĩa.",
+      "speaker_name": "Trang (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 999.261,
+      "end_time": 1004.043,
+      "point_id": "63245e68-8b2e-5857-b91a-5d966999d1f8",
+      "ref_id": [
+        "b5b8e5c6-07b9-5a8d-a4cc-2e3a16a81a74"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "ok, thế thôi nha mọi người. chị thảo còn gì không ạ? không, ok cảm ơn cả nhà.",
+      "segment_html": "ok, thế thôi nha mọi người. chị thảo còn gì không ạ? không, ok cảm ơn cả nhà.",
+      "speaker_name": "Anh Nghĩa (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1005.043,
+      "end_time": 1012.87,
+      "point_id": "1f55a212-51d4-5f9c-a1ed-914cf5ca0ae9",
+      "ref_id": [
+        "9257645a-bd66-5f07-9648-1c6fe9b71966"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "ờ alo alo mọi người nghe rõ không ạ, ok rồi. thì là hôm nay mình họp sprint mười hai nha, có năm cái mục, đồng bộ đơn hàng từ sàn, đồng bộ tồn kho lên sàn, chương trình khuyến mãi, báo cáo doanh thu cửa hàng, với cả báo cáo hiệu quả khuyến mãi. hiếu nói cái đồng bộ đơn trước đi em. dạ vâng. thì cái đồng bộ đơn hàng từ sàn thì hiện tại mình đã kết nối được ba sàn là sô pi, la da da với tích tốc sóp. cơ chế hiện tại là cứ năm phút thì hệ thống gọi a pi của sàn một lần để lấy đơn mới về, xong tạo đơn trong hệ thống, trừ tồn kho tạm của cái kho tổng, rồi đẩy sang bộ phận đóng gói. tuần vừa rồi đồng bộ khoảng mười một nghìn bốn trăm đơn, độ trễ trung bình từ lúc khách đặt trên sàn đến lúc đơn hiện trong hệ thống là khoảng bốn phút. vấn đề là bên tích tốc sóp thì có khoảng hai phần trăm đơn bị trùng, tức là một đơn tạo ra hai lần, do sàn đấy hay gửi lại cái trạng thái đơn, mà mình đang so trùng theo cái mã nội bộ chứ không phải mã đơn của sàn. có hai lần kho đóng gói đóng hai lần một đơn, gửi đi hai kiện, mất tiền ship với hàng. ừ cái này chị biết, tuần trước có một khách ở đà nẵng nhận hai hộp sữa bột, bên chị phải gọi xin lại. thế em sửa thế nào? dạ em đề xuất là thứ nhất chống trùng theo cái mã đơn của sàn cộng với mã sàn, tức là cặp đấy là duy nhất, đơn về lần hai thì chỉ cập nhật trạng thái chứ không tạo mới. thứ hai là chuyển sang nhận uép húc, tức là sàn chủ động bắn thông báo khi có đơn, thay vì cứ năm phút mình hỏi một lần, như thế độ trễ còn dưới một phút. sô pi với tích tốc thì có hỗ trợ uép húc, còn la da da thì em đang kiểm tra lại tài liệu. em bổ sung là trên màn hình danh sách đơn thì em sẽ thêm cột nguồn đơn với mã đơn sàn, để bộ phận chăm sóc khách tra cứu nhanh, chứ hiện tại phải mở từng đơn mới thấy. còn đợt sale mười một mười một thì sao, năm ngoái ngày đấy về một ngày hơn tám nghìn đơn, hệ thống cũ treo luôn. dạ với uép húc thì cao điểm mình nhận được khoảng hai trăm đơn một phút, em đã thử tải giả lập năm trăm đơn một phút thì vẫn chạy, có hàng đợi ở giữa nên không sợ mất đơn. rồi vậy chốt mục này: chống trùng theo mã đơn sàn cộng mã sàn, chuyển sang nhận uép húc cho sô pi và tích tốc, la da da thì tạm giữ quét định kỳ nhưng rút xuống hai phút. phải xong trước ngày năm tháng mười một để kịp chạy thử trước mười một mười một. dạ em làm, chống trùng em đẩy lên trong tuần này luôn, uép húc thì cuối tuần sau. phần cột nguồn đơn thì em làm luôn trong sprint này ạ. tiếp theo là cái đồng bộ tồn kho, nghe thì giống cái đồng bộ đơn nhưng mà là chiều ngược lại, mình đẩy tồn kho lên sàn. hiếu nói tiếp nhé. dạ. thì đồng bộ tồn kho hiện tại là mỗi ba mươi phút hệ thống đẩy số tồn của tất cả các mã hàng lên ba sàn, khoảng bốn nghìn hai trăm mã. vấn đề là trong ba mươi phút đấy thì cửa hàng vẫn bán, sàn khác vẫn bán, nên số trên sàn bị lệch với kho thực. tuần vừa rồi có ba mươi bảy đơn bị bán vượt, tức là khách đặt rồi mà kho hết hàng, phải hủy đơn, mà sàn thì phạt điểm uy tín shop khi hủy đơn do người bán, sô pi đã cảnh báo shop mình một lần rồi. cái này nghiêm trọng hơn cái trùng đơn đấy. shop mà bị sô pi hạ điểm thì mất huy hiệu shop yêu thích, lượt hiển thị giảm hẳn. mà bỉm, sữa là hàng bán chạy, hết hàng nhanh lắm, nhất là mấy mã sữa nhập khẩu. dạ em đề xuất đổi sang đẩy theo sự kiện, tức là mã hàng nào có biến động, bán ở cửa hàng, bán trên sàn, nhập kho, trả hàng, thì đẩy ngay mã đấy lên ba sàn, không chờ ba mươi phút. còn mỗi đêm hai giờ sáng thì đồng bộ toàn bộ một lần để sửa các sai lệch nếu có. em có xem số liệu thì ba mươi bảy đơn bán vượt thì hai mươi chín đơn là các mã có tồn dưới mười, tức là mã sắp hết. em đề xuất là giữ lại một phần tồn kho an toàn, ví dụ chỉ đẩy lên sàn chín mươi lăm phần trăm số tồn thực, hoặc mã nào còn dưới năm cái thì mỗi sàn chỉ hiện một hai cái thôi. giữ năm phần trăm thì được, nhưng mà phần giữ lại đấy để cửa hàng bán chứ đừng để chết hàng. trên màn hình quản lý tồn kho em làm thêm cảnh báo lệch tồn, mã nào số trên sàn khác số trong kho quá hai cái thì tô đỏ cho bộ phận kho kiểm tra. ok chốt: đẩy tồn kho theo sự kiện khi có biến động, đồng bộ toàn bộ lúc hai giờ sáng hằng đêm, giữ tồn an toàn năm phần trăm cho mỗi sàn, có màn hình cảnh báo lệch tồn. em làm cái đẩy theo sự kiện, cái này phức tạp hơn, em cần hai tuần, xong trước ngày tám. em lập danh sách các mã sắp hết hay bị bán vượt để chị thảo xem lại định mức nhập hàng, thứ năm em gửi. mục ba là khuyến mãi, trang trình bày nhé. dạ. thì chức năng tạo chương trình khuyến mãi bây giờ đã có ba loại, là giảm giá theo phần trăm hoặc số tiền, mua x tặng y, ví dụ mua hai bịch bỉm tặng một gói khăn ướt, và combo giá cố định. người quản lý chọn kênh áp dụng là cửa hàng, quét mã ở máy pốt, hay trên sàn, chọn thời gian, chọn cửa hàng. nhưng vấn đề là chồng khuyến mãi, ví dụ tuần trước có chương trình giảm mười phần trăm toàn bộ sữa ở cửa hàng, mà khách cầm thêm thẻ thành viên hạng vàng giảm năm phần trăm, rồi máy pốt lại cộng thêm combo, có hóa đơn giảm gần ba mươi phần trăm, dưới giá vốn. đúng rồi, mấy cửa hàng quận bảy báo là nhân viên cũng không biết cái nào được cộng cái nào không. chị muốn mặc định là không cộng dồn, khách chỉ được hưởng một khuyến mãi có lợi nhất, trừ thẻ thành viên thì được cộng thêm. về kỹ thuật thì em làm được cái bảng quy tắc ưu tiên, mỗi chương trình có một mức ưu tiên và một cờ là có được cộng dồn hay không. máy pốt tính thử tất cả các tổ hợp hợp lệ rồi chọn cái có lợi nhất cho khách. thêm một chặn cứng là tổng giảm không vượt quá giá vốn cộng năm phần trăm. em có ý là hay mình làm tích điểm thành viên dùng chung, khách mua trên sô pi cũng được cộng điểm vào thẻ thành viên của cửa hàng, như thế khách gắn bó hơn. ý thì hay nhưng mà sàn không cho mình lấy số điện thoại khách đâu em, dữ liệu khách trên sàn bị che hết, chính sách của sàn không cho kéo khách ra ngoài. mà làm sai là bị khóa shop. thôi cái này để sau tính, giờ chưa làm. chốt: mặc định không cộng dồn khuyến mãi, chỉ áp dụng chương trình có lợi nhất, riêng ưu đãi thẻ thành viên được cộng thêm; có bảng cấu hình ưu tiên và cờ cộng dồn; chặn cứng tổng giảm không thấp hơn giá vốn cộng năm phần trăm. phần tính khuyến mãi trên máy pốt em làm. còn màn hình cấu hình ưu tiên với cờ cộng dồn thì em làm ạ, xong cùng sprint với anh hiếu. mục bốn là báo cáo doanh thu theo cửa hàng, khoa nói nhé. dạ. báo cáo doanh thu theo cửa hàng thì hiện có doanh thu theo ngày, theo tuần, theo tháng cho hai mươi ba cửa hàng và ba kênh sàn, có so sánh cùng kỳ, top mười mã hàng bán chạy theo cửa hàng. vấn đề thứ nhất là chậm, báo cáo tháng chạy mất khoảng bốn mươi giây vì đang truy vấn thẳng vào cơ sở dữ liệu bán hàng, mà giờ cao điểm truy vấn báo cáo còn làm chậm cả máy pốt ở cửa hàng. vấn đề thứ hai là số liệu lệch với bên kế toán, tháng chín báo cáo của mình ra doanh thu cao hơn sổ kế toán khoảng một phẩy hai tỷ. em kiểm tra thì do cách tính khác nhau, mình tính doanh thu theo ngày đặt đơn, còn kế toán ghi nhận theo ngày giao hàng thành công, và hàng trả lại thì mình chưa trừ, còn kế toán trừ theo ngày khách trả. cái lệch số này làm chị khổ nhất, họp với ban giám đốc mà mỗi bên một số. phải thống nhất một cách tính, theo kế toán là chuẩn, vì đấy là số đi báo cáo thuế. về hiệu năng thì em đề xuất tách một kho dữ liệu báo cáo riêng, mỗi đêm đổ dữ liệu từ cơ sở dữ liệu bán hàng sang, trong ngày thì cập nhật mười lăm phút một lần, báo cáo chỉ truy vấn kho này, không đụng vào cơ sở dữ liệu bán hàng nữa. như thế số trong ngày thì trễ mười lăm phút, chị thảo có chấp nhận được không ạ? trễ mười lăm phút thì được, chị chỉ cần số cuối ngày chính xác. chốt: doanh thu trên báo cáo tính theo ngày giao hàng thành công, hàng trả lại trừ theo ngày khách trả, khớp với cách ghi nhận của kế toán; tách kho dữ liệu báo cáo riêng, cập nhật mười lăm phút một lần. em làm lại công thức và đối soát với kế toán số liệu tháng chín, tháng mười, phải khớp thì mới đưa lên, thứ sáu tuần sau em báo cáo. tách kho dữ liệu thì em làm sau khi xong đồng bộ tồn kho, khoảng giữa tháng. mục cuối là báo cáo hiệu quả khuyến mãi, cái này gần giống báo cáo doanh thu nhưng mà nhìn theo chương trình. khoa nói tiếp. dạ. hiện tại báo cáo hiệu quả khuyến mãi mới chỉ có doanh thu và số đơn trong thời gian chạy chương trình, chưa có so sánh, nên nhìn vào thì chương trình nào cũng thấy tăng. em đề xuất bổ sung ba chỉ số. một là doanh thu tăng thêm so với trung bình bốn tuần trước chương trình, cùng nhóm hàng cùng cửa hàng. hai là chi phí khuyến mãi, tức là tổng tiền giảm giá cộng giá vốn hàng tặng. ba là lợi nhuận gộp sau khuyến mãi, để biết chương trình nào thật sự có lãi. đúng cái chị cần. tháng trước chương trình mua hai tặng một bỉm, doanh thu tăng bốn mươi phần trăm nhưng chị nghi là lỗ vì hàng tặng toàn là gói to. thêm một cái nữa là chị muốn xem khách mới, tức là bao nhiêu khách lần đầu mua trong chương trình. dạ khách mới thì chỉ tính được ở cửa hàng với khách có thẻ thành viên, trên sàn thì không có thông tin khách nên không tính được. phần giao diện em làm dạng bảng xếp hạng chương trình theo lợi nhuận gộp, bấm vào thì ra chi tiết theo cửa hàng. em có thêm ý là sau khi có dữ liệu đủ một năm thì mình có thể làm mô hình học máy dự báo trước hiệu quả của một chương trình, kiểu nhập thông số vào thì ra dự báo doanh thu với lãi lỗ. cái đấy để sau nha, giờ dữ liệu chưa đủ, mà sprint đang kín rồi. ghi lại làm ý tưởng giai đoạn hai. chốt mục này: bổ sung doanh thu tăng thêm so với bốn tuần trước, chi phí khuyến mãi gồm giảm giá và giá vốn hàng tặng, lợi nhuận gộp sau khuyến mãi, số khách mới ở kênh cửa hàng; giao diện bảng xếp hạng theo lợi nhuận gộp. em làm định nghĩa chỉ số với câu truy vấn, gửi chị thảo duyệt định nghĩa trước rồi mới làm. em làm giao diện sau khi anh khoa chốt định nghĩa. ok, thế thôi nha mọi người. chị thảo còn gì không ạ? không, ok cảm ơn cả nhà.",
+  "metadata": {
+    "meeting_id": "synth_024",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

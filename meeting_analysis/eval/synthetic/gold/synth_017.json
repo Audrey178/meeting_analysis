@@ -1,0 +1,467 @@
+{
+  "meeting_id": "synth_017",
+  "n_turns": 54,
+  "total_chars": 13586,
+  "boundaries": [
+    8,
+    19,
+    28,
+    36,
+    46
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng đặt lịch khám trực tuyến",
+      "summary": "Chức năng đặt lịch khám qua ứng dụng đã chạy thử ở 4 chuyên khoa, tỷ lệ bệnh nhân đặt nhưng không đến 23%; thống nhất yêu cầu xác nhận lại trước 24 giờ và tự hủy nếu không xác nhận, mở rộng ra 12 chuyên khoa từ tháng sau.",
+      "turn_range": [
+        0,
+        8
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000008"
+      ],
+      "chars": 2631,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng bệnh án điện tử nội trú",
+      "summary": "Bệnh án điện tử nội trú đã triển khai ở khoa Nội và khoa Ngoại; bác sĩ phàn nàn nhập liệu chậm; thống nhất thêm mẫu câu, nhập liệu bằng giọng nói để sau, ký số bằng sim ký số thay USB token.",
+      "turn_range": [
+        8,
+        19
+      ],
+      "turn_ids": [
+        "TURN_000009",
+        "TURN_000019"
+      ],
+      "chars": 2668,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Kết nối máy xét nghiệm và trả kết quả cận lâm sàng tự động",
+      "summary": "Đã kết nối 9/14 máy xét nghiệm qua chuẩn HL7; 5 máy đời cũ chưa hỗ trợ; thống nhất mua bộ chuyển đổi cho 3 máy, 2 máy sắp thanh lý vẫn nhập tay; bật cảnh báo giá trị nguy hiểm gửi bác sĩ điều trị.",
+      "turn_range": [
+        19,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000020",
+        "TURN_000028"
+      ],
+      "chars": 2098,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Triển khai thanh toán viện phí không tiền mặt",
+      "summary": "Thanh toán bằng mã QR tại quầy đã chạy, chiếm 31% giao dịch; lỗi đối soát lệch do ngân hàng trả kết quả chậm; thống nhất đối soát tự động theo mã giao dịch và mở thêm thanh toán tạm ứng nội trú qua ứng dụng.",
+      "turn_range": [
+        28,
+        36
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000036"
+      ],
+      "chars": 1989,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Kết nối cổng giám định bảo hiểm y tế",
+      "summary": "Tỷ lệ hồ sơ bảo hiểm bị từ chối 4,2% chủ yếu do sai mã dịch vụ kỹ thuật và thiếu chứng chỉ hành nghề; thống nhất kiểm tra hồ sơ trước khi đẩy lên cổng và cập nhật danh mục theo bảng mã mới; đề xuất đẩy dữ liệu theo thời gian thực bị gạt.",
+      "turn_range": [
+        36,
+        46
+      ],
+      "turn_ids": [
+        "TURN_000037",
+        "TURN_000046"
+      ],
+      "chars": 2486,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Thống nhất kế hoạch đào tạo người dùng và lịch sprint tới",
+      "summary": "Thống nhất đào tạo bệnh án điện tử cho 6 khoa mới theo mô hình người dùng nòng cốt, mỗi khoa 2 bác sĩ và 2 điều dưỡng; lịch triển khai thêm khoa Nhi và khoa Sản từ tháng sau.",
+      "turn_range": [
+        46,
+        54
+      ],
+      "turn_ids": [
+        "TURN_000047",
+        "TURN_000054"
+      ],
+      "chars": 1714,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Linh (Trưởng nhóm Frontend)",
+      "actor_aliases": [
+        "Linh",
+        "em"
+      ],
+      "task": "Làm chức năng xác nhận lại trước 24 giờ và tự hủy lịch khám",
+      "deadline": "trước thứ Sáu tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "actor_aliases": [
+        "phòng tôi"
+      ],
+      "task": "Soạn hướng dẫn mở khóa đặt lịch cho tổng đài viên",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Quân (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Quân",
+        "em"
+      ],
+      "task": "Tích hợp ký số từ xa trên điện thoại cho bệnh án điện tử",
+      "deadline": "trước cuối tháng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "actor_aliases": [
+        "phòng tôi"
+      ],
+      "task": "Làm tờ trình mua sim ký số cho khoảng 45 bác sĩ",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "BS. Thành (Trưởng khoa Xét nghiệm)",
+      "actor_aliases": [
+        "bác sĩ Thành",
+        "khoa Xét nghiệm"
+      ],
+      "task": "Gửi danh sách ngưỡng giá trị xét nghiệm nguy hiểm",
+      "deadline": "trong tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "actor_aliases": [
+        "phòng tôi"
+      ],
+      "task": "Mua 3 bộ chuyển đổi cổng nối tiếp cho máy huyết học",
+      "deadline": "khoảng hai tuần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Quân (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm cảnh báo giá trị xét nghiệm nguy hiểm có xác nhận và leo thang",
+      "deadline": "khoảng một tuần sau khi nhận danh sách ngưỡng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Quân (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Quân",
+        "em"
+      ],
+      "task": "Làm hỏi lại ngân hàng và đối soát tự động cuối ngày theo mã giao dịch",
+      "deadline": "trong sprint này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Tâm (Kiểm thử)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Rà soát giao dịch tháng trước tìm trường hợp thu trùng, gửi kế toán",
+      "deadline": "trước thứ Tư",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Làm bảng ánh xạ mã dịch vụ kỹ thuật cũ sang mới với phòng Kế hoạch tổng hợp, gửi Quân",
+      "deadline": "trước ngày 20",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Quân (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm bước kiểm tra hồ sơ trước khi đẩy cổng giám định và chặn chỉ định ngoài phạm vi hành nghề",
+      "deadline": "sau khi có bảng ánh xạ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Chỉ đạo khoa Nhi và khoa Sản gửi danh sách người dùng nòng cốt cho phòng Kế hoạch tổng hợp",
+      "deadline": "trước thứ Hai tuần sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Tâm (Kiểm thử)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm bộ thẻ hướng dẫn thao tác, gửi bác sĩ Hạnh duyệt",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Long (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lên lịch đào tạo chi tiết và gửi cả nhóm",
+      "deadline": "sau khi có danh sách",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Áp dụng xác nhận lại trước 24 giờ, tự hủy nếu 6 giờ trước giờ khám chưa xác nhận; không đặt vượt khung giờ; khóa đặt trực tuyến 30 ngày nếu không đến 3 lần, tổng đài được mở khóa; mở rộng ra 12 chuyên khoa từ tháng sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Thêm bộ mẫu câu theo bệnh và sao chép tờ điều trị ngày trước; chuyển ký số sang ký số từ xa trên điện thoại",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Mua 3 bộ chuyển đổi cho máy huyết học; 2 máy đông máu sắp thanh lý nhập tay; làm cảnh báo giá trị nguy hiểm có leo thang lên trưởng khoa sau 15 phút",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Hỏi lại ngân hàng sau 2 phút và đối soát tự động cuối ngày; thêm tạm ứng nội trú qua ứng dụng ở sprint sau nữa",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Cập nhật bảng mã DVKT mới; chặn chỉ định ngoài phạm vi chứng chỉ hành nghề; kiểm tra hồ sơ trước khi đẩy; vẫn đẩy dữ liệu cuối ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Đào tạo theo mô hình người dùng nòng cốt (2 bác sĩ, 2 điều dưỡng mỗi khoa, 3 buổi sau giao ban); khoa Nhi và khoa Sản bắt đầu từ ngày 1 tháng sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "rejected_task",
+      "text": "Cho đặt vượt 10% khung giờ khám đầu buổi",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Nhập tờ điều trị bằng nhận dạng giọng nói",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013",
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Đẩy dữ liệu lên cổng giám định theo thời gian thực",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000042",
+        "TURN_000043"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Linh (Trưởng nhóm Frontend)",
+      "point": "Đặt lịch chạy thử 4 chuyên khoa, 2.140 lượt, thời gian chờ 18 phút so với 65 phút, nhưng 23% đặt không đến",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "point": "Không đồng ý đặt vượt khung giờ; khóa 30 ngày được nếu tổng đài mở khóa được",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Quân (Trưởng nhóm Backend)",
+      "point": "Bệnh án điện tử chạy ở 2 khoa, 1.600 bệnh án, đang chạy song song giấy",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "point": "Bác sĩ quá tải vì chạy song song và quên USB token",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Quân (Trưởng nhóm Backend)",
+      "point": "Kết nối 9/14 máy xét nghiệm, thời gian trả kết quả sinh hóa giảm từ 95 xuống 52 phút",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "point": "Yêu cầu cảnh báo ngay cho bác sĩ khi có kết quả xét nghiệm nguy hiểm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Tâm (Kiểm thử)",
+      "point": "Thanh toán QR chiếm 31% giao dịch, 1,5% bị lệch, 2 ca thu trùng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "point": "Hồ sơ bảo hiểm bị từ chối 4,2% (khoảng 380 triệu), do sai mã DVKT, ngoài phạm vi hành nghề, thuốc vượt quy định",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Long (Quản lý dự án)",
+      "point": "Đề xuất mô hình người dùng nòng cốt để đào tạo, mở rộng khoa Nhi và Sản tháng sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Anh Long (Quản lý dự án)",
+    "BV": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+    "BE": "Quân (Trưởng nhóm Backend)",
+    "FE": "Linh (Trưởng nhóm Frontend)",
+    "DT": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+    "QA": "Tâm (Kiểm thử)"
+  },
+  "tags": [
+    "many_topics_medium"
+  ]
+}

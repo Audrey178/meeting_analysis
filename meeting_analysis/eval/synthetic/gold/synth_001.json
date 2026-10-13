@@ -1,0 +1,309 @@
+{
+  "meeting_id": "synth_001",
+  "n_turns": 52,
+  "total_chars": 12549,
+  "boundaries": [
+    8,
+    20,
+    30,
+    38
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tiến độ chung và phạm vi giai đoạn 1 của dự án",
+      "summary": "PM tổng hợp tiến độ (khoảng 55%, chậm 2 tuần do chờ dữ liệu mẫu), khách hàng yêu cầu giữ mốc demo 15/12; thống nhất giữ phạm vi 3 chức năng chính và bỏ ứng dụng di động khỏi giai đoạn 1.",
+      "turn_range": [
+        0,
+        8
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000008"
+      ],
+      "chars": 2673,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng AI tự động phân loại kiến nghị theo lĩnh vực",
+      "summary": "Hiếu báo cáo mô hình phân loại PhoBERT đạt F1 khoảng 0.81 trên 18 lĩnh vực, yếu ở các lĩnh vực đất đai-môi trường; thống nhất gộp nhãn còn 12 lĩnh vực và dùng ngưỡng tin cậy 0.7 để chuyển chuyên viên duyệt.",
+      "turn_range": [
+        8,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000009",
+        "TURN_000020"
+      ],
+      "chars": 3169,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng tra cứu và theo dõi trạng thái kiến nghị cho cử tri",
+      "summary": "Linh demo cổng tra cứu bằng mã kiến nghị; khách hàng yêu cầu tra cứu bằng số điện thoại có OTP và ẩn thông tin cá nhân; thống nhất thêm tra cứu theo số điện thoại với OTP qua SMS brandname của tỉnh.",
+      "turn_range": [
+        20,
+        30
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000030"
+      ],
+      "chars": 2474,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xây dựng chức năng AI tự động đánh giá câu trả lời kiến nghị",
+      "summary": "Hiếu đề xuất chấm câu trả lời của cơ quan theo 3 tiêu chí; khách hàng yêu cầu AI chỉ gợi ý, chuyên viên quyết định; thống nhất bản đầu dùng luật và mô hình tương đồng, AI chỉ đánh dấu câu trả lời chưa đạt để chuyên viên xem.",
+      "turn_range": [
+        30,
+        38
+      ],
+      "turn_ids": [
+        "TURN_000031",
+        "TURN_000038"
+      ],
+      "chars": 2253,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Thống nhất kế hoạch triển khai và phân công đến mốc demo 15/12",
+      "summary": "PM chốt kế hoạch và phân công việc cho từng người đến mốc demo 15/12, gồm cập nhật danh mục lĩnh vực, train lại mô hình, tích hợp OTP, bóc tách dữ liệu báo cáo giám sát và chuẩn bị kịch bản demo.",
+      "turn_range": [
+        38,
+        52
+      ],
+      "turn_ids": [
+        "TURN_000039",
+        "TURN_000052"
+      ],
+      "chars": 1980,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "actor_aliases": [
+        "anh Phong"
+      ],
+      "task": "Gửi danh mục 12 lĩnh vực mới và tài liệu API SMS brandname dùng chung của tỉnh",
+      "deadline": "thứ Sáu tuần này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000040",
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Hiếu (Kỹ sư AI)",
+      "actor_aliases": [
+        "Hiếu"
+      ],
+      "task": "Map nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy",
+      "deadline": "trước 25/11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Nam (Lập trình Backend)",
+      "actor_aliases": [
+        "Nam"
+      ],
+      "task": "Tích hợp SMS brandname, sinh OTP và API tra cứu theo số điện thoại",
+      "deadline": "1 tuần sau khi nhận tài liệu API SMS",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Linh (Lập trình Frontend)",
+      "actor_aliases": [
+        "Linh"
+      ],
+      "task": "Nối cổng tra cứu với API thật, thêm màn hình số điện thoại và OTP, ẩn trường thông tin cá nhân",
+      "deadline": "1/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Hiếu (Kỹ sư AI)",
+      "actor_aliases": [
+        "bạn làm phân loại lúc nãy",
+        "em ấy",
+        "em"
+      ],
+      "task": "Bóc tách dữ liệu báo cáo giám sát thành dữ liệu có nhãn cho chức năng đánh giá câu trả lời",
+      "deadline": "trước Tết",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048",
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Mai (Phân tích nghiệp vụ)",
+      "actor_aliases": [
+        "chị Mai"
+      ],
+      "task": "Cập nhật đặc tả tra cứu theo số điện thoại và đánh giá câu trả lời theo hướng gợi ý; soạn kịch bản demo gửi khách hàng duyệt",
+      "deadline": "trước 10/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Tuấn (Giám đốc dự án)",
+      "actor_aliases": [
+        "anh"
+      ],
+      "task": "Làm phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi khách hàng",
+      "deadline": "trong tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Giai đoạn 1 giữ đúng 3 chức năng chính; ứng dụng di động chuyển sang giai đoạn 2; giữ mốc demo 15/12",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Chuyển mô hình phân loại sang 12 lĩnh vực theo danh mục mới",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Dùng PhoBERT, ngưỡng tin cậy 0.7, dưới ngưỡng vào hàng chờ chuyên viên duyệt, ghi log nhãn sửa để train lại",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Thêm tra cứu bằng số điện thoại có OTP dùng SMS brandname dùng chung của tỉnh, vẫn giữ tra theo mã kiến nghị",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Chức năng đánh giá câu trả lời bản đầu dùng tương đồng ngữ nghĩa + luật, chỉ đánh dấu câu trả lời có dấu hiệu chưa đạt kèm lý do, chuyên viên quyết định",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "rejected_task",
+      "text": "Linh làm ứng dụng di động bằng Flutter song song trong giai đoạn 1",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Dùng mô hình ngôn ngữ lớn tự host (Qwen/Llama) để phân loại đa nhãn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Hiếu (Kỹ sư AI)",
+      "point": "Mô hình PhoBERT đạt F1 macro ~0.81 trên 18 lĩnh vực, yếu ở đất đai và môi trường (~0.6)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Hiếu (Kỹ sư AI)",
+      "point": "Ngưỡng tin cậy 0.7: ~82% tự động chuyển với độ chính xác ~96%",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Linh (Lập trình Frontend)",
+      "point": "Demo cổng tra cứu theo mã kiến nghị với timeline trạng thái, đang dùng dữ liệu giả",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "point": "Không hiển thị họ tên, địa chỉ người kiến nghị trên trang tra cứu",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Hiếu (Kỹ sư AI)",
+      "point": "Đề xuất chấm câu trả lời theo 3 tiêu chí: đúng trọng tâm, có hướng giải quyết và thời hạn, có căn cứ pháp lý",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Anh Tuấn (Giám đốc dự án)",
+    "BA": "Chị Mai (Phân tích nghiệp vụ)",
+    "BE": "Nam (Lập trình Backend)",
+    "AI": "Hiếu (Kỹ sư AI)",
+    "FE": "Linh (Lập trình Frontend)",
+    "KH": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)"
+  },
+  "tags": [
+    "short_meeting",
+    "pronoun_actor",
+    "dense_actions_closing",
+    "rejected_task",
+    "hedged_proposal"
+  ]
+}

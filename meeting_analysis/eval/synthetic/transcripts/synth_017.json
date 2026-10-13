@@ -1,0 +1,1091 @@
+{
+  "transcript": "Chào bác sĩ Hạnh, chào chị Yến và cả nhóm. Sprint này mình có sáu hạng mục cần rà, em đi lần lượt cho nhanh: đặt lịch khám, bệnh án điện tử, kết nối máy xét nghiệm, thanh toán không tiền mặt, cổng giám định bảo hiểm và cuối cùng là đào tạo người dùng. Linh nói phần đặt lịch khám trước. Dạ. Chức năng đặt lịch khám trên ứng dụng di động và trên web đã chạy thử ba tuần ở bốn chuyên khoa là Nội tổng hợp, Tai mũi họng, Da liễu và Sản. Bệnh nhân chọn chuyên khoa, chọn bác sĩ hoặc để hệ thống tự xếp, chọn khung giờ 30 phút, nhận mã đặt lịch, đến bệnh viện quét mã ở ki-ốt là vào thẳng hàng đợi khám không cần lấy số. Ba tuần có khoảng 2.140 lượt đặt. Phản hồi của bệnh nhân nhìn chung tốt, thời gian chờ trung bình của nhóm đặt trước là 18 phút so với 65 phút của nhóm lấy số trực tiếp. Vấn đề lớn nhất là tỷ lệ đặt rồi không đến là 23%, tức là gần một phần tư khung giờ bị bỏ trống, bác sĩ ngồi chờ trong khi ngoài sảnh vẫn đông. Con số 23% là cao quá. Các bác sĩ khoa Da liễu đã phản ánh với tôi là buổi sáng thứ Hai có tới 8 ca đặt không đến. Các anh có phương án gì không? Dạ, nhóm đề xuất ba việc. Một là 24 giờ trước giờ khám thì gửi tin nhắn và thông báo ứng dụng yêu cầu bệnh nhân bấm xác nhận, nếu đến 6 giờ trước giờ khám vẫn không xác nhận thì hệ thống tự hủy và nhả khung giờ cho người khác. Hai là cho phép đặt quá số khung giờ khoảng 10% ở các khung đầu buổi, giống hãng bay bán vượt chỗ. Ba là bệnh nhân không đến ba lần thì tạm khóa đặt lịch trực tuyến 30 ngày. Cái thứ nhất thì đồng ý. Cái đặt vượt 10% thì tôi không đồng ý, bệnh viện không phải hãng bay, nếu cả mười người đến hết thì bệnh nhân chờ lâu lại phàn nàn là đặt lịch rồi vẫn phải chờ, mất uy tín. Còn khóa 30 ngày thì phải cẩn thận, người cao tuổi nhiều khi con cháu đặt hộ rồi quên, khóa thì họ lại xuống xếp hàng, nhưng tôi thấy có thể khóa được, miễn là có thông báo rõ ràng và tổng đài có thể mở khóa khi bệnh nhân gọi lên giải thích. Vậy em chốt: áp dụng xác nhận lại trước 24 giờ và tự hủy nếu đến 6 giờ trước giờ khám chưa xác nhận; không đặt vượt khung giờ; khóa đặt trực tuyến 30 ngày nếu không đến ba lần, tổng đài được quyền mở khóa. Mở rộng ra 12 chuyên khoa từ ngày 1 tháng sau. Linh làm phần xác nhận và tự hủy nhé. Dạ, em làm trong sprint này, khoảng 5 ngày công, xong trước thứ Sáu tuần sau. Phần quy trình mở khóa ở tổng đài thì phòng tôi soạn hướng dẫn cho tổng đài viên. Hạng mục thứ hai là bệnh án điện tử nội trú. Quân nói nhé. Dạ. Bệnh án điện tử nội trú đã chạy chính thức ở khoa Nội tổng hợp và khoa Ngoại chấn thương được hai tháng, khoảng 1.600 bệnh án. Các phần đã có là phiếu khám vào viện, tờ điều trị hằng ngày, phiếu chăm sóc điều dưỡng, chỉ định cận lâm sàng, y lệnh thuốc và tóm tắt ra viện. Bác sĩ ký số từng tờ điều trị bằng USB token. Theo Thông tư 46 của Bộ Y tế thì để bỏ hẳn bệnh án giấy, bệnh viện phải đáp ứng đủ các tiêu chí và tự đánh giá, Sở Y tế công nhận. Hiện mình đang chạy song song cả giấy và điện tử. Tôi nói thẳng là các bác sĩ đang rất mệt vì chạy song song, viết tay một lần rồi lại gõ máy một lần. Bác sĩ khoa Ngoại phản ánh gõ tờ điều trị cho 30 bệnh nhân mất cả buổi sáng. Còn cái USB token thì cứ rút ra cắm vào, quên ở nhà là không ký được, có hôm khoa Nội có hai bác sĩ trực quên token. Phải làm sao cho bác sĩ nhập nhanh hơn. Dạ, về nhập liệu nhóm có hai hướng. Một là thêm mẫu câu và bộ mẫu theo bệnh, ví dụ bệnh nhân sau mổ kết hợp xương ngày thứ hai thì có sẵn mẫu diễn biến, bác sĩ chỉ sửa chỗ khác. Hai là sao chép tờ điều trị ngày hôm trước làm nền rồi sửa. Hai việc này khoảng hai tuần. Em thấy hiện nay có mấy dịch vụ nhận dạng giọng nói tiếng Việt khá tốt, hay mình cho bác sĩ đọc tờ điều trị rồi tự chuyển thành chữ, như thế còn nhanh hơn gõ. Nhận dạng giọng nói thì nghe hấp dẫn nhưng thuật ngữ y khoa, tên thuốc, nhiều chỗ bác sĩ đọc tiếng Anh tiếng Pháp lẫn lộn, độ chính xác chưa chắc đã đủ. Mà dữ liệu bệnh án gửi lên dịch vụ đám mây bên ngoài thì phải đánh giá bảo mật. Cái này để nghiên cứu sau, sprint này chưa làm. Về ký số thì tôi đề nghị chuyển sang sim ký số hoặc ký số từ xa trên điện thoại, nhà mạng bây giờ đều có dịch vụ, bác sĩ xác nhận bằng mã PIN trên điện thoại, không phải cắm token. Chi phí khoảng 300.000 đồng một bác sĩ một năm. Cái đó được. Bệnh viện chi được. Em chốt: thêm bộ mẫu câu theo bệnh và chức năng sao chép tờ điều trị ngày trước, làm trong hai sprint tới; chuyển ký số sang ký số từ xa trên điện thoại cho bác sĩ hai khoa đang chạy; nhận dạng giọng nói chưa làm. Quân phụ trách tích hợp ký số từ xa. Dạ, em làm việc với nhà cung cấp dịch vụ ký số, tích hợp xong trước cuối tháng. Việc mua sim ký số cho khoảng 45 bác sĩ hai khoa thì phòng tôi làm tờ trình mua sắm. Tiếp theo là kết nối máy xét nghiệm. Quân nói tiếp. Dạ. Khoa Xét nghiệm có 14 máy, đến nay đã kết nối được 9 máy qua chuẩn HL7 và ASTM, kết quả tự động đổ về hệ thống, bác sĩ xem ngay trên bệnh án, không phải chờ giấy. Thời gian trả kết quả sinh hóa trung bình giảm từ 95 phút xuống còn 52 phút. Còn 5 máy chưa kết nối được, gồm 3 máy huyết học đời 2012 chỉ có cổng nối tiếp RS232 và 2 máy đông máu rất cũ không có cổng xuất dữ liệu. Với 3 máy huyết học thì có thể mua bộ chuyển đổi cổng nối tiếp sang mạng, khoảng 12 triệu một bộ. Với 2 máy đông máu thì không kết nối được. 2 máy đông máu đó trong kế hoạch thanh lý năm sau rồi, bệnh viện đang làm hồ sơ mua máy mới. Không nên đầu tư thêm. Tôi muốn bổ sung một yêu cầu rất quan trọng. Khi có kết quả nguy hiểm, ví dụ kali máu trên 6,5 hay dưới 2,5, hay tiểu cầu dưới 20.000, thì hệ thống phải cảnh báo ngay cho bác sĩ điều trị, không chờ bác sĩ mở bệnh án ra xem. Hiện nay khoa Xét nghiệm vẫn phải gọi điện thoại, có khi gọi không được. Dạ, kỹ thuật làm được. Mình cấu hình ngưỡng giá trị nguy hiểm cho từng chỉ số, khi có kết quả vượt ngưỡng thì đẩy cảnh báo lên màn hình trạm điều dưỡng của khoa và gửi thông báo ứng dụng cho bác sĩ điều trị, bác sĩ phải bấm xác nhận đã nhận. Nếu sau 15 phút không ai xác nhận thì báo cho trưởng khoa. Nhưng danh sách ngưỡng thì cần khoa Xét nghiệm cung cấp. Danh sách ngưỡng giá trị nguy hiểm thì tôi giao khoa Xét nghiệm, bác sĩ Thành trưởng khoa sẽ gửi trong tuần này. Em chốt: mua 3 bộ chuyển đổi cho 3 máy huyết học; 2 máy đông máu sắp thanh lý vẫn nhập tay; làm cảnh báo giá trị nguy hiểm có xác nhận và leo thang lên trưởng khoa sau 15 phút. Phòng tôi mua 3 bộ chuyển đổi, dự kiến hai tuần có hàng. Còn cảnh báo giá trị nguy hiểm em làm ngay sau khi nhận danh sách ngưỡng, khoảng một tuần. Hạng mục thứ tư là thanh toán không tiền mặt. Tâm bên kiểm thử theo dõi phần này, Tâm nói nhé. Dạ. Thanh toán viện phí bằng mã QR tại quầy thu ngân đã chạy hai tháng, hiện chiếm khoảng 31% số giao dịch ngoại trú. Quy trình là thu ngân in phiếu có mã QR động chứa số tiền và mã hồ sơ, bệnh nhân quét bằng ứng dụng ngân hàng, ngân hàng báo về hệ thống thì phiếu tự chuyển trạng thái đã thanh toán. Vấn đề là có khoảng 1,5% giao dịch bị lệch, tức là bệnh nhân đã chuyển tiền nhưng hệ thống chưa nhận được thông báo của ngân hàng, thu ngân phải bảo bệnh nhân chờ hoặc chụp màn hình, rồi cuối ngày kế toán đối soát bằng tay với sao kê. Tháng trước có 2 trường hợp bệnh nhân bị thu hai lần, một lần chuyển khoản một lần tiền mặt, phải hoàn tiền. Nguyên nhân là ngân hàng gửi thông báo qua webhook, khi hệ thống ngân hàng tải cao thì gửi chậm có khi 10 đến 20 phút, có khi mất hẳn. Em đề xuất thêm một tiến trình chủ động hỏi lại ngân hàng theo mã giao dịch sau 2 phút nếu chưa nhận được thông báo, và cuối ngày tự động đối soát toàn bộ với sao kê điện tử của ngân hàng theo mã giao dịch, chỉ những giao dịch lệch mới phải xử lý tay. Còn tạm ứng nội trú thì sao? Người nhà bệnh nhân nội trú phải xuống quầy nộp tạm ứng, nhiều khi nửa đêm phải đi tìm cây ATM. Dạ, ứng dụng có thể thêm chức năng tạm ứng nội trú, người nhà xem số dư tạm ứng và chi phí đã phát sinh theo ngày, nạp thêm tạm ứng qua mã QR ngay trên ứng dụng. Khoảng hai sprint. Em chốt: làm tiến trình hỏi lại ngân hàng sau 2 phút và đối soát tự động cuối ngày theo mã giao dịch; thêm chức năng tạm ứng nội trú qua ứng dụng ở sprint sau nữa. Quân làm phần đối soát. Dạ, phần đối soát tự động em làm trong sprint này. Em rà lại toàn bộ giao dịch tháng trước để xem còn trường hợp thu trùng nào nữa không, gửi kế toán trước thứ Tư. Hạng mục thứ năm là cổng giám định bảo hiểm y tế. Chị Yến nói giúp em. Vâng. Hiện nay hệ thống đẩy dữ liệu khám chữa bệnh lên cổng giám định của Bảo hiểm xã hội theo định dạng XML của Quyết định 4750, mỗi ngày đẩy một lần vào buổi tối. Tháng trước tỷ lệ hồ sơ bị từ chối thanh toán hoặc phải giải trình là 4,2%, tương đương khoảng 380 triệu đồng chưa được thanh toán. Nguyên nhân chính là ba loại: một là mã dịch vụ kỹ thuật không khớp với bảng mã mới Bộ Y tế ban hành từ tháng 7, khoảng 45% lỗi; hai là bác sĩ chỉ định dịch vụ ngoài phạm vi chứng chỉ hành nghề, khoảng 30%; ba là thuốc kê vượt số ngày quy định hoặc không đúng chỉ định trong tờ hướng dẫn, khoảng 25%. Về kỹ thuật thì mình có thể thêm bước kiểm tra trước khi đẩy, tức là trước khi gửi hồ sơ, hệ thống tự chạy bộ luật: mã dịch vụ có trong danh mục mới không, bác sĩ chỉ định có chứng chỉ hành nghề phù hợp không, số ngày thuốc có vượt không. Hồ sơ nào lỗi thì hiện cảnh báo cho phòng Kế hoạch tổng hợp sửa trước. Bảng ánh xạ mã cũ sang mã mới thì em cần phòng Kế hoạch tổng hợp xác nhận. Kiểm tra lúc đẩy thì muộn rồi, bệnh nhân đã ra viện. Tôi muốn chặn ngay từ lúc bác sĩ chỉ định, bác sĩ không có phạm vi thì không cho chỉ định. Dạ, việc chặn khi chỉ định thì làm được với chứng chỉ hành nghề, vì dữ liệu phạm vi hành nghề đã có. Còn kiểm tra thuốc thì bộ luật phức tạp hơn, giai đoạn này mình làm cảnh báo chứ chưa chặn. Em có đọc là cổng giám định có hỗ trợ đẩy dữ liệu ngay khi kết thúc lượt khám, hay mình chuyển sang đẩy theo thời gian thực luôn, phát hiện lỗi sớm hơn. Không nên lúc này. Đẩy theo thời gian thực thì hồ sơ chưa hoàn thiện cũng lên, sai sót lại nhiều hơn, mà sửa hồ sơ đã đẩy thì thủ tục rắc rối. Giữ đẩy cuối ngày, làm bước kiểm tra trước đã. Em chốt: cập nhật danh mục theo bảng mã dịch vụ kỹ thuật mới; chặn chỉ định ngoài phạm vi chứng chỉ hành nghề ngay khi bác sĩ chỉ định; thêm bước kiểm tra hồ sơ trước khi đẩy lên cổng giám định; vẫn đẩy dữ liệu cuối ngày. Bảng ánh xạ mã cũ sang mã mới thì tôi làm với phòng Kế hoạch tổng hợp, gửi Quân trước ngày 20. Bước kiểm tra trước khi đẩy và chặn chỉ định thì em làm luôn sau khi có bảng ánh xạ. Hạng mục cuối là đào tạo và lịch sprint tới. Theo kế hoạch, tháng sau mình mở rộng bệnh án điện tử sang khoa Nhi và khoa Sản, rồi quý tới là thêm bốn khoa nữa. Em đề xuất mô hình người dùng nòng cốt: mỗi khoa chọn 2 bác sĩ và 2 điều dưỡng, nhóm dự án đào tạo kỹ cho những người này trong 3 buổi, sau đó họ hướng dẫn lại trong khoa và là đầu mối hỗ trợ. Tuần đầu đi vào chạy thật thì nhóm dự án cử người trực tại khoa ca ngày. Tôi đồng ý mô hình này. Nhưng chọn người nòng cốt phải chọn người trẻ, chịu khó, không chọn trưởng khoa vì trưởng khoa bận lắm. Và đào tạo phải sau giờ giao ban sáng, không lấy giờ khám. Phòng Công nghệ thông tin cũng sẽ cử 2 người học cùng để sau này bệnh viện tự hỗ trợ được, không phụ thuộc hoàn toàn vào nhà thầu. Em đề nghị có bộ tài liệu hướng dẫn ngắn dạng thẻ, mỗi thao tác một trang có ảnh chụp màn hình, dán ở trạm điều dưỡng, vì bác sĩ không có thời gian đọc tài liệu dài. Em chốt: đào tạo theo mô hình người dùng nòng cốt, mỗi khoa 2 bác sĩ, 2 điều dưỡng, 3 buổi sau giao ban sáng; phòng Công nghệ thông tin cử 2 người học cùng; tuần đầu chạy thật có người của dự án trực ca ngày; khoa Nhi và khoa Sản bắt đầu từ ngày 1 tháng sau. Danh sách người nòng cốt của khoa Nhi và khoa Sản thì tôi chỉ đạo hai khoa gửi phòng Kế hoạch tổng hợp trước thứ Hai tuần sau. Bộ thẻ hướng dẫn em làm, gửi bác sĩ Hạnh duyệt trước khi in. Em sẽ lên lịch đào tạo chi tiết và gửi cả nhóm sau khi có danh sách. Cảm ơn mọi người, sprint này nhiều việc, cố gắng nhé.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Chào bác sĩ Hạnh, chào chị Yến và cả nhóm. Sprint này mình có sáu hạng mục cần rà, em đi lần lượt cho nhanh: đặt lịch khám, bệnh án điện tử, kết nối máy xét nghiệm, thanh toán không tiền mặt,",
+      "segment_html": "Chào bác sĩ Hạnh, chào chị Yến và cả nhóm. Sprint này mình có sáu hạng mục cần rà, em đi lần lượt cho nhanh: đặt lịch khám, bệnh án điện tử, kết nối máy xét nghiệm, thanh toán không tiền mặt,",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 18.511,
+      "point_id": "32df2f3a-7470-53b6-a4d1-6fa7ba6cc4e7",
+      "ref_id": [
+        "9064393f-d0e2-5ff9-967b-828414b85676"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "cổng giám định bảo hiểm và cuối cùng là đào tạo người dùng. Linh nói phần đặt lịch khám trước.",
+      "segment_html": "cổng giám định bảo hiểm và cuối cùng là đào tạo người dùng. Linh nói phần đặt lịch khám trước.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 18.761,
+      "end_time": 27.457,
+      "point_id": "32df2f3a-7470-53b6-a4d1-6fa7ba6cc4e7",
+      "ref_id": [
+        "9064393f-d0e2-5ff9-967b-828414b85676"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Dạ. Chức năng đặt lịch khám trên ứng dụng di động và trên web đã chạy thử ba tuần ở bốn chuyên khoa là Nội tổng hợp, Tai mũi họng, Da liễu và Sản. Bệnh nhân chọn chuyên khoa, chọn bác sĩ hoặc để hệ thống tự xếp, chọn khung giờ 30 phút,",
+      "segment_html": "Dạ. Chức năng đặt lịch khám trên ứng dụng di động và trên web đã chạy thử ba tuần ở bốn chuyên khoa là Nội tổng hợp, Tai mũi họng, Da liễu và Sản. Bệnh nhân chọn chuyên khoa, chọn bác sĩ hoặc để hệ thống tự xếp, chọn khung giờ 30 phút,",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 28.457,
+      "end_time": 51.5,
+      "point_id": "f3a98a85-bf4c-5d9e-918b-0197049c6f2d",
+      "ref_id": [
+        "c8b57616-1b1e-5b6e-a813-adaacc67d721"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "nhận mã đặt lịch, đến bệnh viện quét mã ở ki-ốt là vào thẳng hàng đợi khám không cần lấy số. Ba tuần có khoảng 2.140 lượt đặt. Phản hồi của bệnh nhân nhìn chung tốt,",
+      "segment_html": "nhận mã đặt lịch, đến bệnh viện quét mã ở ki-ốt là vào thẳng hàng đợi khám không cần lấy số. Ba tuần có khoảng 2.140 lượt đặt. Phản hồi của bệnh nhân nhìn chung tốt,",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 51.75,
+      "end_time": 67.402,
+      "point_id": "f3a98a85-bf4c-5d9e-918b-0197049c6f2d",
+      "ref_id": [
+        "c8b57616-1b1e-5b6e-a813-adaacc67d721"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "thời gian chờ trung bình của nhóm đặt trước là 18 phút so với 65 phút của nhóm lấy số trực tiếp. Vấn đề lớn nhất là tỷ lệ đặt rồi không đến là 23%, tức là gần một phần tư khung giờ bị bỏ trống, bác sĩ ngồi chờ trong khi ngoài sảnh vẫn đông.",
+      "segment_html": "thời gian chờ trung bình của nhóm đặt trước là 18 phút so với 65 phút của nhóm lấy số trực tiếp. Vấn đề lớn nhất là tỷ lệ đặt rồi không đến là 23%, tức là gần một phần tư khung giờ bị bỏ trống, bác sĩ ngồi chờ trong khi ngoài sảnh vẫn đông.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 67.652,
+      "end_time": 92.0,
+      "point_id": "f3a98a85-bf4c-5d9e-918b-0197049c6f2d",
+      "ref_id": [
+        "c8b57616-1b1e-5b6e-a813-adaacc67d721"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Con số 23% là cao quá. Các bác sĩ khoa Da liễu đã phản ánh với tôi là buổi sáng thứ Hai có tới 8 ca đặt không đến. Các anh có phương án gì không?",
+      "segment_html": "Con số 23% là cao quá. Các bác sĩ khoa Da liễu đã phản ánh với tôi là buổi sáng thứ Hai có tới 8 ca đặt không đến. Các anh có phương án gì không?",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 93.0,
+      "end_time": 108.652,
+      "point_id": "ae037f6a-993d-5f94-a906-7db1b41f2ea9",
+      "ref_id": [
+        "49946500-7b28-576c-b680-9b640843888b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Dạ, nhóm đề xuất ba việc. Một là 24 giờ trước giờ khám thì gửi tin nhắn và thông báo ứng dụng yêu cầu bệnh nhân bấm xác nhận, nếu đến 6 giờ trước giờ khám vẫn không xác nhận thì hệ thống tự hủy và nhả khung giờ cho người khác.",
+      "segment_html": "Dạ, nhóm đề xuất ba việc. Một là 24 giờ trước giờ khám thì gửi tin nhắn và thông báo ứng dụng yêu cầu bệnh nhân bấm xác nhận, nếu đến 6 giờ trước giờ khám vẫn không xác nhận thì hệ thống tự hủy và nhả khung giờ cho người khác.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 109.652,
+      "end_time": 132.261,
+      "point_id": "99e63cde-7f29-57af-801c-01db81b1acea",
+      "ref_id": [
+        "177b776b-dd73-53d0-8d90-4b98bec1ccb3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Hai là cho phép đặt quá số khung giờ khoảng 10% ở các khung đầu buổi, giống hãng bay bán vượt chỗ. Ba là bệnh nhân không đến ba lần thì tạm khóa đặt lịch trực tuyến 30 ngày.",
+      "segment_html": "Hai là cho phép đặt quá số khung giờ khoảng 10% ở các khung đầu buổi, giống hãng bay bán vượt chỗ. Ba là bệnh nhân không đến ba lần thì tạm khóa đặt lịch trực tuyến 30 ngày.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 132.511,
+      "end_time": 149.467,
+      "point_id": "99e63cde-7f29-57af-801c-01db81b1acea",
+      "ref_id": [
+        "177b776b-dd73-53d0-8d90-4b98bec1ccb3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "Cái thứ nhất thì đồng ý. Cái đặt vượt 10% thì tôi không đồng ý, bệnh viện không phải hãng bay, nếu cả mười người đến hết thì bệnh nhân chờ lâu lại phàn nàn là đặt lịch rồi vẫn phải chờ, mất uy tín. Còn khóa 30 ngày thì phải cẩn thận,",
+      "segment_html": "Cái thứ nhất thì đồng ý. Cái đặt vượt 10% thì tôi không đồng ý, bệnh viện không phải hãng bay, nếu cả mười người đến hết thì bệnh nhân chờ lâu lại phàn nàn là đặt lịch rồi vẫn phải chờ, mất uy tín. Còn khóa 30 ngày thì phải cẩn thận,",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 150.467,
+      "end_time": 173.511,
+      "point_id": "4eda317e-3d4f-57fc-9bde-d30d6086ae5a",
+      "ref_id": [
+        "81b467da-118e-5244-9187-6e6cb2a54973"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "người cao tuổi nhiều khi con cháu đặt hộ rồi quên, khóa thì họ lại xuống xếp hàng, nhưng tôi thấy có thể khóa được, miễn là có thông báo rõ ràng và tổng đài có thể mở khóa khi bệnh nhân gọi lên giải thích.",
+      "segment_html": "người cao tuổi nhiều khi con cháu đặt hộ rồi quên, khóa thì họ lại xuống xếp hàng, nhưng tôi thấy có thể khóa được, miễn là có thông báo rõ ràng và tổng đài có thể mở khóa khi bệnh nhân gọi lên giải thích.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 173.761,
+      "end_time": 193.761,
+      "point_id": "4eda317e-3d4f-57fc-9bde-d30d6086ae5a",
+      "ref_id": [
+        "81b467da-118e-5244-9187-6e6cb2a54973"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Vậy em chốt: áp dụng xác nhận lại trước 24 giờ và tự hủy nếu đến 6 giờ trước giờ khám chưa xác nhận; không đặt vượt khung giờ; khóa đặt trực tuyến 30 ngày nếu không đến ba lần, tổng đài được quyền mở khóa.",
+      "segment_html": "Vậy em chốt: áp dụng xác nhận lại trước 24 giờ và tự hủy nếu đến 6 giờ trước giờ khám chưa xác nhận; không đặt vượt khung giờ; khóa đặt trực tuyến 30 ngày nếu không đến ba lần, tổng đài được quyền mở khóa.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 194.761,
+      "end_time": 214.761,
+      "point_id": "31089e8c-4a0e-5ee9-b9e2-d7fab1f0817a",
+      "ref_id": [
+        "fe01327c-4f2d-51a1-a0ec-bec3318d9790"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Mở rộng ra 12 chuyên khoa từ ngày 1 tháng sau. Linh làm phần xác nhận và tự hủy nhé.",
+      "segment_html": "Mở rộng ra 12 chuyên khoa từ ngày 1 tháng sau. Linh làm phần xác nhận và tự hủy nhé.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 215.011,
+      "end_time": 223.707,
+      "point_id": "31089e8c-4a0e-5ee9-b9e2-d7fab1f0817a",
+      "ref_id": [
+        "fe01327c-4f2d-51a1-a0ec-bec3318d9790"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Dạ, em làm trong sprint này, khoảng 5 ngày công, xong trước thứ Sáu tuần sau.",
+      "segment_html": "Dạ, em làm trong sprint này, khoảng 5 ngày công, xong trước thứ Sáu tuần sau.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 224.707,
+      "end_time": 231.663,
+      "point_id": "ade044b3-08e5-5b1f-915b-09aef9daf743",
+      "ref_id": [
+        "43b35b46-d472-5b8e-b255-2118c5d94906"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Phần quy trình mở khóa ở tổng đài thì phòng tôi soạn hướng dẫn cho tổng đài viên.",
+      "segment_html": "Phần quy trình mở khóa ở tổng đài thì phòng tôi soạn hướng dẫn cho tổng đài viên.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 232.663,
+      "end_time": 240.489,
+      "point_id": "2031a4bb-d1df-5b19-bdcc-80a372040844",
+      "ref_id": [
+        "703a8dda-d86a-5fef-aa97-07a407ecdc7e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Hạng mục thứ hai là bệnh án điện tử nội trú. Quân nói nhé.",
+      "segment_html": "Hạng mục thứ hai là bệnh án điện tử nội trú. Quân nói nhé.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 241.489,
+      "end_time": 247.576,
+      "point_id": "2f2e3cf7-b534-50d0-8cc6-01c3a8bc19a0",
+      "ref_id": [
+        "c1838d5c-ceab-5a0a-bdad-16839455ce2e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Dạ. Bệnh án điện tử nội trú đã chạy chính thức ở khoa Nội tổng hợp và khoa Ngoại chấn thương được hai tháng, khoảng 1.600 bệnh án. Các phần đã có là phiếu khám vào viện, tờ điều trị hằng ngày, phiếu chăm sóc điều dưỡng, chỉ định cận lâm sàng,",
+      "segment_html": "Dạ. Bệnh án điện tử nội trú đã chạy chính thức ở khoa Nội tổng hợp và khoa Ngoại chấn thương được hai tháng, khoảng 1.600 bệnh án. Các phần đã có là phiếu khám vào viện, tờ điều trị hằng ngày, phiếu chăm sóc điều dưỡng, chỉ định cận lâm sàng,",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 248.576,
+      "end_time": 271.185,
+      "point_id": "57b1dcc7-730f-5041-b778-1c82906435fa",
+      "ref_id": [
+        "ab0855af-74bf-5179-99e2-306dd4b09e50"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "y lệnh thuốc và tóm tắt ra viện. Bác sĩ ký số từng tờ điều trị bằng USB token. Theo Thông tư 46 của Bộ Y tế thì để bỏ hẳn bệnh án giấy, bệnh viện phải đáp ứng đủ các tiêu chí và tự đánh giá, Sở Y tế công nhận.",
+      "segment_html": "y lệnh thuốc và tóm tắt ra viện. Bác sĩ ký số từng tờ điều trị bằng USB token. Theo Thông tư 46 của Bộ Y tế thì để bỏ hẳn bệnh án giấy, bệnh viện phải đáp ứng đủ các tiêu chí và tự đánh giá, Sở Y tế công nhận.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 271.435,
+      "end_time": 294.043,
+      "point_id": "57b1dcc7-730f-5041-b778-1c82906435fa",
+      "ref_id": [
+        "ab0855af-74bf-5179-99e2-306dd4b09e50"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Hiện mình đang chạy song song cả giấy và điện tử.",
+      "segment_html": "Hiện mình đang chạy song song cả giấy và điện tử.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 294.293,
+      "end_time": 299.076,
+      "point_id": "57b1dcc7-730f-5041-b778-1c82906435fa",
+      "ref_id": [
+        "ab0855af-74bf-5179-99e2-306dd4b09e50"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Tôi nói thẳng là các bác sĩ đang rất mệt vì chạy song song, viết tay một lần rồi lại gõ máy một lần. Bác sĩ khoa Ngoại phản ánh gõ tờ điều trị cho 30 bệnh nhân mất cả buổi sáng. Còn cái USB token thì cứ rút ra cắm vào, quên ở nhà là không ký được,",
+      "segment_html": "Tôi nói thẳng là các bác sĩ đang rất mệt vì chạy song song, viết tay một lần rồi lại gõ máy một lần. Bác sĩ khoa Ngoại phản ánh gõ tờ điều trị cho 30 bệnh nhân mất cả buổi sáng. Còn cái USB token thì cứ rút ra cắm vào, quên ở nhà là không ký được,",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 300.076,
+      "end_time": 325.728,
+      "point_id": "b7ae12ba-e558-53c1-a058-060af72d76c5",
+      "ref_id": [
+        "61a171c1-f690-5b16-9e3b-133050c0e458"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "có hôm khoa Nội có hai bác sĩ trực quên token. Phải làm sao cho bác sĩ nhập nhanh hơn.",
+      "segment_html": "có hôm khoa Nội có hai bác sĩ trực quên token. Phải làm sao cho bác sĩ nhập nhanh hơn.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 325.978,
+      "end_time": 334.674,
+      "point_id": "b7ae12ba-e558-53c1-a058-060af72d76c5",
+      "ref_id": [
+        "61a171c1-f690-5b16-9e3b-133050c0e458"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Dạ, về nhập liệu nhóm có hai hướng. Một là thêm mẫu câu và bộ mẫu theo bệnh, ví dụ bệnh nhân sau mổ kết hợp xương ngày thứ hai thì có sẵn mẫu diễn biến, bác sĩ chỉ sửa chỗ khác. Hai là sao chép tờ điều trị ngày hôm trước làm nền rồi sửa. Hai việc này khoảng hai tuần.",
+      "segment_html": "Dạ, về nhập liệu nhóm có hai hướng. Một là thêm mẫu câu và bộ mẫu theo bệnh, ví dụ bệnh nhân sau mổ kết hợp xương ngày thứ hai thì có sẵn mẫu diễn biến, bác sĩ chỉ sửa chỗ khác. Hai là sao chép tờ điều trị ngày hôm trước làm nền rồi sửa. Hai việc này khoảng hai tuần.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 335.674,
+      "end_time": 362.63,
+      "point_id": "56dc1d59-7fce-586a-be8d-39449c0dd380",
+      "ref_id": [
+        "acd9e05a-e479-5b25-8efa-82a90a5d4919"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Em thấy hiện nay có mấy dịch vụ nhận dạng giọng nói tiếng Việt khá tốt, hay mình cho bác sĩ đọc tờ điều trị rồi tự chuyển thành chữ, như thế còn nhanh hơn gõ.",
+      "segment_html": "Em thấy hiện nay có mấy dịch vụ nhận dạng giọng nói tiếng Việt khá tốt, hay mình cho bác sĩ đọc tờ điều trị rồi tự chuyển thành chữ, như thế còn nhanh hơn gõ.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 363.63,
+      "end_time": 379.283,
+      "point_id": "452020d5-bd83-513b-a629-9b00d4e16a0d",
+      "ref_id": [
+        "872b4fcc-c303-5015-9ff7-4aad821b09b7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Nhận dạng giọng nói thì nghe hấp dẫn nhưng thuật ngữ y khoa, tên thuốc, nhiều chỗ bác sĩ đọc tiếng Anh tiếng Pháp lẫn lộn, độ chính xác chưa chắc đã đủ. Mà dữ liệu bệnh án gửi lên dịch vụ đám mây bên ngoài thì phải đánh giá bảo mật.",
+      "segment_html": "Nhận dạng giọng nói thì nghe hấp dẫn nhưng thuật ngữ y khoa, tên thuốc, nhiều chỗ bác sĩ đọc tiếng Anh tiếng Pháp lẫn lộn, độ chính xác chưa chắc đã đủ. Mà dữ liệu bệnh án gửi lên dịch vụ đám mây bên ngoài thì phải đánh giá bảo mật.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 380.283,
+      "end_time": 402.891,
+      "point_id": "7212712f-bc8f-5398-a7db-3359f1cf4cfb",
+      "ref_id": [
+        "b94bcf93-4fe7-54dc-9436-4ceb1857c388"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Cái này để nghiên cứu sau, sprint này chưa làm.",
+      "segment_html": "Cái này để nghiên cứu sau, sprint này chưa làm.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 403.141,
+      "end_time": 407.489,
+      "point_id": "7212712f-bc8f-5398-a7db-3359f1cf4cfb",
+      "ref_id": [
+        "b94bcf93-4fe7-54dc-9436-4ceb1857c388"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Về ký số thì tôi đề nghị chuyển sang sim ký số hoặc ký số từ xa trên điện thoại, nhà mạng bây giờ đều có dịch vụ, bác sĩ xác nhận bằng mã PIN trên điện thoại, không phải cắm token. Chi phí khoảng 300.000 đồng một bác sĩ một năm.",
+      "segment_html": "Về ký số thì tôi đề nghị chuyển sang sim ký số hoặc ký số từ xa trên điện thoại, nhà mạng bây giờ đều có dịch vụ, bác sĩ xác nhận bằng mã PIN trên điện thoại, không phải cắm token. Chi phí khoảng 300.000 đồng một bác sĩ một năm.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 408.489,
+      "end_time": 431.098,
+      "point_id": "51ba45cc-31f1-56a5-993a-626a531aa38c",
+      "ref_id": [
+        "453daa3a-9306-5aba-9ad9-a5c14526fde9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Cái đó được. Bệnh viện chi được.",
+      "segment_html": "Cái đó được. Bệnh viện chi được.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 432.098,
+      "end_time": 435.141,
+      "point_id": "ef1baf39-1228-5a99-9654-463179a3365a",
+      "ref_id": [
+        "81a5111b-4202-54c1-bcb2-e87ffb905039"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Em chốt: thêm bộ mẫu câu theo bệnh và chức năng sao chép tờ điều trị ngày trước, làm trong hai sprint tới; chuyển ký số sang ký số từ xa trên điện thoại cho bác sĩ hai khoa đang chạy; nhận dạng giọng nói chưa làm. Quân phụ trách tích hợp ký số từ xa.",
+      "segment_html": "Em chốt: thêm bộ mẫu câu theo bệnh và chức năng sao chép tờ điều trị ngày trước, làm trong hai sprint tới; chuyển ký số sang ký số từ xa trên điện thoại cho bác sĩ hai khoa đang chạy; nhận dạng giọng nói chưa làm. Quân phụ trách tích hợp ký số từ xa.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 436.141,
+      "end_time": 460.489,
+      "point_id": "5d8caa80-3be5-5134-a9c8-f80fa4ff0127",
+      "ref_id": [
+        "e652fa8b-3c6e-53d6-939d-0484b00b990f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Dạ, em làm việc với nhà cung cấp dịch vụ ký số, tích hợp xong trước cuối tháng.",
+      "segment_html": "Dạ, em làm việc với nhà cung cấp dịch vụ ký số, tích hợp xong trước cuối tháng.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 461.489,
+      "end_time": 469.315,
+      "point_id": "cc959a30-02d4-5b36-96df-780df51eb685",
+      "ref_id": [
+        "2079cf56-f804-561e-a234-8cfd1ab5b7b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Việc mua sim ký số cho khoảng 45 bác sĩ hai khoa thì phòng tôi làm tờ trình mua sắm.",
+      "segment_html": "Việc mua sim ký số cho khoảng 45 bác sĩ hai khoa thì phòng tôi làm tờ trình mua sắm.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 470.315,
+      "end_time": 479.011,
+      "point_id": "ad3a3e74-ef8f-57bb-bddb-3e5f9e8a1f03",
+      "ref_id": [
+        "0d8df700-de3f-5015-8348-ab21dcf1c8a3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Tiếp theo là kết nối máy xét nghiệm. Quân nói tiếp.",
+      "segment_html": "Tiếp theo là kết nối máy xét nghiệm. Quân nói tiếp.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 480.011,
+      "end_time": 484.793,
+      "point_id": "89db10c7-7c19-5cae-ae27-d92f3f0ad509",
+      "ref_id": [
+        "75ef6ab2-d66d-599b-ac24-8f13ac6f1af5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Dạ. Khoa Xét nghiệm có 14 máy, đến nay đã kết nối được 9 máy qua chuẩn HL7 và ASTM, kết quả tự động đổ về hệ thống, bác sĩ xem ngay trên bệnh án, không phải chờ giấy. Thời gian trả kết quả sinh hóa trung bình giảm từ 95 phút xuống còn 52 phút.",
+      "segment_html": "Dạ. Khoa Xét nghiệm có 14 máy, đến nay đã kết nối được 9 máy qua chuẩn HL7 và ASTM, kết quả tự động đổ về hệ thống, bác sĩ xem ngay trên bệnh án, không phải chờ giấy. Thời gian trả kết quả sinh hóa trung bình giảm từ 95 phút xuống còn 52 phút.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 485.793,
+      "end_time": 510.141,
+      "point_id": "02098a86-c940-5912-ba30-4bb323eee8c1",
+      "ref_id": [
+        "a7e44d75-524e-5924-bf5c-47e76d58cfa6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Còn 5 máy chưa kết nối được, gồm 3 máy huyết học đời 2012 chỉ có cổng nối tiếp RS232 và 2 máy đông máu rất cũ không có cổng xuất dữ liệu. Với 3 máy huyết học thì có thể mua bộ chuyển đổi cổng nối tiếp sang mạng, khoảng 12 triệu một bộ.",
+      "segment_html": "Còn 5 máy chưa kết nối được, gồm 3 máy huyết học đời 2012 chỉ có cổng nối tiếp RS232 và 2 máy đông máu rất cũ không có cổng xuất dữ liệu. Với 3 máy huyết học thì có thể mua bộ chuyển đổi cổng nối tiếp sang mạng, khoảng 12 triệu một bộ.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 510.391,
+      "end_time": 534.304,
+      "point_id": "02098a86-c940-5912-ba30-4bb323eee8c1",
+      "ref_id": [
+        "a7e44d75-524e-5924-bf5c-47e76d58cfa6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Với 2 máy đông máu thì không kết nối được.",
+      "segment_html": "Với 2 máy đông máu thì không kết nối được.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 534.554,
+      "end_time": 538.902,
+      "point_id": "02098a86-c940-5912-ba30-4bb323eee8c1",
+      "ref_id": [
+        "a7e44d75-524e-5924-bf5c-47e76d58cfa6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "2 máy đông máu đó trong kế hoạch thanh lý năm sau rồi, bệnh viện đang làm hồ sơ mua máy mới. Không nên đầu tư thêm.",
+      "segment_html": "2 máy đông máu đó trong kế hoạch thanh lý năm sau rồi, bệnh viện đang làm hồ sơ mua máy mới. Không nên đầu tư thêm.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 539.902,
+      "end_time": 551.641,
+      "point_id": "f4309541-04dc-5de2-9486-7b6ca4e2c7b4",
+      "ref_id": [
+        "361738a8-5fc3-57e8-9539-ee5f9568e31c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Tôi muốn bổ sung một yêu cầu rất quan trọng. Khi có kết quả nguy hiểm, ví dụ kali máu trên 6,5 hay dưới 2,5, hay tiểu cầu dưới 20.000, thì hệ thống phải cảnh báo ngay cho bác sĩ điều trị, không chờ bác sĩ mở bệnh án ra xem.",
+      "segment_html": "Tôi muốn bổ sung một yêu cầu rất quan trọng. Khi có kết quả nguy hiểm, ví dụ kali máu trên 6,5 hay dưới 2,5, hay tiểu cầu dưới 20.000, thì hệ thống phải cảnh báo ngay cho bác sĩ điều trị, không chờ bác sĩ mở bệnh án ra xem.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 552.641,
+      "end_time": 574.815,
+      "point_id": "c45d431d-259e-571c-a5eb-acf1f193e52e",
+      "ref_id": [
+        "0edfc5fb-4540-5d9b-b3dc-b9c751b3d50a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Hiện nay khoa Xét nghiệm vẫn phải gọi điện thoại, có khi gọi không được.",
+      "segment_html": "Hiện nay khoa Xét nghiệm vẫn phải gọi điện thoại, có khi gọi không được.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 575.065,
+      "end_time": 581.587,
+      "point_id": "c45d431d-259e-571c-a5eb-acf1f193e52e",
+      "ref_id": [
+        "0edfc5fb-4540-5d9b-b3dc-b9c751b3d50a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Dạ, kỹ thuật làm được. Mình cấu hình ngưỡng giá trị nguy hiểm cho từng chỉ số, khi có kết quả vượt ngưỡng thì đẩy cảnh báo lên màn hình trạm điều dưỡng của khoa và gửi thông báo ứng dụng cho bác sĩ điều trị, bác sĩ phải bấm xác nhận đã nhận.",
+      "segment_html": "Dạ, kỹ thuật làm được. Mình cấu hình ngưỡng giá trị nguy hiểm cho từng chỉ số, khi có kết quả vượt ngưỡng thì đẩy cảnh báo lên màn hình trạm điều dưỡng của khoa và gửi thông báo ứng dụng cho bác sĩ điều trị, bác sĩ phải bấm xác nhận đã nhận.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 582.587,
+      "end_time": 606.065,
+      "point_id": "478c0889-33ca-54d5-90de-4dae8b1926d8",
+      "ref_id": [
+        "85ac4160-8a55-58e6-aea9-dd9200f338b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Nếu sau 15 phút không ai xác nhận thì báo cho trưởng khoa. Nhưng danh sách ngưỡng thì cần khoa Xét nghiệm cung cấp.",
+      "segment_html": "Nếu sau 15 phút không ai xác nhận thì báo cho trưởng khoa. Nhưng danh sách ngưỡng thì cần khoa Xét nghiệm cung cấp.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 606.315,
+      "end_time": 616.75,
+      "point_id": "478c0889-33ca-54d5-90de-4dae8b1926d8",
+      "ref_id": [
+        "85ac4160-8a55-58e6-aea9-dd9200f338b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Danh sách ngưỡng giá trị nguy hiểm thì tôi giao khoa Xét nghiệm, bác sĩ Thành trưởng khoa sẽ gửi trong tuần này.",
+      "segment_html": "Danh sách ngưỡng giá trị nguy hiểm thì tôi giao khoa Xét nghiệm, bác sĩ Thành trưởng khoa sẽ gửi trong tuần này.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 617.75,
+      "end_time": 627.75,
+      "point_id": "d9f67ea0-c722-51b0-84bc-96d9d90d28f8",
+      "ref_id": [
+        "7a6aab8d-903b-56d8-ba0b-a18b308de173"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Em chốt: mua 3 bộ chuyển đổi cho 3 máy huyết học; 2 máy đông máu sắp thanh lý vẫn nhập tay; làm cảnh báo giá trị nguy hiểm có xác nhận và leo thang lên trưởng khoa sau 15 phút.",
+      "segment_html": "Em chốt: mua 3 bộ chuyển đổi cho 3 máy huyết học; 2 máy đông máu sắp thanh lý vẫn nhập tay; làm cảnh báo giá trị nguy hiểm có xác nhận và leo thang lên trưởng khoa sau 15 phút.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 628.75,
+      "end_time": 646.576,
+      "point_id": "e3c1a822-fc36-5be2-a740-0e1983147994",
+      "ref_id": [
+        "72a88ea1-0f8a-5353-a879-d94506fa5937"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Phòng tôi mua 3 bộ chuyển đổi, dự kiến hai tuần có hàng.",
+      "segment_html": "Phòng tôi mua 3 bộ chuyển đổi, dự kiến hai tuần có hàng.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 647.576,
+      "end_time": 653.228,
+      "point_id": "526b750d-f545-5729-b46b-62e8b7c2a671",
+      "ref_id": [
+        "3603c8d3-4268-52a5-9856-d1f36280d6aa"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Còn cảnh báo giá trị nguy hiểm em làm ngay sau khi nhận danh sách ngưỡng, khoảng một tuần.",
+      "segment_html": "Còn cảnh báo giá trị nguy hiểm em làm ngay sau khi nhận danh sách ngưỡng, khoảng một tuần.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 654.228,
+      "end_time": 662.489,
+      "point_id": "5acf3e52-ccb6-50ed-a07a-29221c3416ed",
+      "ref_id": [
+        "0c1e6025-5aa0-5d61-8c72-7d4b87fc6290"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Hạng mục thứ tư là thanh toán không tiền mặt. Tâm bên kiểm thử theo dõi phần này, Tâm nói nhé.",
+      "segment_html": "Hạng mục thứ tư là thanh toán không tiền mặt. Tâm bên kiểm thử theo dõi phần này, Tâm nói nhé.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 663.489,
+      "end_time": 672.62,
+      "point_id": "61387261-6c31-5720-9792-28e1d0d99a24",
+      "ref_id": [
+        "30feb5d8-2e4e-5fc5-ac4b-6e2b89c44b19"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Dạ. Thanh toán viện phí bằng mã QR tại quầy thu ngân đã chạy hai tháng, hiện chiếm khoảng 31% số giao dịch ngoại trú. Quy trình là thu ngân in phiếu có mã QR động chứa số tiền và mã hồ sơ, bệnh nhân quét bằng ứng dụng ngân hàng,",
+      "segment_html": "Dạ. Thanh toán viện phí bằng mã QR tại quầy thu ngân đã chạy hai tháng, hiện chiếm khoảng 31% số giao dịch ngoại trú. Quy trình là thu ngân in phiếu có mã QR động chứa số tiền và mã hồ sơ, bệnh nhân quét bằng ứng dụng ngân hàng,",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 673.62,
+      "end_time": 695.793,
+      "point_id": "6f56eb0a-59ec-5b46-9ed3-505f2f9e23d5",
+      "ref_id": [
+        "348d9e1f-5647-568f-90e1-99d3d9032747"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "ngân hàng báo về hệ thống thì phiếu tự chuyển trạng thái đã thanh toán. Vấn đề là có khoảng 1,5% giao dịch bị lệch, tức là bệnh nhân đã chuyển tiền nhưng hệ thống chưa nhận được thông báo của ngân hàng,",
+      "segment_html": "ngân hàng báo về hệ thống thì phiếu tự chuyển trạng thái đã thanh toán. Vấn đề là có khoảng 1,5% giao dịch bị lệch, tức là bệnh nhân đã chuyển tiền nhưng hệ thống chưa nhận được thông báo của ngân hàng,",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 696.043,
+      "end_time": 714.739,
+      "point_id": "6f56eb0a-59ec-5b46-9ed3-505f2f9e23d5",
+      "ref_id": [
+        "348d9e1f-5647-568f-90e1-99d3d9032747"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "thu ngân phải bảo bệnh nhân chờ hoặc chụp màn hình, rồi cuối ngày kế toán đối soát bằng tay với sao kê. Tháng trước có 2 trường hợp bệnh nhân bị thu hai lần, một lần chuyển khoản một lần tiền mặt, phải hoàn tiền.",
+      "segment_html": "thu ngân phải bảo bệnh nhân chờ hoặc chụp màn hình, rồi cuối ngày kế toán đối soát bằng tay với sao kê. Tháng trước có 2 trường hợp bệnh nhân bị thu hai lần, một lần chuyển khoản một lần tiền mặt, phải hoàn tiền.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 714.989,
+      "end_time": 734.989,
+      "point_id": "6f56eb0a-59ec-5b46-9ed3-505f2f9e23d5",
+      "ref_id": [
+        "348d9e1f-5647-568f-90e1-99d3d9032747"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Nguyên nhân là ngân hàng gửi thông báo qua webhook, khi hệ thống ngân hàng tải cao thì gửi chậm có khi 10 đến 20 phút, có khi mất hẳn.",
+      "segment_html": "Nguyên nhân là ngân hàng gửi thông báo qua webhook, khi hệ thống ngân hàng tải cao thì gửi chậm có khi 10 đến 20 phút, có khi mất hẳn.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 735.989,
+      "end_time": 749.033,
+      "point_id": "e295a0cf-a929-5ca1-b56e-8d68854b0c0a",
+      "ref_id": [
+        "9b7a94d0-49b1-5dce-9320-3310ed6d79f3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Em đề xuất thêm một tiến trình chủ động hỏi lại ngân hàng theo mã giao dịch sau 2 phút nếu chưa nhận được thông báo, và cuối ngày tự động đối soát toàn bộ với sao kê điện tử của ngân hàng theo mã giao dịch,",
+      "segment_html": "Em đề xuất thêm một tiến trình chủ động hỏi lại ngân hàng theo mã giao dịch sau 2 phút nếu chưa nhận được thông báo, và cuối ngày tự động đối soát toàn bộ với sao kê điện tử của ngân hàng theo mã giao dịch,",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 749.283,
+      "end_time": 769.717,
+      "point_id": "e295a0cf-a929-5ca1-b56e-8d68854b0c0a",
+      "ref_id": [
+        "9b7a94d0-49b1-5dce-9320-3310ed6d79f3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "chỉ những giao dịch lệch mới phải xử lý tay.",
+      "segment_html": "chỉ những giao dịch lệch mới phải xử lý tay.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 769.967,
+      "end_time": 774.315,
+      "point_id": "e295a0cf-a929-5ca1-b56e-8d68854b0c0a",
+      "ref_id": [
+        "9b7a94d0-49b1-5dce-9320-3310ed6d79f3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "Còn tạm ứng nội trú thì sao? Người nhà bệnh nhân nội trú phải xuống quầy nộp tạm ứng, nhiều khi nửa đêm phải đi tìm cây ATM.",
+      "segment_html": "Còn tạm ứng nội trú thì sao? Người nhà bệnh nhân nội trú phải xuống quầy nộp tạm ứng, nhiều khi nửa đêm phải đi tìm cây ATM.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 775.315,
+      "end_time": 787.489,
+      "point_id": "d34efccb-eaf7-5bc5-9dda-383dcca2ad2c",
+      "ref_id": [
+        "772beaf6-7d0e-59d6-9103-ed52d205547f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Dạ, ứng dụng có thể thêm chức năng tạm ứng nội trú, người nhà xem số dư tạm ứng và chi phí đã phát sinh theo ngày, nạp thêm tạm ứng qua mã QR ngay trên ứng dụng. Khoảng hai sprint.",
+      "segment_html": "Dạ, ứng dụng có thể thêm chức năng tạm ứng nội trú, người nhà xem số dư tạm ứng và chi phí đã phát sinh theo ngày, nạp thêm tạm ứng qua mã QR ngay trên ứng dụng. Khoảng hai sprint.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 788.489,
+      "end_time": 806.315,
+      "point_id": "a85c33d1-7390-5610-9e2a-2cb3334e30f3",
+      "ref_id": [
+        "9a9b962a-e96c-50bc-995b-8c9c3a4f9da3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Em chốt: làm tiến trình hỏi lại ngân hàng sau 2 phút và đối soát tự động cuối ngày theo mã giao dịch; thêm chức năng tạm ứng nội trú qua ứng dụng ở sprint sau nữa. Quân làm phần đối soát.",
+      "segment_html": "Em chốt: làm tiến trình hỏi lại ngân hàng sau 2 phút và đối soát tự động cuối ngày theo mã giao dịch; thêm chức năng tạm ứng nội trú qua ứng dụng ở sprint sau nữa. Quân làm phần đối soát.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 807.315,
+      "end_time": 825.576,
+      "point_id": "dc0eb924-8b5f-54f0-8708-7f69aa0ea8bf",
+      "ref_id": [
+        "a42281c0-1b4b-5492-8a12-0dbaeac5d092"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Dạ, phần đối soát tự động em làm trong sprint này.",
+      "segment_html": "Dạ, phần đối soát tự động em làm trong sprint này.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 826.576,
+      "end_time": 831.359,
+      "point_id": "5f4d9880-a19b-5c00-9d38-e1787c1d22a0",
+      "ref_id": [
+        "0bb6ddf8-4451-5818-8e22-460b2b1ef1ad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Em rà lại toàn bộ giao dịch tháng trước để xem còn trường hợp thu trùng nào nữa không, gửi kế toán trước thứ Tư.",
+      "segment_html": "Em rà lại toàn bộ giao dịch tháng trước để xem còn trường hợp thu trùng nào nữa không, gửi kế toán trước thứ Tư.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 832.359,
+      "end_time": 843.228,
+      "point_id": "d8a61fe9-c852-5117-a11c-fae012991188",
+      "ref_id": [
+        "30e1797b-0318-5db8-8fdf-78ed909bcdcd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Hạng mục thứ năm là cổng giám định bảo hiểm y tế. Chị Yến nói giúp em.",
+      "segment_html": "Hạng mục thứ năm là cổng giám định bảo hiểm y tế. Chị Yến nói giúp em.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 844.228,
+      "end_time": 851.62,
+      "point_id": "b454b258-0ec9-55a7-8d7f-6ddc43125f22",
+      "ref_id": [
+        "6496f85e-a43b-5a23-8f74-017ae553feb1"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Vâng. Hiện nay hệ thống đẩy dữ liệu khám chữa bệnh lên cổng giám định của Bảo hiểm xã hội theo định dạng XML của Quyết định 4750, mỗi ngày đẩy một lần vào buổi tối. Tháng trước tỷ lệ hồ sơ bị từ chối thanh toán hoặc phải giải trình là 4,2%,",
+      "segment_html": "Vâng. Hiện nay hệ thống đẩy dữ liệu khám chữa bệnh lên cổng giám định của Bảo hiểm xã hội theo định dạng XML của Quyết định 4750, mỗi ngày đẩy một lần vào buổi tối. Tháng trước tỷ lệ hồ sơ bị từ chối thanh toán hoặc phải giải trình là 4,2%,",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 852.62,
+      "end_time": 875.663,
+      "point_id": "b6fcbfe2-8574-5cde-972a-6c15c412f007",
+      "ref_id": [
+        "954d5b70-0d84-5e65-9644-43e399120133"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "tương đương khoảng 380 triệu đồng chưa được thanh toán. Nguyên nhân chính là ba loại: một là mã dịch vụ kỹ thuật không khớp với bảng mã mới Bộ Y tế ban hành từ tháng 7, khoảng 45% lỗi; hai là bác sĩ chỉ định dịch vụ ngoài phạm vi chứng chỉ hành nghề,",
+      "segment_html": "tương đương khoảng 380 triệu đồng chưa được thanh toán. Nguyên nhân chính là ba loại: một là mã dịch vụ kỹ thuật không khớp với bảng mã mới Bộ Y tế ban hành từ tháng 7, khoảng 45% lỗi; hai là bác sĩ chỉ định dịch vụ ngoài phạm vi chứng chỉ hành nghề,",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 875.913,
+      "end_time": 899.826,
+      "point_id": "b6fcbfe2-8574-5cde-972a-6c15c412f007",
+      "ref_id": [
+        "954d5b70-0d84-5e65-9644-43e399120133"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "khoảng 30%; ba là thuốc kê vượt số ngày quy định hoặc không đúng chỉ định trong tờ hướng dẫn, khoảng 25%.",
+      "segment_html": "khoảng 30%; ba là thuốc kê vượt số ngày quy định hoặc không đúng chỉ định trong tờ hướng dẫn, khoảng 25%.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 900.076,
+      "end_time": 909.641,
+      "point_id": "b6fcbfe2-8574-5cde-972a-6c15c412f007",
+      "ref_id": [
+        "954d5b70-0d84-5e65-9644-43e399120133"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "Về kỹ thuật thì mình có thể thêm bước kiểm tra trước khi đẩy, tức là trước khi gửi hồ sơ, hệ thống tự chạy bộ luật: mã dịch vụ có trong danh mục mới không, bác sĩ chỉ định có chứng chỉ hành nghề phù hợp không, số ngày thuốc có vượt không.",
+      "segment_html": "Về kỹ thuật thì mình có thể thêm bước kiểm tra trước khi đẩy, tức là trước khi gửi hồ sơ, hệ thống tự chạy bộ luật: mã dịch vụ có trong danh mục mới không, bác sĩ chỉ định có chứng chỉ hành nghề phù hợp không, số ngày thuốc có vượt không.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 910.641,
+      "end_time": 934.12,
+      "point_id": "bf79ed51-0cdd-5313-adff-07a6c170fd67",
+      "ref_id": [
+        "c5c2f4e1-346f-5840-8526-c6d0c1128f86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "Hồ sơ nào lỗi thì hiện cảnh báo cho phòng Kế hoạch tổng hợp sửa trước. Bảng ánh xạ mã cũ sang mã mới thì em cần phòng Kế hoạch tổng hợp xác nhận.",
+      "segment_html": "Hồ sơ nào lỗi thì hiện cảnh báo cho phòng Kế hoạch tổng hợp sửa trước. Bảng ánh xạ mã cũ sang mã mới thì em cần phòng Kế hoạch tổng hợp xác nhận.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 934.37,
+      "end_time": 949.152,
+      "point_id": "bf79ed51-0cdd-5313-adff-07a6c170fd67",
+      "ref_id": [
+        "c5c2f4e1-346f-5840-8526-c6d0c1128f86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Kiểm tra lúc đẩy thì muộn rồi, bệnh nhân đã ra viện. Tôi muốn chặn ngay từ lúc bác sĩ chỉ định, bác sĩ không có phạm vi thì không cho chỉ định.",
+      "segment_html": "Kiểm tra lúc đẩy thì muộn rồi, bệnh nhân đã ra viện. Tôi muốn chặn ngay từ lúc bác sĩ chỉ định, bác sĩ không có phạm vi thì không cho chỉ định.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 950.152,
+      "end_time": 964.5,
+      "point_id": "9855219d-45c8-539c-aa31-32705054484a",
+      "ref_id": [
+        "8db34583-bff6-5ca2-a990-09d48f4a4ace"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "Dạ, việc chặn khi chỉ định thì làm được với chứng chỉ hành nghề, vì dữ liệu phạm vi hành nghề đã có. Còn kiểm tra thuốc thì bộ luật phức tạp hơn, giai đoạn này mình làm cảnh báo chứ chưa chặn.",
+      "segment_html": "Dạ, việc chặn khi chỉ định thì làm được với chứng chỉ hành nghề, vì dữ liệu phạm vi hành nghề đã có. Còn kiểm tra thuốc thì bộ luật phức tạp hơn, giai đoạn này mình làm cảnh báo chứ chưa chặn.",
+      "speaker_name": "Linh (Trưởng nhóm Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 965.5,
+      "end_time": 984.196,
+      "point_id": "f403a007-34ce-58ab-a0be-07fc84b042bd",
+      "ref_id": [
+        "03b711e1-346e-5139-bc42-0d05f5d74459"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Em có đọc là cổng giám định có hỗ trợ đẩy dữ liệu ngay khi kết thúc lượt khám, hay mình chuyển sang đẩy theo thời gian thực luôn, phát hiện lỗi sớm hơn.",
+      "segment_html": "Em có đọc là cổng giám định có hỗ trợ đẩy dữ liệu ngay khi kết thúc lượt khám, hay mình chuyển sang đẩy theo thời gian thực luôn, phát hiện lỗi sớm hơn.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 985.196,
+      "end_time": 999.978,
+      "point_id": "fa25f621-6d10-5f61-9667-f7fae0d922fc",
+      "ref_id": [
+        "7362b43d-4b7d-57f7-8473-a7c413dc4af4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "Không nên lúc này. Đẩy theo thời gian thực thì hồ sơ chưa hoàn thiện cũng lên, sai sót lại nhiều hơn, mà sửa hồ sơ đã đẩy thì thủ tục rắc rối. Giữ đẩy cuối ngày, làm bước kiểm tra trước đã.",
+      "segment_html": "Không nên lúc này. Đẩy theo thời gian thực thì hồ sơ chưa hoàn thiện cũng lên, sai sót lại nhiều hơn, mà sửa hồ sơ đã đẩy thì thủ tục rắc rối. Giữ đẩy cuối ngày, làm bước kiểm tra trước đã.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 1000.978,
+      "end_time": 1019.674,
+      "point_id": "b553e6dc-b417-54f4-a63f-b8de6ee44ed8",
+      "ref_id": [
+        "fdd3b9be-e1ff-5528-bd68-de03caea3b50"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Em chốt: cập nhật danh mục theo bảng mã dịch vụ kỹ thuật mới; chặn chỉ định ngoài phạm vi chứng chỉ hành nghề ngay khi bác sĩ chỉ định; thêm bước kiểm tra hồ sơ trước khi đẩy lên cổng giám định; vẫn đẩy dữ liệu cuối ngày.",
+      "segment_html": "Em chốt: cập nhật danh mục theo bảng mã dịch vụ kỹ thuật mới; chặn chỉ định ngoài phạm vi chứng chỉ hành nghề ngay khi bác sĩ chỉ định; thêm bước kiểm tra hồ sơ trước khi đẩy lên cổng giám định; vẫn đẩy dữ liệu cuối ngày.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1020.674,
+      "end_time": 1041.978,
+      "point_id": "59f7b49a-a17b-5923-bc3a-8f8b6af999fa",
+      "ref_id": [
+        "a8a9f342-8e54-555d-984f-fe9951f0fe8e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "Bảng ánh xạ mã cũ sang mã mới thì tôi làm với phòng Kế hoạch tổng hợp, gửi Quân trước ngày 20.",
+      "segment_html": "Bảng ánh xạ mã cũ sang mã mới thì tôi làm với phòng Kế hoạch tổng hợp, gửi Quân trước ngày 20.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 1042.978,
+      "end_time": 1052.543,
+      "point_id": "fc48bab9-4844-5fde-a8bc-0fca2c2e44e5",
+      "ref_id": [
+        "98e33f29-dc86-5340-842c-f8d005a305b6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Bước kiểm tra trước khi đẩy và chặn chỉ định thì em làm luôn sau khi có bảng ánh xạ.",
+      "segment_html": "Bước kiểm tra trước khi đẩy và chặn chỉ định thì em làm luôn sau khi có bảng ánh xạ.",
+      "speaker_name": "Quân (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1053.543,
+      "end_time": 1062.239,
+      "point_id": "366de834-fd5f-5bc9-917b-d58350e3016e",
+      "ref_id": [
+        "537000c1-bc59-5f4d-9ec6-4f8b87f41a7c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "Hạng mục cuối là đào tạo và lịch sprint tới. Theo kế hoạch, tháng sau mình mở rộng bệnh án điện tử sang khoa Nhi và khoa Sản, rồi quý tới là thêm bốn khoa nữa. Em đề xuất mô hình người dùng nòng cốt: mỗi khoa chọn 2 bác sĩ và 2 điều dưỡng,",
+      "segment_html": "Hạng mục cuối là đào tạo và lịch sprint tới. Theo kế hoạch, tháng sau mình mở rộng bệnh án điện tử sang khoa Nhi và khoa Sản, rồi quý tới là thêm bốn khoa nữa. Em đề xuất mô hình người dùng nòng cốt: mỗi khoa chọn 2 bác sĩ và 2 điều dưỡng,",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1063.239,
+      "end_time": 1087.152,
+      "point_id": "65b54495-61fd-50ac-beb1-74fd1e530324",
+      "ref_id": [
+        "114fade9-2690-5a1f-9e47-241e41843613"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "nhóm dự án đào tạo kỹ cho những người này trong 3 buổi, sau đó họ hướng dẫn lại trong khoa và là đầu mối hỗ trợ. Tuần đầu đi vào chạy thật thì nhóm dự án cử người trực tại khoa ca ngày.",
+      "segment_html": "nhóm dự án đào tạo kỹ cho những người này trong 3 buổi, sau đó họ hướng dẫn lại trong khoa và là đầu mối hỗ trợ. Tuần đầu đi vào chạy thật thì nhóm dự án cử người trực tại khoa ca ngày.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1087.402,
+      "end_time": 1106.533,
+      "point_id": "65b54495-61fd-50ac-beb1-74fd1e530324",
+      "ref_id": [
+        "114fade9-2690-5a1f-9e47-241e41843613"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Tôi đồng ý mô hình này. Nhưng chọn người nòng cốt phải chọn người trẻ, chịu khó, không chọn trưởng khoa vì trưởng khoa bận lắm. Và đào tạo phải sau giờ giao ban sáng, không lấy giờ khám.",
+      "segment_html": "Tôi đồng ý mô hình này. Nhưng chọn người nòng cốt phải chọn người trẻ, chịu khó, không chọn trưởng khoa vì trưởng khoa bận lắm. Và đào tạo phải sau giờ giao ban sáng, không lấy giờ khám.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 1107.533,
+      "end_time": 1124.489,
+      "point_id": "967ed62e-5bd8-52ba-9b01-ce87ad75d181",
+      "ref_id": [
+        "2182f6e2-aae8-52b7-b5c4-0f07d1f9d66a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 70,
+      "segment": "Phòng Công nghệ thông tin cũng sẽ cử 2 người học cùng để sau này bệnh viện tự hỗ trợ được, không phụ thuộc hoàn toàn vào nhà thầu.",
+      "segment_html": "Phòng Công nghệ thông tin cũng sẽ cử 2 người học cùng để sau này bệnh viện tự hỗ trợ được, không phụ thuộc hoàn toàn vào nhà thầu.",
+      "speaker_name": "Chị Yến (Trưởng phòng Công nghệ thông tin bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 1125.489,
+      "end_time": 1138.098,
+      "point_id": "5418445c-d60a-53b1-9984-b669f1872e56",
+      "ref_id": [
+        "3ae637dd-30d6-5e54-bda3-608717ff5b60"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 71,
+      "segment": "Em đề nghị có bộ tài liệu hướng dẫn ngắn dạng thẻ, mỗi thao tác một trang có ảnh chụp màn hình, dán ở trạm điều dưỡng, vì bác sĩ không có thời gian đọc tài liệu dài.",
+      "segment_html": "Em đề nghị có bộ tài liệu hướng dẫn ngắn dạng thẻ, mỗi thao tác một trang có ảnh chụp màn hình, dán ở trạm điều dưỡng, vì bác sĩ không có thời gian đọc tài liệu dài.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1139.098,
+      "end_time": 1155.62,
+      "point_id": "3056152f-d08e-5d97-8330-bb87b9837c4e",
+      "ref_id": [
+        "320c1ec0-897d-5502-accc-c9274f794f6d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 72,
+      "segment": "Em chốt: đào tạo theo mô hình người dùng nòng cốt, mỗi khoa 2 bác sĩ, 2 điều dưỡng, 3 buổi sau giao ban sáng; phòng Công nghệ thông tin cử 2 người học cùng; tuần đầu chạy thật có người của dự án trực ca ngày;",
+      "segment_html": "Em chốt: đào tạo theo mô hình người dùng nòng cốt, mỗi khoa 2 bác sĩ, 2 điều dưỡng, 3 buổi sau giao ban sáng; phòng Công nghệ thông tin cử 2 người học cùng; tuần đầu chạy thật có người của dự án trực ca ngày;",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1156.62,
+      "end_time": 1177.054,
+      "point_id": "c2fa286f-3e80-55a2-819e-14a7cf854e70",
+      "ref_id": [
+        "a13adda0-75ce-5e6d-835d-61a4bf711792"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 73,
+      "segment": "khoa Nhi và khoa Sản bắt đầu từ ngày 1 tháng sau.",
+      "segment_html": "khoa Nhi và khoa Sản bắt đầu từ ngày 1 tháng sau.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1177.304,
+      "end_time": 1182.522,
+      "point_id": "c2fa286f-3e80-55a2-819e-14a7cf854e70",
+      "ref_id": [
+        "a13adda0-75ce-5e6d-835d-61a4bf711792"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 74,
+      "segment": "Danh sách người nòng cốt của khoa Nhi và khoa Sản thì tôi chỉ đạo hai khoa gửi phòng Kế hoạch tổng hợp trước thứ Hai tuần sau.",
+      "segment_html": "Danh sách người nòng cốt của khoa Nhi và khoa Sản thì tôi chỉ đạo hai khoa gửi phòng Kế hoạch tổng hợp trước thứ Hai tuần sau.",
+      "speaker_name": "BS. Hạnh (Phó Giám đốc bệnh viện)",
+      "speaker_org_unit": null,
+      "start_time": 1183.522,
+      "end_time": 1195.696,
+      "point_id": "7dbdf392-722c-5af1-9e5d-02cabe9f5190",
+      "ref_id": [
+        "a5437ec5-9281-573f-8274-0bcebb722202"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 75,
+      "segment": "Bộ thẻ hướng dẫn em làm, gửi bác sĩ Hạnh duyệt trước khi in.",
+      "segment_html": "Bộ thẻ hướng dẫn em làm, gửi bác sĩ Hạnh duyệt trước khi in.",
+      "speaker_name": "Tâm (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1196.696,
+      "end_time": 1202.783,
+      "point_id": "36342999-9273-5bbf-a946-26a511f4f3b2",
+      "ref_id": [
+        "92e28c25-5032-5cdf-86a6-181ee37add62"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 76,
+      "segment": "Em sẽ lên lịch đào tạo chi tiết và gửi cả nhóm sau khi có danh sách. Cảm ơn mọi người, sprint này nhiều việc, cố gắng nhé.",
+      "segment_html": "Em sẽ lên lịch đào tạo chi tiết và gửi cả nhóm sau khi có danh sách. Cảm ơn mọi người, sprint này nhiều việc, cố gắng nhé.",
+      "speaker_name": "Anh Long (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1203.783,
+      "end_time": 1215.957,
+      "point_id": "c48df150-5ace-5417-9d7b-bf1afba747f2",
+      "ref_id": [
+        "2e7cba50-70ce-5a5f-9a8d-16d4525a4679"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Chào bác sĩ Hạnh, chào chị Yến và cả nhóm. Sprint này mình có sáu hạng mục cần rà, em đi lần lượt cho nhanh: đặt lịch khám, bệnh án điện tử, kết nối máy xét nghiệm, thanh toán không tiền mặt, cổng giám định bảo hiểm và cuối cùng là đào tạo người dùng. Linh nói phần đặt lịch khám trước. Dạ. Chức năng đặt lịch khám trên ứng dụng di động và trên web đã chạy thử ba tuần ở bốn chuyên khoa là Nội tổng hợp, Tai mũi họng, Da liễu và Sản. Bệnh nhân chọn chuyên khoa, chọn bác sĩ hoặc để hệ thống tự xếp, chọn khung giờ 30 phút, nhận mã đặt lịch, đến bệnh viện quét mã ở ki-ốt là vào thẳng hàng đợi khám không cần lấy số. Ba tuần có khoảng 2.140 lượt đặt. Phản hồi của bệnh nhân nhìn chung tốt, thời gian chờ trung bình của nhóm đặt trước là 18 phút so với 65 phút của nhóm lấy số trực tiếp. Vấn đề lớn nhất là tỷ lệ đặt rồi không đến là 23%, tức là gần một phần tư khung giờ bị bỏ trống, bác sĩ ngồi chờ trong khi ngoài sảnh vẫn đông. Con số 23% là cao quá. Các bác sĩ khoa Da liễu đã phản ánh với tôi là buổi sáng thứ Hai có tới 8 ca đặt không đến. Các anh có phương án gì không? Dạ, nhóm đề xuất ba việc. Một là 24 giờ trước giờ khám thì gửi tin nhắn và thông báo ứng dụng yêu cầu bệnh nhân bấm xác nhận, nếu đến 6 giờ trước giờ khám vẫn không xác nhận thì hệ thống tự hủy và nhả khung giờ cho người khác. Hai là cho phép đặt quá số khung giờ khoảng 10% ở các khung đầu buổi, giống hãng bay bán vượt chỗ. Ba là bệnh nhân không đến ba lần thì tạm khóa đặt lịch trực tuyến 30 ngày. Cái thứ nhất thì đồng ý. Cái đặt vượt 10% thì tôi không đồng ý, bệnh viện không phải hãng bay, nếu cả mười người đến hết thì bệnh nhân chờ lâu lại phàn nàn là đặt lịch rồi vẫn phải chờ, mất uy tín. Còn khóa 30 ngày thì phải cẩn thận, người cao tuổi nhiều khi con cháu đặt hộ rồi quên, khóa thì họ lại xuống xếp hàng, nhưng tôi thấy có thể khóa được, miễn là có thông báo rõ ràng và tổng đài có thể mở khóa khi bệnh nhân gọi lên giải thích. Vậy em chốt: áp dụng xác nhận lại trước 24 giờ và tự hủy nếu đến 6 giờ trước giờ khám chưa xác nhận; không đặt vượt khung giờ; khóa đặt trực tuyến 30 ngày nếu không đến ba lần, tổng đài được quyền mở khóa. Mở rộng ra 12 chuyên khoa từ ngày 1 tháng sau. Linh làm phần xác nhận và tự hủy nhé. Dạ, em làm trong sprint này, khoảng 5 ngày công, xong trước thứ Sáu tuần sau. Phần quy trình mở khóa ở tổng đài thì phòng tôi soạn hướng dẫn cho tổng đài viên. Hạng mục thứ hai là bệnh án điện tử nội trú. Quân nói nhé. Dạ. Bệnh án điện tử nội trú đã chạy chính thức ở khoa Nội tổng hợp và khoa Ngoại chấn thương được hai tháng, khoảng 1.600 bệnh án. Các phần đã có là phiếu khám vào viện, tờ điều trị hằng ngày, phiếu chăm sóc điều dưỡng, chỉ định cận lâm sàng, y lệnh thuốc và tóm tắt ra viện. Bác sĩ ký số từng tờ điều trị bằng USB token. Theo Thông tư 46 của Bộ Y tế thì để bỏ hẳn bệnh án giấy, bệnh viện phải đáp ứng đủ các tiêu chí và tự đánh giá, Sở Y tế công nhận. Hiện mình đang chạy song song cả giấy và điện tử. Tôi nói thẳng là các bác sĩ đang rất mệt vì chạy song song, viết tay một lần rồi lại gõ máy một lần. Bác sĩ khoa Ngoại phản ánh gõ tờ điều trị cho 30 bệnh nhân mất cả buổi sáng. Còn cái USB token thì cứ rút ra cắm vào, quên ở nhà là không ký được, có hôm khoa Nội có hai bác sĩ trực quên token. Phải làm sao cho bác sĩ nhập nhanh hơn. Dạ, về nhập liệu nhóm có hai hướng. Một là thêm mẫu câu và bộ mẫu theo bệnh, ví dụ bệnh nhân sau mổ kết hợp xương ngày thứ hai thì có sẵn mẫu diễn biến, bác sĩ chỉ sửa chỗ khác. Hai là sao chép tờ điều trị ngày hôm trước làm nền rồi sửa. Hai việc này khoảng hai tuần. Em thấy hiện nay có mấy dịch vụ nhận dạng giọng nói tiếng Việt khá tốt, hay mình cho bác sĩ đọc tờ điều trị rồi tự chuyển thành chữ, như thế còn nhanh hơn gõ. Nhận dạng giọng nói thì nghe hấp dẫn nhưng thuật ngữ y khoa, tên thuốc, nhiều chỗ bác sĩ đọc tiếng Anh tiếng Pháp lẫn lộn, độ chính xác chưa chắc đã đủ. Mà dữ liệu bệnh án gửi lên dịch vụ đám mây bên ngoài thì phải đánh giá bảo mật. Cái này để nghiên cứu sau, sprint này chưa làm. Về ký số thì tôi đề nghị chuyển sang sim ký số hoặc ký số từ xa trên điện thoại, nhà mạng bây giờ đều có dịch vụ, bác sĩ xác nhận bằng mã PIN trên điện thoại, không phải cắm token. Chi phí khoảng 300.000 đồng một bác sĩ một năm. Cái đó được. Bệnh viện chi được. Em chốt: thêm bộ mẫu câu theo bệnh và chức năng sao chép tờ điều trị ngày trước, làm trong hai sprint tới; chuyển ký số sang ký số từ xa trên điện thoại cho bác sĩ hai khoa đang chạy; nhận dạng giọng nói chưa làm. Quân phụ trách tích hợp ký số từ xa. Dạ, em làm việc với nhà cung cấp dịch vụ ký số, tích hợp xong trước cuối tháng. Việc mua sim ký số cho khoảng 45 bác sĩ hai khoa thì phòng tôi làm tờ trình mua sắm. Tiếp theo là kết nối máy xét nghiệm. Quân nói tiếp. Dạ. Khoa Xét nghiệm có 14 máy, đến nay đã kết nối được 9 máy qua chuẩn HL7 và ASTM, kết quả tự động đổ về hệ thống, bác sĩ xem ngay trên bệnh án, không phải chờ giấy. Thời gian trả kết quả sinh hóa trung bình giảm từ 95 phút xuống còn 52 phút. Còn 5 máy chưa kết nối được, gồm 3 máy huyết học đời 2012 chỉ có cổng nối tiếp RS232 và 2 máy đông máu rất cũ không có cổng xuất dữ liệu. Với 3 máy huyết học thì có thể mua bộ chuyển đổi cổng nối tiếp sang mạng, khoảng 12 triệu một bộ. Với 2 máy đông máu thì không kết nối được. 2 máy đông máu đó trong kế hoạch thanh lý năm sau rồi, bệnh viện đang làm hồ sơ mua máy mới. Không nên đầu tư thêm. Tôi muốn bổ sung một yêu cầu rất quan trọng. Khi có kết quả nguy hiểm, ví dụ kali máu trên 6,5 hay dưới 2,5, hay tiểu cầu dưới 20.000, thì hệ thống phải cảnh báo ngay cho bác sĩ điều trị, không chờ bác sĩ mở bệnh án ra xem. Hiện nay khoa Xét nghiệm vẫn phải gọi điện thoại, có khi gọi không được. Dạ, kỹ thuật làm được. Mình cấu hình ngưỡng giá trị nguy hiểm cho từng chỉ số, khi có kết quả vượt ngưỡng thì đẩy cảnh báo lên màn hình trạm điều dưỡng của khoa và gửi thông báo ứng dụng cho bác sĩ điều trị, bác sĩ phải bấm xác nhận đã nhận. Nếu sau 15 phút không ai xác nhận thì báo cho trưởng khoa. Nhưng danh sách ngưỡng thì cần khoa Xét nghiệm cung cấp. Danh sách ngưỡng giá trị nguy hiểm thì tôi giao khoa Xét nghiệm, bác sĩ Thành trưởng khoa sẽ gửi trong tuần này. Em chốt: mua 3 bộ chuyển đổi cho 3 máy huyết học; 2 máy đông máu sắp thanh lý vẫn nhập tay; làm cảnh báo giá trị nguy hiểm có xác nhận và leo thang lên trưởng khoa sau 15 phút. Phòng tôi mua 3 bộ chuyển đổi, dự kiến hai tuần có hàng. Còn cảnh báo giá trị nguy hiểm em làm ngay sau khi nhận danh sách ngưỡng, khoảng một tuần. Hạng mục thứ tư là thanh toán không tiền mặt. Tâm bên kiểm thử theo dõi phần này, Tâm nói nhé. Dạ. Thanh toán viện phí bằng mã QR tại quầy thu ngân đã chạy hai tháng, hiện chiếm khoảng 31% số giao dịch ngoại trú. Quy trình là thu ngân in phiếu có mã QR động chứa số tiền và mã hồ sơ, bệnh nhân quét bằng ứng dụng ngân hàng, ngân hàng báo về hệ thống thì phiếu tự chuyển trạng thái đã thanh toán. Vấn đề là có khoảng 1,5% giao dịch bị lệch, tức là bệnh nhân đã chuyển tiền nhưng hệ thống chưa nhận được thông báo của ngân hàng, thu ngân phải bảo bệnh nhân chờ hoặc chụp màn hình, rồi cuối ngày kế toán đối soát bằng tay với sao kê. Tháng trước có 2 trường hợp bệnh nhân bị thu hai lần, một lần chuyển khoản một lần tiền mặt, phải hoàn tiền. Nguyên nhân là ngân hàng gửi thông báo qua webhook, khi hệ thống ngân hàng tải cao thì gửi chậm có khi 10 đến 20 phút, có khi mất hẳn. Em đề xuất thêm một tiến trình chủ động hỏi lại ngân hàng theo mã giao dịch sau 2 phút nếu chưa nhận được thông báo, và cuối ngày tự động đối soát toàn bộ với sao kê điện tử của ngân hàng theo mã giao dịch, chỉ những giao dịch lệch mới phải xử lý tay. Còn tạm ứng nội trú thì sao? Người nhà bệnh nhân nội trú phải xuống quầy nộp tạm ứng, nhiều khi nửa đêm phải đi tìm cây ATM. Dạ, ứng dụng có thể thêm chức năng tạm ứng nội trú, người nhà xem số dư tạm ứng và chi phí đã phát sinh theo ngày, nạp thêm tạm ứng qua mã QR ngay trên ứng dụng. Khoảng hai sprint. Em chốt: làm tiến trình hỏi lại ngân hàng sau 2 phút và đối soát tự động cuối ngày theo mã giao dịch; thêm chức năng tạm ứng nội trú qua ứng dụng ở sprint sau nữa. Quân làm phần đối soát. Dạ, phần đối soát tự động em làm trong sprint này. Em rà lại toàn bộ giao dịch tháng trước để xem còn trường hợp thu trùng nào nữa không, gửi kế toán trước thứ Tư. Hạng mục thứ năm là cổng giám định bảo hiểm y tế. Chị Yến nói giúp em. Vâng. Hiện nay hệ thống đẩy dữ liệu khám chữa bệnh lên cổng giám định của Bảo hiểm xã hội theo định dạng XML của Quyết định 4750, mỗi ngày đẩy một lần vào buổi tối. Tháng trước tỷ lệ hồ sơ bị từ chối thanh toán hoặc phải giải trình là 4,2%, tương đương khoảng 380 triệu đồng chưa được thanh toán. Nguyên nhân chính là ba loại: một là mã dịch vụ kỹ thuật không khớp với bảng mã mới Bộ Y tế ban hành từ tháng 7, khoảng 45% lỗi; hai là bác sĩ chỉ định dịch vụ ngoài phạm vi chứng chỉ hành nghề, khoảng 30%; ba là thuốc kê vượt số ngày quy định hoặc không đúng chỉ định trong tờ hướng dẫn, khoảng 25%. Về kỹ thuật thì mình có thể thêm bước kiểm tra trước khi đẩy, tức là trước khi gửi hồ sơ, hệ thống tự chạy bộ luật: mã dịch vụ có trong danh mục mới không, bác sĩ chỉ định có chứng chỉ hành nghề phù hợp không, số ngày thuốc có vượt không. Hồ sơ nào lỗi thì hiện cảnh báo cho phòng Kế hoạch tổng hợp sửa trước. Bảng ánh xạ mã cũ sang mã mới thì em cần phòng Kế hoạch tổng hợp xác nhận. Kiểm tra lúc đẩy thì muộn rồi, bệnh nhân đã ra viện. Tôi muốn chặn ngay từ lúc bác sĩ chỉ định, bác sĩ không có phạm vi thì không cho chỉ định. Dạ, việc chặn khi chỉ định thì làm được với chứng chỉ hành nghề, vì dữ liệu phạm vi hành nghề đã có. Còn kiểm tra thuốc thì bộ luật phức tạp hơn, giai đoạn này mình làm cảnh báo chứ chưa chặn. Em có đọc là cổng giám định có hỗ trợ đẩy dữ liệu ngay khi kết thúc lượt khám, hay mình chuyển sang đẩy theo thời gian thực luôn, phát hiện lỗi sớm hơn. Không nên lúc này. Đẩy theo thời gian thực thì hồ sơ chưa hoàn thiện cũng lên, sai sót lại nhiều hơn, mà sửa hồ sơ đã đẩy thì thủ tục rắc rối. Giữ đẩy cuối ngày, làm bước kiểm tra trước đã. Em chốt: cập nhật danh mục theo bảng mã dịch vụ kỹ thuật mới; chặn chỉ định ngoài phạm vi chứng chỉ hành nghề ngay khi bác sĩ chỉ định; thêm bước kiểm tra hồ sơ trước khi đẩy lên cổng giám định; vẫn đẩy dữ liệu cuối ngày. Bảng ánh xạ mã cũ sang mã mới thì tôi làm với phòng Kế hoạch tổng hợp, gửi Quân trước ngày 20. Bước kiểm tra trước khi đẩy và chặn chỉ định thì em làm luôn sau khi có bảng ánh xạ. Hạng mục cuối là đào tạo và lịch sprint tới. Theo kế hoạch, tháng sau mình mở rộng bệnh án điện tử sang khoa Nhi và khoa Sản, rồi quý tới là thêm bốn khoa nữa. Em đề xuất mô hình người dùng nòng cốt: mỗi khoa chọn 2 bác sĩ và 2 điều dưỡng, nhóm dự án đào tạo kỹ cho những người này trong 3 buổi, sau đó họ hướng dẫn lại trong khoa và là đầu mối hỗ trợ. Tuần đầu đi vào chạy thật thì nhóm dự án cử người trực tại khoa ca ngày. Tôi đồng ý mô hình này. Nhưng chọn người nòng cốt phải chọn người trẻ, chịu khó, không chọn trưởng khoa vì trưởng khoa bận lắm. Và đào tạo phải sau giờ giao ban sáng, không lấy giờ khám. Phòng Công nghệ thông tin cũng sẽ cử 2 người học cùng để sau này bệnh viện tự hỗ trợ được, không phụ thuộc hoàn toàn vào nhà thầu. Em đề nghị có bộ tài liệu hướng dẫn ngắn dạng thẻ, mỗi thao tác một trang có ảnh chụp màn hình, dán ở trạm điều dưỡng, vì bác sĩ không có thời gian đọc tài liệu dài. Em chốt: đào tạo theo mô hình người dùng nòng cốt, mỗi khoa 2 bác sĩ, 2 điều dưỡng, 3 buổi sau giao ban sáng; phòng Công nghệ thông tin cử 2 người học cùng; tuần đầu chạy thật có người của dự án trực ca ngày; khoa Nhi và khoa Sản bắt đầu từ ngày 1 tháng sau. Danh sách người nòng cốt của khoa Nhi và khoa Sản thì tôi chỉ đạo hai khoa gửi phòng Kế hoạch tổng hợp trước thứ Hai tuần sau. Bộ thẻ hướng dẫn em làm, gửi bác sĩ Hạnh duyệt trước khi in. Em sẽ lên lịch đào tạo chi tiết và gửi cả nhóm sau khi có danh sách. Cảm ơn mọi người, sprint này nhiều việc, cố gắng nhé.",
+  "metadata": {
+    "meeting_id": "synth_017",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

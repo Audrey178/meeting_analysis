@@ -1,0 +1,397 @@
+{
+  "meeting_id": "synth_038",
+  "n_turns": 60,
+  "total_chars": 14703,
+  "boundaries": [
+    13,
+    25,
+    37,
+    49
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Đánh giá khối lượng rác tiếp nhận và tình hình vận hành hai lò đốt trong tuần",
+      "summary": "Tuần qua tiếp nhận bình quân 1.120 tấn/ngày, vượt công suất đốt thiết kế 1.000 tấn/ngày, tồn bể 9.800/12.000 tấn; rác ẩm 58% phải đốt kèm 6.300 lít dầu DO; lò số 2 dừng 19 giờ do kẹt ghi lò; thống nhất thay 12 thanh ghi lò số 2 trong đợt dừng Chủ nhật, sau đó cho hai lò chạy 105% công suất trong 2 tuần, ưu tiên gắp rác đã ủ đủ 5 ngày, giới hạn dầu đốt kèm 600 lít/ngày; đề xuất xin chuyển bớt rác sang bãi chôn lấp chưa chốt.",
+      "turn_range": [
+        0,
+        13
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000013"
+      ],
+      "chars": 3542,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xử lý nước rỉ rác và kiểm soát khí thải quan trắc tự động",
+      "summary": "Hồ chứa nước rỉ rác đạt 86% dung tích, lượng nước rỉ 420 m³/ngày trong khi trạm xử lý thiết kế 400 m³/ngày chỉ chạy 340 m³ do màng RO cụm 2 bị bẩn; quan trắc tự động ghi nhận 2 lần bụi vượt ngưỡng 50 mg/Nm³ ở lò 1 do rách 9 túi lọc khoang 3; thống nhất thay màng RO cụm 2 bằng bộ dự phòng, thay túi lọc ngay, đặt ngưỡng cảnh báo sớm bụi 40 mg, gửi văn bản giải trình Sở.",
+      "turn_range": [
+        13,
+        25
+      ],
+      "turn_ids": [
+        "TURN_000014",
+        "TURN_000025"
+      ],
+      "chars": 3068,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Giải quyết phản ánh mùi hôi của người dân và xe chở rác rò rỉ nước",
+      "summary": "Tuần qua có 6 phản ánh của người dân xã Tân Thạnh về mùi hôi buổi tối và 14 lượt xe chở rác rò nước rỉ trên đường vào nhà máy; thống nhất đóng cửa nhà tiếp nhận sau 18 giờ, phun chế phẩm khử mùi từ 17 giờ hằng ngày, xe rò rỉ lần 1 lập biên bản, lần 2 từ chối tiếp nhận và thông báo cho 4 đơn vị vận chuyển, tổ chức đối thoại với người dân; đề xuất trồng vành đai cây xanh để sang năm.",
+      "turn_range": [
+        25,
+        37
+      ],
+      "turn_ids": [
+        "TURN_000026",
+        "TURN_000037"
+      ],
+      "chars": 2990,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Lập kế hoạch sửa cầu trục gắp rác và trung tu tua bin máy phát",
+      "summary": "Cầu trục gắp rác số 1 hỏng xi lanh thủy lực gầu ngoạm, chỉ còn cầu trục số 2 hoạt động; tua bin máy phát đến tháng 12 đạt 8.000 giờ, đến hạn trung tu; thống nhất phục hồi xi lanh cũ trong 10 ngày đồng thời mua xi lanh chính hãng dự phòng (khoảng 420 triệu), trung tu tua bin 7 ngày từ 7/12, lò vẫn đốt và xả hơi qua bình ngưng, báo Điện lực trước 20/11.",
+      "turn_range": [
+        37,
+        49
+      ],
+      "turn_ids": [
+        "TURN_000038",
+        "TURN_000049"
+      ],
+      "chars": 2715,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Chấn chỉnh an toàn lao động tại sàn tiếp nhận và bổ sung nhân sự vận hành",
+      "summary": "Tuần qua có một vụ suýt tai nạn khi công nhân mới dọn rác ở mép bể không đeo dây an toàn; định biên 32 vận hành viên lò mới có 28, tuần qua 9 ca kéo dài 12 tiếng; thống nhất bắt buộc đeo dây an toàn và có người thứ hai giám sát khi làm việc ở mép bể, lắp lan can tháo lắp cho 8 cửa đổ trong 1 tuần, tuyển bổ sung 4 vận hành viên trước 31/12, không để ai trực quá 12 tiếng và quá 2 ca kéo dài mỗi tuần.",
+      "turn_range": [
+        49,
+        60
+      ],
+      "turn_ids": [
+        "TURN_000050",
+        "TURN_000060"
+      ],
+      "chars": 2388,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "actor_aliases": [
+        "anh Lâm",
+        "em"
+      ],
+      "task": "Thay 12 thanh ghi lò số 2 trong đợt dừng lò (từ 6 giờ sáng Chủ nhật, chạy lại 12 giờ trưa thứ Hai)",
+      "deadline": "Chủ nhật này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012",
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Thay 9 túi lọc rách khoang 3 lò 1 và thay màng RO cụm 2 trạm xử lý nước rỉ",
+      "deadline": "túi lọc sáng mai; màng RO trước thứ Sáu",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023",
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Hoa (Phụ trách Môi trường)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Soạn văn bản giải trình hai lần vượt ngưỡng bụi trình giám đốc ký gửi Sở",
+      "deadline": "trước thứ Năm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023",
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Chị Hoa (Phụ trách Môi trường)",
+      "actor_aliases": [
+        "chị Hoa",
+        "em"
+      ],
+      "task": "Bổ sung hợp đồng và triển khai phun chế phẩm khử mùi dọc tuyến đường và nhà tiếp nhận từ 17 giờ hằng ngày",
+      "deadline": "bắt đầu từ chiều thứ Tư",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034",
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Toàn (Tổ trưởng tổ tiếp nhận)",
+      "actor_aliases": [
+        "anh Toàn",
+        "Toàn",
+        "em",
+        "Người nói không xác định"
+      ],
+      "task": "Lập danh sách 14 lượt xe rò rỉ kèm ảnh, soạn văn bản thông báo chế tài cho các đơn vị vận chuyển",
+      "deadline": "trước thứ Năm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034",
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Quyên (Trưởng phòng Hành chính - Nhân sự)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Liên hệ UBND xã Tân Thạnh bố trí buổi đối thoại với người dân (giám đốc chủ trì)",
+      "deadline": "cuối tháng 11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034",
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Gửi xi lanh cầu trục 1 đi phục hồi; làm tờ trình mua xi lanh chính hãng dự phòng",
+      "deadline": "gửi phục hồi hôm nay; tờ trình trong tuần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047",
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Khoa (Trưởng phòng Vận hành)",
+      "actor_aliases": [
+        "anh Khoa",
+        "em"
+      ],
+      "task": "Gửi thông báo lịch dừng phát điện trung tu tua bin cho Điện lực",
+      "deadline": "trước 20/11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047",
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Chị Quyên (Trưởng phòng Hành chính - Nhân sự)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Đăng tuyển và tuyển đủ 4 vận hành viên lò, ưu tiên người có chứng chỉ vận hành lò hơi",
+      "deadline": "trước 31/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000057",
+        "TURN_000058"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "actor_aliases": [
+        "anh Lâm",
+        "em"
+      ],
+      "task": "Lắp lan can khung thép tháo lắp cho 8 cửa đổ rác",
+      "deadline": "trước thứ Tư tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000057",
+        "TURN_000059"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thay 12 thanh ghi lò số 2 trong đợt dừng Chủ nhật; sau đó hai lò chạy 105% công suất trong 2 tuần; cầu trục ưu tiên gắp rác đã ủ, rác mới nằm bể tối thiểu 5 ngày khi bể có chỗ; dầu DO đốt kèm không quá 600 lít/ngày",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Thay màng RO cụm 2 để trạm xử lý nước rỉ chạy đủ 400 m³/ngày; thay 9 túi lọc rách khoang 3 lò 1; đặt ngưỡng cảnh báo sớm bụi 40 mg; gửi văn bản giải trình hai lần vượt ngưỡng cho Sở",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Đóng kín cửa nhà tiếp nhận sau 18 giờ; phun chế phẩm khử mùi từ 17 giờ hằng ngày; xe rò rỉ lần 1 lập biên bản, lần 2 từ chối tiếp nhận, thông báo cho 4 đơn vị vận chuyển; tổ chức đối thoại với dân xã Tân Thạnh",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Phục hồi xi lanh cầu trục 1 trong 10 ngày, đồng thời mua xi lanh chính hãng dự phòng; trung tu tua bin 7 ngày từ 7/12, lò vẫn đốt và xả hơi qua bình ngưng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Bắt buộc đeo dây an toàn và có người thứ hai giám sát khi làm việc ở mép bể, vi phạm thì đình chỉ công việc; lắp lan can cho 8 cửa đổ trong 1 tuần; tuyển 4 vận hành viên trước 31/12; không trực quá 12 tiếng và quá 2 ca kéo dài/tuần",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000057"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Gửi văn bản đề nghị Sở Xây dựng chuyển bớt khoảng 100 tấn rác/ngày sang bãi chôn lấp Phước Hậu trong 2 tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Trồng vành đai cây xanh khoảng 2 ha dọc tường rào phía Đông Nam để chắn mùi",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000031",
+        "TURN_000032"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Khoa (Trưởng phòng Vận hành)",
+      "point": "Tiếp nhận bình quân 1.120 tấn/ngày, vượt công suất 1.000 tấn; tồn bể 9.800/12.000 tấn; rác ẩm 58% phải đốt kèm 6.300 lít dầu DO; lò 2 dừng 19 giờ do kẹt ghi lò",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "point": "Ghi lò số 2 đã chạy 26.000 giờ (khuyến cáo 24.000), 12 thanh mòn, hàng đã về, thay mất khoảng 30 tiếng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Hoa (Phụ trách Môi trường)",
+      "point": "Hồ nước rỉ 86% dung tích, nước rỉ 420 m³/ngày nhưng trạm chỉ xử lý 340 m³ do màng RO cụm 2 bẩn; bụi vượt ngưỡng 2 lần (58 và 63 mg/Nm³) ở lò 1",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "point": "Khoang 3 lọc bụi lò 1 rách 9 túi; kho có 40 túi và một bộ màng RO dự phòng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Toàn (Tổ trưởng tổ tiếp nhận)",
+      "point": "Trung bình 186 lượt xe/ngày; 14 lượt xe rò nước rỉ, chủ yếu xe ép rác cũ của HTX Bình Minh, trên đoạn đường 2,3 km",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Hoa (Phụ trách Môi trường)",
+      "point": "6 phản ánh mùi buổi tối của dân xã Tân Thạnh; nguồn mùi từ đường vận chuyển và cửa cuốn nhà tiếp nhận hỏng để mở",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+      "point": "Cầu trục 1 hỏng xi lanh, chỉ còn cầu trục 2; xi lanh chính hãng 420 triệu giao 4 tuần, phục hồi 90 triệu trong 10 ngày; tua bin đạt 8.000 giờ cần trung tu 7 ngày",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Quyên (Trưởng phòng Hành chính - Nhân sự)",
+      "point": "Một vụ suýt rơi xuống bể sâu 12 m do không đeo dây an toàn; thiếu 4/32 vận hành viên, tuần qua 9 ca kéo dài",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Toàn (Tổ trưởng tổ tiếp nhận)",
+      "point": "Người trượt là công nhân mới; anh em ngại đeo dây an toàn, ca đêm không ai nhắc; thành chắn cửa 5-6 chỉ cao 40 cm",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Ông Thịnh (Giám đốc nhà máy)",
+    "VH": "Anh Khoa (Trưởng phòng Vận hành)",
+    "MT": "Chị Hoa (Phụ trách Môi trường)",
+    "CD": "Anh Lâm (Quản đốc xưởng Cơ điện)",
+    "HC": "Chị Quyên (Trưởng phòng Hành chính - Nhân sự)",
+    "UNK": "Người nói không xác định"
+  },
+  "tags": [
+    "aside_interruption",
+    "unknown_speaker",
+    "hedged_proposal"
+  ]
+}

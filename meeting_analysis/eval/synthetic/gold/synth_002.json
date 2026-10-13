@@ -1,0 +1,193 @@
+{
+  "meeting_id": "synth_002",
+  "n_turns": 22,
+  "total_chars": 11488,
+  "boundaries": [
+    5,
+    14
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án chuyển đổi số ngành y tế tỉnh giai đoạn 2026-2030",
+      "summary": "Sở Y tế trình bày căn cứ, hiện trạng, mục tiêu, ba nhóm nhiệm vụ và tổng kinh phí dự kiến khoảng 1.180 tỷ đồng của Đề án chuyển đổi số ngành y tế.",
+      "turn_range": [
+        0,
+        5
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000005"
+      ],
+      "chars": 4433,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Góp ý nguồn vốn, mô hình đầu tư và nhân lực cho Đề án chuyển đổi số ngành y tế",
+      "summary": "Các sở góp ý về khả năng cân đối ngân sách, đề xuất thuê dịch vụ thay vì đầu tư, lo ngại về nhân lực CNTT tuyến xã và yêu cầu dữ liệu đặt tại trung tâm dữ liệu tỉnh.",
+      "turn_range": [
+        5,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000006",
+        "TURN_000014"
+      ],
+      "chars": 4585,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Kết luận của Ban Thường vụ về Đề án chuyển đổi số ngành y tế",
+      "summary": "Bí thư kết luận thống nhất chủ trương, yêu cầu phân kỳ ưu tiên nền tảng dữ liệu và bệnh án điện tử tuyến tỉnh, chưa đưa thuê dịch vụ vào đề án, giao các sở hoàn thiện và cân đối nguồn.",
+      "turn_range": [
+        14,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000022"
+      ],
+      "chars": 2470,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "actor_aliases": [
+        "Sở Y tế",
+        "đồng chí Hòa"
+      ],
+      "task": "Tiếp thu ý kiến, hoàn thiện đề án theo hướng phân kỳ, trình UBND ban hành",
+      "deadline": "trước 30/11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Chủ trì rà soát, đề xuất bố trí nguồn năm 2026 từ nguồn dự phòng và tăng thu, báo cáo Thường trực",
+      "deadline": "trong tháng 11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở Khoa học và Công nghệ"
+      ],
+      "task": "Ban hành văn bản hướng dẫn chuẩn liên thông dữ liệu y tế bắt buộc nhà cung cấp phần mềm tuân thủ",
+      "deadline": "quý 1/2026",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thống nhất chủ trương ban hành Đề án chuyển đổi số ngành y tế giai đoạn 2026-2030",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Phân kỳ: giai đoạn 2026-2027 chỉ làm nền tảng dữ liệu dùng chung và bệnh án điện tử bệnh viện tuyến tỉnh; đặt lịch, thanh toán chuyển giai đoạn 2 theo hướng kết nối nền tảng sẵn có; tính lại tổng kinh phí",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Toàn bộ dữ liệu y tế đặt tại Trung tâm dữ liệu của tỉnh; chuẩn liên thông áp dụng HL7 FHIR",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Chưa đưa phương án thuê dịch vụ CNTT vào đề án lần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Thuê dịch vụ CNTT (bệnh án điện tử, PACS) thay vì đầu tư mua sắm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Rà soát tổng thể nhân lực CNTT cho trạm y tế xã, bệnh viện và cơ chế đãi ngộ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "point": "Ngân sách tỉnh chỉ cân đối được khoảng 500-550 tỷ thay vì 720 tỷ; năm 2026 chỉ khoảng 120-130 tỷ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Dữ liệu y tế phải đặt tại Trung tâm dữ liệu tỉnh; phải có văn bản bắt buộc chuẩn HL7 FHIR",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "point": "Nhân lực CNTT tuyến xã là khâu yếu nhất, cần rà soát và cơ chế đãi ngộ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    }
+  ],
+  "speakers": {
+    "BT": "Đ/c Thành (Bí thư Tỉnh ủy)",
+    "YT": "Đ/c Hòa (Giám đốc Sở Y tế)",
+    "TC": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+    "TT": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+    "PCT": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)"
+  },
+  "tags": [
+    "short_meeting",
+    "phase_structure",
+    "hedged_proposal"
+  ]
+}

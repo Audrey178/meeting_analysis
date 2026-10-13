@@ -1,0 +1,277 @@
+{
+  "meeting_id": "synth_023",
+  "n_turns": 27,
+  "total_chars": 10894,
+  "boundaries": [
+    3,
+    6,
+    17
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày dự thảo Nghị quyết chính sách thu hút giáo viên về công tác tại vùng khó khăn",
+      "summary": "Sở Giáo dục trình bày: tỉnh thiếu 1.340 giáo viên, tập trung ở mầm non và tiểu học vùng đồng bào dân tộc thiểu số; dự thảo hỗ trợ một lần 60 triệu đồng, hỗ trợ nhà ở công vụ và 30% lương hằng tháng trong 5 năm, kinh phí khoảng 412 tỷ đồng.",
+      "turn_range": [
+        0,
+        3
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000003"
+      ],
+      "chars": 2755,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Báo cáo thẩm tra sơ bộ của Ban Văn hóa - Xã hội về dự thảo Nghị quyết thu hút giáo viên",
+      "summary": "Ban Văn hóa - Xã hội thẩm tra: đồng ý sự cần thiết nhưng đề nghị mở rộng đối tượng sang giáo viên đang công tác, làm rõ cơ chế hoàn trả, bổ sung giáo viên người dân tộc tại chỗ; Ban Pháp chế lưu ý thẩm quyền ban hành và trùng lặp với chính sách Trung ương.",
+      "turn_range": [
+        3,
+        6
+      ],
+      "turn_ids": [
+        "TURN_000004",
+        "TURN_000006"
+      ],
+      "chars": 2645,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Thảo luận về kinh phí, đối tượng và nguồn đào tạo giáo viên tại chỗ",
+      "summary": "Sở Tài chính cho rằng ngân sách chỉ đáp ứng khoảng 300 tỷ; Sở Nội vụ nêu vướng biên chế; thống nhất hướng mở rộng hỗ trợ hằng tháng 15% cho giáo viên đang công tác, giảm mức hỗ trợ một lần; đề xuất hỗ trợ xe máy cho giáo viên và đề xuất tăng thời gian cam kết lên 7 năm chưa được chấp nhận.",
+      "turn_range": [
+        6,
+        17
+      ],
+      "turn_ids": [
+        "TURN_000007",
+        "TURN_000017"
+      ],
+      "chars": 3006,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Kết luận của Thường trực HĐND tỉnh về dự thảo Nghị quyết thu hút giáo viên",
+      "summary": "Thường trực kết luận: đồng ý trình kỳ họp; hỗ trợ hằng tháng 30% cho giáo viên mới và 15% cho giáo viên đang công tác; hỗ trợ một lần 40 triệu; giữ cam kết 5 năm; bổ sung đào tạo đặt hàng 80 chỉ tiêu/năm; kinh phí không quá 300 tỷ; Sở Giáo dục hoàn thiện trước 10/11.",
+      "turn_range": [
+        17,
+        27
+      ],
+      "turn_ids": [
+        "TURN_000018",
+        "TURN_000027"
+      ],
+      "chars": 2488,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Thủy (Giám đốc Sở Giáo dục và Đào tạo)",
+      "actor_aliases": [
+        "Sở Giáo dục và Đào tạo",
+        "Sở"
+      ],
+      "task": "Chủ trì hoàn chỉnh dự thảo Nghị quyết, gửi Ban Văn hóa - Xã hội để thẩm tra chính thức",
+      "deadline": "trước ngày 10 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Lâm (Phó Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Tính lại chi tiết kinh phí theo phương án mới, không quá 300 tỷ, gửi Sở Giáo dục",
+      "deadline": "trước ngày 5 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Hương (Giám đốc Sở Nội vụ)",
+      "actor_aliases": [
+        "Sở Nội vụ"
+      ],
+      "task": "Gửi văn bản đề nghị Bộ Nội vụ bổ sung biên chế giáo viên; làm việc với ĐH Đà Lạt về đào tạo đặt hàng",
+      "deadline": "trong tháng này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c K'Brăn (Trưởng Ban Văn hóa - Xã hội HĐND tỉnh)",
+      "actor_aliases": [
+        "Ban Văn hóa - Xã hội",
+        "đồng chí K'Brăn"
+      ],
+      "task": "Chuẩn bị báo cáo thẩm tra chính thức, kiểm tra kỹ phần kinh phí",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Đồng ý để UBND tỉnh trình dự thảo Nghị quyết tại kỳ họp thứ 9 sau khi hoàn chỉnh",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Mở rộng đối tượng cho giáo viên đang công tác (kể cả hợp đồng theo Nghị định 111), không hồi tố",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Hỗ trợ hằng tháng 30% cho giáo viên mới, 15% cho giáo viên đang công tác và sau 5 năm vẫn ở lại; hỗ trợ một lần giảm xuống 40 triệu",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Giữ cam kết 5 năm; quy định rõ trường hợp không phải hoàn trả",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Bổ sung đào tạo đặt hàng giáo viên người dân tộc tại chỗ khoảng 80 chỉ tiêu/năm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Nhà công vụ lồng ghép chương trình MTQG; tổng kinh phí Nghị quyết không quá 300 tỷ trong 5 năm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Hỗ trợ mỗi giáo viên mới một xe máy địa hình",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000010",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Nâng thời gian cam kết lên 7 năm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000013",
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "superseded_decision",
+      "text": "Hỗ trợ một lần 60 triệu đồng (dự thảo, bị giảm còn 40 triệu)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Thủy (Giám đốc Sở Giáo dục và Đào tạo)",
+      "point": "Tỉnh thiếu 1.340 giáo viên, tập trung ở 46 xã đặc biệt khó khăn; tuyển dụng chỉ đạt 41% chỉ tiêu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Thủy (Giám đốc Sở Giáo dục và Đào tạo)",
+      "point": "Dự thảo: hỗ trợ một lần 60 triệu, 30% lương trong 5 năm, nhà công vụ hoặc 1,5 triệu thuê nhà; kinh phí 412 tỷ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c K'Brăn (Trưởng Ban Văn hóa - Xã hội HĐND tỉnh)",
+      "point": "Đề nghị mở rộng cho giáo viên đang công tác, làm rõ hoàn trả, bổ sung giáo viên người dân tộc tại chỗ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Đạt (Trưởng Ban Pháp chế HĐND tỉnh)",
+      "point": "Chính sách phải bổ sung, không trùng Nghị định 76; không hồi tố; dẫn chiếu đúng danh sách xã",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Lâm (Phó Giám đốc Sở Tài chính)",
+      "point": "Ngân sách tối đa khoảng 300 tỷ; đề xuất 30%/15% và hỗ trợ một lần 40 triệu",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Hương (Giám đốc Sở Nội vụ)",
+      "point": "Biên chế trống chỉ khoảng 610; đề nghị cơ chế hợp đồng và đào tạo đặt hàng 80 chỉ tiêu/năm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Nhân (Phó Chủ tịch Thường trực HĐND tỉnh)",
+    "GD": "Đ/c Thủy (Giám đốc Sở Giáo dục và Đào tạo)",
+    "VX": "Đ/c K'Brăn (Trưởng Ban Văn hóa - Xã hội HĐND tỉnh)",
+    "TC": "Đ/c Lâm (Phó Giám đốc Sở Tài chính)",
+    "NV": "Đ/c Hương (Giám đốc Sở Nội vụ)",
+    "PC": "Đ/c Đạt (Trưởng Ban Pháp chế HĐND tỉnh)"
+  },
+  "tags": [
+    "phase_structure",
+    "hedged_proposal"
+  ]
+}

@@ -1,0 +1,353 @@
+{
+  "meeting_id": "synth_011",
+  "n_turns": 49,
+  "total_chars": 16541,
+  "boundaries": [
+    11,
+    25,
+    37
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tình hình bán tour Tết Nhật Bản và xử lý chi phí vé máy bay tăng",
+      "summary": "Tour Tết Nhật Bản mới bán được 62% chỗ, giá vé máy bay đoàn tăng 18% so với lúc báo giá; thống nhất giữ giá bán cho khách đã đặt cọc, tăng giá 2,9 triệu cho khách mới và cắt một đoàn khởi hành ngày mùng 4.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 4839,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xử lý sự cố khách sạn đối tác Đà Lạt nhận trùng phòng dịp Tết",
+      "summary": "Khách sạn đối tác ở Đà Lạt báo nhận trùng 18 phòng của hai đoàn ngày mùng 2 và mùng 3; thống nhất chuyển khách sang khách sạn cùng hạng có hợp đồng mới, yêu cầu khách sạn cũ bồi thường chênh lệch và rà soát toàn bộ xác nhận phòng Tết.",
+      "turn_range": [
+        11,
+        25
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000025"
+      ],
+      "chars": 3956,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Đẩy mạnh bán tour Tết qua kênh trực tuyến và video ngắn",
+      "summary": "Kênh video ngắn mang về 14% khách hỏi nhưng tỷ lệ chốt thấp do phản hồi chậm; thống nhất lập tổ trực tin nhắn đến 22 giờ, làm chuỗi video giới thiệu hành trình do hướng dẫn viên quay, bỏ đề xuất thuê người nổi tiếng.",
+      "turn_range": [
+        25,
+        37
+      ],
+      "turn_ids": [
+        "TURN_000026",
+        "TURN_000037"
+      ],
+      "chars": 3652,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Tuyển dụng và đào tạo hướng dẫn viên cho mùa cao điểm Tết",
+      "summary": "Thiếu khoảng 8 hướng dẫn viên cho cao điểm Tết, đặc biệt hướng dẫn viên tiếng Nhật; thống nhất tuyển cộng tác viên có thẻ, trả thêm phụ cấp Tết 30%, tổ chức 2 buổi đào tạo quy trình xử lý sự cố trước Tết.",
+      "turn_range": [
+        37,
+        49
+      ],
+      "turn_ids": [
+        "TURN_000038",
+        "TURN_000049"
+      ],
+      "chars": 4094,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Việt",
+      "actor_aliases": [
+        "SPEAKER_01",
+        "Việt",
+        "em"
+      ],
+      "task": "Làm việc với hãng bay trả lại chỗ đoàn mùng 4 để lấy lại cọc",
+      "deadline": "trong tuần này (trước 15/11)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Tú",
+      "actor_aliases": [
+        "SPEAKER_02",
+        "em"
+      ],
+      "task": "Gọi 9 khách đoàn mùng 4 mời chuyển đoàn mùng 6 hoặc hoàn cọc, báo lại",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Anh Lâm",
+      "actor_aliases": [
+        "SPEAKER_04",
+        "anh Lâm"
+      ],
+      "task": "Liên hệ khách sạn Thung Lũng Xanh lấy giá tốt nhất cho 18 phòng",
+      "deadline": "chiều nay",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Việt",
+      "actor_aliases": [
+        "SPEAKER_01"
+      ],
+      "task": "Soạn văn bản gửi khách sạn Hoa Đồi yêu cầu chịu chênh lệch",
+      "deadline": "ký trong ngày mai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Việt",
+      "actor_aliases": [
+        "SPEAKER_01",
+        "anh Việt"
+      ],
+      "task": "Phân công rà soát, gọi xác nhận lại toàn bộ đặt phòng dịp Tết",
+      "deadline": "trong 2 tuần",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024",
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Phương",
+      "actor_aliases": [
+        "SPEAKER_03",
+        "Phương"
+      ],
+      "task": "Làm kịch bản trả lời mẫu và cấu hình trả lời tự động",
+      "deadline": "trong tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Tú",
+      "actor_aliases": [
+        "SPEAKER_02"
+      ],
+      "task": "Cùng Phương xếp lịch trực tin nhắn buổi tối",
+      "deadline": "bắt đầu thứ Hai tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Phương",
+      "actor_aliases": [
+        "SPEAKER_03"
+      ],
+      "task": "Cùng Tú xếp lịch trực tin nhắn buổi tối",
+      "deadline": "bắt đầu thứ Hai tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Anh Lâm",
+      "actor_aliases": [
+        "SPEAKER_04"
+      ],
+      "task": "Đề xuất mức thưởng cho hướng dẫn viên quay video",
+      "deadline": "trong tuần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036",
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Lâm",
+      "actor_aliases": [
+        "SPEAKER_04"
+      ],
+      "task": "Tuyển đủ hướng dẫn viên cao điểm Tết, tổ chức 2 buổi đào tạo, cập nhật sổ tay xử lý sự cố",
+      "deadline": "đủ người trước 20/12; đào tạo trước 15/1",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046",
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Việt",
+      "actor_aliases": [
+        "SPEAKER_01"
+      ],
+      "task": "Tính tổng chi phí phụ cấp Tết và đào tạo gửi giám đốc duyệt",
+      "deadline": "tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000048",
+        "TURN_000049"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Giữ giá cho khách đã đặt cọc; khách mới từ tuần sau tăng lên 35,8 triệu; cắt đoàn mùng 4, khách chuyển đoàn mùng 6 hoặc hoàn cọc kèm voucher 1 triệu; không giảm giá chung",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Chuyển 18 phòng sang khách sạn Thung Lũng Xanh; yêu cầu Hoa Đồi chịu chênh lệch, không trả thì cấn trừ công nợ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Rà soát, xác nhận lại toàn bộ đặt phòng dịp Tết",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Không thuê người nổi tiếng; lập tổ trực tin nhắn 19h-22h và trả lời tự động; hướng dẫn viên quay video ngắn có thưởng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Tuyển thêm cộng tác viên, tua Nhật trả theo thỏa thuận; phụ cấp Tết 30% cho hướng dẫn viên từ 28 Tết đến mùng 6; 2 buổi đào tạo bắt buộc trước 15/1, cấm đưa khách vào điểm mua sắm ngoài chương trình",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Giảm 1 triệu cho mọi khách tour Nhật để cạnh tranh",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "rejected_task",
+      "text": "Thuê người nổi tiếng trên TikTok đi thử tour và làm video (80-120 triệu)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "SPEAKER_02",
+      "point": "Tour Tết Nhật bán 93/150 chỗ (62%), đoàn mùng 4 và mùng 6 yếu; đối thủ chào 29,9 triệu so với 32,9 triệu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "SPEAKER_01",
+      "point": "Vé máy bay đoàn tăng từ 11,2 lên 13,2 triệu (18%), yên giảm bù khoảng 400 nghìn/khách",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "SPEAKER_01",
+      "point": "Khách sạn Hoa Đồi nhận trùng 18/36 phòng của 2 đoàn Đà Lạt ngày mùng 2-3",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "SPEAKER_03",
+      "point": "Video ngắn mang về 14% khách hỏi nhưng tỷ lệ chốt chỉ 3% do phản hồi chậm buổi tối",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "SPEAKER_04",
+      "point": "Thiếu khoảng 8 hướng dẫn viên cao điểm Tết, tua Nhật thiếu 2 người có thẻ quốc tế nói tiếng Nhật",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04"
+  },
+  "tags": [
+    "asr_noise",
+    "diarized_labels"
+  ]
+}

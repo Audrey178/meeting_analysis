@@ -1,0 +1,139 @@
+{
+  "meeting_id": "synth_039",
+  "n_turns": 17,
+  "total_chars": 7924,
+  "boundaries": [
+    8
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Báo cáo tình hình phát triển người tham gia bảo hiểm xã hội, bảo hiểm y tế 9 tháng năm 2026",
+      "summary": "Bảo hiểm xã hội tỉnh báo cáo bao phủ BHXH đạt 31,4% lực lượng lao động, BHXH tự nguyện chỉ 2,9%, BHYT 92,1%; nợ đóng 214 tỷ, 61 doanh nghiệp nợ kéo dài trên 12 tháng; Liên đoàn Lao động nêu khoảng 3.800 người lao động bị ảnh hưởng quyền lợi; đại biểu đề xuất ngân sách tỉnh hỗ trợ thêm mức đóng BHXH tự nguyện nhưng chủ trì cho biết chưa bàn tại phiên này.",
+      "turn_range": [
+        0,
+        8
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000008"
+      ],
+      "chars": 3854,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Báo cáo tình hình khám, chữa bệnh bảo hiểm y tế và cung ứng thuốc tại các cơ sở y tế",
+      "summary": "Sở Y tế báo cáo 9 tháng có 1,86 triệu lượt khám chữa bệnh BHYT, chi phí đã sử dụng 87% dự toán quỹ năm, nguy cơ vượt khoảng 140 tỷ; 23% cơ sở y tế có thời điểm thiếu thuốc do đấu thầu tập trung chậm; Bảo hiểm xã hội nêu 38 tỷ chi phí bị từ chối thanh toán; các đơn vị chỉ thông tin, không có kết luận.",
+      "turn_range": [
+        8,
+        17
+      ],
+      "turn_ids": [
+        "TURN_000009",
+        "TURN_000017"
+      ],
+      "chars": 4070,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [],
+  "decisions": [],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Ngân sách tỉnh hỗ trợ thêm 20% mức đóng bảo hiểm xã hội tự nguyện cho hộ nghèo, cận nghèo (chủ trì chỉ ghi nhận làm tham khảo, chưa bàn)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006",
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Các cơ quan, đơn vị tiếp tục quan tâm, phối hợp chặt chẽ để bảo đảm quyền lợi người tham gia (khẩu hiệu chung, không giao việc)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Liễu (Phó Giám đốc Bảo hiểm xã hội tỉnh)",
+      "point": "Bao phủ BHXH 31,4% lực lượng lao động (chỉ tiêu 33%), BHXH tự nguyện 2,9%; BHYT 92,1%, giảm 0,5 điểm do hộ thoát cận nghèo không còn được hỗ trợ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Liễu (Phó Giám đốc Bảo hiểm xã hội tỉnh)",
+      "point": "Nợ đóng BHXH, BHTN, BHYT khoảng 214 tỷ (6,8% số phải thu); 61 doanh nghiệp nợ trên 12 tháng khoảng 96 tỷ, 9 doanh nghiệp chủ bỏ trốn khó thu hồi",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Xuân (Phó Chủ tịch Liên đoàn Lao động tỉnh)",
+      "point": "Khoảng 3.800 người lao động ở 61 doanh nghiệp nợ kéo dài bị ảnh hưởng quyền lợi; khởi kiện 4 doanh nghiệp nhưng khó thi hành án",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Hữu (Ủy viên Ban Văn hóa - Xã hội HĐND tỉnh)",
+      "point": "Đề xuất ngân sách tỉnh hỗ trợ thêm 20% mức đóng BHXH tự nguyện cho hộ nghèo, cận nghèo",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Chính (Phó Giám đốc Sở Y tế)",
+      "point": "1,86 triệu lượt khám chữa bệnh BHYT, chi phí đã bằng 87% dự toán quỹ năm, nguy cơ vượt 130-140 tỷ do thông tuyến, kỹ thuật mới, bệnh mạn tính",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Chính (Phó Giám đốc Sở Y tế)",
+      "point": "23% cơ sở có thời điểm thiếu thuốc do gói thầu tập trung chậm khoảng 4 tháng; đến tháng 9 đã có khoảng 92% danh mục",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Liễu (Phó Giám đốc Bảo hiểm xã hội tỉnh)",
+      "point": "Từ chối thanh toán khoảng 38 tỷ (2,7%) do chỉ định không đúng quy trình, kê thuốc không phù hợp, thanh toán trùng; đang đối chiếu lại khoảng 11 tỷ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Thuận (Trưởng Ban Văn hóa - Xã hội HĐND tỉnh)",
+    "BH": "Đ/c Liễu (Phó Giám đốc Bảo hiểm xã hội tỉnh)",
+    "YT": "Đ/c Chính (Phó Giám đốc Sở Y tế)",
+    "LD": "Đ/c Xuân (Phó Chủ tịch Liên đoàn Lao động tỉnh)",
+    "DB": "Đ/c Hữu (Ủy viên Ban Văn hóa - Xã hội HĐND tỉnh)"
+  },
+  "tags": [
+    "short_meeting",
+    "no_actions"
+  ]
+}

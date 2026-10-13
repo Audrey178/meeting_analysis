@@ -1,0 +1,381 @@
+{
+  "meeting_id": "synth_034",
+  "n_turns": 45,
+  "total_chars": 15329,
+  "boundaries": [
+    4,
+    12,
+    20,
+    28
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án thu gom, xử lý chất thải rắn sinh hoạt tỉnh Thạch Bình giai đoạn 2026-2030",
+      "summary": "Sở Nông nghiệp và Môi trường trình bày: rác phát sinh khoảng 1.150 tấn/ngày, 71% chôn lấp, bãi Đồng Mít quá tải 140%; Đề án đặt mục tiêu thu gom đô thị 98%, nông thôn 85%, xây hai khu xử lý Núi Cấm (600 tấn/ngày, đốt phát điện, PPP) và Khe Lau (300 tấn/ngày), đóng 14 bãi chôn lấp nhỏ, tổng vốn khoảng 5.860 tỷ.",
+      "turn_range": [
+        0,
+        4
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000004"
+      ],
+      "chars": 2960,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Góp ý về vị trí, công suất và công nghệ của các khu xử lý tập trung",
+      "summary": "Sở Xây dựng lưu ý khoảng cách an toàn và tuyến vận chuyển qua thị trấn, cho rằng Khe Lau 300 tấn/ngày dư công suất so với lượng rác thực tế phía Nam (175 tấn/ngày); thành phố Vĩnh Lạc đề nghị đóng bãi Đồng Mít sớm vào 2028; đề xuất gộp về một khu xử lý duy nhất ở Núi Cấm chưa được chấp nhận.",
+      "turn_range": [
+        4,
+        12
+      ],
+      "turn_ids": [
+        "TURN_000005",
+        "TURN_000012"
+      ],
+      "chars": 3285,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Góp ý về phân loại rác tại nguồn và thu gom, xử lý rác khu vực nông thôn, miền núi",
+      "summary": "Huyện Mường Khoa đề nghị hỗ trợ lò đốt mini mỗi xã nhưng Sở Nông nghiệp và Môi trường không khuyến khích vì không đạt chuẩn khí thải, đề xuất hố ủ tại hộ (thí điểm Nậm Pồ giảm gần nửa lượng rác phải chở); Vĩnh Lạc nêu tình trạng phân loại rồi gom chung; đề xuất tính giá theo túi chuyên dụng từ 2027 chưa được chấp nhận.",
+      "turn_range": [
+        12,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000013",
+        "TURN_000020"
+      ],
+      "chars": 3159,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Góp ý về nguồn vốn, cơ chế lựa chọn nhà đầu tư và giá dịch vụ xử lý rác",
+      "summary": "Sở Tài chính cho biết ngân sách tỉnh chỉ cân đối được khoảng 800 tỷ thay vì 1.240 tỷ; giá xử lý nhà đầu tư đề xuất 540.000 đồng/tấn so với 385.000 hiện nay, làm tăng chi ngân sách khoảng 34 tỷ/năm; đề nghị đấu thầu rộng rãi với giá trần; đề xuất tăng giá thu gom hộ gia đình lên 40.000 đồng/tháng chưa được chấp nhận.",
+      "turn_range": [
+        20,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000028"
+      ],
+      "chars": 2421,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Kết luận của Phó Chủ tịch UBND tỉnh về Đề án và phân công hoàn thiện hồ sơ",
+      "summary": "Phó Chủ tịch kết luận: thống nhất cơ bản Đề án, trình Ban Thường vụ Tỉnh ủy tháng 12; ưu tiên Núi Cấm, đóng Đồng Mít chậm nhất 2028; Khe Lau giữ nhưng phân kỳ giai đoạn 1 200 tấn/ngày; đấu thầu rộng rãi Núi Cấm với giá trần dưới 500.000 đồng/tấn; ngân sách tỉnh khoảng 900 tỷ; không đầu tư lò đốt mini, hỗ trợ hố ủ; phân công các sở, địa phương hoàn thiện hồ sơ.",
+      "turn_range": [
+        28,
+        45
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000045"
+      ],
+      "chars": 3504,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Hạnh (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường",
+        "Sở",
+        "đồng chí Hạnh"
+      ],
+      "task": "Chủ trì tiếp thu ý kiến, hoàn chỉnh dự thảo Đề án, trình UBND tỉnh xem xét lần cuối",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Ngân (Phó Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Tính lại cơ cấu vốn theo phương án khoảng 900 tỷ ngân sách và xây dựng phương án giá trần dịch vụ xử lý cho khu Núi Cấm, gửi Sở Nông nghiệp và Môi trường",
+      "deadline": "trước ngày 10 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Khải (Phó Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Rà soát quy hoạch, đề xuất vị trí 6 trạm trung chuyển và phương án tuyến tránh thị trấn Bắc Sơn, gửi văn bản cho Sở Nông nghiệp và Môi trường",
+      "deadline": "trong tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Thắng (Chủ tịch UBND thành phố Vĩnh Lạc)",
+      "actor_aliases": [
+        "Thành phố Vĩnh Lạc",
+        "thành phố",
+        "chúng tôi"
+      ],
+      "task": "Xây dựng lộ trình đóng cửa bãi Đồng Mít đến năm 2028 kèm phương án hỗ trợ người dân hai xã Phú Điền, Đông Thạnh",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Thắng (Chủ tịch UBND thành phố Vĩnh Lạc)",
+      "actor_aliases": [
+        "Thành phố Vĩnh Lạc",
+        "thành phố",
+        "chúng tôi"
+      ],
+      "task": "Tổ chức đối thoại với người dân hai xã Phú Điền, Đông Thạnh về bãi Đồng Mít, báo cáo kết quả cho UBND tỉnh",
+      "deadline": "trong tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000039",
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Lò Văn Sơn (Chủ tịch UBND huyện Mường Khoa)",
+      "actor_aliases": [
+        "Huyện Mường Khoa",
+        "huyện"
+      ],
+      "task": "Tổng kết mô hình hố ủ phân tại hộ ở xã Nậm Pồ, gửi số liệu cho Sở Nông nghiệp và Môi trường làm cơ sở nhân rộng",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Diệp (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "Văn phòng Ủy ban",
+        "Văn phòng"
+      ],
+      "task": "Đăng ký nội dung Đề án vào chương trình phiên họp Ban Thường vụ Tỉnh ủy tháng 12; theo dõi, đôn đốc các sở bảo đảm thời hạn",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thống nhất cơ bản mục tiêu, nội dung Đề án; hoàn chỉnh để trình Ban Thường vụ Tỉnh ủy trong tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Ưu tiên đầu tư khu xử lý Núi Cấm 600 tấn/ngày trước; đóng cửa bãi Đồng Mít chậm nhất năm 2028 (thay vì 2030 như dự thảo)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Giữ khu xử lý Khe Lau (không gộp) nhưng phân kỳ, giai đoạn 1 công suất khoảng 200 tấn/ngày, dành quỹ đất mở rộng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Lựa chọn nhà đầu tư Núi Cấm qua đấu thầu rộng rãi, không chỉ định; giá trần dịch vụ xử lý không quá 500.000 đồng/tấn; bổ sung tiêu chí công nghệ, khí thải, tro xỉ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Ngân sách tỉnh cho Đề án khoảng 900 tỷ với danh mục ưu tiên (trạm trung chuyển, xe thu gom nông thôn, hỗ trợ hố ủ tại hộ); không đầu tư mới lò đốt mini",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Quy định rác đã phân loại phải thu gom, vận chuyển riêng, đưa vào điều kiện hợp đồng dịch vụ; tuyến qua thị trấn Bắc Sơn trước mắt vận chuyển ban đêm",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Gộp về một khu xử lý duy nhất ở Núi Cấm (nâng lên 800 tấn/ngày), bỏ khu Khe Lau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000009",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Áp dụng bán túi chuyên dụng, tính giá dịch vụ theo số túi cho toàn thành phố Vĩnh Lạc từ đầu năm 2027",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000018",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Tăng giá thu gom rác hộ gia đình từ 25.000 lên 40.000 đồng/tháng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000025",
+        "TURN_000026",
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Hỗ trợ mỗi xã huyện Mường Khoa một lò đốt rác mini (khoảng 1,5 tỷ/lò)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000014",
+        "TURN_000015"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Hạnh (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Rác phát sinh khoảng 1.150 tấn/ngày; thu gom đô thị 92%, nông thôn 58%; 71% chôn lấp trực tiếp; bãi Đồng Mít quá tải khoảng 140%; 9/11 lò đốt mini không đạt chuẩn khí thải",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Hạnh (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Đề án: thu gom đô thị 98%, nông thôn 85%, chôn lấp dưới 30% đến 2030; khu Núi Cấm 600 tấn/ngày đốt phát điện PPP và Khe Lau 300 tấn/ngày; tổng vốn 5.860 tỷ, ngân sách 1.240 tỷ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Khải (Phó Giám đốc Sở Xây dựng)",
+      "point": "Tuyến vận chuyển lên Núi Cấm phải qua thị trấn Bắc Sơn; Khe Lau 300 tấn/ngày dư so với 175 tấn rác thu gom thực tế; thiếu tiêu chí lựa chọn công nghệ, khí thải, tro xỉ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Thắng (Chủ tịch UBND thành phố Vĩnh Lạc)",
+      "point": "Dân hai xã chặn xe rác Đồng Mít hai lần trong năm; đề nghị đóng bãi chậm nhất 2028, ưu tiên làm Núi Cấm trước",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Thắng (Chủ tịch UBND thành phố Vĩnh Lạc)",
+      "point": "Thí điểm phân loại ở 4 phường chỉ 46% hộ làm đúng; xe gom lại đổ chung làm dân mất niềm tin, cần gom riêng, chở riêng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Lò Văn Sơn (Chủ tịch UBND huyện Mường Khoa)",
+      "point": "Mường Khoa thu gom mới đạt 38%, vùng cao xe không vào được, dân đốt hoặc đổ xuống suối",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Lò Văn Sơn (Chủ tịch UBND huyện Mường Khoa)",
+      "point": "Thí điểm hố ủ ở Nậm Pồ với 340 hộ giảm gần một nửa lượng rác phải chở; cần hỗ trợ khoảng 600 nghìn đồng/hộ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Hạnh (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Không đưa lò đốt mini vào Đề án; vùng cao xử lý rác hữu cơ bằng hố ủ tại hộ, rác còn lại gom về trạm trung chuyển cụm xã",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Ngân (Phó Giám đốc Sở Tài chính)",
+      "point": "Ngân sách chỉ cân đối được khoảng 800 tỷ; giá nhà đầu tư đề xuất 540.000 đồng/tấn làm ngân sách chi thêm khoảng 34 tỷ/năm; đề nghị đấu thầu rộng rãi, giá trần dưới 500.000",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Phong (Phó Chủ tịch UBND tỉnh)",
+    "MT": "Đ/c Hạnh (Giám đốc Sở Nông nghiệp và Môi trường)",
+    "XD": "Đ/c Khải (Phó Giám đốc Sở Xây dựng)",
+    "TC": "Đ/c Ngân (Phó Giám đốc Sở Tài chính)",
+    "TP": "Đ/c Thắng (Chủ tịch UBND thành phố Vĩnh Lạc)",
+    "HU": "Đ/c Lò Văn Sơn (Chủ tịch UBND huyện Mường Khoa)",
+    "VP": "Đ/c Diệp (Chánh Văn phòng UBND tỉnh)"
+  },
+  "tags": [
+    "phase_structure",
+    "hedged_proposal"
+  ]
+}

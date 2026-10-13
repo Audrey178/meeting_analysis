@@ -1,0 +1,343 @@
+{
+  "meeting_id": "synth_016",
+  "n_turns": 48,
+  "total_chars": 15299,
+  "boundaries": [
+    4,
+    16,
+    25,
+    35
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án phát triển du lịch cộng đồng huyện Tân Lạc giai đoạn 2026-2030",
+      "summary": "Phòng Văn hóa - Thông tin trình bày mục tiêu đón 150.000 lượt khách năm 2030, phát triển 4 bản du lịch cộng đồng, tổng kinh phí 86 tỷ đồng, trong đó ngân sách huyện 22 tỷ.",
+      "turn_range": [
+        0,
+        4
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000004"
+      ],
+      "chars": 2262,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Góp ý về nguồn vốn, đất đai và quy hoạch của Đề án",
+      "summary": "Phòng Tài chính - Kế hoạch cho rằng ngân sách huyện 22 tỷ là quá sức, đề nghị giảm còn 15 tỷ; Phòng Tài nguyên và Môi trường nêu vướng đất rừng phòng hộ ở bãi đỗ xe thác Mu và thiếu quy hoạch chi tiết; xã Mãn Đức đề nghị ưu tiên hạ tầng đường vào bản Ải.",
+      "turn_range": [
+        4,
+        16
+      ],
+      "turn_ids": [
+        "TURN_000005",
+        "TURN_000016"
+      ],
+      "chars": 3672,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Góp ý về bảo tồn văn hóa, đào tạo nhân lực và xúc tiến du lịch",
+      "summary": "Các ý kiến nêu nguy cơ thương mại hóa lễ hội, thiếu hướng dẫn viên người địa phương, đề nghị gắn với sản phẩm OCOP; đề xuất thành lập công ty du lịch huyện chưa được chấp nhận.",
+      "turn_range": [
+        16,
+        25
+      ],
+      "turn_ids": [
+        "TURN_000017",
+        "TURN_000025"
+      ],
+      "chars": 2609,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Góp ý về môi trường, an ninh trật tự và quản lý hoạt động homestay",
+      "summary": "Các ý kiến nêu rác thải và nước thải ở bản Lũy Ải đã quá tải mùa cao điểm, homestay chưa đăng ký kinh doanh và lưu trú, an toàn phòng cháy nhà sàn; đề nghị bổ sung nhóm nhiệm vụ môi trường và điều kiện cấp phép.",
+      "turn_range": [
+        25,
+        35
+      ],
+      "turn_ids": [
+        "TURN_000026",
+        "TURN_000035"
+      ],
+      "chars": 3559,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Kết luận của Chủ tịch UBND huyện về Đề án du lịch cộng đồng",
+      "summary": "Chủ tịch kết luận: giảm ngân sách huyện còn 15 tỷ, giữ mức hỗ trợ homestay 50 triệu nhưng giảm số hộ xuống 80; ưu tiên đường vào bản Ải bằng vốn chương trình mục tiêu quốc gia; dời bãi đỗ xe thác Mu khỏi đất rừng phòng hộ; bổ sung quy hoạch chi tiết 1/500; giao các phòng hoàn thiện trước 20/11.",
+      "turn_range": [
+        35,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000036",
+        "TURN_000048"
+      ],
+      "chars": 3197,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+      "actor_aliases": [
+        "chị Mai",
+        "phòng Văn hóa"
+      ],
+      "task": "Chủ trì chỉnh sửa đề án, bổ sung bảng phân kỳ đầu tư theo năm, gửi Văn phòng",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Hòa (Trưởng phòng Tài chính - Kế hoạch)",
+      "actor_aliases": [
+        "anh Hòa",
+        "tôi"
+      ],
+      "task": "Làm hồ sơ đề xuất đưa tuyến đường bản Ải vào danh mục vốn chương trình MTQG, gửi Sở Dân tộc và Tôn giáo",
+      "deadline": "trong tháng này (làm ngay tuần này)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000039",
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Tùng (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "anh Tùng",
+        "tôi"
+      ],
+      "task": "Cùng xã làm việc với 2 hộ dân, có phương án thỏa thuận đất cho bãi đỗ xe thác Mu",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Lò Văn Pản (Chủ tịch UBND xã Mãn Đức)",
+      "actor_aliases": [
+        "anh Pản",
+        "tôi"
+      ],
+      "task": "Vận động bà con bản Ải hiến đất mở rộng lề đường",
+      "deadline": "tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+      "actor_aliases": [
+        "chị Mai",
+        "em"
+      ],
+      "task": "Chủ trì buổi hướng dẫn tại bản Lũy Ải về đăng ký kinh doanh, khai báo lưu trú, phòng cháy (mời Công an, Chi cục Thuế, một cửa)",
+      "deadline": "trong tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Ngân (Chánh Văn phòng HĐND-UBND huyện)",
+      "actor_aliases": [
+        "đồng chí Ngân",
+        "Văn phòng"
+      ],
+      "task": "Dự thảo và ban hành thông báo kết luận cuộc họp",
+      "deadline": "ngày mai",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Giảm ngân sách huyện cho đề án xuống 15 tỷ trong 5 năm, phần chênh lệch huy động qua lồng ghép chương trình nông thôn mới và MTQG dân tộc thiểu số",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Giữ mức hỗ trợ homestay 50 triệu/hộ nhưng giảm từ 120 xuống 80 hộ giai đoạn đầu, ưu tiên hộ nghèo/cận nghèo, cam kết giữ kiến trúc nhà sàn",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Ưu tiên cứng hóa đường vào bản Ải là hạng mục đầu tiên, bằng vốn MTQG dân tộc thiểu số",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Dời bãi đỗ xe thác Mu ra khỏi đất rừng phòng hộ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Bổ sung quy hoạch chi tiết 1/500 và quy chế quản lý kiến trúc cho 4 bản; tách bạch nghi lễ truyền thống và biểu diễn; cắt hội chợ quốc tế, tập trung quảng bá số",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Bổ sung nhóm nhiệm vụ môi trường và bộ tiêu chí homestay (đăng ký kinh doanh, khai báo lưu trú, phòng cháy, bể tự hoại); dừng việc bản tự thu tiền khách, chuyển sang tổ hợp tác thu giá dịch vụ có niêm yết",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Huyện thành lập công ty cổ phần du lịch góp vốn cùng người dân",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022",
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Các phòng ban, các xã quán triệt phát triển du lịch đi đôi giữ gìn bản sắc (khẩu hiệu chung)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+      "point": "Mục tiêu 150.000 lượt khách năm 2030, phát triển 4 bản du lịch cộng đồng, hỗ trợ 120 hộ homestay 50 triệu/hộ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+      "point": "Tổng kinh phí 86 tỷ: tỉnh 38 tỷ, huyện 22 tỷ, xã hội hóa 26 tỷ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Hòa (Trưởng phòng Tài chính - Kế hoạch)",
+      "point": "Ngân sách huyện 22 tỷ quá sức, đề nghị tối đa 15 tỷ; cần bảng phân kỳ đầu tư",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Tùng (Trưởng phòng Tài nguyên và Môi trường)",
+      "point": "0,7 ha bãi đỗ xe thác Mu nằm trong rừng phòng hộ; 4 bản chưa có quy hoạch chi tiết",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Lò Văn Pản (Chủ tịch UBND xã Mãn Đức)",
+      "point": "Đường vào bản Ải 4,5 km là đường đất, cần cứng hóa trước; lễ hội không được biến thành biểu diễn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+      "point": "Huyện chỉ có 3 hướng dẫn viên có thẻ; đề xuất đào tạo 40 thuyết minh viên người Mường",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Tùng (Trưởng phòng Tài nguyên và Môi trường)",
+      "point": "Bản Lũy Ải ngày cao điểm phát sinh khoảng 2 tấn rác, chỉ 5/23 hộ có bể tự hoại đạt chuẩn; cần nhóm nhiệm vụ môi trường riêng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Hòa (Trưởng phòng Tài chính - Kế hoạch)",
+      "point": "Bản, xã không được tự đặt phí; phải là giá dịch vụ do tổ hợp tác thu, có niêm yết",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Ngân (Chánh Văn phòng HĐND-UBND huyện)",
+      "point": "Công an huyện: chỉ 9/23 hộ khai báo lưu trú, nguy cơ cháy nhà sàn, đề nghị điều kiện đăng ký kinh doanh và phòng cháy",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Thắng (Chủ tịch UBND huyện)",
+    "VH": "Đ/c Mai (Trưởng phòng Văn hóa - Thông tin)",
+    "TC": "Đ/c Hòa (Trưởng phòng Tài chính - Kế hoạch)",
+    "TN": "Đ/c Tùng (Trưởng phòng Tài nguyên và Môi trường)",
+    "XA": "Đ/c Lò Văn Pản (Chủ tịch UBND xã Mãn Đức)",
+    "VP": "Đ/c Ngân (Chánh Văn phòng HĐND-UBND huyện)"
+  },
+  "tags": [
+    "aside_interruption",
+    "pronoun_actor",
+    "phase_structure"
+  ]
+}

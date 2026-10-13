@@ -1,0 +1,1609 @@
+{
+  "transcript": "Chào thầy Hoàng, chào anh Cường và cả nhóm. Hôm nay họp tiến độ tháng, em đề nghị đi lần lượt: đăng nhập một lần, thi trực tuyến, báo cáo học tập, cuối cùng là kế hoạch học kỳ hai. Vũ báo cáo phần SSO trước nhé. Dạ. Phần đăng nhập một lần thì mình dùng Keycloak làm máy chủ xác thực, kết nối với cơ sở dữ liệu người dùng của hệ thống quản lý đào tạo của trường qua giao thức LDAP mà anh Cường cung cấp. Sinh viên, giảng viên đăng nhập một lần bằng tài khoản trường là vào được LMS, thư điện tử và cổng đào tạo luôn. Đến tuần trước thì đã chạy thử với khoảng 4.200 sinh viên khóa 2023 và 2024, và 380 giảng viên, đăng nhập ổn định, thời gian xác thực trung bình dưới một giây. Nhưng khi đồng bộ thêm các khóa cũ từ 2019 đến 2022 thì phát sinh lỗi, khoảng 1.300 sinh viên không đăng nhập được. Nguyên nhân là mã sinh viên các khóa trước 2021 được cấp theo định dạng cũ chỉ có bảy chữ số, và có hơn 200 trường hợp trùng mã với sinh viên hệ vừa làm vừa học, hai người khác nhau cùng một mã. Keycloak coi mã sinh viên là định danh duy nhất nên khi đồng bộ thì bản ghi sau đè bản ghi trước, thành ra sinh viên này đăng nhập lại vào tài khoản của sinh viên kia. Nhóm em đã phải tắt đồng bộ các khóa cũ ngay khi phát hiện. Chuyện trùng mã thì bên tôi biết từ lâu, vì hệ vừa làm vừa học trước đây do trung tâm liên kết quản lý riêng, cấp mã riêng, sau này mới gộp dữ liệu về một hệ thống. Trong hệ thống quản lý đào tạo thì hai loại sinh viên này phân biệt bằng trường hệ đào tạo, nhưng cái mã hiển thị thì trùng. Việc sửa mã trên hệ thống quản lý đào tạo thì không làm được, vì mã sinh viên đã in trên thẻ, trên bảng điểm, trên văn bằng của những người đã tốt nghiệp. Dạ vâng, nên em đề xuất là không sửa mã gốc, mà trong Keycloak mình dùng một định danh chuẩn hóa, ghép tiền tố hệ đào tạo và khóa vào trước mã sinh viên, ví dụ chính quy khóa 2020 là CQ20 cộng mã, vừa làm vừa học là VL20 cộng mã. Sinh viên vẫn đăng nhập bằng mã cũ, hệ thống sẽ hỏi thêm hệ đào tạo nếu mã đó bị trùng. Như vậy thì không đụng gì đến dữ liệu gốc. Tôi thấy phương án này được. Nhưng tôi lưu ý là sinh viên khóa cũ nhiều em đang học lại, học cải thiện, và đặc biệt là khoảng 600 em khóa 2020 đang làm đồ án tốt nghiệp, học kỳ sau phải nộp đồ án trên LMS. Nếu các em không đăng nhập được thì rất phiền. Việc này phải xong trước khi bắt đầu học kỳ hai. Chị bổ sung là khi chạy đồng bộ lại thì phải kiểm thử kỹ những tài khoản đã bị đè, vì có thể trong thời gian chạy thử đã có sinh viên đăng nhập nhầm vào tài khoản người khác và nộp bài, hoặc xem điểm. Chị đề nghị là rà soát log đăng nhập của khoảng 200 mã trùng trong hai tuần chạy thử, xem có trường hợp nào đã truy cập nhầm không, nếu có thì phải báo cáo nhà trường. Dạ em xin nói rõ thêm về cách chạy đồng bộ lại để thầy Hoàng và anh Cường yên tâm. Bước một là em xuất toàn bộ danh sách sinh viên từ LDAP, gồm mã, họ tên, ngày sinh, hệ đào tạo, khóa, rồi chạy một đoạn kiểm tra tìm tất cả các mã xuất hiện nhiều hơn một lần. Theo số liệu sơ bộ thì có 214 mã bị trùng, liên quan 431 sinh viên, vì có vài mã trùng ba người. Bước hai là em sinh định danh chuẩn hóa cho toàn bộ sinh viên, không chỉ những người bị trùng, để sau này quy tắc thống nhất, sinh viên chính quy khóa 2021 trở về sau thì mã đã có tiền tố khóa sẵn nên định danh gần như giữ nguyên. Bước ba là xóa các bản ghi bị đè trong Keycloak và nhập lại theo định danh mới. Bước bốn là với các sinh viên bị trùng mã, lần đăng nhập đầu tiên hệ thống sẽ hiện màn hình chọn hệ đào tạo, chọn xong thì lưu lại, lần sau không hỏi nữa. Toàn bộ quá trình em sẽ chạy trên môi trường thử nghiệm trước, chị Oanh kiểm tra ngẫu nhiên khoảng một trăm tài khoản, đạt thì mới chạy trên môi trường thật, và chạy vào ban đêm để không ảnh hưởng người dùng. Thời gian chạy thật thì ước khoảng hai tiếng cho toàn bộ khoảng 18.000 tài khoản sinh viên các khóa. Về rủi ro thì nếu có sinh viên nào đã được giảng viên thêm vào lớp học phần trên LMS bằng tài khoản cũ bị đè, thì sau khi đồng bộ lại em phải ánh xạ lại tư cách thành viên lớp, bài nộp và điểm sang tài khoản mới, cái này em đã tính vào thời gian. Tôi đề nghị thêm là trước khi chạy trên môi trường thật thì phải sao lưu toàn bộ cơ sở dữ liệu Keycloak và LMS, và bên dự án gửi cho tôi kịch bản khôi phục nếu có sự cố, vì đây là thao tác trên dữ liệu người dùng của toàn trường. Ngoài ra thì bên Trung tâm dữ liệu cũng cần biết trước lịch chạy để theo dõi tải máy chủ LDAP, vì xuất toàn bộ danh sách sẽ tạo tải khá lớn. Ok, chốt phương án định danh chuẩn hóa có tiền tố hệ và khóa như Vũ đề xuất, không sửa mã gốc. Vũ làm và chạy đồng bộ lại các khóa 2019 đến 2022, xong trước ngày 10 tháng 12. Chị Oanh rà soát log đăng nhập của các mã trùng trong thời gian chạy thử, có gì báo em để em báo thầy Hoàng. Dạ vâng anh. Ok, trong tuần này chị rà xong. Rồi, phần thi trực tuyến. Hà báo cáo đi em. Dạ. Chức năng thi trực tuyến thì hiện đã có đầy đủ cho hình thức trắc nghiệm, giảng viên tạo ngân hàng câu hỏi, cấu hình đề thi ngẫu nhiên theo ma trận độ khó, thời gian làm bài, số lần làm. Sinh viên làm bài trên trình duyệt, hết giờ thì tự nộp. Tháng vừa rồi đã chạy thử giữa kỳ cho ba học phần là Toán cao cấp, Vật lý đại cương và Tin học cơ sở, tổng cộng khoảng 2.100 lượt thi. Hệ thống chịu tải tốt, lúc cao điểm có khoảng 900 sinh viên thi đồng thời, thời gian phản hồi vẫn dưới hai giây. Lỗi thì có một số trường hợp sinh viên bị mất mạng giữa chừng, khi vào lại thì bài làm vẫn được lưu nhưng đồng hồ vẫn chạy, có em mất năm phút. Cái này em đã sửa cho phép giám thị cộng thêm thời gian cho từng sinh viên. Vấn đề lớn nhất mà các thầy cô phản ánh là gian lận. Kết quả thi giữa kỳ Toán cao cấp trực tuyến cao hơn hẳn so với thi giấy các năm trước, điểm trung bình cao hơn khoảng 1,8 điểm, các thầy nghi là sinh viên tra cứu, hỏi nhau qua điện thoại. Đúng vậy, hội đồng khoa học của khoa Cơ bản đã có ý kiến là nếu không giải quyết được gian lận thì khoa không đồng ý thi cuối kỳ trực tuyến. Tôi cũng xin nói rõ là mục tiêu của nhà trường trong năm nay là chỉ thi trực tuyến giữa kỳ và các học phần tự chọn, còn thi cuối kỳ các học phần bắt buộc thì vẫn thi tập trung tại phòng máy. Anh Trung, em có tìm hiểu một giải pháp là tích hợp nhận diện khuôn mặt để giám sát thi. Tức là trong khi thi thì webcam của sinh viên liên tục chụp ảnh, hệ thống so khớp với ảnh thẻ sinh viên, phát hiện người khác làm bài hộ, phát hiện sinh viên nhìn ra ngoài màn hình quá lâu, hoặc có người thứ hai xuất hiện. Có mấy dịch vụ nước ngoài cung cấp sẵn, tính phí theo lượt thi, khoảng 1 đến 2 đô la một lượt. Nhóm em có thể tích hợp trong khoảng sáu tuần. Tôi thì tôi rất băn khoăn về cái này. Thứ nhất là ảnh khuôn mặt là dữ liệu sinh trắc học, theo Nghị định 13 và Luật Bảo vệ dữ liệu cá nhân thì là dữ liệu cá nhân nhạy cảm, phải có sự đồng ý rõ ràng của từng sinh viên, và nếu gửi ra dịch vụ nước ngoài thì còn phải làm hồ sơ đánh giá tác động chuyển dữ liệu ra nước ngoài nộp Bộ Công an. Thủ tục này rất phức tạp. Thứ hai là chi phí, mỗi học kỳ trường có khoảng 60.000 lượt thi, nếu một đô la một lượt thì đã hơn một tỷ rưỡi một năm, trường không có kinh phí này. Thứ ba là nhiều sinh viên ở nông thôn không có máy tính có webcam, làm bài bằng điện thoại. Tôi đồng ý với anh Cường. Nhà trường sẽ không dùng nhận diện khuôn mặt trong năm nay. Dạ em bổ sung thêm là trong số các cách chống gian lận mà không cần camera, thì trên hệ thống hiện đã ghi lại khá nhiều dữ liệu có ích mà các thầy cô chưa dùng. Ví dụ là thời gian làm từng câu, số lần chuyển ra khỏi cửa sổ thi, thời điểm nộp bài, địa chỉ mạng. Khi em xem lại dữ liệu bài thi Toán cao cấp giữa kỳ thì thấy có những nhóm sinh viên nộp bài cách nhau chỉ vài giây, cùng địa chỉ mạng, và chọn sai giống hệt nhau ở những câu khó, rất có khả năng là làm chung. Có khoảng 70 trường hợp như vậy. Nếu mình làm một báo cáo bất thường sau mỗi kỳ thi, liệt kê các trường hợp nghi vấn cho giám thị và giảng viên xem xét, thì cũng có tác dụng răn đe, và không vướng vấn đề dữ liệu cá nhân nhạy cảm như ảnh khuôn mặt. Tuy vậy thì báo cáo này chỉ để tham khảo, không thể dùng làm căn cứ xử lý kỷ luật nếu không có bằng chứng khác. Tôi thấy dữ liệu đó có giá trị. Việc xử lý vi phạm thì theo quy chế phải có biên bản của giám thị, nên báo cáo bất thường chỉ là để giám thị chú ý hơn. Nhưng trước mắt tôi muốn tập trung vào các biện pháp phòng ngừa đã, còn báo cáo bất thường thì để học kỳ sau tính. Ok, vậy bỏ phương án nhận diện khuôn mặt, nhóm mình không làm. Thay vào đó em chốt ba biện pháp làm được ngay. Một là bắt buộc dùng chế độ trình duyệt khóa khi thi, không cho mở tab khác, không cho sao chép dán, thoát ra là ghi nhận. Hai là mỗi sinh viên một đề riêng, xáo trộn cả thứ tự câu hỏi lẫn thứ tự đáp án. Ba là với thi giữa kỳ quan trọng thì chia phòng thi ảo, mỗi phòng tối đa 40 sinh viên có một giám thị giám sát qua camera trực tiếp bằng Google Meet như các trường khác đang làm. Hà làm trình duyệt khóa và xáo trộn đáp án, xong trước ngày 20 tháng 12. Dạ, em làm được anh. Phòng Đào tạo sẽ ban hành quy chế thi trực tuyến giữa kỳ có quy định về giám sát qua camera và xử lý vi phạm, tôi phụ trách, trước khi bắt đầu học kỳ hai. Tiếp theo là phần báo cáo học tập. Hà với Vũ cùng làm phần này, Hà trình bày giao diện nhé. Dạ. Bảng điều khiển cho giảng viên hiện có các chỉ số cho từng lớp học phần: số sinh viên truy cập theo tuần, thời gian xem bài giảng video, tỷ lệ nộp bài tập đúng hạn, điểm các bài kiểm tra thành phần, và danh sách sinh viên chưa từng truy cập. Giảng viên có thể lọc theo nhóm, xuất ra Excel. Với cố vấn học tập thì có một bảng tổng hợp theo lớp sinh hoạt, xem được tình hình của từng sinh viên trên tất cả các học phần đang học. Dữ liệu cập nhật mỗi đêm. Hiện đã mở cho khoảng 40 giảng viên dùng thử, phản hồi chung là giao diện dễ dùng, nhưng nhiều thầy cô nói là có nhiều số liệu quá mà không biết nên làm gì với nó. Đúng vậy, và đây là cái tôi muốn nói. Mục tiêu của nhà trường khi làm LMS không phải để có thêm biểu đồ, mà để giảm tỷ lệ sinh viên bị cảnh báo học vụ và thôi học. Năm học vừa rồi trường có hơn 900 sinh viên bị cảnh báo học vụ, gần 300 em bị buộc thôi học, phần lớn là năm nhất và năm hai. Khi xem lại thì hầu hết các em đó đều có dấu hiệu từ rất sớm, vắng học nhiều, không nộp bài, nhưng cố vấn học tập thì không biết cho đến khi có điểm cuối kỳ thì đã muộn. Tôi muốn hệ thống phải có cảnh báo sớm, tự động báo cho cố vấn học tập những em có nguy cơ, để cố vấn gọi các em lên nói chuyện kịp thời. Dạ về kỹ thuật thì có hai cách thầy ạ. Cách thứ nhất là dùng luật, ví dụ vắng quá ba buổi, không nộp quá hai bài tập liên tiếp, điểm giữa kỳ dưới 4, thì đánh dấu là có nguy cơ. Cách thứ hai là huấn luyện một mô hình dự đoán từ dữ liệu các năm trước, cho ra xác suất trượt của từng sinh viên. Cách thứ hai thì có thể chính xác hơn, nhưng cần dữ liệu lịch sử đầy đủ, mà LMS mới chạy được một học kỳ, dữ liệu hành vi học tập các năm trước thì không có, chỉ có điểm. Em nghĩ là trước mắt làm theo luật, dễ giải thích cho cố vấn học tập, sau hai ba học kỳ có dữ liệu thì mới làm mô hình. Tôi đồng ý với Vũ. Với lại dùng luật thì cố vấn học tập hiểu ngay vì sao em này bị cảnh báo, còn mô hình mà nói xác suất bảy mươi phần trăm thì các thầy cô sẽ hỏi là tại sao, mình không trả lời được. Chị lưu ý về dữ liệu điểm danh. Hiện nay điểm danh thì mỗi giảng viên làm một kiểu, có thầy điểm danh trên giấy, có thầy dùng ứng dụng riêng, chỉ khoảng một phần ba giảng viên điểm danh trên LMS. Nếu luật dựa vào số buổi vắng mà dữ liệu điểm danh không đầy đủ thì cảnh báo sẽ sai, em nào học lớp thầy điểm danh giấy thì không bao giờ bị cảnh báo vắng. Việc điểm danh trên LMS thì Phòng Đào tạo sẽ yêu cầu bắt buộc từ học kỳ hai, tôi sẽ đưa vào văn bản hướng dẫn. Còn cảnh báo thì gửi cho cố vấn học tập hằng tuần, qua thư điện tử và thông báo trên LMS, kèm danh sách và lý do cảnh báo của từng em. Tôi nói thêm về quy trình để bên dự án hiểu. Hiện nay mỗi lớp sinh hoạt có một cố vấn học tập, là giảng viên kiêm nhiệm, phụ trách khoảng 60 đến 80 sinh viên. Cố vấn học tập thì rất bận, nên nếu hệ thống gửi một danh sách quá dài hoặc cảnh báo quá nhiều thì các thầy cô sẽ bỏ qua. Theo kinh nghiệm của Phòng Đào tạo khi làm thủ công ở học kỳ trước, mỗi tuần mỗi lớp chỉ nên có khoảng ba đến năm em bị cảnh báo thì cố vấn mới xử lý được. Vì vậy ba tiêu chí của Vũ nêu thì tôi thấy hợp lý, nhưng cần theo dõi xem thực tế mỗi tuần ra bao nhiêu em, nếu quá nhiều thì điều chỉnh ngưỡng. Ngoài ra thì khi cố vấn đã gặp và trao đổi với sinh viên rồi thì phải có chỗ để ghi lại kết quả trao đổi, để tuần sau nếu em đó tiếp tục bị cảnh báo thì cố vấn biết là đã gặp rồi, và Phòng Đào tạo cũng có số liệu để đánh giá hiệu quả của hoạt động cố vấn. Hiện nay việc này làm trên sổ tay, cuối kỳ không tổng hợp được. Dạ màn hình danh sách cảnh báo em sẽ có thêm cột trạng thái xử lý và ô ghi chú kết quả trao đổi cho cố vấn, cái này đơn giản thôi thầy. Ok, em chốt là làm cảnh báo sớm theo luật với ba tiêu chí: vắng từ ba buổi trở lên trong một học phần, không nộp hai bài tập liên tiếp, điểm giữa kỳ dưới 4. Gửi danh sách cho cố vấn học tập hằng tuần vào sáng thứ Hai qua thư điện tử và LMS, có ghi lý do. Chưa làm mô hình dự đoán trong năm nay. Vũ làm phần luật và gửi thông báo, Hà làm màn hình danh sách cảnh báo cho cố vấn, xong trước học kỳ hai. Dạ vâng. Dạ em làm luôn sau phần trình duyệt khóa. Phòng Đào tạo sẽ có văn bản yêu cầu giảng viên điểm danh trên LMS bắt buộc từ học kỳ hai. Anh Trung ơi, trước khi sang kế hoạch học kỳ hai, tôi xin quay lại phần đăng nhập một lần một chút, vì tôi vừa nhận được lịch của Trung tâm dữ liệu. Máy chủ LDAP của trường có lịch bảo trì nâng cấp hệ điều hành vào tuần từ 15 đến 19 tháng 12, dự kiến dừng dịch vụ khoảng hai ngày. Mà theo như Vũ nói thì Keycloak đang xác thực trực tiếp với LDAP, tức là LDAP dừng thì toàn bộ sinh viên không đăng nhập được LMS. Tuần đó lại đúng là tuần thi giữa kỳ trực tuyến của một số học phần tự chọn. Dạ đúng anh, hiện tại Keycloak mỗi lần xác thực đều hỏi LDAP, không có bộ nhớ đệm. Có một cách là cấu hình Keycloak lưu bản sao thông tin người dùng và mật khẩu đã băm từ LDAP vào cơ sở dữ liệu của nó, khi LDAP không kết nối được thì vẫn xác thực được từ bản sao. Nhưng như vậy thì nếu có sinh viên đổi mật khẩu trong thời gian đó sẽ không đồng bộ, và về bảo mật thì mình đang giữ thêm một bản mật khẩu, anh Cường có đồng ý không? Về nguyên tắc thì tôi không muốn có thêm một nơi lưu mật khẩu. Tôi nghĩ đơn giản nhất là tôi đề nghị Trung tâm dữ liệu lùi lịch bảo trì LDAP sang tuần sau thi, tức là sau ngày 22 tháng 12, cái này tôi làm được. Còn một việc nữa là về bảo mật, Ban Giám hiệu vừa có chỉ đạo là tất cả tài khoản có quyền nhập điểm và quản trị phải bật xác thực hai yếu tố, vì năm ngoái có một vụ lộ mật khẩu giảng viên và bị sửa điểm. Mà trên LMS thì giảng viên nhập điểm thành phần, nên cũng phải áp dụng. Keycloak có sẵn xác thực hai yếu tố bằng ứng dụng OTP như Google Authenticator anh ạ, chỉ cần bật theo nhóm người dùng. Em có thể bật cho nhóm giảng viên và nhóm quản trị, còn sinh viên thì không bắt buộc. Giảng viên lớn tuổi thì sẽ có một số thầy cô gặp khó khăn với ứng dụng OTP, cần có hướng dẫn và hỗ trợ. Tôi nói thêm về vụ lộ mật khẩu năm ngoái để mọi người hiểu vì sao Ban Giám hiệu yêu cầu gấp. Năm ngoái có một giảng viên dùng chung mật khẩu tài khoản trường với một trang web bên ngoài, trang đó bị lộ dữ liệu, kẻ xấu lấy mật khẩu đăng nhập vào hệ thống quản lý đào tạo và sửa điểm của 14 sinh viên một học phần, đến khi giảng viên phát hiện thì đã gần một tháng. Nhà trường phải hủy kết quả, tổ chức thi lại, và có đơn vị công an vào làm việc. Từ đó Ban Giám hiệu yêu cầu tất cả tài khoản có quyền sửa dữ liệu điểm phải có xác thực hai yếu tố. Hệ thống quản lý đào tạo thì đã bật từ học kỳ trước, bây giờ đến lượt LMS vì LMS cũng có quyền nhập điểm thành phần và đồng bộ sang. Tỷ lệ giảng viên đã cài ứng dụng OTP cho hệ thống quản lý đào tạo hiện khoảng 85%, nên phần lớn thầy cô đã quen rồi, chỉ cần thêm một tài khoản nữa vào ứng dụng. Ok, chốt hai việc. Một là không cấu hình lưu bản sao mật khẩu, anh Cường đề nghị Trung tâm dữ liệu lùi bảo trì LDAP sang sau ngày 22 tháng 12. Hai là bật xác thực hai yếu tố bắt buộc cho tài khoản giảng viên và quản trị trên Keycloak từ học kỳ hai, sinh viên không bắt buộc. Vũ cấu hình, Hà làm trang hướng dẫn cài ứng dụng OTP có hình ảnh từng bước. Tôi sẽ làm việc với Trung tâm dữ liệu ngay trong tuần này. Dạ em cấu hình, bật thử cho nhóm quản trị trước. Dạ em làm trang hướng dẫn. Phần cuối là kế hoạch học kỳ hai. Thầy Hoàng cho bên em biết phạm vi nhà trường muốn triển khai ạ. Kế hoạch của nhà trường là học kỳ hai sẽ triển khai LMS cho toàn bộ các học phần đại cương, khoảng 180 lớp học phần, và toàn bộ học phần của ba khoa thí điểm là Công nghệ thông tin, Điện tử viễn thông và Kinh tế, khoảng 320 lớp học phần nữa. Tổng cộng khoảng 500 lớp học phần, 12.000 sinh viên và 260 giảng viên. Các khoa khác thì học kỳ sau nữa. Yêu cầu là mỗi lớp học phần phải có đề cương, bài giảng và ít nhất các bài tập được đưa lên LMS, giảng viên nhập điểm thành phần trên LMS và đồng bộ sang hệ thống quản lý đào tạo. Với quy mô 12.000 sinh viên thì chị đề nghị trước khi mở phải có một đợt kiểm thử hiệu năng mô phỏng khoảng 3.000 người dùng đồng thời, vì đầu học kỳ sinh viên đăng nhập dồn dập để xem thời khóa biểu và tài liệu. Đợt thi giữa kỳ vừa rồi mới có 900 người đồng thời. Về hạ tầng thì hiện LMS chạy trên hai máy chủ ảo tại Trung tâm dữ liệu của trường. Nếu cần thêm tài nguyên thì phải có đề xuất sớm, vì cấp phát máy chủ mới mất khoảng hai tuần. Dạ em ước với 3.000 người dùng đồng thời thì cần thêm một máy chủ ứng dụng nữa và tăng bộ nhớ cho máy chủ cơ sở dữ liệu. Em sẽ gửi anh Cường thông số cụ thể sau khi chạy kiểm thử hiệu năng thử trên môi trường hiện tại. Về tập huấn thì Phòng Đào tạo sẽ tổ chức tập huấn cho 260 giảng viên trong tháng 1, chia theo khoa, mỗi buổi nửa ngày. Tôi đề nghị bên dự án cử người hướng dẫn và chuẩn bị tài liệu, video hướng dẫn ngắn cho từng chức năng chính. Dạ về nội dung bài giảng thì em báo cáo thêm là hiện nay nhiều thầy cô gửi video bài giảng dung lượng rất lớn, có video một tiếng mà nặng gần 4 gigabyte, tải lên rất lâu và sinh viên xem bằng điện thoại thì tốn dung lượng mạng. Hệ thống có chức năng tự động chuyển mã video sang nhiều độ phân giải, nhưng quá trình chuyển mã chạy trên chính máy chủ ứng dụng nên khi nhiều thầy cô tải lên cùng lúc thì máy chủ bị chậm. Nếu học kỳ hai có 260 giảng viên tải bài giảng vào tuần đầu thì em lo là sẽ ảnh hưởng đến sinh viên đang dùng. Em nghĩ là trong thông số máy chủ gửi anh Cường thì nên tính thêm một máy chủ chuyển mã riêng, hoặc khuyến nghị thầy cô tải video lên trước học kỳ một tuần để rải tải. Việc tải bài giảng trước thì Phòng Đào tạo sẽ đưa vào yêu cầu, hạn cuối là một tuần trước khi bắt đầu học kỳ. Ok, em chốt kế hoạch. Học kỳ hai mở LMS cho khoảng 500 lớp học phần gồm đại cương và ba khoa thí điểm như thầy Hoàng nói. Trước khi mở phải kiểm thử hiệu năng mô phỏng 3.000 người dùng đồng thời. Tập huấn giảng viên trong tháng 1. Nghiệm thu giai đoạn 1 vào cuối tháng 2 sau khi học kỳ hai chạy ổn định được ba tuần. Phân công như sau: chị Oanh làm kịch bản và chạy kiểm thử hiệu năng trước ngày 5 tháng 1. Vũ gửi thông số máy chủ cho anh Cường trước ngày 15 tháng 12 để anh Cường đề xuất cấp phát. Hà làm bộ video hướng dẫn ngắn cho giảng viên, khoảng mười video, xong trước ngày 10 tháng 1. Em thì em làm kế hoạch nghiệm thu gửi thầy Hoàng trong tháng 12. Ok chị làm. Dạ em gửi anh Cường. Nhận được thông số thì tôi làm đề xuất cấp phát luôn. Dạ em làm video. Phòng Đào tạo lên lịch tập huấn gửi các khoa trước ngày 20 tháng 12. Cảm ơn anh Trung và cả nhóm. Dạ cảm ơn thầy, cảm ơn mọi người.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Chào thầy Hoàng, chào anh Cường và cả nhóm. Hôm nay họp tiến độ tháng, em đề nghị đi lần lượt: đăng nhập một lần, thi trực tuyến, báo cáo học tập, cuối cùng là kế hoạch học kỳ hai. Vũ báo cáo phần SSO trước nhé.",
+      "segment_html": "Chào thầy Hoàng, chào anh Cường và cả nhóm. Hôm nay họp tiến độ tháng, em đề nghị đi lần lượt: đăng nhập một lần, thi trực tuyến, báo cáo học tập, cuối cùng là kế hoạch học kỳ hai. Vũ báo cáo phần SSO trước nhé.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 20.685,
+      "point_id": "25b8328a-52d8-5c34-8faa-5d17a6f72d81",
+      "ref_id": [
+        "b11c0214-e15e-56a9-a584-436775a71762"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Dạ. Phần đăng nhập một lần thì mình dùng Keycloak làm máy chủ xác thực, kết nối với cơ sở dữ liệu người dùng của hệ thống quản lý đào tạo của trường qua giao thức LDAP mà anh Cường cung cấp. Sinh viên,",
+      "segment_html": "Dạ. Phần đăng nhập một lần thì mình dùng Keycloak làm máy chủ xác thực, kết nối với cơ sở dữ liệu người dùng của hệ thống quản lý đào tạo của trường qua giao thức LDAP mà anh Cường cung cấp. Sinh viên,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 21.685,
+      "end_time": 40.815,
+      "point_id": "28dedff1-9004-55c1-8ef7-99cbd94c45b3",
+      "ref_id": [
+        "d5d8752f-2140-577a-a7bb-64687859d938"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "giảng viên đăng nhập một lần bằng tài khoản trường là vào được LMS, thư điện tử và cổng đào tạo luôn. Đến tuần trước thì đã chạy thử với khoảng 4.200 sinh viên khóa 2023 và 2024, và 380 giảng viên, đăng nhập ổn định,",
+      "segment_html": "giảng viên đăng nhập một lần bằng tài khoản trường là vào được LMS, thư điện tử và cổng đào tạo luôn. Đến tuần trước thì đã chạy thử với khoảng 4.200 sinh viên khóa 2023 và 2024, và 380 giảng viên, đăng nhập ổn định,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 41.065,
+      "end_time": 61.065,
+      "point_id": "28dedff1-9004-55c1-8ef7-99cbd94c45b3",
+      "ref_id": [
+        "d5d8752f-2140-577a-a7bb-64687859d938"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "thời gian xác thực trung bình dưới một giây. Nhưng khi đồng bộ thêm các khóa cũ từ 2019 đến 2022 thì phát sinh lỗi, khoảng 1.300 sinh viên không đăng nhập được.",
+      "segment_html": "thời gian xác thực trung bình dưới một giây. Nhưng khi đồng bộ thêm các khóa cũ từ 2019 đến 2022 thì phát sinh lỗi, khoảng 1.300 sinh viên không đăng nhập được.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 61.315,
+      "end_time": 75.663,
+      "point_id": "28dedff1-9004-55c1-8ef7-99cbd94c45b3",
+      "ref_id": [
+        "d5d8752f-2140-577a-a7bb-64687859d938"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Nguyên nhân là mã sinh viên các khóa trước 2021 được cấp theo định dạng cũ chỉ có bảy chữ số, và có hơn 200 trường hợp trùng mã với sinh viên hệ vừa làm vừa học, hai người khác nhau cùng một mã.",
+      "segment_html": "Nguyên nhân là mã sinh viên các khóa trước 2021 được cấp theo định dạng cũ chỉ có bảy chữ số, và có hơn 200 trường hợp trùng mã với sinh viên hệ vừa làm vừa học, hai người khác nhau cùng một mã.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 75.913,
+      "end_time": 95.043,
+      "point_id": "28dedff1-9004-55c1-8ef7-99cbd94c45b3",
+      "ref_id": [
+        "d5d8752f-2140-577a-a7bb-64687859d938"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Keycloak coi mã sinh viên là định danh duy nhất nên khi đồng bộ thì bản ghi sau đè bản ghi trước, thành ra sinh viên này đăng nhập lại vào tài khoản của sinh viên kia. Nhóm em đã phải tắt đồng bộ các khóa cũ ngay khi phát hiện.",
+      "segment_html": "Keycloak coi mã sinh viên là định danh duy nhất nên khi đồng bộ thì bản ghi sau đè bản ghi trước, thành ra sinh viên này đăng nhập lại vào tài khoản của sinh viên kia. Nhóm em đã phải tắt đồng bộ các khóa cũ ngay khi phát hiện.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 95.293,
+      "end_time": 117.467,
+      "point_id": "28dedff1-9004-55c1-8ef7-99cbd94c45b3",
+      "ref_id": [
+        "d5d8752f-2140-577a-a7bb-64687859d938"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Chuyện trùng mã thì bên tôi biết từ lâu, vì hệ vừa làm vừa học trước đây do trung tâm liên kết quản lý riêng, cấp mã riêng, sau này mới gộp dữ liệu về một hệ thống.",
+      "segment_html": "Chuyện trùng mã thì bên tôi biết từ lâu, vì hệ vừa làm vừa học trước đây do trung tâm liên kết quản lý riêng, cấp mã riêng, sau này mới gộp dữ liệu về một hệ thống.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 118.467,
+      "end_time": 134.989,
+      "point_id": "c23bf521-6378-5c36-bf17-bd71ee67fa98",
+      "ref_id": [
+        "3217df50-66b2-5969-8a89-bbebe3a16af7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Trong hệ thống quản lý đào tạo thì hai loại sinh viên này phân biệt bằng trường hệ đào tạo, nhưng cái mã hiển thị thì trùng. Việc sửa mã trên hệ thống quản lý đào tạo thì không làm được, vì mã sinh viên đã in trên thẻ, trên bảng điểm,",
+      "segment_html": "Trong hệ thống quản lý đào tạo thì hai loại sinh viên này phân biệt bằng trường hệ đào tạo, nhưng cái mã hiển thị thì trùng. Việc sửa mã trên hệ thống quản lý đào tạo thì không làm được, vì mã sinh viên đã in trên thẻ, trên bảng điểm,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 135.239,
+      "end_time": 157.848,
+      "point_id": "c23bf521-6378-5c36-bf17-bd71ee67fa98",
+      "ref_id": [
+        "3217df50-66b2-5969-8a89-bbebe3a16af7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "trên văn bằng của những người đã tốt nghiệp.",
+      "segment_html": "trên văn bằng của những người đã tốt nghiệp.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 158.098,
+      "end_time": 162.011,
+      "point_id": "c23bf521-6378-5c36-bf17-bd71ee67fa98",
+      "ref_id": [
+        "3217df50-66b2-5969-8a89-bbebe3a16af7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Dạ vâng, nên em đề xuất là không sửa mã gốc, mà trong Keycloak mình dùng một định danh chuẩn hóa, ghép tiền tố hệ đào tạo và khóa vào trước mã sinh viên, ví dụ chính quy khóa 2020 là CQ20 cộng mã, vừa làm vừa học là VL20 cộng mã.",
+      "segment_html": "Dạ vâng, nên em đề xuất là không sửa mã gốc, mà trong Keycloak mình dùng một định danh chuẩn hóa, ghép tiền tố hệ đào tạo và khóa vào trước mã sinh viên, ví dụ chính quy khóa 2020 là CQ20 cộng mã, vừa làm vừa học là VL20 cộng mã.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 163.011,
+      "end_time": 185.62,
+      "point_id": "68c0629e-22de-5a43-8895-b96c0abad13e",
+      "ref_id": [
+        "e1e96c32-fcf8-5f86-b838-aeb4f233293d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Sinh viên vẫn đăng nhập bằng mã cũ, hệ thống sẽ hỏi thêm hệ đào tạo nếu mã đó bị trùng. Như vậy thì không đụng gì đến dữ liệu gốc.",
+      "segment_html": "Sinh viên vẫn đăng nhập bằng mã cũ, hệ thống sẽ hỏi thêm hệ đào tạo nếu mã đó bị trùng. Như vậy thì không đụng gì đến dữ liệu gốc.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 185.87,
+      "end_time": 199.348,
+      "point_id": "68c0629e-22de-5a43-8895-b96c0abad13e",
+      "ref_id": [
+        "e1e96c32-fcf8-5f86-b838-aeb4f233293d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Tôi thấy phương án này được. Nhưng tôi lưu ý là sinh viên khóa cũ nhiều em đang học lại, học cải thiện, và đặc biệt là khoảng 600 em khóa 2020 đang làm đồ án tốt nghiệp, học kỳ sau phải nộp đồ án trên LMS.",
+      "segment_html": "Tôi thấy phương án này được. Nhưng tôi lưu ý là sinh viên khóa cũ nhiều em đang học lại, học cải thiện, và đặc biệt là khoảng 600 em khóa 2020 đang làm đồ án tốt nghiệp, học kỳ sau phải nộp đồ án trên LMS.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 200.348,
+      "end_time": 220.783,
+      "point_id": "63ce39bd-b566-5ab7-9b88-91cc5cda6376",
+      "ref_id": [
+        "2529df5d-cf8d-5740-b762-d6e1c37a3f3f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Nếu các em không đăng nhập được thì rất phiền. Việc này phải xong trước khi bắt đầu học kỳ hai.",
+      "segment_html": "Nếu các em không đăng nhập được thì rất phiền. Việc này phải xong trước khi bắt đầu học kỳ hai.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 221.033,
+      "end_time": 230.163,
+      "point_id": "63ce39bd-b566-5ab7-9b88-91cc5cda6376",
+      "ref_id": [
+        "2529df5d-cf8d-5740-b762-d6e1c37a3f3f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Chị bổ sung là khi chạy đồng bộ lại thì phải kiểm thử kỹ những tài khoản đã bị đè, vì có thể trong thời gian chạy thử đã có sinh viên đăng nhập nhầm vào tài khoản người khác và nộp bài, hoặc xem điểm.",
+      "segment_html": "Chị bổ sung là khi chạy đồng bộ lại thì phải kiểm thử kỹ những tài khoản đã bị đè, vì có thể trong thời gian chạy thử đã có sinh viên đăng nhập nhầm vào tài khoản người khác và nộp bài, hoặc xem điểm.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 231.163,
+      "end_time": 251.163,
+      "point_id": "42026e00-dd59-5281-90b9-5d6393674cb6",
+      "ref_id": [
+        "d494e208-9eb5-5811-8f14-d09717c817ba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Chị đề nghị là rà soát log đăng nhập của khoảng 200 mã trùng trong hai tuần chạy thử, xem có trường hợp nào đã truy cập nhầm không, nếu có thì phải báo cáo nhà trường.",
+      "segment_html": "Chị đề nghị là rà soát log đăng nhập của khoảng 200 mã trùng trong hai tuần chạy thử, xem có trường hợp nào đã truy cập nhầm không, nếu có thì phải báo cáo nhà trường.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 251.413,
+      "end_time": 267.5,
+      "point_id": "42026e00-dd59-5281-90b9-5d6393674cb6",
+      "ref_id": [
+        "d494e208-9eb5-5811-8f14-d09717c817ba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Dạ em xin nói rõ thêm về cách chạy đồng bộ lại để thầy Hoàng và anh Cường yên tâm. Bước một là em xuất toàn bộ danh sách sinh viên từ LDAP, gồm mã, họ tên, ngày sinh, hệ đào tạo, khóa,",
+      "segment_html": "Dạ em xin nói rõ thêm về cách chạy đồng bộ lại để thầy Hoàng và anh Cường yên tâm. Bước một là em xuất toàn bộ danh sách sinh viên từ LDAP, gồm mã, họ tên, ngày sinh, hệ đào tạo, khóa,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 268.5,
+      "end_time": 287.196,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "rồi chạy một đoạn kiểm tra tìm tất cả các mã xuất hiện nhiều hơn một lần. Theo số liệu sơ bộ thì có 214 mã bị trùng, liên quan 431 sinh viên, vì có vài mã trùng ba người. Bước hai là em sinh định danh chuẩn hóa cho toàn bộ sinh viên,",
+      "segment_html": "rồi chạy một đoạn kiểm tra tìm tất cả các mã xuất hiện nhiều hơn một lần. Theo số liệu sơ bộ thì có 214 mã bị trùng, liên quan 431 sinh viên, vì có vài mã trùng ba người. Bước hai là em sinh định danh chuẩn hóa cho toàn bộ sinh viên,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 287.446,
+      "end_time": 310.924,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "không chỉ những người bị trùng, để sau này quy tắc thống nhất, sinh viên chính quy khóa 2021 trở về sau thì mã đã có tiền tố khóa sẵn nên định danh gần như giữ nguyên. Bước ba là xóa các bản ghi bị đè trong Keycloak và nhập lại theo định danh mới.",
+      "segment_html": "không chỉ những người bị trùng, để sau này quy tắc thống nhất, sinh viên chính quy khóa 2021 trở về sau thì mã đã có tiền tố khóa sẵn nên định danh gần như giữ nguyên. Bước ba là xóa các bản ghi bị đè trong Keycloak và nhập lại theo định danh mới.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 311.174,
+      "end_time": 335.087,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Bước bốn là với các sinh viên bị trùng mã, lần đăng nhập đầu tiên hệ thống sẽ hiện màn hình chọn hệ đào tạo, chọn xong thì lưu lại, lần sau không hỏi nữa. Toàn bộ quá trình em sẽ chạy trên môi trường thử nghiệm trước,",
+      "segment_html": "Bước bốn là với các sinh viên bị trùng mã, lần đăng nhập đầu tiên hệ thống sẽ hiện màn hình chọn hệ đào tạo, chọn xong thì lưu lại, lần sau không hỏi nữa. Toàn bộ quá trình em sẽ chạy trên môi trường thử nghiệm trước,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 335.337,
+      "end_time": 356.207,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "chị Oanh kiểm tra ngẫu nhiên khoảng một trăm tài khoản, đạt thì mới chạy trên môi trường thật, và chạy vào ban đêm để không ảnh hưởng người dùng. Thời gian chạy thật thì ước khoảng hai tiếng cho toàn bộ khoảng 18.000 tài khoản sinh viên các khóa.",
+      "segment_html": "chị Oanh kiểm tra ngẫu nhiên khoảng một trăm tài khoản, đạt thì mới chạy trên môi trường thật, và chạy vào ban đêm để không ảnh hưởng người dùng. Thời gian chạy thật thì ước khoảng hai tiếng cho toàn bộ khoảng 18.000 tài khoản sinh viên các khóa.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 356.457,
+      "end_time": 378.196,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Về rủi ro thì nếu có sinh viên nào đã được giảng viên thêm vào lớp học phần trên LMS bằng tài khoản cũ bị đè, thì sau khi đồng bộ lại em phải ánh xạ lại tư cách thành viên lớp, bài nộp và điểm sang tài khoản mới, cái này em đã tính vào thời gian.",
+      "segment_html": "Về rủi ro thì nếu có sinh viên nào đã được giảng viên thêm vào lớp học phần trên LMS bằng tài khoản cũ bị đè, thì sau khi đồng bộ lại em phải ánh xạ lại tư cách thành viên lớp, bài nộp và điểm sang tài khoản mới, cái này em đã tính vào thời gian.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 378.446,
+      "end_time": 403.663,
+      "point_id": "04d26709-6153-595f-84dc-08193296d962",
+      "ref_id": [
+        "58bbc49a-19c4-5921-8e86-d091ea95bf42"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Tôi đề nghị thêm là trước khi chạy trên môi trường thật thì phải sao lưu toàn bộ cơ sở dữ liệu Keycloak và LMS, và bên dự án gửi cho tôi kịch bản khôi phục nếu có sự cố, vì đây là thao tác trên dữ liệu người dùng của toàn trường.",
+      "segment_html": "Tôi đề nghị thêm là trước khi chạy trên môi trường thật thì phải sao lưu toàn bộ cơ sở dữ liệu Keycloak và LMS, và bên dự án gửi cho tôi kịch bản khôi phục nếu có sự cố, vì đây là thao tác trên dữ liệu người dùng của toàn trường.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 404.663,
+      "end_time": 427.707,
+      "point_id": "3889025a-ba50-5f92-ab26-f0083113f199",
+      "ref_id": [
+        "089cca3d-72b6-5c32-a05d-eb67e2a2238d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Ngoài ra thì bên Trung tâm dữ liệu cũng cần biết trước lịch chạy để theo dõi tải máy chủ LDAP, vì xuất toàn bộ danh sách sẽ tạo tải khá lớn.",
+      "segment_html": "Ngoài ra thì bên Trung tâm dữ liệu cũng cần biết trước lịch chạy để theo dõi tải máy chủ LDAP, vì xuất toàn bộ danh sách sẽ tạo tải khá lớn.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 427.957,
+      "end_time": 441.87,
+      "point_id": "3889025a-ba50-5f92-ab26-f0083113f199",
+      "ref_id": [
+        "089cca3d-72b6-5c32-a05d-eb67e2a2238d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Ok, chốt phương án định danh chuẩn hóa có tiền tố hệ và khóa như Vũ đề xuất, không sửa mã gốc. Vũ làm và chạy đồng bộ lại các khóa 2019 đến 2022, xong trước ngày 10 tháng 12. Chị Oanh rà soát log đăng nhập của các mã trùng trong thời gian chạy thử, có gì báo em để em báo thầy Hoàng.",
+      "segment_html": "Ok, chốt phương án định danh chuẩn hóa có tiền tố hệ và khóa như Vũ đề xuất, không sửa mã gốc. Vũ làm và chạy đồng bộ lại các khóa 2019 đến 2022, xong trước ngày 10 tháng 12. Chị Oanh rà soát log đăng nhập của các mã trùng trong thời gian chạy thử, có gì báo em để em báo thầy Hoàng.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 442.87,
+      "end_time": 471.13,
+      "point_id": "7f3cb973-40ea-57e6-b518-4c5700b9e01c",
+      "ref_id": [
+        "9955bbcf-f583-5d82-9689-11ad71c4bd69"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Dạ vâng anh.",
+      "segment_html": "Dạ vâng anh.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 472.13,
+      "end_time": 473.435,
+      "point_id": "c44e4621-defa-5093-9657-c4ae6b1395a4",
+      "ref_id": [
+        "6ff2c420-aab2-5b17-bf37-bc751bc2e619"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Ok, trong tuần này chị rà xong.",
+      "segment_html": "Ok, trong tuần này chị rà xong.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 474.435,
+      "end_time": 477.478,
+      "point_id": "71eef851-0b65-5e79-8fdf-2aa2118b3354",
+      "ref_id": [
+        "24ef6b79-7f37-5327-aa22-cfcf38cf3c3d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Rồi, phần thi trực tuyến. Hà báo cáo đi em.",
+      "segment_html": "Rồi, phần thi trực tuyến. Hà báo cáo đi em.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 478.478,
+      "end_time": 482.826,
+      "point_id": "80b940f1-4b8c-5a4e-9ff2-b48ab8157181",
+      "ref_id": [
+        "31fc1bb9-7c43-59a6-9ec0-0f4eb7b13e8b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Dạ. Chức năng thi trực tuyến thì hiện đã có đầy đủ cho hình thức trắc nghiệm, giảng viên tạo ngân hàng câu hỏi, cấu hình đề thi ngẫu nhiên theo ma trận độ khó, thời gian làm bài, số lần làm. Sinh viên làm bài trên trình duyệt, hết giờ thì tự nộp.",
+      "segment_html": "Dạ. Chức năng thi trực tuyến thì hiện đã có đầy đủ cho hình thức trắc nghiệm, giảng viên tạo ngân hàng câu hỏi, cấu hình đề thi ngẫu nhiên theo ma trận độ khó, thời gian làm bài, số lần làm. Sinh viên làm bài trên trình duyệt, hết giờ thì tự nộp.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 483.826,
+      "end_time": 507.304,
+      "point_id": "6fd9152f-125a-5721-bb97-e15629cb8fe7",
+      "ref_id": [
+        "f8eaaa0c-5887-554a-b817-9dbf83891a9a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Tháng vừa rồi đã chạy thử giữa kỳ cho ba học phần là Toán cao cấp, Vật lý đại cương và Tin học cơ sở, tổng cộng khoảng 2.100 lượt thi. Hệ thống chịu tải tốt, lúc cao điểm có khoảng 900 sinh viên thi đồng thời, thời gian phản hồi vẫn dưới hai giây.",
+      "segment_html": "Tháng vừa rồi đã chạy thử giữa kỳ cho ba học phần là Toán cao cấp, Vật lý đại cương và Tin học cơ sở, tổng cộng khoảng 2.100 lượt thi. Hệ thống chịu tải tốt, lúc cao điểm có khoảng 900 sinh viên thi đồng thời, thời gian phản hồi vẫn dưới hai giây.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 507.554,
+      "end_time": 531.467,
+      "point_id": "6fd9152f-125a-5721-bb97-e15629cb8fe7",
+      "ref_id": [
+        "f8eaaa0c-5887-554a-b817-9dbf83891a9a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Lỗi thì có một số trường hợp sinh viên bị mất mạng giữa chừng, khi vào lại thì bài làm vẫn được lưu nhưng đồng hồ vẫn chạy, có em mất năm phút. Cái này em đã sửa cho phép giám thị cộng thêm thời gian cho từng sinh viên.",
+      "segment_html": "Lỗi thì có một số trường hợp sinh viên bị mất mạng giữa chừng, khi vào lại thì bài làm vẫn được lưu nhưng đồng hồ vẫn chạy, có em mất năm phút. Cái này em đã sửa cho phép giám thị cộng thêm thời gian cho từng sinh viên.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 531.717,
+      "end_time": 553.457,
+      "point_id": "6fd9152f-125a-5721-bb97-e15629cb8fe7",
+      "ref_id": [
+        "f8eaaa0c-5887-554a-b817-9dbf83891a9a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Vấn đề lớn nhất mà các thầy cô phản ánh là gian lận. Kết quả thi giữa kỳ Toán cao cấp trực tuyến cao hơn hẳn so với thi giấy các năm trước, điểm trung bình cao hơn khoảng 1,8 điểm, các thầy nghi là sinh viên tra cứu, hỏi nhau qua điện thoại.",
+      "segment_html": "Vấn đề lớn nhất mà các thầy cô phản ánh là gian lận. Kết quả thi giữa kỳ Toán cao cấp trực tuyến cao hơn hẳn so với thi giấy các năm trước, điểm trung bình cao hơn khoảng 1,8 điểm, các thầy nghi là sinh viên tra cứu, hỏi nhau qua điện thoại.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 553.707,
+      "end_time": 577.185,
+      "point_id": "6fd9152f-125a-5721-bb97-e15629cb8fe7",
+      "ref_id": [
+        "f8eaaa0c-5887-554a-b817-9dbf83891a9a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Đúng vậy, hội đồng khoa học của khoa Cơ bản đã có ý kiến là nếu không giải quyết được gian lận thì khoa không đồng ý thi cuối kỳ trực tuyến.",
+      "segment_html": "Đúng vậy, hội đồng khoa học của khoa Cơ bản đã có ý kiến là nếu không giải quyết được gian lận thì khoa không đồng ý thi cuối kỳ trực tuyến.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 578.185,
+      "end_time": 592.098,
+      "point_id": "55d7446d-3406-58f3-82bb-ad38e87c70c1",
+      "ref_id": [
+        "8ec8072f-512d-5890-b8ce-f01ace3d6135"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Tôi cũng xin nói rõ là mục tiêu của nhà trường trong năm nay là chỉ thi trực tuyến giữa kỳ và các học phần tự chọn, còn thi cuối kỳ các học phần bắt buộc thì vẫn thi tập trung tại phòng máy.",
+      "segment_html": "Tôi cũng xin nói rõ là mục tiêu của nhà trường trong năm nay là chỉ thi trực tuyến giữa kỳ và các học phần tự chọn, còn thi cuối kỳ các học phần bắt buộc thì vẫn thi tập trung tại phòng máy.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 592.348,
+      "end_time": 611.478,
+      "point_id": "55d7446d-3406-58f3-82bb-ad38e87c70c1",
+      "ref_id": [
+        "8ec8072f-512d-5890-b8ce-f01ace3d6135"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Anh Trung, em có tìm hiểu một giải pháp là tích hợp nhận diện khuôn mặt để giám sát thi. Tức là trong khi thi thì webcam của sinh viên liên tục chụp ảnh, hệ thống so khớp với ảnh thẻ sinh viên, phát hiện người khác làm bài hộ,",
+      "segment_html": "Anh Trung, em có tìm hiểu một giải pháp là tích hợp nhận diện khuôn mặt để giám sát thi. Tức là trong khi thi thì webcam của sinh viên liên tục chụp ảnh, hệ thống so khớp với ảnh thẻ sinh viên, phát hiện người khác làm bài hộ,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 612.478,
+      "end_time": 634.217,
+      "point_id": "a2b3f537-efbf-5846-9029-ca95937439db",
+      "ref_id": [
+        "20638e4a-6bc5-54d8-9f34-5cb64c8235b3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "phát hiện sinh viên nhìn ra ngoài màn hình quá lâu, hoặc có người thứ hai xuất hiện. Có mấy dịch vụ nước ngoài cung cấp sẵn, tính phí theo lượt thi, khoảng 1 đến 2 đô la một lượt. Nhóm em có thể tích hợp trong khoảng sáu tuần.",
+      "segment_html": "phát hiện sinh viên nhìn ra ngoài màn hình quá lâu, hoặc có người thứ hai xuất hiện. Có mấy dịch vụ nước ngoài cung cấp sẵn, tính phí theo lượt thi, khoảng 1 đến 2 đô la một lượt. Nhóm em có thể tích hợp trong khoảng sáu tuần.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 634.467,
+      "end_time": 656.207,
+      "point_id": "a2b3f537-efbf-5846-9029-ca95937439db",
+      "ref_id": [
+        "20638e4a-6bc5-54d8-9f34-5cb64c8235b3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Tôi thì tôi rất băn khoăn về cái này. Thứ nhất là ảnh khuôn mặt là dữ liệu sinh trắc học, theo Nghị định 13 và Luật Bảo vệ dữ liệu cá nhân thì là dữ liệu cá nhân nhạy cảm, phải có sự đồng ý rõ ràng của từng sinh viên,",
+      "segment_html": "Tôi thì tôi rất băn khoăn về cái này. Thứ nhất là ảnh khuôn mặt là dữ liệu sinh trắc học, theo Nghị định 13 và Luật Bảo vệ dữ liệu cá nhân thì là dữ liệu cá nhân nhạy cảm, phải có sự đồng ý rõ ràng của từng sinh viên,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 657.207,
+      "end_time": 679.815,
+      "point_id": "4762ca42-2435-54dd-b213-488431e38ba6",
+      "ref_id": [
+        "b8e9cc53-d5a2-577d-8abd-23f305eab20e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "và nếu gửi ra dịch vụ nước ngoài thì còn phải làm hồ sơ đánh giá tác động chuyển dữ liệu ra nước ngoài nộp Bộ Công an. Thủ tục này rất phức tạp. Thứ hai là chi phí, mỗi học kỳ trường có khoảng 60.000 lượt thi,",
+      "segment_html": "và nếu gửi ra dịch vụ nước ngoài thì còn phải làm hồ sơ đánh giá tác động chuyển dữ liệu ra nước ngoài nộp Bộ Công an. Thủ tục này rất phức tạp. Thứ hai là chi phí, mỗi học kỳ trường có khoảng 60.000 lượt thi,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 680.065,
+      "end_time": 700.935,
+      "point_id": "4762ca42-2435-54dd-b213-488431e38ba6",
+      "ref_id": [
+        "b8e9cc53-d5a2-577d-8abd-23f305eab20e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "nếu một đô la một lượt thì đã hơn một tỷ rưỡi một năm, trường không có kinh phí này. Thứ ba là nhiều sinh viên ở nông thôn không có máy tính có webcam, làm bài bằng điện thoại.",
+      "segment_html": "nếu một đô la một lượt thì đã hơn một tỷ rưỡi một năm, trường không có kinh phí này. Thứ ba là nhiều sinh viên ở nông thôn không có máy tính có webcam, làm bài bằng điện thoại.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 701.185,
+      "end_time": 718.576,
+      "point_id": "4762ca42-2435-54dd-b213-488431e38ba6",
+      "ref_id": [
+        "b8e9cc53-d5a2-577d-8abd-23f305eab20e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Tôi đồng ý với anh Cường. Nhà trường sẽ không dùng nhận diện khuôn mặt trong năm nay.",
+      "segment_html": "Tôi đồng ý với anh Cường. Nhà trường sẽ không dùng nhận diện khuôn mặt trong năm nay.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 719.576,
+      "end_time": 727.402,
+      "point_id": "ec9bc237-f3fe-54eb-8f49-483211ed8e0d",
+      "ref_id": [
+        "2bdbf6a3-1dee-5606-a435-1174d7744c3d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Dạ em bổ sung thêm là trong số các cách chống gian lận mà không cần camera, thì trên hệ thống hiện đã ghi lại khá nhiều dữ liệu có ích mà các thầy cô chưa dùng. Ví dụ là thời gian làm từng câu, số lần chuyển ra khỏi cửa sổ thi, thời điểm nộp bài,",
+      "segment_html": "Dạ em bổ sung thêm là trong số các cách chống gian lận mà không cần camera, thì trên hệ thống hiện đã ghi lại khá nhiều dữ liệu có ích mà các thầy cô chưa dùng. Ví dụ là thời gian làm từng câu, số lần chuyển ra khỏi cửa sổ thi, thời điểm nộp bài,",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 728.402,
+      "end_time": 753.185,
+      "point_id": "b60325c4-c909-54c9-aadf-7cad0e83c837",
+      "ref_id": [
+        "fcf3a14e-1603-5289-bcfd-e98bada0315e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "địa chỉ mạng. Khi em xem lại dữ liệu bài thi Toán cao cấp giữa kỳ thì thấy có những nhóm sinh viên nộp bài cách nhau chỉ vài giây, cùng địa chỉ mạng, và chọn sai giống hệt nhau ở những câu khó, rất có khả năng là làm chung.",
+      "segment_html": "địa chỉ mạng. Khi em xem lại dữ liệu bài thi Toán cao cấp giữa kỳ thì thấy có những nhóm sinh viên nộp bài cách nhau chỉ vài giây, cùng địa chỉ mạng, và chọn sai giống hệt nhau ở những câu khó, rất có khả năng là làm chung.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 753.435,
+      "end_time": 775.609,
+      "point_id": "b60325c4-c909-54c9-aadf-7cad0e83c837",
+      "ref_id": [
+        "fcf3a14e-1603-5289-bcfd-e98bada0315e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Có khoảng 70 trường hợp như vậy. Nếu mình làm một báo cáo bất thường sau mỗi kỳ thi, liệt kê các trường hợp nghi vấn cho giám thị và giảng viên xem xét, thì cũng có tác dụng răn đe, và không vướng vấn đề dữ liệu cá nhân nhạy cảm như ảnh khuôn mặt.",
+      "segment_html": "Có khoảng 70 trường hợp như vậy. Nếu mình làm một báo cáo bất thường sau mỗi kỳ thi, liệt kê các trường hợp nghi vấn cho giám thị và giảng viên xem xét, thì cũng có tác dụng răn đe, và không vướng vấn đề dữ liệu cá nhân nhạy cảm như ảnh khuôn mặt.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 775.859,
+      "end_time": 800.207,
+      "point_id": "b60325c4-c909-54c9-aadf-7cad0e83c837",
+      "ref_id": [
+        "fcf3a14e-1603-5289-bcfd-e98bada0315e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Tuy vậy thì báo cáo này chỉ để tham khảo, không thể dùng làm căn cứ xử lý kỷ luật nếu không có bằng chứng khác.",
+      "segment_html": "Tuy vậy thì báo cáo này chỉ để tham khảo, không thể dùng làm căn cứ xử lý kỷ luật nếu không có bằng chứng khác.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 800.457,
+      "end_time": 811.761,
+      "point_id": "b60325c4-c909-54c9-aadf-7cad0e83c837",
+      "ref_id": [
+        "fcf3a14e-1603-5289-bcfd-e98bada0315e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Tôi thấy dữ liệu đó có giá trị. Việc xử lý vi phạm thì theo quy chế phải có biên bản của giám thị, nên báo cáo bất thường chỉ là để giám thị chú ý hơn. Nhưng trước mắt tôi muốn tập trung vào các biện pháp phòng ngừa đã,",
+      "segment_html": "Tôi thấy dữ liệu đó có giá trị. Việc xử lý vi phạm thì theo quy chế phải có biên bản của giám thị, nên báo cáo bất thường chỉ là để giám thị chú ý hơn. Nhưng trước mắt tôi muốn tập trung vào các biện pháp phòng ngừa đã,",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 812.761,
+      "end_time": 834.935,
+      "point_id": "bdc8d576-f85f-5bb2-ba6a-74064a59ed7d",
+      "ref_id": [
+        "eeb0c097-f425-5297-8f5a-250c590a7175"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "còn báo cáo bất thường thì để học kỳ sau tính.",
+      "segment_html": "còn báo cáo bất thường thì để học kỳ sau tính.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 835.185,
+      "end_time": 839.967,
+      "point_id": "bdc8d576-f85f-5bb2-ba6a-74064a59ed7d",
+      "ref_id": [
+        "eeb0c097-f425-5297-8f5a-250c590a7175"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "Ok, vậy bỏ phương án nhận diện khuôn mặt, nhóm mình không làm. Thay vào đó em chốt ba biện pháp làm được ngay. Một là bắt buộc dùng chế độ trình duyệt khóa khi thi, không cho mở tab khác, không cho sao chép dán, thoát ra là ghi nhận.",
+      "segment_html": "Ok, vậy bỏ phương án nhận diện khuôn mặt, nhóm mình không làm. Thay vào đó em chốt ba biện pháp làm được ngay. Một là bắt buộc dùng chế độ trình duyệt khóa khi thi, không cho mở tab khác, không cho sao chép dán, thoát ra là ghi nhận.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 840.967,
+      "end_time": 863.141,
+      "point_id": "0f573ef0-a4b1-51d4-9da6-621d4cea2f4a",
+      "ref_id": [
+        "8b6d2b0c-00eb-5c8e-939c-1891f960d9ad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Hai là mỗi sinh viên một đề riêng, xáo trộn cả thứ tự câu hỏi lẫn thứ tự đáp án. Ba là với thi giữa kỳ quan trọng thì chia phòng thi ảo,",
+      "segment_html": "Hai là mỗi sinh viên một đề riêng, xáo trộn cả thứ tự câu hỏi lẫn thứ tự đáp án. Ba là với thi giữa kỳ quan trọng thì chia phòng thi ảo,",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 863.391,
+      "end_time": 877.739,
+      "point_id": "0f573ef0-a4b1-51d4-9da6-621d4cea2f4a",
+      "ref_id": [
+        "8b6d2b0c-00eb-5c8e-939c-1891f960d9ad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "mỗi phòng tối đa 40 sinh viên có một giám thị giám sát qua camera trực tiếp bằng Google Meet như các trường khác đang làm. Hà làm trình duyệt khóa và xáo trộn đáp án, xong trước ngày 20 tháng 12.",
+      "segment_html": "mỗi phòng tối đa 40 sinh viên có một giám thị giám sát qua camera trực tiếp bằng Google Meet như các trường khác đang làm. Hà làm trình duyệt khóa và xáo trộn đáp án, xong trước ngày 20 tháng 12.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 877.989,
+      "end_time": 896.25,
+      "point_id": "0f573ef0-a4b1-51d4-9da6-621d4cea2f4a",
+      "ref_id": [
+        "8b6d2b0c-00eb-5c8e-939c-1891f960d9ad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "Dạ, em làm được anh.",
+      "segment_html": "Dạ, em làm được anh.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 897.25,
+      "end_time": 899.424,
+      "point_id": "27e09756-ed1d-59bb-bd12-c9461b0079b7",
+      "ref_id": [
+        "d4c89313-b273-57ad-8876-1f621a255148"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "Phòng Đào tạo sẽ ban hành quy chế thi trực tuyến giữa kỳ có quy định về giám sát qua camera và xử lý vi phạm, tôi phụ trách, trước khi bắt đầu học kỳ hai.",
+      "segment_html": "Phòng Đào tạo sẽ ban hành quy chế thi trực tuyến giữa kỳ có quy định về giám sát qua camera và xử lý vi phạm, tôi phụ trách, trước khi bắt đầu học kỳ hai.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 900.424,
+      "end_time": 916.076,
+      "point_id": "f25a9485-74e1-5ab1-82c8-3132a87a7949",
+      "ref_id": [
+        "103de0e7-7a33-5108-9101-af14d0df0e8c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Tiếp theo là phần báo cáo học tập. Hà với Vũ cùng làm phần này, Hà trình bày giao diện nhé.",
+      "segment_html": "Tiếp theo là phần báo cáo học tập. Hà với Vũ cùng làm phần này, Hà trình bày giao diện nhé.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 917.076,
+      "end_time": 926.207,
+      "point_id": "6a286d4f-d7f7-5b36-914f-09f632d1c9aa",
+      "ref_id": [
+        "4fda6ad1-4b5a-514f-a742-f917a3ad93e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Dạ. Bảng điều khiển cho giảng viên hiện có các chỉ số cho từng lớp học phần: số sinh viên truy cập theo tuần, thời gian xem bài giảng video, tỷ lệ nộp bài tập đúng hạn, điểm các bài kiểm tra thành phần, và danh sách sinh viên chưa từng truy cập.",
+      "segment_html": "Dạ. Bảng điều khiển cho giảng viên hiện có các chỉ số cho từng lớp học phần: số sinh viên truy cập theo tuần, thời gian xem bài giảng video, tỷ lệ nộp bài tập đúng hạn, điểm các bài kiểm tra thành phần, và danh sách sinh viên chưa từng truy cập.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 927.207,
+      "end_time": 950.25,
+      "point_id": "1444cb47-42be-57da-82f9-777bf15aa5ae",
+      "ref_id": [
+        "df829afe-e610-5b3d-8e27-bb3f3b15800a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Giảng viên có thể lọc theo nhóm, xuất ra Excel. Với cố vấn học tập thì có một bảng tổng hợp theo lớp sinh hoạt, xem được tình hình của từng sinh viên trên tất cả các học phần đang học. Dữ liệu cập nhật mỗi đêm.",
+      "segment_html": "Giảng viên có thể lọc theo nhóm, xuất ra Excel. Với cố vấn học tập thì có một bảng tổng hợp theo lớp sinh hoạt, xem được tình hình của từng sinh viên trên tất cả các học phần đang học. Dữ liệu cập nhật mỗi đêm.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 950.5,
+      "end_time": 970.935,
+      "point_id": "1444cb47-42be-57da-82f9-777bf15aa5ae",
+      "ref_id": [
+        "df829afe-e610-5b3d-8e27-bb3f3b15800a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Hiện đã mở cho khoảng 40 giảng viên dùng thử, phản hồi chung là giao diện dễ dùng, nhưng nhiều thầy cô nói là có nhiều số liệu quá mà không biết nên làm gì với nó.",
+      "segment_html": "Hiện đã mở cho khoảng 40 giảng viên dùng thử, phản hồi chung là giao diện dễ dùng, nhưng nhiều thầy cô nói là có nhiều số liệu quá mà không biết nên làm gì với nó.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 971.185,
+      "end_time": 987.272,
+      "point_id": "1444cb47-42be-57da-82f9-777bf15aa5ae",
+      "ref_id": [
+        "df829afe-e610-5b3d-8e27-bb3f3b15800a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Đúng vậy, và đây là cái tôi muốn nói. Mục tiêu của nhà trường khi làm LMS không phải để có thêm biểu đồ, mà để giảm tỷ lệ sinh viên bị cảnh báo học vụ và thôi học. Năm học vừa rồi trường có hơn 900 sinh viên bị cảnh báo học vụ,",
+      "segment_html": "Đúng vậy, và đây là cái tôi muốn nói. Mục tiêu của nhà trường khi làm LMS không phải để có thêm biểu đồ, mà để giảm tỷ lệ sinh viên bị cảnh báo học vụ và thôi học. Năm học vừa rồi trường có hơn 900 sinh viên bị cảnh báo học vụ,",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 988.272,
+      "end_time": 1011.75,
+      "point_id": "6ca45b80-234e-52ff-ad83-6d7c5bc3d546",
+      "ref_id": [
+        "d15f4a4f-2a35-57fe-92ac-ef8fabb2374a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "gần 300 em bị buộc thôi học, phần lớn là năm nhất và năm hai. Khi xem lại thì hầu hết các em đó đều có dấu hiệu từ rất sớm, vắng học nhiều, không nộp bài, nhưng cố vấn học tập thì không biết cho đến khi có điểm cuối kỳ thì đã muộn.",
+      "segment_html": "gần 300 em bị buộc thôi học, phần lớn là năm nhất và năm hai. Khi xem lại thì hầu hết các em đó đều có dấu hiệu từ rất sớm, vắng học nhiều, không nộp bài, nhưng cố vấn học tập thì không biết cho đến khi có điểm cuối kỳ thì đã muộn.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1012.0,
+      "end_time": 1035.913,
+      "point_id": "6ca45b80-234e-52ff-ad83-6d7c5bc3d546",
+      "ref_id": [
+        "d15f4a4f-2a35-57fe-92ac-ef8fabb2374a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "Tôi muốn hệ thống phải có cảnh báo sớm, tự động báo cho cố vấn học tập những em có nguy cơ, để cố vấn gọi các em lên nói chuyện kịp thời.",
+      "segment_html": "Tôi muốn hệ thống phải có cảnh báo sớm, tự động báo cho cố vấn học tập những em có nguy cơ, để cố vấn gọi các em lên nói chuyện kịp thời.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1036.163,
+      "end_time": 1050.511,
+      "point_id": "6ca45b80-234e-52ff-ad83-6d7c5bc3d546",
+      "ref_id": [
+        "d15f4a4f-2a35-57fe-92ac-ef8fabb2374a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "Dạ về kỹ thuật thì có hai cách thầy ạ. Cách thứ nhất là dùng luật, ví dụ vắng quá ba buổi, không nộp quá hai bài tập liên tiếp, điểm giữa kỳ dưới 4, thì đánh dấu là có nguy cơ. Cách thứ hai là huấn luyện một mô hình dự đoán từ dữ liệu các năm trước,",
+      "segment_html": "Dạ về kỹ thuật thì có hai cách thầy ạ. Cách thứ nhất là dùng luật, ví dụ vắng quá ba buổi, không nộp quá hai bài tập liên tiếp, điểm giữa kỳ dưới 4, thì đánh dấu là có nguy cơ. Cách thứ hai là huấn luyện một mô hình dự đoán từ dữ liệu các năm trước,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1051.511,
+      "end_time": 1077.163,
+      "point_id": "91a2baae-f951-5edf-a8a8-907244182e35",
+      "ref_id": [
+        "403a1717-3075-5277-9f21-de96f03efe06"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "cho ra xác suất trượt của từng sinh viên. Cách thứ hai thì có thể chính xác hơn, nhưng cần dữ liệu lịch sử đầy đủ, mà LMS mới chạy được một học kỳ, dữ liệu hành vi học tập các năm trước thì không có, chỉ có điểm. Em nghĩ là trước mắt làm theo luật,",
+      "segment_html": "cho ra xác suất trượt của từng sinh viên. Cách thứ hai thì có thể chính xác hơn, nhưng cần dữ liệu lịch sử đầy đủ, mà LMS mới chạy được một học kỳ, dữ liệu hành vi học tập các năm trước thì không có, chỉ có điểm. Em nghĩ là trước mắt làm theo luật,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1077.413,
+      "end_time": 1102.196,
+      "point_id": "91a2baae-f951-5edf-a8a8-907244182e35",
+      "ref_id": [
+        "403a1717-3075-5277-9f21-de96f03efe06"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "dễ giải thích cho cố vấn học tập, sau hai ba học kỳ có dữ liệu thì mới làm mô hình.",
+      "segment_html": "dễ giải thích cho cố vấn học tập, sau hai ba học kỳ có dữ liệu thì mới làm mô hình.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1102.446,
+      "end_time": 1111.576,
+      "point_id": "91a2baae-f951-5edf-a8a8-907244182e35",
+      "ref_id": [
+        "403a1717-3075-5277-9f21-de96f03efe06"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Tôi đồng ý với Vũ. Với lại dùng luật thì cố vấn học tập hiểu ngay vì sao em này bị cảnh báo, còn mô hình mà nói xác suất bảy mươi phần trăm thì các thầy cô sẽ hỏi là tại sao, mình không trả lời được.",
+      "segment_html": "Tôi đồng ý với Vũ. Với lại dùng luật thì cố vấn học tập hiểu ngay vì sao em này bị cảnh báo, còn mô hình mà nói xác suất bảy mươi phần trăm thì các thầy cô sẽ hỏi là tại sao, mình không trả lời được.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1112.576,
+      "end_time": 1133.446,
+      "point_id": "eb6e1ed9-8c8a-54cc-842e-44b51ad87944",
+      "ref_id": [
+        "1bd2dbed-e4fc-5a18-84d2-765a0cf62007"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "Chị lưu ý về dữ liệu điểm danh. Hiện nay điểm danh thì mỗi giảng viên làm một kiểu, có thầy điểm danh trên giấy, có thầy dùng ứng dụng riêng, chỉ khoảng một phần ba giảng viên điểm danh trên LMS.",
+      "segment_html": "Chị lưu ý về dữ liệu điểm danh. Hiện nay điểm danh thì mỗi giảng viên làm một kiểu, có thầy điểm danh trên giấy, có thầy dùng ứng dụng riêng, chỉ khoảng một phần ba giảng viên điểm danh trên LMS.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1134.446,
+      "end_time": 1152.707,
+      "point_id": "07823413-7343-5840-bd92-12a0735a76b2",
+      "ref_id": [
+        "2011ae73-870e-578f-a04a-2d7b8314f39d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Nếu luật dựa vào số buổi vắng mà dữ liệu điểm danh không đầy đủ thì cảnh báo sẽ sai, em nào học lớp thầy điểm danh giấy thì không bao giờ bị cảnh báo vắng.",
+      "segment_html": "Nếu luật dựa vào số buổi vắng mà dữ liệu điểm danh không đầy đủ thì cảnh báo sẽ sai, em nào học lớp thầy điểm danh giấy thì không bao giờ bị cảnh báo vắng.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1152.957,
+      "end_time": 1168.609,
+      "point_id": "07823413-7343-5840-bd92-12a0735a76b2",
+      "ref_id": [
+        "2011ae73-870e-578f-a04a-2d7b8314f39d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "Việc điểm danh trên LMS thì Phòng Đào tạo sẽ yêu cầu bắt buộc từ học kỳ hai, tôi sẽ đưa vào văn bản hướng dẫn. Còn cảnh báo thì gửi cho cố vấn học tập hằng tuần, qua thư điện tử và thông báo trên LMS, kèm danh sách và lý do cảnh báo của từng em.",
+      "segment_html": "Việc điểm danh trên LMS thì Phòng Đào tạo sẽ yêu cầu bắt buộc từ học kỳ hai, tôi sẽ đưa vào văn bản hướng dẫn. Còn cảnh báo thì gửi cho cố vấn học tập hằng tuần, qua thư điện tử và thông báo trên LMS, kèm danh sách và lý do cảnh báo của từng em.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1169.609,
+      "end_time": 1194.826,
+      "point_id": "67bfcd66-af95-55c4-9b0e-8898a87010c3",
+      "ref_id": [
+        "2e5515b6-64d9-5bb6-844a-bfb476a50885"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Tôi nói thêm về quy trình để bên dự án hiểu. Hiện nay mỗi lớp sinh hoạt có một cố vấn học tập, là giảng viên kiêm nhiệm, phụ trách khoảng 60 đến 80 sinh viên. Cố vấn học tập thì rất bận,",
+      "segment_html": "Tôi nói thêm về quy trình để bên dự án hiểu. Hiện nay mỗi lớp sinh hoạt có một cố vấn học tập, là giảng viên kiêm nhiệm, phụ trách khoảng 60 đến 80 sinh viên. Cố vấn học tập thì rất bận,",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1195.826,
+      "end_time": 1214.522,
+      "point_id": "79a8aa06-735a-5368-acc9-988e82518d3c",
+      "ref_id": [
+        "612167b3-03df-5a2e-bdc8-561db14fb149"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "nên nếu hệ thống gửi một danh sách quá dài hoặc cảnh báo quá nhiều thì các thầy cô sẽ bỏ qua. Theo kinh nghiệm của Phòng Đào tạo khi làm thủ công ở học kỳ trước, mỗi tuần mỗi lớp chỉ nên có khoảng ba đến năm em bị cảnh báo thì cố vấn mới xử lý được.",
+      "segment_html": "nên nếu hệ thống gửi một danh sách quá dài hoặc cảnh báo quá nhiều thì các thầy cô sẽ bỏ qua. Theo kinh nghiệm của Phòng Đào tạo khi làm thủ công ở học kỳ trước, mỗi tuần mỗi lớp chỉ nên có khoảng ba đến năm em bị cảnh báo thì cố vấn mới xử lý được.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1214.772,
+      "end_time": 1240.424,
+      "point_id": "79a8aa06-735a-5368-acc9-988e82518d3c",
+      "ref_id": [
+        "612167b3-03df-5a2e-bdc8-561db14fb149"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Vì vậy ba tiêu chí của Vũ nêu thì tôi thấy hợp lý, nhưng cần theo dõi xem thực tế mỗi tuần ra bao nhiêu em, nếu quá nhiều thì điều chỉnh ngưỡng. Ngoài ra thì khi cố vấn đã gặp và trao đổi với sinh viên rồi thì phải có chỗ để ghi lại kết quả trao đổi,",
+      "segment_html": "Vì vậy ba tiêu chí của Vũ nêu thì tôi thấy hợp lý, nhưng cần theo dõi xem thực tế mỗi tuần ra bao nhiêu em, nếu quá nhiều thì điều chỉnh ngưỡng. Ngoài ra thì khi cố vấn đã gặp và trao đổi với sinh viên rồi thì phải có chỗ để ghi lại kết quả trao đổi,",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1240.674,
+      "end_time": 1266.326,
+      "point_id": "79a8aa06-735a-5368-acc9-988e82518d3c",
+      "ref_id": [
+        "612167b3-03df-5a2e-bdc8-561db14fb149"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "để tuần sau nếu em đó tiếp tục bị cảnh báo thì cố vấn biết là đã gặp rồi, và Phòng Đào tạo cũng có số liệu để đánh giá hiệu quả của hoạt động cố vấn. Hiện nay việc này làm trên sổ tay, cuối kỳ không tổng hợp được.",
+      "segment_html": "để tuần sau nếu em đó tiếp tục bị cảnh báo thì cố vấn biết là đã gặp rồi, và Phòng Đào tạo cũng có số liệu để đánh giá hiệu quả của hoạt động cố vấn. Hiện nay việc này làm trên sổ tay, cuối kỳ không tổng hợp được.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1266.576,
+      "end_time": 1288.75,
+      "point_id": "79a8aa06-735a-5368-acc9-988e82518d3c",
+      "ref_id": [
+        "612167b3-03df-5a2e-bdc8-561db14fb149"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "Dạ màn hình danh sách cảnh báo em sẽ có thêm cột trạng thái xử lý và ô ghi chú kết quả trao đổi cho cố vấn, cái này đơn giản thôi thầy.",
+      "segment_html": "Dạ màn hình danh sách cảnh báo em sẽ có thêm cột trạng thái xử lý và ô ghi chú kết quả trao đổi cho cố vấn, cái này đơn giản thôi thầy.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1289.75,
+      "end_time": 1304.098,
+      "point_id": "d2ffc0fe-53ad-589c-bbea-b2219f14b65a",
+      "ref_id": [
+        "522e325f-3ada-59df-9968-f0381d458220"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Ok, em chốt là làm cảnh báo sớm theo luật với ba tiêu chí: vắng từ ba buổi trở lên trong một học phần, không nộp hai bài tập liên tiếp, điểm giữa kỳ dưới 4. Gửi danh sách cho cố vấn học tập hằng tuần vào sáng thứ Hai qua thư điện tử và LMS,",
+      "segment_html": "Ok, em chốt là làm cảnh báo sớm theo luật với ba tiêu chí: vắng từ ba buổi trở lên trong một học phần, không nộp hai bài tập liên tiếp, điểm giữa kỳ dưới 4. Gửi danh sách cho cố vấn học tập hằng tuần vào sáng thứ Hai qua thư điện tử và LMS,",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1305.098,
+      "end_time": 1329.446,
+      "point_id": "9df2c6dd-a6ec-50d4-86a4-7681ed418bef",
+      "ref_id": [
+        "2c2ee738-9d39-5a93-8f39-0f81e76879df"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 70,
+      "segment": "có ghi lý do. Chưa làm mô hình dự đoán trong năm nay. Vũ làm phần luật và gửi thông báo, Hà làm màn hình danh sách cảnh báo cho cố vấn, xong trước học kỳ hai.",
+      "segment_html": "có ghi lý do. Chưa làm mô hình dự đoán trong năm nay. Vũ làm phần luật và gửi thông báo, Hà làm màn hình danh sách cảnh báo cho cố vấn, xong trước học kỳ hai.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1329.696,
+      "end_time": 1345.783,
+      "point_id": "9df2c6dd-a6ec-50d4-86a4-7681ed418bef",
+      "ref_id": [
+        "2c2ee738-9d39-5a93-8f39-0f81e76879df"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 71,
+      "segment": "Dạ vâng.",
+      "segment_html": "Dạ vâng.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1346.783,
+      "end_time": 1347.652,
+      "point_id": "6a52c0bd-3e6c-5dd8-8058-900108342bb0",
+      "ref_id": [
+        "ee66a5f5-7308-5b54-b592-72cc0535264c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 72,
+      "segment": "Dạ em làm luôn sau phần trình duyệt khóa.",
+      "segment_html": "Dạ em làm luôn sau phần trình duyệt khóa.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1348.652,
+      "end_time": 1352.565,
+      "point_id": "0eff69c0-eca5-579d-8cbe-146d0ce92842",
+      "ref_id": [
+        "f2c4f0b7-8e34-5017-8052-94c95fa784a5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 73,
+      "segment": "Phòng Đào tạo sẽ có văn bản yêu cầu giảng viên điểm danh trên LMS bắt buộc từ học kỳ hai.",
+      "segment_html": "Phòng Đào tạo sẽ có văn bản yêu cầu giảng viên điểm danh trên LMS bắt buộc từ học kỳ hai.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1353.565,
+      "end_time": 1362.696,
+      "point_id": "54949920-b660-5460-8387-8ac02f6b4ce8",
+      "ref_id": [
+        "9b5143e5-8af3-5608-b72c-a3b637cbc768"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 74,
+      "segment": "Anh Trung ơi, trước khi sang kế hoạch học kỳ hai, tôi xin quay lại phần đăng nhập một lần một chút, vì tôi vừa nhận được lịch của Trung tâm dữ liệu. Máy chủ LDAP của trường có lịch bảo trì nâng cấp hệ điều hành vào tuần từ 15 đến 19 tháng 12,",
+      "segment_html": "Anh Trung ơi, trước khi sang kế hoạch học kỳ hai, tôi xin quay lại phần đăng nhập một lần một chút, vì tôi vừa nhận được lịch của Trung tâm dữ liệu. Máy chủ LDAP của trường có lịch bảo trì nâng cấp hệ điều hành vào tuần từ 15 đến 19 tháng 12,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1363.696,
+      "end_time": 1387.609,
+      "point_id": "a435ff4b-3cdd-5d6c-ac12-dd4ed5967d89",
+      "ref_id": [
+        "39dfc955-e243-5f43-b629-760251bf1fb4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 75,
+      "segment": "dự kiến dừng dịch vụ khoảng hai ngày. Mà theo như Vũ nói thì Keycloak đang xác thực trực tiếp với LDAP, tức là LDAP dừng thì toàn bộ sinh viên không đăng nhập được LMS. Tuần đó lại đúng là tuần thi giữa kỳ trực tuyến của một số học phần tự chọn.",
+      "segment_html": "dự kiến dừng dịch vụ khoảng hai ngày. Mà theo như Vũ nói thì Keycloak đang xác thực trực tiếp với LDAP, tức là LDAP dừng thì toàn bộ sinh viên không đăng nhập được LMS. Tuần đó lại đúng là tuần thi giữa kỳ trực tuyến của một số học phần tự chọn.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1387.859,
+      "end_time": 1411.337,
+      "point_id": "a435ff4b-3cdd-5d6c-ac12-dd4ed5967d89",
+      "ref_id": [
+        "39dfc955-e243-5f43-b629-760251bf1fb4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 76,
+      "segment": "Dạ đúng anh, hiện tại Keycloak mỗi lần xác thực đều hỏi LDAP, không có bộ nhớ đệm. Có một cách là cấu hình Keycloak lưu bản sao thông tin người dùng và mật khẩu đã băm từ LDAP vào cơ sở dữ liệu của nó,",
+      "segment_html": "Dạ đúng anh, hiện tại Keycloak mỗi lần xác thực đều hỏi LDAP, không có bộ nhớ đệm. Có một cách là cấu hình Keycloak lưu bản sao thông tin người dùng và mật khẩu đã băm từ LDAP vào cơ sở dữ liệu của nó,",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1412.337,
+      "end_time": 1432.337,
+      "point_id": "fd070a27-b563-5eb8-9354-aa9b7037f0f2",
+      "ref_id": [
+        "a3213e54-50a5-5e62-b807-9a4e6b292fa3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 77,
+      "segment": "khi LDAP không kết nối được thì vẫn xác thực được từ bản sao. Nhưng như vậy thì nếu có sinh viên đổi mật khẩu trong thời gian đó sẽ không đồng bộ, và về bảo mật thì mình đang giữ thêm một bản mật khẩu, anh Cường có đồng ý không?",
+      "segment_html": "khi LDAP không kết nối được thì vẫn xác thực được từ bản sao. Nhưng như vậy thì nếu có sinh viên đổi mật khẩu trong thời gian đó sẽ không đồng bộ, và về bảo mật thì mình đang giữ thêm một bản mật khẩu, anh Cường có đồng ý không?",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1432.587,
+      "end_time": 1455.196,
+      "point_id": "fd070a27-b563-5eb8-9354-aa9b7037f0f2",
+      "ref_id": [
+        "a3213e54-50a5-5e62-b807-9a4e6b292fa3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 78,
+      "segment": "Về nguyên tắc thì tôi không muốn có thêm một nơi lưu mật khẩu. Tôi nghĩ đơn giản nhất là tôi đề nghị Trung tâm dữ liệu lùi lịch bảo trì LDAP sang tuần sau thi, tức là sau ngày 22 tháng 12, cái này tôi làm được. Còn một việc nữa là về bảo mật,",
+      "segment_html": "Về nguyên tắc thì tôi không muốn có thêm một nơi lưu mật khẩu. Tôi nghĩ đơn giản nhất là tôi đề nghị Trung tâm dữ liệu lùi lịch bảo trì LDAP sang tuần sau thi, tức là sau ngày 22 tháng 12, cái này tôi làm được. Còn một việc nữa là về bảo mật,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1456.196,
+      "end_time": 1480.543,
+      "point_id": "b22c6bc6-2d74-56a9-999c-a8529e223fcc",
+      "ref_id": [
+        "00f93575-0f3d-5ba4-a32b-8808d8d46b9e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 79,
+      "segment": "Ban Giám hiệu vừa có chỉ đạo là tất cả tài khoản có quyền nhập điểm và quản trị phải bật xác thực hai yếu tố, vì năm ngoái có một vụ lộ mật khẩu giảng viên và bị sửa điểm. Mà trên LMS thì giảng viên nhập điểm thành phần, nên cũng phải áp dụng.",
+      "segment_html": "Ban Giám hiệu vừa có chỉ đạo là tất cả tài khoản có quyền nhập điểm và quản trị phải bật xác thực hai yếu tố, vì năm ngoái có một vụ lộ mật khẩu giảng viên và bị sửa điểm. Mà trên LMS thì giảng viên nhập điểm thành phần, nên cũng phải áp dụng.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1480.793,
+      "end_time": 1505.141,
+      "point_id": "b22c6bc6-2d74-56a9-999c-a8529e223fcc",
+      "ref_id": [
+        "00f93575-0f3d-5ba4-a32b-8808d8d46b9e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 80,
+      "segment": "Keycloak có sẵn xác thực hai yếu tố bằng ứng dụng OTP như Google Authenticator anh ạ, chỉ cần bật theo nhóm người dùng. Em có thể bật cho nhóm giảng viên và nhóm quản trị, còn sinh viên thì không bắt buộc.",
+      "segment_html": "Keycloak có sẵn xác thực hai yếu tố bằng ứng dụng OTP như Google Authenticator anh ạ, chỉ cần bật theo nhóm người dùng. Em có thể bật cho nhóm giảng viên và nhóm quản trị, còn sinh viên thì không bắt buộc.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1506.141,
+      "end_time": 1524.837,
+      "point_id": "ac9ae020-b6d8-5a5d-8b42-dd2a3a371ac3",
+      "ref_id": [
+        "1fde22e9-6b6b-5148-a7ab-6eab1ffc7f1d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 81,
+      "segment": "Giảng viên lớn tuổi thì sẽ có một số thầy cô gặp khó khăn với ứng dụng OTP, cần có hướng dẫn và hỗ trợ.",
+      "segment_html": "Giảng viên lớn tuổi thì sẽ có một số thầy cô gặp khó khăn với ứng dụng OTP, cần có hướng dẫn và hỗ trợ.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1525.837,
+      "end_time": 1536.707,
+      "point_id": "8983b6b5-405f-50f2-b3c7-fd1e5a636ca3",
+      "ref_id": [
+        "2b0a33da-ba7e-59b2-b0fd-79203ba76532"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 82,
+      "segment": "Tôi nói thêm về vụ lộ mật khẩu năm ngoái để mọi người hiểu vì sao Ban Giám hiệu yêu cầu gấp. Năm ngoái có một giảng viên dùng chung mật khẩu tài khoản trường với một trang web bên ngoài, trang đó bị lộ dữ liệu,",
+      "segment_html": "Tôi nói thêm về vụ lộ mật khẩu năm ngoái để mọi người hiểu vì sao Ban Giám hiệu yêu cầu gấp. Năm ngoái có một giảng viên dùng chung mật khẩu tài khoản trường với một trang web bên ngoài, trang đó bị lộ dữ liệu,",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1537.707,
+      "end_time": 1558.141,
+      "point_id": "1608af99-e274-52c1-987c-c730c419717b",
+      "ref_id": [
+        "e53ae251-0ad0-5663-aea3-095031eb5546"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 83,
+      "segment": "kẻ xấu lấy mật khẩu đăng nhập vào hệ thống quản lý đào tạo và sửa điểm của 14 sinh viên một học phần, đến khi giảng viên phát hiện thì đã gần một tháng. Nhà trường phải hủy kết quả, tổ chức thi lại, và có đơn vị công an vào làm việc.",
+      "segment_html": "kẻ xấu lấy mật khẩu đăng nhập vào hệ thống quản lý đào tạo và sửa điểm của 14 sinh viên một học phần, đến khi giảng viên phát hiện thì đã gần một tháng. Nhà trường phải hủy kết quả, tổ chức thi lại, và có đơn vị công an vào làm việc.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1558.391,
+      "end_time": 1581.87,
+      "point_id": "1608af99-e274-52c1-987c-c730c419717b",
+      "ref_id": [
+        "e53ae251-0ad0-5663-aea3-095031eb5546"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 84,
+      "segment": "Từ đó Ban Giám hiệu yêu cầu tất cả tài khoản có quyền sửa dữ liệu điểm phải có xác thực hai yếu tố. Hệ thống quản lý đào tạo thì đã bật từ học kỳ trước, bây giờ đến lượt LMS vì LMS cũng có quyền nhập điểm thành phần và đồng bộ sang.",
+      "segment_html": "Từ đó Ban Giám hiệu yêu cầu tất cả tài khoản có quyền sửa dữ liệu điểm phải có xác thực hai yếu tố. Hệ thống quản lý đào tạo thì đã bật từ học kỳ trước, bây giờ đến lượt LMS vì LMS cũng có quyền nhập điểm thành phần và đồng bộ sang.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1582.12,
+      "end_time": 1606.033,
+      "point_id": "1608af99-e274-52c1-987c-c730c419717b",
+      "ref_id": [
+        "e53ae251-0ad0-5663-aea3-095031eb5546"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 85,
+      "segment": "Tỷ lệ giảng viên đã cài ứng dụng OTP cho hệ thống quản lý đào tạo hiện khoảng 85%, nên phần lớn thầy cô đã quen rồi, chỉ cần thêm một tài khoản nữa vào ứng dụng.",
+      "segment_html": "Tỷ lệ giảng viên đã cài ứng dụng OTP cho hệ thống quản lý đào tạo hiện khoảng 85%, nên phần lớn thầy cô đã quen rồi, chỉ cần thêm một tài khoản nữa vào ứng dụng.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1606.283,
+      "end_time": 1622.37,
+      "point_id": "1608af99-e274-52c1-987c-c730c419717b",
+      "ref_id": [
+        "e53ae251-0ad0-5663-aea3-095031eb5546"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 86,
+      "segment": "Ok, chốt hai việc. Một là không cấu hình lưu bản sao mật khẩu, anh Cường đề nghị Trung tâm dữ liệu lùi bảo trì LDAP sang sau ngày 22 tháng 12. Hai là bật xác thực hai yếu tố bắt buộc cho tài khoản giảng viên và quản trị trên Keycloak từ học kỳ hai,",
+      "segment_html": "Ok, chốt hai việc. Một là không cấu hình lưu bản sao mật khẩu, anh Cường đề nghị Trung tâm dữ liệu lùi bảo trì LDAP sang sau ngày 22 tháng 12. Hai là bật xác thực hai yếu tố bắt buộc cho tài khoản giảng viên và quản trị trên Keycloak từ học kỳ hai,",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1623.37,
+      "end_time": 1647.717,
+      "point_id": "fc457cd0-b542-579e-8b7e-a3ccd797e229",
+      "ref_id": [
+        "a9f84b94-5965-55ca-aeb2-8d47066b6f2b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 87,
+      "segment": "sinh viên không bắt buộc. Vũ cấu hình, Hà làm trang hướng dẫn cài ứng dụng OTP có hình ảnh từng bước.",
+      "segment_html": "sinh viên không bắt buộc. Vũ cấu hình, Hà làm trang hướng dẫn cài ứng dụng OTP có hình ảnh từng bước.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1647.967,
+      "end_time": 1657.533,
+      "point_id": "fc457cd0-b542-579e-8b7e-a3ccd797e229",
+      "ref_id": [
+        "a9f84b94-5965-55ca-aeb2-8d47066b6f2b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 88,
+      "segment": "Tôi sẽ làm việc với Trung tâm dữ liệu ngay trong tuần này.",
+      "segment_html": "Tôi sẽ làm việc với Trung tâm dữ liệu ngay trong tuần này.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1658.533,
+      "end_time": 1664.185,
+      "point_id": "57fe206c-d4e4-5d45-9811-3f3e30be6811",
+      "ref_id": [
+        "5671763e-aac6-58ec-aa02-fb44b820ffc6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 89,
+      "segment": "Dạ em cấu hình, bật thử cho nhóm quản trị trước.",
+      "segment_html": "Dạ em cấu hình, bật thử cho nhóm quản trị trước.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1665.185,
+      "end_time": 1669.967,
+      "point_id": "3a4c956d-8ee6-535b-93b1-3c6bb59ecde2",
+      "ref_id": [
+        "f114d99e-e5b8-5742-b12b-b37362a9e172"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 90,
+      "segment": "Dạ em làm trang hướng dẫn.",
+      "segment_html": "Dạ em làm trang hướng dẫn.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1670.967,
+      "end_time": 1673.576,
+      "point_id": "ad51772b-f38c-5185-aaa5-6eb211b267eb",
+      "ref_id": [
+        "7fa25bbc-1c42-5a8c-bcef-9dfad47157d0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 91,
+      "segment": "Phần cuối là kế hoạch học kỳ hai. Thầy Hoàng cho bên em biết phạm vi nhà trường muốn triển khai ạ.",
+      "segment_html": "Phần cuối là kế hoạch học kỳ hai. Thầy Hoàng cho bên em biết phạm vi nhà trường muốn triển khai ạ.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1674.576,
+      "end_time": 1684.141,
+      "point_id": "ab61aea6-9b8c-556e-bebc-8276cb076cb4",
+      "ref_id": [
+        "4ce93104-316c-543b-8d04-1fb55784d332"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 92,
+      "segment": "Kế hoạch của nhà trường là học kỳ hai sẽ triển khai LMS cho toàn bộ các học phần đại cương, khoảng 180 lớp học phần, và toàn bộ học phần của ba khoa thí điểm là Công nghệ thông tin, Điện tử viễn thông và Kinh tế, khoảng 320 lớp học phần nữa.",
+      "segment_html": "Kế hoạch của nhà trường là học kỳ hai sẽ triển khai LMS cho toàn bộ các học phần đại cương, khoảng 180 lớp học phần, và toàn bộ học phần của ba khoa thí điểm là Công nghệ thông tin, Điện tử viễn thông và Kinh tế, khoảng 320 lớp học phần nữa.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1685.141,
+      "end_time": 1708.62,
+      "point_id": "572622f8-7ccf-574e-9d0b-ee3d6bdea717",
+      "ref_id": [
+        "bbfeda7e-c0e9-5a31-b315-191a36abcdcd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 93,
+      "segment": "Tổng cộng khoảng 500 lớp học phần, 12.000 sinh viên và 260 giảng viên. Các khoa khác thì học kỳ sau nữa. Yêu cầu là mỗi lớp học phần phải có đề cương, bài giảng và ít nhất các bài tập được đưa lên LMS,",
+      "segment_html": "Tổng cộng khoảng 500 lớp học phần, 12.000 sinh viên và 260 giảng viên. Các khoa khác thì học kỳ sau nữa. Yêu cầu là mỗi lớp học phần phải có đề cương, bài giảng và ít nhất các bài tập được đưa lên LMS,",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1708.87,
+      "end_time": 1728.435,
+      "point_id": "572622f8-7ccf-574e-9d0b-ee3d6bdea717",
+      "ref_id": [
+        "bbfeda7e-c0e9-5a31-b315-191a36abcdcd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 94,
+      "segment": "giảng viên nhập điểm thành phần trên LMS và đồng bộ sang hệ thống quản lý đào tạo.",
+      "segment_html": "giảng viên nhập điểm thành phần trên LMS và đồng bộ sang hệ thống quản lý đào tạo.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1728.685,
+      "end_time": 1736.511,
+      "point_id": "572622f8-7ccf-574e-9d0b-ee3d6bdea717",
+      "ref_id": [
+        "bbfeda7e-c0e9-5a31-b315-191a36abcdcd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 95,
+      "segment": "Với quy mô 12.000 sinh viên thì chị đề nghị trước khi mở phải có một đợt kiểm thử hiệu năng mô phỏng khoảng 3.000 người dùng đồng thời, vì đầu học kỳ sinh viên đăng nhập dồn dập để xem thời khóa biểu và tài liệu.",
+      "segment_html": "Với quy mô 12.000 sinh viên thì chị đề nghị trước khi mở phải có một đợt kiểm thử hiệu năng mô phỏng khoảng 3.000 người dùng đồng thời, vì đầu học kỳ sinh viên đăng nhập dồn dập để xem thời khóa biểu và tài liệu.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1737.511,
+      "end_time": 1757.946,
+      "point_id": "cc6e21ee-f1cb-5f04-9f21-dc995e69ef96",
+      "ref_id": [
+        "c5f3a072-0a96-5943-9198-23b0bf8bf5fe"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 96,
+      "segment": "Đợt thi giữa kỳ vừa rồi mới có 900 người đồng thời.",
+      "segment_html": "Đợt thi giữa kỳ vừa rồi mới có 900 người đồng thời.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1758.196,
+      "end_time": 1763.413,
+      "point_id": "cc6e21ee-f1cb-5f04-9f21-dc995e69ef96",
+      "ref_id": [
+        "c5f3a072-0a96-5943-9198-23b0bf8bf5fe"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 97,
+      "segment": "Về hạ tầng thì hiện LMS chạy trên hai máy chủ ảo tại Trung tâm dữ liệu của trường. Nếu cần thêm tài nguyên thì phải có đề xuất sớm, vì cấp phát máy chủ mới mất khoảng hai tuần.",
+      "segment_html": "Về hạ tầng thì hiện LMS chạy trên hai máy chủ ảo tại Trung tâm dữ liệu của trường. Nếu cần thêm tài nguyên thì phải có đề xuất sớm, vì cấp phát máy chủ mới mất khoảng hai tuần.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1764.413,
+      "end_time": 1781.804,
+      "point_id": "b1bc72d6-072d-5f2d-9e5e-b46321b69c4f",
+      "ref_id": [
+        "07b4729d-ef32-5559-8536-110dd0f959ff"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 98,
+      "segment": "Dạ em ước với 3.000 người dùng đồng thời thì cần thêm một máy chủ ứng dụng nữa và tăng bộ nhớ cho máy chủ cơ sở dữ liệu. Em sẽ gửi anh Cường thông số cụ thể sau khi chạy kiểm thử hiệu năng thử trên môi trường hiện tại.",
+      "segment_html": "Dạ em ước với 3.000 người dùng đồng thời thì cần thêm một máy chủ ứng dụng nữa và tăng bộ nhớ cho máy chủ cơ sở dữ liệu. Em sẽ gửi anh Cường thông số cụ thể sau khi chạy kiểm thử hiệu năng thử trên môi trường hiện tại.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1782.804,
+      "end_time": 1804.978,
+      "point_id": "ad43af9c-2a82-5d30-bc00-164670e5f3d6",
+      "ref_id": [
+        "ce6a99ef-4951-5f11-b97c-a9ccb5ecc991"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 99,
+      "segment": "Về tập huấn thì Phòng Đào tạo sẽ tổ chức tập huấn cho 260 giảng viên trong tháng 1, chia theo khoa, mỗi buổi nửa ngày. Tôi đề nghị bên dự án cử người hướng dẫn và chuẩn bị tài liệu, video hướng dẫn ngắn cho từng chức năng chính.",
+      "segment_html": "Về tập huấn thì Phòng Đào tạo sẽ tổ chức tập huấn cho 260 giảng viên trong tháng 1, chia theo khoa, mỗi buổi nửa ngày. Tôi đề nghị bên dự án cử người hướng dẫn và chuẩn bị tài liệu, video hướng dẫn ngắn cho từng chức năng chính.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1805.978,
+      "end_time": 1827.717,
+      "point_id": "524dfcbd-4a07-5a29-b006-34f257f07af7",
+      "ref_id": [
+        "7ddd15e8-c1c0-5472-ad9c-bb3c5b596e2b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 100,
+      "segment": "Dạ về nội dung bài giảng thì em báo cáo thêm là hiện nay nhiều thầy cô gửi video bài giảng dung lượng rất lớn, có video một tiếng mà nặng gần 4 gigabyte, tải lên rất lâu và sinh viên xem bằng điện thoại thì tốn dung lượng mạng.",
+      "segment_html": "Dạ về nội dung bài giảng thì em báo cáo thêm là hiện nay nhiều thầy cô gửi video bài giảng dung lượng rất lớn, có video một tiếng mà nặng gần 4 gigabyte, tải lên rất lâu và sinh viên xem bằng điện thoại thì tốn dung lượng mạng.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1828.717,
+      "end_time": 1850.457,
+      "point_id": "0dfd478a-b886-56e8-a6d9-1fc1af6421f8",
+      "ref_id": [
+        "899407d5-8d4c-5dd3-8e47-60eb157283b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 101,
+      "segment": "Hệ thống có chức năng tự động chuyển mã video sang nhiều độ phân giải, nhưng quá trình chuyển mã chạy trên chính máy chủ ứng dụng nên khi nhiều thầy cô tải lên cùng lúc thì máy chủ bị chậm.",
+      "segment_html": "Hệ thống có chức năng tự động chuyển mã video sang nhiều độ phân giải, nhưng quá trình chuyển mã chạy trên chính máy chủ ứng dụng nên khi nhiều thầy cô tải lên cùng lúc thì máy chủ bị chậm.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1850.707,
+      "end_time": 1868.533,
+      "point_id": "0dfd478a-b886-56e8-a6d9-1fc1af6421f8",
+      "ref_id": [
+        "899407d5-8d4c-5dd3-8e47-60eb157283b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 102,
+      "segment": "Nếu học kỳ hai có 260 giảng viên tải bài giảng vào tuần đầu thì em lo là sẽ ảnh hưởng đến sinh viên đang dùng. Em nghĩ là trong thông số máy chủ gửi anh Cường thì nên tính thêm một máy chủ chuyển mã riêng,",
+      "segment_html": "Nếu học kỳ hai có 260 giảng viên tải bài giảng vào tuần đầu thì em lo là sẽ ảnh hưởng đến sinh viên đang dùng. Em nghĩ là trong thông số máy chủ gửi anh Cường thì nên tính thêm một máy chủ chuyển mã riêng,",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1868.783,
+      "end_time": 1889.217,
+      "point_id": "0dfd478a-b886-56e8-a6d9-1fc1af6421f8",
+      "ref_id": [
+        "899407d5-8d4c-5dd3-8e47-60eb157283b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 103,
+      "segment": "hoặc khuyến nghị thầy cô tải video lên trước học kỳ một tuần để rải tải.",
+      "segment_html": "hoặc khuyến nghị thầy cô tải video lên trước học kỳ một tuần để rải tải.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1889.467,
+      "end_time": 1896.424,
+      "point_id": "0dfd478a-b886-56e8-a6d9-1fc1af6421f8",
+      "ref_id": [
+        "899407d5-8d4c-5dd3-8e47-60eb157283b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 104,
+      "segment": "Việc tải bài giảng trước thì Phòng Đào tạo sẽ đưa vào yêu cầu, hạn cuối là một tuần trước khi bắt đầu học kỳ.",
+      "segment_html": "Việc tải bài giảng trước thì Phòng Đào tạo sẽ đưa vào yêu cầu, hạn cuối là một tuần trước khi bắt đầu học kỳ.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1897.424,
+      "end_time": 1908.293,
+      "point_id": "108740a4-a485-5463-972e-c58e002f06df",
+      "ref_id": [
+        "e794bcd9-c909-5381-a015-ccd7c90051d3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 105,
+      "segment": "Ok, em chốt kế hoạch. Học kỳ hai mở LMS cho khoảng 500 lớp học phần gồm đại cương và ba khoa thí điểm như thầy Hoàng nói. Trước khi mở phải kiểm thử hiệu năng mô phỏng 3.000 người dùng đồng thời. Tập huấn giảng viên trong tháng 1.",
+      "segment_html": "Ok, em chốt kế hoạch. Học kỳ hai mở LMS cho khoảng 500 lớp học phần gồm đại cương và ba khoa thí điểm như thầy Hoàng nói. Trước khi mở phải kiểm thử hiệu năng mô phỏng 3.000 người dùng đồng thời. Tập huấn giảng viên trong tháng 1.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1909.293,
+      "end_time": 1931.033,
+      "point_id": "d0b4b342-cf82-5dcd-9d67-01aee3ede7ac",
+      "ref_id": [
+        "4e6c71b2-b1ee-511e-a476-e91923b3f18b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 106,
+      "segment": "Nghiệm thu giai đoạn 1 vào cuối tháng 2 sau khi học kỳ hai chạy ổn định được ba tuần. Phân công như sau: chị Oanh làm kịch bản và chạy kiểm thử hiệu năng trước ngày 5 tháng 1.",
+      "segment_html": "Nghiệm thu giai đoạn 1 vào cuối tháng 2 sau khi học kỳ hai chạy ổn định được ba tuần. Phân công như sau: chị Oanh làm kịch bản và chạy kiểm thử hiệu năng trước ngày 5 tháng 1.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1931.283,
+      "end_time": 1948.674,
+      "point_id": "d0b4b342-cf82-5dcd-9d67-01aee3ede7ac",
+      "ref_id": [
+        "4e6c71b2-b1ee-511e-a476-e91923b3f18b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 107,
+      "segment": "Vũ gửi thông số máy chủ cho anh Cường trước ngày 15 tháng 12 để anh Cường đề xuất cấp phát. Hà làm bộ video hướng dẫn ngắn cho giảng viên, khoảng mười video, xong trước ngày 10 tháng 1. Em thì em làm kế hoạch nghiệm thu gửi thầy Hoàng trong tháng 12.",
+      "segment_html": "Vũ gửi thông số máy chủ cho anh Cường trước ngày 15 tháng 12 để anh Cường đề xuất cấp phát. Hà làm bộ video hướng dẫn ngắn cho giảng viên, khoảng mười video, xong trước ngày 10 tháng 1. Em thì em làm kế hoạch nghiệm thu gửi thầy Hoàng trong tháng 12.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1948.924,
+      "end_time": 1972.402,
+      "point_id": "d0b4b342-cf82-5dcd-9d67-01aee3ede7ac",
+      "ref_id": [
+        "4e6c71b2-b1ee-511e-a476-e91923b3f18b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 108,
+      "segment": "Ok chị làm.",
+      "segment_html": "Ok chị làm.",
+      "speaker_name": "Chị Oanh (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1973.402,
+      "end_time": 1974.707,
+      "point_id": "9c85b3b6-dbaf-5923-9479-876a3ced4f0b",
+      "ref_id": [
+        "81579311-20ea-51ad-b2bd-1c26ac70400a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 109,
+      "segment": "Dạ em gửi anh Cường.",
+      "segment_html": "Dạ em gửi anh Cường.",
+      "speaker_name": "Vũ (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1975.707,
+      "end_time": 1977.88,
+      "point_id": "b2866dd4-1200-5866-9bc2-e73a426f51a1",
+      "ref_id": [
+        "d6c73568-497a-5407-a1f0-c5962541d41f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 110,
+      "segment": "Nhận được thông số thì tôi làm đề xuất cấp phát luôn.",
+      "segment_html": "Nhận được thông số thì tôi làm đề xuất cấp phát luôn.",
+      "speaker_name": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "speaker_org_unit": null,
+      "start_time": 1978.88,
+      "end_time": 1984.098,
+      "point_id": "19829a92-83dd-52dd-813a-b818973243c4",
+      "ref_id": [
+        "735da114-afa5-54f1-a42e-f4e37278dc67"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 111,
+      "segment": "Dạ em làm video.",
+      "segment_html": "Dạ em làm video.",
+      "speaker_name": "Hà (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1985.098,
+      "end_time": 1986.837,
+      "point_id": "cc56483f-df6d-57d5-b9b2-390ea220cfa1",
+      "ref_id": [
+        "af7897e7-5ad3-5010-bd19-daab3d71d47e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 112,
+      "segment": "Phòng Đào tạo lên lịch tập huấn gửi các khoa trước ngày 20 tháng 12. Cảm ơn anh Trung và cả nhóm.",
+      "segment_html": "Phòng Đào tạo lên lịch tập huấn gửi các khoa trước ngày 20 tháng 12. Cảm ơn anh Trung và cả nhóm.",
+      "speaker_name": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "speaker_org_unit": null,
+      "start_time": 1987.837,
+      "end_time": 1997.402,
+      "point_id": "6de63a70-26fc-5cf8-9ae6-d7fd9165f72d",
+      "ref_id": [
+        "d24b3250-1758-5b49-8bab-4a10c5767bd5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 113,
+      "segment": "Dạ cảm ơn thầy, cảm ơn mọi người.",
+      "segment_html": "Dạ cảm ơn thầy, cảm ơn mọi người.",
+      "speaker_name": "Anh Trung (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1998.402,
+      "end_time": 2001.88,
+      "point_id": "5248a978-5523-5f69-9385-0772c33114bb",
+      "ref_id": [
+        "be112272-1579-5e04-a05d-d3e8e17e53c0"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Chào thầy Hoàng, chào anh Cường và cả nhóm. Hôm nay họp tiến độ tháng, em đề nghị đi lần lượt: đăng nhập một lần, thi trực tuyến, báo cáo học tập, cuối cùng là kế hoạch học kỳ hai. Vũ báo cáo phần SSO trước nhé. Dạ. Phần đăng nhập một lần thì mình dùng Keycloak làm máy chủ xác thực, kết nối với cơ sở dữ liệu người dùng của hệ thống quản lý đào tạo của trường qua giao thức LDAP mà anh Cường cung cấp. Sinh viên, giảng viên đăng nhập một lần bằng tài khoản trường là vào được LMS, thư điện tử và cổng đào tạo luôn. Đến tuần trước thì đã chạy thử với khoảng 4.200 sinh viên khóa 2023 và 2024, và 380 giảng viên, đăng nhập ổn định, thời gian xác thực trung bình dưới một giây. Nhưng khi đồng bộ thêm các khóa cũ từ 2019 đến 2022 thì phát sinh lỗi, khoảng 1.300 sinh viên không đăng nhập được. Nguyên nhân là mã sinh viên các khóa trước 2021 được cấp theo định dạng cũ chỉ có bảy chữ số, và có hơn 200 trường hợp trùng mã với sinh viên hệ vừa làm vừa học, hai người khác nhau cùng một mã. Keycloak coi mã sinh viên là định danh duy nhất nên khi đồng bộ thì bản ghi sau đè bản ghi trước, thành ra sinh viên này đăng nhập lại vào tài khoản của sinh viên kia. Nhóm em đã phải tắt đồng bộ các khóa cũ ngay khi phát hiện. Chuyện trùng mã thì bên tôi biết từ lâu, vì hệ vừa làm vừa học trước đây do trung tâm liên kết quản lý riêng, cấp mã riêng, sau này mới gộp dữ liệu về một hệ thống. Trong hệ thống quản lý đào tạo thì hai loại sinh viên này phân biệt bằng trường hệ đào tạo, nhưng cái mã hiển thị thì trùng. Việc sửa mã trên hệ thống quản lý đào tạo thì không làm được, vì mã sinh viên đã in trên thẻ, trên bảng điểm, trên văn bằng của những người đã tốt nghiệp. Dạ vâng, nên em đề xuất là không sửa mã gốc, mà trong Keycloak mình dùng một định danh chuẩn hóa, ghép tiền tố hệ đào tạo và khóa vào trước mã sinh viên, ví dụ chính quy khóa 2020 là CQ20 cộng mã, vừa làm vừa học là VL20 cộng mã. Sinh viên vẫn đăng nhập bằng mã cũ, hệ thống sẽ hỏi thêm hệ đào tạo nếu mã đó bị trùng. Như vậy thì không đụng gì đến dữ liệu gốc. Tôi thấy phương án này được. Nhưng tôi lưu ý là sinh viên khóa cũ nhiều em đang học lại, học cải thiện, và đặc biệt là khoảng 600 em khóa 2020 đang làm đồ án tốt nghiệp, học kỳ sau phải nộp đồ án trên LMS. Nếu các em không đăng nhập được thì rất phiền. Việc này phải xong trước khi bắt đầu học kỳ hai. Chị bổ sung là khi chạy đồng bộ lại thì phải kiểm thử kỹ những tài khoản đã bị đè, vì có thể trong thời gian chạy thử đã có sinh viên đăng nhập nhầm vào tài khoản người khác và nộp bài, hoặc xem điểm. Chị đề nghị là rà soát log đăng nhập của khoảng 200 mã trùng trong hai tuần chạy thử, xem có trường hợp nào đã truy cập nhầm không, nếu có thì phải báo cáo nhà trường. Dạ em xin nói rõ thêm về cách chạy đồng bộ lại để thầy Hoàng và anh Cường yên tâm. Bước một là em xuất toàn bộ danh sách sinh viên từ LDAP, gồm mã, họ tên, ngày sinh, hệ đào tạo, khóa, rồi chạy một đoạn kiểm tra tìm tất cả các mã xuất hiện nhiều hơn một lần. Theo số liệu sơ bộ thì có 214 mã bị trùng, liên quan 431 sinh viên, vì có vài mã trùng ba người. Bước hai là em sinh định danh chuẩn hóa cho toàn bộ sinh viên, không chỉ những người bị trùng, để sau này quy tắc thống nhất, sinh viên chính quy khóa 2021 trở về sau thì mã đã có tiền tố khóa sẵn nên định danh gần như giữ nguyên. Bước ba là xóa các bản ghi bị đè trong Keycloak và nhập lại theo định danh mới. Bước bốn là với các sinh viên bị trùng mã, lần đăng nhập đầu tiên hệ thống sẽ hiện màn hình chọn hệ đào tạo, chọn xong thì lưu lại, lần sau không hỏi nữa. Toàn bộ quá trình em sẽ chạy trên môi trường thử nghiệm trước, chị Oanh kiểm tra ngẫu nhiên khoảng một trăm tài khoản, đạt thì mới chạy trên môi trường thật, và chạy vào ban đêm để không ảnh hưởng người dùng. Thời gian chạy thật thì ước khoảng hai tiếng cho toàn bộ khoảng 18.000 tài khoản sinh viên các khóa. Về rủi ro thì nếu có sinh viên nào đã được giảng viên thêm vào lớp học phần trên LMS bằng tài khoản cũ bị đè, thì sau khi đồng bộ lại em phải ánh xạ lại tư cách thành viên lớp, bài nộp và điểm sang tài khoản mới, cái này em đã tính vào thời gian. Tôi đề nghị thêm là trước khi chạy trên môi trường thật thì phải sao lưu toàn bộ cơ sở dữ liệu Keycloak và LMS, và bên dự án gửi cho tôi kịch bản khôi phục nếu có sự cố, vì đây là thao tác trên dữ liệu người dùng của toàn trường. Ngoài ra thì bên Trung tâm dữ liệu cũng cần biết trước lịch chạy để theo dõi tải máy chủ LDAP, vì xuất toàn bộ danh sách sẽ tạo tải khá lớn. Ok, chốt phương án định danh chuẩn hóa có tiền tố hệ và khóa như Vũ đề xuất, không sửa mã gốc. Vũ làm và chạy đồng bộ lại các khóa 2019 đến 2022, xong trước ngày 10 tháng 12. Chị Oanh rà soát log đăng nhập của các mã trùng trong thời gian chạy thử, có gì báo em để em báo thầy Hoàng. Dạ vâng anh. Ok, trong tuần này chị rà xong. Rồi, phần thi trực tuyến. Hà báo cáo đi em. Dạ. Chức năng thi trực tuyến thì hiện đã có đầy đủ cho hình thức trắc nghiệm, giảng viên tạo ngân hàng câu hỏi, cấu hình đề thi ngẫu nhiên theo ma trận độ khó, thời gian làm bài, số lần làm. Sinh viên làm bài trên trình duyệt, hết giờ thì tự nộp. Tháng vừa rồi đã chạy thử giữa kỳ cho ba học phần là Toán cao cấp, Vật lý đại cương và Tin học cơ sở, tổng cộng khoảng 2.100 lượt thi. Hệ thống chịu tải tốt, lúc cao điểm có khoảng 900 sinh viên thi đồng thời, thời gian phản hồi vẫn dưới hai giây. Lỗi thì có một số trường hợp sinh viên bị mất mạng giữa chừng, khi vào lại thì bài làm vẫn được lưu nhưng đồng hồ vẫn chạy, có em mất năm phút. Cái này em đã sửa cho phép giám thị cộng thêm thời gian cho từng sinh viên. Vấn đề lớn nhất mà các thầy cô phản ánh là gian lận. Kết quả thi giữa kỳ Toán cao cấp trực tuyến cao hơn hẳn so với thi giấy các năm trước, điểm trung bình cao hơn khoảng 1,8 điểm, các thầy nghi là sinh viên tra cứu, hỏi nhau qua điện thoại. Đúng vậy, hội đồng khoa học của khoa Cơ bản đã có ý kiến là nếu không giải quyết được gian lận thì khoa không đồng ý thi cuối kỳ trực tuyến. Tôi cũng xin nói rõ là mục tiêu của nhà trường trong năm nay là chỉ thi trực tuyến giữa kỳ và các học phần tự chọn, còn thi cuối kỳ các học phần bắt buộc thì vẫn thi tập trung tại phòng máy. Anh Trung, em có tìm hiểu một giải pháp là tích hợp nhận diện khuôn mặt để giám sát thi. Tức là trong khi thi thì webcam của sinh viên liên tục chụp ảnh, hệ thống so khớp với ảnh thẻ sinh viên, phát hiện người khác làm bài hộ, phát hiện sinh viên nhìn ra ngoài màn hình quá lâu, hoặc có người thứ hai xuất hiện. Có mấy dịch vụ nước ngoài cung cấp sẵn, tính phí theo lượt thi, khoảng 1 đến 2 đô la một lượt. Nhóm em có thể tích hợp trong khoảng sáu tuần. Tôi thì tôi rất băn khoăn về cái này. Thứ nhất là ảnh khuôn mặt là dữ liệu sinh trắc học, theo Nghị định 13 và Luật Bảo vệ dữ liệu cá nhân thì là dữ liệu cá nhân nhạy cảm, phải có sự đồng ý rõ ràng của từng sinh viên, và nếu gửi ra dịch vụ nước ngoài thì còn phải làm hồ sơ đánh giá tác động chuyển dữ liệu ra nước ngoài nộp Bộ Công an. Thủ tục này rất phức tạp. Thứ hai là chi phí, mỗi học kỳ trường có khoảng 60.000 lượt thi, nếu một đô la một lượt thì đã hơn một tỷ rưỡi một năm, trường không có kinh phí này. Thứ ba là nhiều sinh viên ở nông thôn không có máy tính có webcam, làm bài bằng điện thoại. Tôi đồng ý với anh Cường. Nhà trường sẽ không dùng nhận diện khuôn mặt trong năm nay. Dạ em bổ sung thêm là trong số các cách chống gian lận mà không cần camera, thì trên hệ thống hiện đã ghi lại khá nhiều dữ liệu có ích mà các thầy cô chưa dùng. Ví dụ là thời gian làm từng câu, số lần chuyển ra khỏi cửa sổ thi, thời điểm nộp bài, địa chỉ mạng. Khi em xem lại dữ liệu bài thi Toán cao cấp giữa kỳ thì thấy có những nhóm sinh viên nộp bài cách nhau chỉ vài giây, cùng địa chỉ mạng, và chọn sai giống hệt nhau ở những câu khó, rất có khả năng là làm chung. Có khoảng 70 trường hợp như vậy. Nếu mình làm một báo cáo bất thường sau mỗi kỳ thi, liệt kê các trường hợp nghi vấn cho giám thị và giảng viên xem xét, thì cũng có tác dụng răn đe, và không vướng vấn đề dữ liệu cá nhân nhạy cảm như ảnh khuôn mặt. Tuy vậy thì báo cáo này chỉ để tham khảo, không thể dùng làm căn cứ xử lý kỷ luật nếu không có bằng chứng khác. Tôi thấy dữ liệu đó có giá trị. Việc xử lý vi phạm thì theo quy chế phải có biên bản của giám thị, nên báo cáo bất thường chỉ là để giám thị chú ý hơn. Nhưng trước mắt tôi muốn tập trung vào các biện pháp phòng ngừa đã, còn báo cáo bất thường thì để học kỳ sau tính. Ok, vậy bỏ phương án nhận diện khuôn mặt, nhóm mình không làm. Thay vào đó em chốt ba biện pháp làm được ngay. Một là bắt buộc dùng chế độ trình duyệt khóa khi thi, không cho mở tab khác, không cho sao chép dán, thoát ra là ghi nhận. Hai là mỗi sinh viên một đề riêng, xáo trộn cả thứ tự câu hỏi lẫn thứ tự đáp án. Ba là với thi giữa kỳ quan trọng thì chia phòng thi ảo, mỗi phòng tối đa 40 sinh viên có một giám thị giám sát qua camera trực tiếp bằng Google Meet như các trường khác đang làm. Hà làm trình duyệt khóa và xáo trộn đáp án, xong trước ngày 20 tháng 12. Dạ, em làm được anh. Phòng Đào tạo sẽ ban hành quy chế thi trực tuyến giữa kỳ có quy định về giám sát qua camera và xử lý vi phạm, tôi phụ trách, trước khi bắt đầu học kỳ hai. Tiếp theo là phần báo cáo học tập. Hà với Vũ cùng làm phần này, Hà trình bày giao diện nhé. Dạ. Bảng điều khiển cho giảng viên hiện có các chỉ số cho từng lớp học phần: số sinh viên truy cập theo tuần, thời gian xem bài giảng video, tỷ lệ nộp bài tập đúng hạn, điểm các bài kiểm tra thành phần, và danh sách sinh viên chưa từng truy cập. Giảng viên có thể lọc theo nhóm, xuất ra Excel. Với cố vấn học tập thì có một bảng tổng hợp theo lớp sinh hoạt, xem được tình hình của từng sinh viên trên tất cả các học phần đang học. Dữ liệu cập nhật mỗi đêm. Hiện đã mở cho khoảng 40 giảng viên dùng thử, phản hồi chung là giao diện dễ dùng, nhưng nhiều thầy cô nói là có nhiều số liệu quá mà không biết nên làm gì với nó. Đúng vậy, và đây là cái tôi muốn nói. Mục tiêu của nhà trường khi làm LMS không phải để có thêm biểu đồ, mà để giảm tỷ lệ sinh viên bị cảnh báo học vụ và thôi học. Năm học vừa rồi trường có hơn 900 sinh viên bị cảnh báo học vụ, gần 300 em bị buộc thôi học, phần lớn là năm nhất và năm hai. Khi xem lại thì hầu hết các em đó đều có dấu hiệu từ rất sớm, vắng học nhiều, không nộp bài, nhưng cố vấn học tập thì không biết cho đến khi có điểm cuối kỳ thì đã muộn. Tôi muốn hệ thống phải có cảnh báo sớm, tự động báo cho cố vấn học tập những em có nguy cơ, để cố vấn gọi các em lên nói chuyện kịp thời. Dạ về kỹ thuật thì có hai cách thầy ạ. Cách thứ nhất là dùng luật, ví dụ vắng quá ba buổi, không nộp quá hai bài tập liên tiếp, điểm giữa kỳ dưới 4, thì đánh dấu là có nguy cơ. Cách thứ hai là huấn luyện một mô hình dự đoán từ dữ liệu các năm trước, cho ra xác suất trượt của từng sinh viên. Cách thứ hai thì có thể chính xác hơn, nhưng cần dữ liệu lịch sử đầy đủ, mà LMS mới chạy được một học kỳ, dữ liệu hành vi học tập các năm trước thì không có, chỉ có điểm. Em nghĩ là trước mắt làm theo luật, dễ giải thích cho cố vấn học tập, sau hai ba học kỳ có dữ liệu thì mới làm mô hình. Tôi đồng ý với Vũ. Với lại dùng luật thì cố vấn học tập hiểu ngay vì sao em này bị cảnh báo, còn mô hình mà nói xác suất bảy mươi phần trăm thì các thầy cô sẽ hỏi là tại sao, mình không trả lời được. Chị lưu ý về dữ liệu điểm danh. Hiện nay điểm danh thì mỗi giảng viên làm một kiểu, có thầy điểm danh trên giấy, có thầy dùng ứng dụng riêng, chỉ khoảng một phần ba giảng viên điểm danh trên LMS. Nếu luật dựa vào số buổi vắng mà dữ liệu điểm danh không đầy đủ thì cảnh báo sẽ sai, em nào học lớp thầy điểm danh giấy thì không bao giờ bị cảnh báo vắng. Việc điểm danh trên LMS thì Phòng Đào tạo sẽ yêu cầu bắt buộc từ học kỳ hai, tôi sẽ đưa vào văn bản hướng dẫn. Còn cảnh báo thì gửi cho cố vấn học tập hằng tuần, qua thư điện tử và thông báo trên LMS, kèm danh sách và lý do cảnh báo của từng em. Tôi nói thêm về quy trình để bên dự án hiểu. Hiện nay mỗi lớp sinh hoạt có một cố vấn học tập, là giảng viên kiêm nhiệm, phụ trách khoảng 60 đến 80 sinh viên. Cố vấn học tập thì rất bận, nên nếu hệ thống gửi một danh sách quá dài hoặc cảnh báo quá nhiều thì các thầy cô sẽ bỏ qua. Theo kinh nghiệm của Phòng Đào tạo khi làm thủ công ở học kỳ trước, mỗi tuần mỗi lớp chỉ nên có khoảng ba đến năm em bị cảnh báo thì cố vấn mới xử lý được. Vì vậy ba tiêu chí của Vũ nêu thì tôi thấy hợp lý, nhưng cần theo dõi xem thực tế mỗi tuần ra bao nhiêu em, nếu quá nhiều thì điều chỉnh ngưỡng. Ngoài ra thì khi cố vấn đã gặp và trao đổi với sinh viên rồi thì phải có chỗ để ghi lại kết quả trao đổi, để tuần sau nếu em đó tiếp tục bị cảnh báo thì cố vấn biết là đã gặp rồi, và Phòng Đào tạo cũng có số liệu để đánh giá hiệu quả của hoạt động cố vấn. Hiện nay việc này làm trên sổ tay, cuối kỳ không tổng hợp được. Dạ màn hình danh sách cảnh báo em sẽ có thêm cột trạng thái xử lý và ô ghi chú kết quả trao đổi cho cố vấn, cái này đơn giản thôi thầy. Ok, em chốt là làm cảnh báo sớm theo luật với ba tiêu chí: vắng từ ba buổi trở lên trong một học phần, không nộp hai bài tập liên tiếp, điểm giữa kỳ dưới 4. Gửi danh sách cho cố vấn học tập hằng tuần vào sáng thứ Hai qua thư điện tử và LMS, có ghi lý do. Chưa làm mô hình dự đoán trong năm nay. Vũ làm phần luật và gửi thông báo, Hà làm màn hình danh sách cảnh báo cho cố vấn, xong trước học kỳ hai. Dạ vâng. Dạ em làm luôn sau phần trình duyệt khóa. Phòng Đào tạo sẽ có văn bản yêu cầu giảng viên điểm danh trên LMS bắt buộc từ học kỳ hai. Anh Trung ơi, trước khi sang kế hoạch học kỳ hai, tôi xin quay lại phần đăng nhập một lần một chút, vì tôi vừa nhận được lịch của Trung tâm dữ liệu. Máy chủ LDAP của trường có lịch bảo trì nâng cấp hệ điều hành vào tuần từ 15 đến 19 tháng 12, dự kiến dừng dịch vụ khoảng hai ngày. Mà theo như Vũ nói thì Keycloak đang xác thực trực tiếp với LDAP, tức là LDAP dừng thì toàn bộ sinh viên không đăng nhập được LMS. Tuần đó lại đúng là tuần thi giữa kỳ trực tuyến của một số học phần tự chọn. Dạ đúng anh, hiện tại Keycloak mỗi lần xác thực đều hỏi LDAP, không có bộ nhớ đệm. Có một cách là cấu hình Keycloak lưu bản sao thông tin người dùng và mật khẩu đã băm từ LDAP vào cơ sở dữ liệu của nó, khi LDAP không kết nối được thì vẫn xác thực được từ bản sao. Nhưng như vậy thì nếu có sinh viên đổi mật khẩu trong thời gian đó sẽ không đồng bộ, và về bảo mật thì mình đang giữ thêm một bản mật khẩu, anh Cường có đồng ý không? Về nguyên tắc thì tôi không muốn có thêm một nơi lưu mật khẩu. Tôi nghĩ đơn giản nhất là tôi đề nghị Trung tâm dữ liệu lùi lịch bảo trì LDAP sang tuần sau thi, tức là sau ngày 22 tháng 12, cái này tôi làm được. Còn một việc nữa là về bảo mật, Ban Giám hiệu vừa có chỉ đạo là tất cả tài khoản có quyền nhập điểm và quản trị phải bật xác thực hai yếu tố, vì năm ngoái có một vụ lộ mật khẩu giảng viên và bị sửa điểm. Mà trên LMS thì giảng viên nhập điểm thành phần, nên cũng phải áp dụng. Keycloak có sẵn xác thực hai yếu tố bằng ứng dụng OTP như Google Authenticator anh ạ, chỉ cần bật theo nhóm người dùng. Em có thể bật cho nhóm giảng viên và nhóm quản trị, còn sinh viên thì không bắt buộc. Giảng viên lớn tuổi thì sẽ có một số thầy cô gặp khó khăn với ứng dụng OTP, cần có hướng dẫn và hỗ trợ. Tôi nói thêm về vụ lộ mật khẩu năm ngoái để mọi người hiểu vì sao Ban Giám hiệu yêu cầu gấp. Năm ngoái có một giảng viên dùng chung mật khẩu tài khoản trường với một trang web bên ngoài, trang đó bị lộ dữ liệu, kẻ xấu lấy mật khẩu đăng nhập vào hệ thống quản lý đào tạo và sửa điểm của 14 sinh viên một học phần, đến khi giảng viên phát hiện thì đã gần một tháng. Nhà trường phải hủy kết quả, tổ chức thi lại, và có đơn vị công an vào làm việc. Từ đó Ban Giám hiệu yêu cầu tất cả tài khoản có quyền sửa dữ liệu điểm phải có xác thực hai yếu tố. Hệ thống quản lý đào tạo thì đã bật từ học kỳ trước, bây giờ đến lượt LMS vì LMS cũng có quyền nhập điểm thành phần và đồng bộ sang. Tỷ lệ giảng viên đã cài ứng dụng OTP cho hệ thống quản lý đào tạo hiện khoảng 85%, nên phần lớn thầy cô đã quen rồi, chỉ cần thêm một tài khoản nữa vào ứng dụng. Ok, chốt hai việc. Một là không cấu hình lưu bản sao mật khẩu, anh Cường đề nghị Trung tâm dữ liệu lùi bảo trì LDAP sang sau ngày 22 tháng 12. Hai là bật xác thực hai yếu tố bắt buộc cho tài khoản giảng viên và quản trị trên Keycloak từ học kỳ hai, sinh viên không bắt buộc. Vũ cấu hình, Hà làm trang hướng dẫn cài ứng dụng OTP có hình ảnh từng bước. Tôi sẽ làm việc với Trung tâm dữ liệu ngay trong tuần này. Dạ em cấu hình, bật thử cho nhóm quản trị trước. Dạ em làm trang hướng dẫn. Phần cuối là kế hoạch học kỳ hai. Thầy Hoàng cho bên em biết phạm vi nhà trường muốn triển khai ạ. Kế hoạch của nhà trường là học kỳ hai sẽ triển khai LMS cho toàn bộ các học phần đại cương, khoảng 180 lớp học phần, và toàn bộ học phần của ba khoa thí điểm là Công nghệ thông tin, Điện tử viễn thông và Kinh tế, khoảng 320 lớp học phần nữa. Tổng cộng khoảng 500 lớp học phần, 12.000 sinh viên và 260 giảng viên. Các khoa khác thì học kỳ sau nữa. Yêu cầu là mỗi lớp học phần phải có đề cương, bài giảng và ít nhất các bài tập được đưa lên LMS, giảng viên nhập điểm thành phần trên LMS và đồng bộ sang hệ thống quản lý đào tạo. Với quy mô 12.000 sinh viên thì chị đề nghị trước khi mở phải có một đợt kiểm thử hiệu năng mô phỏng khoảng 3.000 người dùng đồng thời, vì đầu học kỳ sinh viên đăng nhập dồn dập để xem thời khóa biểu và tài liệu. Đợt thi giữa kỳ vừa rồi mới có 900 người đồng thời. Về hạ tầng thì hiện LMS chạy trên hai máy chủ ảo tại Trung tâm dữ liệu của trường. Nếu cần thêm tài nguyên thì phải có đề xuất sớm, vì cấp phát máy chủ mới mất khoảng hai tuần. Dạ em ước với 3.000 người dùng đồng thời thì cần thêm một máy chủ ứng dụng nữa và tăng bộ nhớ cho máy chủ cơ sở dữ liệu. Em sẽ gửi anh Cường thông số cụ thể sau khi chạy kiểm thử hiệu năng thử trên môi trường hiện tại. Về tập huấn thì Phòng Đào tạo sẽ tổ chức tập huấn cho 260 giảng viên trong tháng 1, chia theo khoa, mỗi buổi nửa ngày. Tôi đề nghị bên dự án cử người hướng dẫn và chuẩn bị tài liệu, video hướng dẫn ngắn cho từng chức năng chính. Dạ về nội dung bài giảng thì em báo cáo thêm là hiện nay nhiều thầy cô gửi video bài giảng dung lượng rất lớn, có video một tiếng mà nặng gần 4 gigabyte, tải lên rất lâu và sinh viên xem bằng điện thoại thì tốn dung lượng mạng. Hệ thống có chức năng tự động chuyển mã video sang nhiều độ phân giải, nhưng quá trình chuyển mã chạy trên chính máy chủ ứng dụng nên khi nhiều thầy cô tải lên cùng lúc thì máy chủ bị chậm. Nếu học kỳ hai có 260 giảng viên tải bài giảng vào tuần đầu thì em lo là sẽ ảnh hưởng đến sinh viên đang dùng. Em nghĩ là trong thông số máy chủ gửi anh Cường thì nên tính thêm một máy chủ chuyển mã riêng, hoặc khuyến nghị thầy cô tải video lên trước học kỳ một tuần để rải tải. Việc tải bài giảng trước thì Phòng Đào tạo sẽ đưa vào yêu cầu, hạn cuối là một tuần trước khi bắt đầu học kỳ. Ok, em chốt kế hoạch. Học kỳ hai mở LMS cho khoảng 500 lớp học phần gồm đại cương và ba khoa thí điểm như thầy Hoàng nói. Trước khi mở phải kiểm thử hiệu năng mô phỏng 3.000 người dùng đồng thời. Tập huấn giảng viên trong tháng 1. Nghiệm thu giai đoạn 1 vào cuối tháng 2 sau khi học kỳ hai chạy ổn định được ba tuần. Phân công như sau: chị Oanh làm kịch bản và chạy kiểm thử hiệu năng trước ngày 5 tháng 1. Vũ gửi thông số máy chủ cho anh Cường trước ngày 15 tháng 12 để anh Cường đề xuất cấp phát. Hà làm bộ video hướng dẫn ngắn cho giảng viên, khoảng mười video, xong trước ngày 10 tháng 1. Em thì em làm kế hoạch nghiệm thu gửi thầy Hoàng trong tháng 12. Ok chị làm. Dạ em gửi anh Cường. Nhận được thông số thì tôi làm đề xuất cấp phát luôn. Dạ em làm video. Phòng Đào tạo lên lịch tập huấn gửi các khoa trước ngày 20 tháng 12. Cảm ơn anh Trung và cả nhóm. Dạ cảm ơn thầy, cảm ơn mọi người.",
+  "metadata": {
+    "meeting_id": "synth_010",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

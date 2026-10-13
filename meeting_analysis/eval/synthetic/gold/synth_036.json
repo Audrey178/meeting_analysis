@@ -1,0 +1,453 @@
+{
+  "meeting_id": "synth_036",
+  "n_turns": 57,
+  "total_chars": 14267,
+  "boundaries": [
+    11,
+    25,
+    36,
+    48
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Kết nối liên thông đơn thuốc điện tử với hệ thống đơn thuốc quốc gia",
+      "summary": "Đã kết nối xong trên môi trường thử nghiệm nhưng khoảng 3% đơn tra không ra và cổng quốc gia chậm giờ cao điểm; thống nhất không chặn cứng, cho nhập tay mã đơn kèm ảnh đơn giấy, gửi dữ liệu bán theo lô 30 phút và cho bán thuốc thay thế cùng hoạt chất có ghi lý do.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 3347,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng cảnh báo thuốc cận hạn sử dụng",
+      "summary": "Tháng 9 chuỗi hủy khoảng 47 triệu tiền thuốc hết hạn do cảnh báo 90 ngày quá muộn, thông báo dài bị bỏ qua và quầy không xuất theo hạn dùng; thống nhất cảnh báo ba mức 180/90/30 ngày, bắt buộc gợi ý lô gần hạn nhất ở quầy, khóa bán thuốc dùng dài ngày còn dưới 30 ngày; đề xuất tự động giảm giá thuốc cận hạn để chờ pháp chế.",
+      "turn_range": [
+        11,
+        25
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000025"
+      ],
+      "chars": 3529,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng cảnh báo tồn kho thuốc dưới định mức và đề xuất nhập hàng",
+      "summary": "Định mức tối thiểu cố định 20 hộp khiến thuốc bán chạy báo muộn còn thuốc bán chậm báo nhiễu, tháng 9 có 212 lượt khách hỏi mua mà hết hàng; thống nhất định mức động theo bán trung bình 28 ngày, có hệ số mùa vụ, không tính lô đã khóa bán vào tồn khả dụng, mỗi sáng tạo một phiếu đề xuất nhập cho quản lý duyệt.",
+      "turn_range": [
+        25,
+        36
+      ],
+      "turn_ids": [
+        "TURN_000026",
+        "TURN_000036"
+      ],
+      "chars": 2655,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xây dựng ứng dụng tích điểm khách hàng trên Zalo Mini App",
+      "summary": "Mini app đã xong đăng nhập và xem điểm; nhắc lịch uống thuốc tốn phí tin nhắn OA và cần đồng ý của khách; thống nhất đợt này chỉ làm tích điểm, lịch sử mua và nút liên hệ dược sĩ, tích điểm 10.000 đồng một điểm và không tính thuốc kê đơn; đề xuất làm chatbot AI tư vấn thuốc bị gạt.",
+      "turn_range": [
+        36,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000037",
+        "TURN_000048"
+      ],
+      "chars": 2694,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Rà soát kết quả kiểm thử và kế hoạch triển khai thí điểm tại 6 nhà thuốc",
+      "summary": "Kiểm thử chấp nhận ghi nhận 41 lỗi, còn 23 lỗi mở trong đó 4 lỗi nghiêm trọng; thống nhất thí điểm tại 6 nhà thuốc từ thứ Hai 2/11, chạy song song phần mềm cũ 2 tuần, đóng 4 lỗi nghiêm trọng trước 28/10 và đào tạo nhân viên thứ Bảy 31/10.",
+      "turn_range": [
+        48,
+        57
+      ],
+      "turn_ids": [
+        "TURN_000049",
+        "TURN_000057"
+      ],
+      "chars": 2042,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Lộc (Backend)",
+      "actor_aliases": [
+        "Lộc",
+        "em"
+      ],
+      "task": "Làm phía backend liên thông đơn thuốc: nhập tay mã đơn, gửi dữ liệu bán theo lô 30 phút, bán thuốc thay thế",
+      "deadline": "thứ Năm tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Ngân (Frontend)",
+      "actor_aliases": [
+        "Ngân",
+        "em"
+      ],
+      "task": "Làm màn hình chụp ảnh đơn giấy và chọn thuốc thay thế",
+      "deadline": "thứ Năm tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "actor_aliases": [
+        "anh Tín",
+        "anh"
+      ],
+      "task": "Gửi Lộc file danh mục thuốc kê đơn bắt buộc quét đơn, gộp cả danh sách thuốc dùng dài ngày",
+      "deadline": "trước ngày 20",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011",
+        "TURN_000021",
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Chị Phượng (Kiểm thử)",
+      "actor_aliases": [
+        "chị Phượng",
+        "chị"
+      ],
+      "task": "Dựng bộ test cảnh báo cận hạn bằng dữ liệu lô thật của hai nhà thuốc",
+      "deadline": "trước thứ Tư tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Ngân (Frontend)",
+      "actor_aliases": [
+        "Ngân",
+        "em"
+      ],
+      "task": "Làm lại màn hình cảnh báo cận hạn ba mức và bản tóm tắt",
+      "deadline": "cuối sprint này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Lộc (Backend)",
+      "actor_aliases": [
+        "Lộc",
+        "em"
+      ],
+      "task": "Làm gợi ý lô có hạn gần nhất ở quầy và khóa bán thuốc dùng dài ngày dưới 30 ngày",
+      "deadline": "đầu sprint 10",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Lộc (Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm công thức định mức tồn kho động và tạo phiếu đề xuất nhập hằng sáng",
+      "deadline": "trước ngày 30/10",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Gửi Lộc bảng hệ số mùa vụ theo nhóm thuốc",
+      "deadline": "thứ Hai tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Lộc (Backend)",
+      "actor_aliases": [
+        "Lộc",
+        "em"
+      ],
+      "task": "Làm API tích điểm có loại trừ thuốc kê đơn",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046",
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Ngân (Frontend)",
+      "actor_aliases": [
+        "Ngân",
+        "em"
+      ],
+      "task": "Hoàn thiện Zalo Mini App tích điểm, đưa bản thử cho chị Phượng",
+      "deadline": "ngày 27",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046",
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Chốt danh sách 6 nhà thuốc thí điểm và nhân viên đi đào tạo, gửi anh Đạt",
+      "deadline": "thứ Sáu tuần này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "actor_aliases": [
+        "anh"
+      ],
+      "task": "Soạn tài liệu hướng dẫn nghiệp vụ dược kèm video thao tác",
+      "deadline": "trước buổi đào tạo (31/10)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Không chặn cứng khi tra đơn không được: nhập tay mã đơn, chụp ảnh đơn giấy, đánh dấu chờ đối chiếu; gửi dữ liệu bán lên cổng theo lô 30 phút, tự gửi lại, rà lúc 23 giờ; cho bán thuốc thay thế cùng hoạt chất, cùng hàm lượng, bắt ghi lý do",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Cảnh báo cận hạn ba mức 180/90/30 ngày (180 ngày tóm tắt hằng tuần, 90 và 30 ngày hằng ngày, sắp theo giá trị); bắt buộc gợi ý lô hạn gần nhất ở quầy, chọn lô khác phải ghi lý do; khóa bán thuốc dùng dài ngày còn dưới 30 ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Bỏ định mức cố định 20 hộp, dùng định mức động theo bán trung bình 28 ngày × (2 ngày giao + 5 ngày dự phòng) kèm hệ số mùa vụ; không tính lô đã khóa bán vào tồn khả dụng; mỗi sáng 7 giờ tạo một phiếu đề xuất nhập đủ bán 14 ngày cho quản lý duyệt",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Mini app đợt này chỉ gồm tích điểm, lịch sử mua và nút liên hệ dược sĩ; 10.000 đồng một điểm, chỉ tính hàng không kê đơn; nhắc lịch uống thuốc chuyển sang giai đoạn 2",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Thí điểm tại 6 nhà thuốc (4 nội thành, 2 ngoại thành) từ thứ Hai 2/11, chạy song song phần mềm cũ 2 tuần; đóng 4 lỗi nghiêm trọng trước 28/10, không kịp thì lùi; đào tạo nhân viên thứ Bảy 31/10",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Tự động giảm giá 20% thuốc còn dưới 60 ngày hạn dùng (chờ hỏi pháp chế, chưa làm)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "rejected_task",
+      "text": "Lộc tích hợp chatbot AI tư vấn thuốc theo triệu chứng trong mini app",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000041",
+        "TURN_000042",
+        "TURN_000043"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Lộc (Backend)",
+      "point": "Liên thông đơn thuốc đã chạy trên môi trường thử nghiệm; khoảng 3% trong 1.300 đơn tra không ra; cổng quốc gia chậm 15-20 giây giờ cao điểm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "point": "Không được chặn cứng đơn giấy hợp lệ; thuốc thay thế phải cùng hoạt chất, hàm lượng, dạng bào chế và ghi rõ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Ngân (Frontend)",
+      "point": "Tháng 9 hủy khoảng 47 triệu tiền thuốc hết hạn do cảnh báo 90 ngày quá muộn, thông báo dài bị bỏ qua, quầy không xuất theo hạn dùng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "point": "Phát hiện thuốc nhỏ mắt hết hạn vẫn trên kệ, rủi ro bị phạt hoặc đình chỉ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "point": "Chỉ khóa bán thuốc dùng dài ngày dưới 30 ngày, không khóa thuốc ngắn ngày; giảm giá thuốc kê đơn vướng quy định khuyến mại",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Lộc (Backend)",
+      "point": "Định mức cố định 20 hộp gây báo muộn với thuốc bán chạy và hơn 300 cảnh báo/ngày; tháng 9 có 212 lượt khách hỏi mua mà hết hàng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "point": "Muốn hệ thống đề xuất luôn số lượng cần nhập để quản lý duyệt; cần hệ số mùa vụ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Ngân (Frontend)",
+      "point": "Mini app đã xong đăng nhập, xem điểm, lịch sử; nhắc uống thuốc tốn phí tin OA khoảng 200 đồng/tin và cần khách đồng ý",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "point": "Không tích điểm cho thuốc kê đơn; không chấp nhận chatbot tư vấn thuốc theo triệu chứng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000040",
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Chị Phượng (Kiểm thử)",
+      "point": "UAT ghi nhận 41 lỗi, còn 23 lỗi mở, 4 lỗi nghiêm trọng, nặng nhất là mất dữ liệu đơn khi mất mạng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "point": "Thí điểm 6 nhà thuốc gồm 4 nội thành, 2 ngoại thành; đào tạo vào thứ Bảy",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "point": "Chạy song song với phần mềm cũ 2 tuần vì báo cáo Sở Y tế tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Anh Đạt (Quản lý dự án)",
+    "PO": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+    "DS": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+    "BE": "Lộc (Backend)",
+    "FE": "Ngân (Frontend)",
+    "QA": "Chị Phượng (Kiểm thử)"
+  },
+  "tags": [
+    "similar_adjacent_topics",
+    "rejected_task",
+    "hedged_proposal"
+  ]
+}

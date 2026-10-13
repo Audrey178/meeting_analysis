@@ -1,0 +1,1035 @@
+{
+  "transcript": "Rồi alo alo mọi người nghe rõ không. Ok. Thế thì hôm nay là mình họp cái tuần thứ hai sau khi go live cái kho Bin Dương nhé. Anh muốn là mình nói cái vụ lệch tồn trước vì là cái này là cái nóng nhất, hôm qua bên kinh doanh họ gọi anh ba lần rồi. Chị Hằng nói qua tình hình ở kho đi chị. À ừ thì là bên chị thì thế này. Từ hôm thứ hai tuần trước đến giờ là bên chị phát hiện là cái số tồn trên hệ thống với cái số thực tế ngoài kệ nó bị lệch. Không phải là lệch hết đâu, mà là chị cho mấy bạn đi đếm thử mấy dãy A với dãy C thì là khoảng, chị ước là khoảng ba phần trăm cái mã hàng là bị lệch. Có mã thì hệ thống ghi là có hai mươi thùng mà ngoài kệ có mười, có mã thì ngược lại. Cái nguy hiểm là bên bán hàng họ nhìn cái tồn trên hệ thống họ chốt đơn cho khách, xong bên chị ra lấy thì không có hàng. Tuần vừa rồi là có mười bảy đơn bị như vậy rồi, phải gọi xin lỗi khách, có một khách lớn là bên chuỗi siêu thị họ phàn nàn ghê lắm. Rồi mấy bạn nhân viên kho thì bắt đầu là không tin cái hệ thống nữa, lại quay ra ghi sổ tay, cái này chị thấy là rất là nguy hiểm vì mình bỏ bao nhiêu công ra để chuyển sang hệ thống mới. Toàn em đã tìm ra nguyên nhân chưa? Dạ rồi anh, em với anh Khoa ngồi soi log cả ngày hôm qua. Thì nguyên nhân là như này anh. Cái WMS của mình nó đồng bộ hai chiều với cái ê rờ pê, chiều từ WMS sang ê rờ pê là cái phiếu xuất nhập, còn chiều từ ê rờ pê về WMS là cái đơn hàng với cái điều chỉnh tồn do kế toán làm. Cái kho Bin Dương thì cái mạng wifi ở khu dãy C nó rất là chập chờn, các máy quét cầm tay nó mất kết nối liên tục. Khi mà mất kết nối thì cái máy quét nó lưu tạm giao dịch ở trong máy, có mạng lại thì nó gửi lại. Nhưng mà có trường hợp là cái giao dịch đã lên server rồi nhưng mà cái phản hồi về máy thì bị mất, thế là máy nó tưởng là chưa gửi, nó gửi lại lần nữa. Thế là một lần xuất hàng bị ghi thành hai lần. Em đếm trong log thì có khoảng hai trăm bốn mươi giao dịch bị trùng như vậy trong hai tuần. Với lại anh Việt ơi còn một cái nữa là cái chiều ngược lại. Bên kế toán họ vẫn đang làm cái điều chỉnh tồn ở trên ê rờ pê theo thói quen cũ, tức là cuối ngày họ nhìn cái phiếu giấy họ điều chỉnh. Mà cái điều chỉnh đó nó lại đồng bộ về WMS, trong khi WMS đã ghi nhận cái giao dịch đó từ máy quét rồi. Thế là lại bị cộng hai lần theo kiểu khác. Cho nên nó mới lệch cả hai chiều, có mã thừa có mã thiếu. Hừm. Thế giờ xử lý thế nào? Toàn đề xuất đi. Dạ em đề xuất là ba việc anh. Một là cái máy quét thì em phải thêm cái khóa chống trùng, tức là mỗi giao dịch nó sinh ra một cái mã duy nhất ngay trên máy, server nhận được mã nào rồi thì bỏ qua, không ghi lần hai, cái này gọi là cái ai đem pô ten sì ấy anh. Cái này em làm khoảng ba ngày. Hai là trong thời gian chờ thì mình tạm tắt cái chiều đồng bộ từ ê rờ pê về WMS với các loại điều chỉnh tồn, chỉ giữ đơn hàng thôi, để kế toán không làm lệch thêm. Ba là sau khi sửa xong thì phải kiểm kê lại toàn bộ kho một lần để đưa số về đúng, chứ giờ sửa code thì số cũ nó vẫn sai. Kiểm kê toàn kho thì bên chị phải dừng xuất nhập ít nhất là một ngày đấy, kho mình hơn bốn nghìn vị trí kệ. Mà tuần này là cao điểm cuối tháng. Thế này. Anh chốt là tạm dừng cái đồng bộ điều chỉnh tồn từ ê rờ pê về WMS ngay từ chiều nay, chỉ giữ đồng bộ đơn hàng. Cái khóa chống trùng thì làm luôn. Còn kiểm kê toàn kho thì không làm tuần này, dời sang chủ nhật tuần sau, làm ngày chủ nhật để không ảnh hưởng xuất hàng. Chị Hằng thu xếp người giúp anh nhé. Ừ chủ nhật thì được, chị sẽ xếp ca, nhưng mà phải có tiền làm thêm giờ cho anh em đấy nhé. Được, cái đó anh trình giám đốc. À còn cái wifi dãy C thì sao, cái đó mới là gốc mà. Dạ cái wifi thì em hỏi bên hạ tầng rồi, họ bảo là phải lắp thêm hai cái access point ở cuối dãy C, nhưng mà họ đang báo giá, chưa biết bao giờ lắp. Cái này em nghĩ là cần có người đôn đốc chứ không là để đấy lâu lắm. Ừ cái wifi thì đúng là phải có ai theo dõi, để anh xem sau. Thôi mình sang phần tích hợp vận tải. Khoa nói phần tích hợp đi em. Dạ. Phần tích hợp thì có hai mảng anh. Mảng thứ nhất là WMS với cái TMS, cái hệ thống điều xe nội bộ của mình, cái này thì xong rồi anh, khi mà kho đóng gói xong một đơn thì WMS nó đẩy sang TMS cái thông tin kiện hàng, cân nặng, kích thước, TMS nó tự ghép chuyến. Chạy hai tuần nay ổn, chưa thấy lỗi gì lớn. Mảng thứ hai là với các bên giao hàng bên ngoài, mình đang làm với ba bên. Bên thứ nhất là bên Giao Nhanh thì xong rồi, đơn nào giao ngoại tỉnh thì WMS tự tạo vận đơn bên họ, in tem luôn. Bên thứ hai là bên Tốc Hành, thì hôm tuần trước họ đổi sang API phiên bản ba mà không báo trước, cái phiên bản hai mình đang dùng thì họ tắt vào cuối tháng này, nên là em phải viết lại gần như toàn bộ phần kết nối. Bên thứ ba là một công ty nhỏ ở miền Tây, họ không có API gì cả, họ chỉ nhận file Excel qua email thôi. Thế sản lượng mỗi bên bao nhiêu? Anh nhớ là Tốc Hành là bên lớn nhất đúng không. Đúng rồi anh, Tốc Hành là chiếm khoảng sáu mươi phần trăm đơn ngoại tỉnh của kho chị, Giao Nhanh khoảng ba mươi, còn cái bên miền Tây thì chỉ khoảng mười phần trăm, chủ yếu là đi các tỉnh đồng bằng. Thế thì em nghĩ là phải ưu tiên Tốc Hành trước anh. Cuối tháng này họ tắt phiên bản hai là mình mất sáu mươi phần trăm đơn không tạo được vận đơn tự động, mấy bạn kho lại phải lên trang web của họ gõ tay từng đơn. Em ước viết lại mất khoảng tám ngày làm việc, tức là phải bắt đầu ngay thì mới kịp. Anh Khoa ơi, cái phiên bản ba của Tốc Hành em có đọc qua tài liệu, nó có cái webhook báo trạng thái giao hàng, cái này hay đấy, mình không phải gọi hỏi trạng thái liên tục như bây giờ nữa. Nhưng mà nó yêu cầu mình phải có cái địa chỉ công khai có https để họ gọi về, mà server WMS của mình đang nằm trong mạng nội bộ. Ừ đúng, cái đó thì phải nhờ bên hạ tầng mở một cái cổng qua cái reverse proxy. Hay là giai đoạn này mình chưa dùng webhook, vẫn gọi hỏi trạng thái mỗi mười lăm phút như cũ, cho nhanh. Ừ, anh chốt thế này. Ưu tiên số một là chuyển kết nối Tốc Hành sang phiên bản ba, phải xong trước ngày hai mươi tám để kịp trước khi họ tắt bản cũ. Giai đoạn này chưa làm webhook, vẫn gọi hỏi trạng thái định kỳ, webhook để sau. Còn cái bên miền Tây thì không làm API, WMS chỉ cần có nút xuất file Excel đúng mẫu của họ, bạn kho gửi email thủ công, mười phần trăm thì chấp nhận được. Cái mẫu Excel của bên miền Tây thì chị có, chị gửi cho Khoa. Dạ vâng chị gửi em. Anh Việt, thế còn cái việc xuất file Excel đấy thì ai làm ạ, vì em thì em dồn hết cho Tốc Hành rồi. Cái nút xuất file đấy thì đơn giản, để Toàn làm, sau khi xong cái khóa chống trùng. Toàn ok không? Dạ ok anh, cái này em làm một ngày là xong. Rồi, sang phần đào tạo với quy trình. Dung ơi em nói đi. Dạ vâng. Em báo cáo là về đào tạo thì kho Bin Dương có tổng cộng tám mươi hai nhân viên, chia ba ca. Đến giờ em đã đào tạo được năm mươi tám bạn, tức là khoảng bảy mươi phần trăm. Hai ca ngày thì gần như đủ rồi, nhưng mà ca đêm thì mới đào tạo được có năm bạn, vì là giờ đào tạo của em là giờ hành chính, ca đêm các bạn đi làm từ mười giờ tối thì ban ngày các bạn ngủ, không ai lên học. Mà cái lỗi thao tác nhiều nhất lại là ở ca đêm, em xem log thì là quét nhầm vị trí kệ, quét mã thùng thay vì quét mã sản phẩm, hoặc là lấy hàng xong không bấm xác nhận. Đúng rồi đấy anh Việt, ca đêm là ca nhập hàng nhiều nhất, xe container về toàn đêm, mà các bạn ấy thì chưa quen máy, nhiều bạn lớn tuổi, nhìn cái màn hình nhỏ không quen. Chị nghĩ cái lệch tồn cũng có một phần là từ đây chứ không phải chỉ do mạng. Thế Dung tính đào tạo ca đêm thế nào? Dạ em nghĩ là em phải lên kho ca đêm để đào tạo tại chỗ, kiểu là cầm tay chỉ việc luôn trong ca, chứ gọi lên phòng học thì không được. Em tính là làm ba đêm, mỗi đêm khoảng mười bạn. Nhưng mà em cũng cần có chị Hằng cử một bạn tổ trưởng ca đêm làm cùng, để sau này bạn ấy kèm lại các bạn mới. Ừ được, chị cử bạn Thắng tổ trưởng ca đêm, bạn ấy nhanh nhẹn, dùng máy quen rồi. Dạ em cảm ơn chị. Còn một việc nữa em muốn xin ý kiến anh Việt là về quy trình kiểm kê. Hiện nay theo quy trình cũ thì kho làm kiểm kê toàn bộ vào cuối mỗi tháng, dừng kho cả ngày. Nhưng mà WMS thì nó hỗ trợ kiểm kê chu kỳ, tức là mỗi ngày đếm một ít, chia hàng thành nhóm A B C theo giá trị với tần suất xuất. Nhóm A là hàng giá trị cao, xuất nhiều thì đếm hằng tuần, nhóm B thì hằng tháng, nhóm C thì mỗi quý. Làm như vậy thì không phải dừng kho, mà sai lệch cũng phát hiện sớm hơn. Chị thì chị ủng hộ cái này, vì cái dừng kho cuối tháng là cực kỳ khổ, mà khách hàng họ cũng không thích. Nhưng mà cái việc phân nhóm A B C thì ai làm, chị không có số liệu giá trị hàng. Cái đó thì em chạy được từ dữ liệu ê rờ pê chị ạ, có giá vốn với số lần xuất trong sáu tháng rồi, em chạy ra danh sách phân nhóm. Được. Anh chốt là chuyển sang kiểm kê chu kỳ theo nhóm A B C, bỏ kiểm kê toàn kho hằng tháng, áp dụng từ tháng sau, sau khi mình đã làm cái lần kiểm kê toàn kho chủ nhật tuần sau để đưa số về đúng. Dung soạn cái quy trình kiểm kê chu kỳ, trình anh ký ban hành. Dạ vâng, em soạn xong trong tuần này gửi anh. Còn đào tạo ca đêm thì em làm luôn ba đêm đó trong tuần sau nhé, cùng với bạn Thắng. Toàn thì chạy cái danh sách phân nhóm A B C gửi cho Dung với chị Hằng. Dạ vâng anh, em chạy xong trước thứ tư. Rồi, phần cuối là cái Long An. Theo kế hoạch ban đầu thì là mình go live kho Long An vào ngày mùng một tháng mười hai. Giám đốc thì vẫn muốn giữ ngày đó. Mọi người thấy sao? Về kỹ thuật thì kho Long An nó dùng chung cái server WMS với Bin Dương, chỉ cần khai báo thêm kho, vị trí kệ, người dùng thôi, cái phần đấy thì nhanh. Cái lo nhất là tích hợp, vì Long An có thêm một đối tác giao hàng nữa là bên Hỏa Tốc Miền Nam mà mình chưa làm bao giờ. Chị thì chị nói thật là chị hơi lo. Bin Dương hai tuần mà còn đang lệch tồn thế này, giờ mà Long An lại go live ngày mùng một thì cả đội dự án sẽ bị chia đôi, Bin Dương không ai lo. Mà kho Long An là kho hàng lạnh, hàng thực phẩm, có hạn sử dụng, cái phần quản lý lô với hạn dùng mình chưa test kỹ. Ừ, thế này, anh vẫn nghiêng về giữ ngày mùng một vì là đã báo cáo lên rồi, nhưng mà phải có điều kiện. Anh Việt, ngày mùng một thì em không kịp đào tạo cho Long An đâu ạ, Long An có sáu mươi người, mà em đang còn nợ ca đêm Bin Dương. Với lại phần quản lý hạn dùng thì em mới code xong phần xuất theo hạn dùng trước, cái phần cảnh báo hàng sắp hết hạn thì chưa làm, mà kho lạnh thì cái này là bắt buộc anh ạ. Ừ. Vậy thì thôi, anh đổi lại. Không go live Long An ngày mùng một nữa, lùi sang ngày mười lăm tháng một năm sau. Và có điều kiện là chỉ go live khi tỷ lệ lệch tồn ở Bin Dương dưới không phẩy năm phần trăm trong hai tuần liên tiếp. Anh sẽ tự báo cáo giám đốc về việc lùi lịch này. Ừ như thế thì chị yên tâm hơn. Toàn thì làm cho xong cái phần cảnh báo hàng sắp hết hạn trước khi go live Long An. Còn cái đối tác Hỏa Tốc Miền Nam thì Khoa làm sau khi xong Tốc Hành, tháng mười hai làm. Dạ vâng anh. Rồi, còn anh thì anh sẽ làm việc với giám đốc về lùi lịch Long An với cái tiền làm thêm giờ chủ nhật cho kho, trong tuần này. Thôi hôm nay đến đây, cảm ơn mọi người.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi alo alo mọi người nghe rõ không. Ok. Thế thì hôm nay là mình họp cái tuần thứ hai sau khi go live cái kho Bin Dương nhé. Anh muốn là mình nói cái vụ lệch tồn trước vì là cái này là cái nóng nhất, hôm qua bên kinh doanh họ gọi anh ba lần rồi.",
+      "segment_html": "Rồi alo alo mọi người nghe rõ không. Ok. Thế thì hôm nay là mình họp cái tuần thứ hai sau khi go live cái kho Bin Dương nhé. Anh muốn là mình nói cái vụ lệch tồn trước vì là cái này là cái nóng nhất, hôm qua bên kinh doanh họ gọi anh ba lần rồi.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 25.467,
+      "point_id": "f7149ce0-eaa0-5d17-a7a5-b607caedf057",
+      "ref_id": [
+        "0d98530d-6ea5-5125-b7c7-73cfe53af8cb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Chị Hằng nói qua tình hình ở kho đi chị.",
+      "segment_html": "Chị Hằng nói qua tình hình ở kho đi chị.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 25.717,
+      "end_time": 30.065,
+      "point_id": "f7149ce0-eaa0-5d17-a7a5-b607caedf057",
+      "ref_id": [
+        "0d98530d-6ea5-5125-b7c7-73cfe53af8cb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "À ừ thì là bên chị thì thế này. Từ hôm thứ hai tuần trước đến giờ là bên chị phát hiện là cái số tồn trên hệ thống với cái số thực tế ngoài kệ nó bị lệch. Không phải là lệch hết đâu, mà là chị cho mấy bạn đi đếm thử mấy dãy A với dãy C thì là khoảng,",
+      "segment_html": "À ừ thì là bên chị thì thế này. Từ hôm thứ hai tuần trước đến giờ là bên chị phát hiện là cái số tồn trên hệ thống với cái số thực tế ngoài kệ nó bị lệch. Không phải là lệch hết đâu, mà là chị cho mấy bạn đi đếm thử mấy dãy A với dãy C thì là khoảng,",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 31.065,
+      "end_time": 58.457,
+      "point_id": "ed6b5506-1646-5292-ac89-a640e7757d9a",
+      "ref_id": [
+        "14e78c2e-f483-5b00-a8f0-497fad362a26"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "chị ước là khoảng ba phần trăm cái mã hàng là bị lệch. Có mã thì hệ thống ghi là có hai mươi thùng mà ngoài kệ có mười, có mã thì ngược lại. Cái nguy hiểm là bên bán hàng họ nhìn cái tồn trên hệ thống họ chốt đơn cho khách,",
+      "segment_html": "chị ước là khoảng ba phần trăm cái mã hàng là bị lệch. Có mã thì hệ thống ghi là có hai mươi thùng mà ngoài kệ có mười, có mã thì ngược lại. Cái nguy hiểm là bên bán hàng họ nhìn cái tồn trên hệ thống họ chốt đơn cho khách,",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 58.707,
+      "end_time": 81.75,
+      "point_id": "ed6b5506-1646-5292-ac89-a640e7757d9a",
+      "ref_id": [
+        "14e78c2e-f483-5b00-a8f0-497fad362a26"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "xong bên chị ra lấy thì không có hàng. Tuần vừa rồi là có mười bảy đơn bị như vậy rồi, phải gọi xin lỗi khách, có một khách lớn là bên chuỗi siêu thị họ phàn nàn ghê lắm. Rồi mấy bạn nhân viên kho thì bắt đầu là không tin cái hệ thống nữa,",
+      "segment_html": "xong bên chị ra lấy thì không có hàng. Tuần vừa rồi là có mười bảy đơn bị như vậy rồi, phải gọi xin lỗi khách, có một khách lớn là bên chuỗi siêu thị họ phàn nàn ghê lắm. Rồi mấy bạn nhân viên kho thì bắt đầu là không tin cái hệ thống nữa,",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 82.0,
+      "end_time": 106.348,
+      "point_id": "ed6b5506-1646-5292-ac89-a640e7757d9a",
+      "ref_id": [
+        "14e78c2e-f483-5b00-a8f0-497fad362a26"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "lại quay ra ghi sổ tay, cái này chị thấy là rất là nguy hiểm vì mình bỏ bao nhiêu công ra để chuyển sang hệ thống mới.",
+      "segment_html": "lại quay ra ghi sổ tay, cái này chị thấy là rất là nguy hiểm vì mình bỏ bao nhiêu công ra để chuyển sang hệ thống mới.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 106.598,
+      "end_time": 118.772,
+      "point_id": "ed6b5506-1646-5292-ac89-a640e7757d9a",
+      "ref_id": [
+        "14e78c2e-f483-5b00-a8f0-497fad362a26"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Toàn em đã tìm ra nguyên nhân chưa?",
+      "segment_html": "Toàn em đã tìm ra nguyên nhân chưa?",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 119.772,
+      "end_time": 123.25,
+      "point_id": "99dbc704-7aac-51fd-babb-1cb4cda23c83",
+      "ref_id": [
+        "b045b9f8-d9ee-50cb-b452-f3a975c17062"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Dạ rồi anh, em với anh Khoa ngồi soi log cả ngày hôm qua. Thì nguyên nhân là như này anh. Cái WMS của mình nó đồng bộ hai chiều với cái ê rờ pê, chiều từ WMS sang ê rờ pê là cái phiếu xuất nhập,",
+      "segment_html": "Dạ rồi anh, em với anh Khoa ngồi soi log cả ngày hôm qua. Thì nguyên nhân là như này anh. Cái WMS của mình nó đồng bộ hai chiều với cái ê rờ pê, chiều từ WMS sang ê rờ pê là cái phiếu xuất nhập,",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 124.25,
+      "end_time": 144.685,
+      "point_id": "ed21e25f-0ca7-57e5-9d81-547cee07bf50",
+      "ref_id": [
+        "a0490310-79af-53ab-8488-98190775a59c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "còn chiều từ ê rờ pê về WMS là cái đơn hàng với cái điều chỉnh tồn do kế toán làm. Cái kho Bin Dương thì cái mạng wifi ở khu dãy C nó rất là chập chờn, các máy quét cầm tay nó mất kết nối liên tục.",
+      "segment_html": "còn chiều từ ê rờ pê về WMS là cái đơn hàng với cái điều chỉnh tồn do kế toán làm. Cái kho Bin Dương thì cái mạng wifi ở khu dãy C nó rất là chập chờn, các máy quét cầm tay nó mất kết nối liên tục.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 144.935,
+      "end_time": 166.239,
+      "point_id": "ed21e25f-0ca7-57e5-9d81-547cee07bf50",
+      "ref_id": [
+        "a0490310-79af-53ab-8488-98190775a59c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Khi mà mất kết nối thì cái máy quét nó lưu tạm giao dịch ở trong máy, có mạng lại thì nó gửi lại. Nhưng mà có trường hợp là cái giao dịch đã lên server rồi nhưng mà cái phản hồi về máy thì bị mất, thế là máy nó tưởng là chưa gửi, nó gửi lại lần nữa.",
+      "segment_html": "Khi mà mất kết nối thì cái máy quét nó lưu tạm giao dịch ở trong máy, có mạng lại thì nó gửi lại. Nhưng mà có trường hợp là cái giao dịch đã lên server rồi nhưng mà cái phản hồi về máy thì bị mất, thế là máy nó tưởng là chưa gửi, nó gửi lại lần nữa.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 166.489,
+      "end_time": 192.576,
+      "point_id": "ed21e25f-0ca7-57e5-9d81-547cee07bf50",
+      "ref_id": [
+        "a0490310-79af-53ab-8488-98190775a59c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Thế là một lần xuất hàng bị ghi thành hai lần. Em đếm trong log thì có khoảng hai trăm bốn mươi giao dịch bị trùng như vậy trong hai tuần.",
+      "segment_html": "Thế là một lần xuất hàng bị ghi thành hai lần. Em đếm trong log thì có khoảng hai trăm bốn mươi giao dịch bị trùng như vậy trong hai tuần.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 192.826,
+      "end_time": 206.304,
+      "point_id": "ed21e25f-0ca7-57e5-9d81-547cee07bf50",
+      "ref_id": [
+        "a0490310-79af-53ab-8488-98190775a59c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Với lại anh Việt ơi còn một cái nữa là cái chiều ngược lại. Bên kế toán họ vẫn đang làm cái điều chỉnh tồn ở trên ê rờ pê theo thói quen cũ, tức là cuối ngày họ nhìn cái phiếu giấy họ điều chỉnh. Mà cái điều chỉnh đó nó lại đồng bộ về WMS,",
+      "segment_html": "Với lại anh Việt ơi còn một cái nữa là cái chiều ngược lại. Bên kế toán họ vẫn đang làm cái điều chỉnh tồn ở trên ê rờ pê theo thói quen cũ, tức là cuối ngày họ nhìn cái phiếu giấy họ điều chỉnh. Mà cái điều chỉnh đó nó lại đồng bộ về WMS,",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 207.304,
+      "end_time": 232.087,
+      "point_id": "a67e2aac-3dc2-562e-a5c9-c50bdd81d524",
+      "ref_id": [
+        "9ca322af-9a45-5632-842e-604aca768f03"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "trong khi WMS đã ghi nhận cái giao dịch đó từ máy quét rồi. Thế là lại bị cộng hai lần theo kiểu khác. Cho nên nó mới lệch cả hai chiều, có mã thừa có mã thiếu.",
+      "segment_html": "trong khi WMS đã ghi nhận cái giao dịch đó từ máy quét rồi. Thế là lại bị cộng hai lần theo kiểu khác. Cho nên nó mới lệch cả hai chiều, có mã thừa có mã thiếu.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 232.337,
+      "end_time": 248.859,
+      "point_id": "a67e2aac-3dc2-562e-a5c9-c50bdd81d524",
+      "ref_id": [
+        "9ca322af-9a45-5632-842e-604aca768f03"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Hừm. Thế giờ xử lý thế nào? Toàn đề xuất đi.",
+      "segment_html": "Hừm. Thế giờ xử lý thế nào? Toàn đề xuất đi.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 249.859,
+      "end_time": 254.641,
+      "point_id": "42bec74d-4c72-537a-9245-65c79e148f09",
+      "ref_id": [
+        "e8ff2608-2b50-5ce1-8d63-f5a01bdd6cc5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Dạ em đề xuất là ba việc anh. Một là cái máy quét thì em phải thêm cái khóa chống trùng, tức là mỗi giao dịch nó sinh ra một cái mã duy nhất ngay trên máy, server nhận được mã nào rồi thì bỏ qua, không ghi lần hai,",
+      "segment_html": "Dạ em đề xuất là ba việc anh. Một là cái máy quét thì em phải thêm cái khóa chống trùng, tức là mỗi giao dịch nó sinh ra một cái mã duy nhất ngay trên máy, server nhận được mã nào rồi thì bỏ qua, không ghi lần hai,",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 255.641,
+      "end_time": 277.38,
+      "point_id": "6f7e6d09-e6c6-5b57-a500-8dcb8b1fa946",
+      "ref_id": [
+        "23ee7378-9ad7-5cbc-b39c-b6802e839f85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "cái này gọi là cái ai đem pô ten sì ấy anh. Cái này em làm khoảng ba ngày. Hai là trong thời gian chờ thì mình tạm tắt cái chiều đồng bộ từ ê rờ pê về WMS với các loại điều chỉnh tồn, chỉ giữ đơn hàng thôi, để kế toán không làm lệch thêm.",
+      "segment_html": "cái này gọi là cái ai đem pô ten sì ấy anh. Cái này em làm khoảng ba ngày. Hai là trong thời gian chờ thì mình tạm tắt cái chiều đồng bộ từ ê rờ pê về WMS với các loại điều chỉnh tồn, chỉ giữ đơn hàng thôi, để kế toán không làm lệch thêm.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 277.63,
+      "end_time": 302.413,
+      "point_id": "6f7e6d09-e6c6-5b57-a500-8dcb8b1fa946",
+      "ref_id": [
+        "23ee7378-9ad7-5cbc-b39c-b6802e839f85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "Ba là sau khi sửa xong thì phải kiểm kê lại toàn bộ kho một lần để đưa số về đúng, chứ giờ sửa code thì số cũ nó vẫn sai.",
+      "segment_html": "Ba là sau khi sửa xong thì phải kiểm kê lại toàn bộ kho một lần để đưa số về đúng, chứ giờ sửa code thì số cũ nó vẫn sai.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 302.663,
+      "end_time": 316.141,
+      "point_id": "6f7e6d09-e6c6-5b57-a500-8dcb8b1fa946",
+      "ref_id": [
+        "23ee7378-9ad7-5cbc-b39c-b6802e839f85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Kiểm kê toàn kho thì bên chị phải dừng xuất nhập ít nhất là một ngày đấy, kho mình hơn bốn nghìn vị trí kệ. Mà tuần này là cao điểm cuối tháng.",
+      "segment_html": "Kiểm kê toàn kho thì bên chị phải dừng xuất nhập ít nhất là một ngày đấy, kho mình hơn bốn nghìn vị trí kệ. Mà tuần này là cao điểm cuối tháng.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 317.141,
+      "end_time": 331.489,
+      "point_id": "313d0161-30a3-53d5-a004-0697dd7dcb7c",
+      "ref_id": [
+        "be7e3489-0764-597b-99a4-99d4799df395"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Thế này. Anh chốt là tạm dừng cái đồng bộ điều chỉnh tồn từ ê rờ pê về WMS ngay từ chiều nay, chỉ giữ đồng bộ đơn hàng. Cái khóa chống trùng thì làm luôn. Còn kiểm kê toàn kho thì không làm tuần này, dời sang chủ nhật tuần sau,",
+      "segment_html": "Thế này. Anh chốt là tạm dừng cái đồng bộ điều chỉnh tồn từ ê rờ pê về WMS ngay từ chiều nay, chỉ giữ đồng bộ đơn hàng. Cái khóa chống trùng thì làm luôn. Còn kiểm kê toàn kho thì không làm tuần này, dời sang chủ nhật tuần sau,",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 332.489,
+      "end_time": 355.098,
+      "point_id": "5612254a-5300-52fd-b94b-969194241573",
+      "ref_id": [
+        "b55eb41b-d790-5d4b-aa07-42f026db9892"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "làm ngày chủ nhật để không ảnh hưởng xuất hàng. Chị Hằng thu xếp người giúp anh nhé.",
+      "segment_html": "làm ngày chủ nhật để không ảnh hưởng xuất hàng. Chị Hằng thu xếp người giúp anh nhé.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 355.348,
+      "end_time": 363.174,
+      "point_id": "5612254a-5300-52fd-b94b-969194241573",
+      "ref_id": [
+        "b55eb41b-d790-5d4b-aa07-42f026db9892"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Ừ chủ nhật thì được, chị sẽ xếp ca, nhưng mà phải có tiền làm thêm giờ cho anh em đấy nhé.",
+      "segment_html": "Ừ chủ nhật thì được, chị sẽ xếp ca, nhưng mà phải có tiền làm thêm giờ cho anh em đấy nhé.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 364.174,
+      "end_time": 373.739,
+      "point_id": "173e72ad-aef7-5454-99b9-47b71235538c",
+      "ref_id": [
+        "f375c823-69a5-594b-a17c-797c93cb0b01"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Được, cái đó anh trình giám đốc. À còn cái wifi dãy C thì sao, cái đó mới là gốc mà.",
+      "segment_html": "Được, cái đó anh trình giám đốc. À còn cái wifi dãy C thì sao, cái đó mới là gốc mà.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 374.739,
+      "end_time": 383.87,
+      "point_id": "fece2bdb-ff7b-5155-908d-19915a299fce",
+      "ref_id": [
+        "5aee19b9-bdd8-5f9b-9df0-02d7c756949e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Dạ cái wifi thì em hỏi bên hạ tầng rồi, họ bảo là phải lắp thêm hai cái access point ở cuối dãy C, nhưng mà họ đang báo giá, chưa biết bao giờ lắp. Cái này em nghĩ là cần có người đôn đốc chứ không là để đấy lâu lắm.",
+      "segment_html": "Dạ cái wifi thì em hỏi bên hạ tầng rồi, họ bảo là phải lắp thêm hai cái access point ở cuối dãy C, nhưng mà họ đang báo giá, chưa biết bao giờ lắp. Cái này em nghĩ là cần có người đôn đốc chứ không là để đấy lâu lắm.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 384.87,
+      "end_time": 407.478,
+      "point_id": "f3969f18-0be9-5e42-9917-c28074ae5362",
+      "ref_id": [
+        "02ec4184-c142-5100-8f92-c1b4bdc43ed3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Ừ cái wifi thì đúng là phải có ai theo dõi, để anh xem sau. Thôi mình sang phần tích hợp vận tải.",
+      "segment_html": "Ừ cái wifi thì đúng là phải có ai theo dõi, để anh xem sau. Thôi mình sang phần tích hợp vận tải.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 408.478,
+      "end_time": 418.478,
+      "point_id": "50744ab0-5628-5b91-9969-11977d48e55b",
+      "ref_id": [
+        "a87b0894-535a-533d-ad6c-7282949b28ce"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Khoa nói phần tích hợp đi em.",
+      "segment_html": "Khoa nói phần tích hợp đi em.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 419.478,
+      "end_time": 422.522,
+      "point_id": "e7241069-2dc6-5dc9-aa83-7a177068a0ad",
+      "ref_id": [
+        "f188cc00-ef58-58b7-81d3-adaa596371a2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Dạ. Phần tích hợp thì có hai mảng anh. Mảng thứ nhất là WMS với cái TMS, cái hệ thống điều xe nội bộ của mình, cái này thì xong rồi anh, khi mà kho đóng gói xong một đơn thì WMS nó đẩy sang TMS cái thông tin kiện hàng, cân nặng, kích thước,",
+      "segment_html": "Dạ. Phần tích hợp thì có hai mảng anh. Mảng thứ nhất là WMS với cái TMS, cái hệ thống điều xe nội bộ của mình, cái này thì xong rồi anh, khi mà kho đóng gói xong một đơn thì WMS nó đẩy sang TMS cái thông tin kiện hàng, cân nặng, kích thước,",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 423.522,
+      "end_time": 447.435,
+      "point_id": "daf1d766-1637-5168-910e-fceed57f5cb3",
+      "ref_id": [
+        "e5110e28-cc26-58f3-b9ca-9b6376fcf8ae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "TMS nó tự ghép chuyến. Chạy hai tuần nay ổn, chưa thấy lỗi gì lớn. Mảng thứ hai là với các bên giao hàng bên ngoài, mình đang làm với ba bên. Bên thứ nhất là bên Giao Nhanh thì xong rồi, đơn nào giao ngoại tỉnh thì WMS tự tạo vận đơn bên họ,",
+      "segment_html": "TMS nó tự ghép chuyến. Chạy hai tuần nay ổn, chưa thấy lỗi gì lớn. Mảng thứ hai là với các bên giao hàng bên ngoài, mình đang làm với ba bên. Bên thứ nhất là bên Giao Nhanh thì xong rồi, đơn nào giao ngoại tỉnh thì WMS tự tạo vận đơn bên họ,",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 447.685,
+      "end_time": 471.598,
+      "point_id": "daf1d766-1637-5168-910e-fceed57f5cb3",
+      "ref_id": [
+        "e5110e28-cc26-58f3-b9ca-9b6376fcf8ae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "in tem luôn. Bên thứ hai là bên Tốc Hành, thì hôm tuần trước họ đổi sang API phiên bản ba mà không báo trước, cái phiên bản hai mình đang dùng thì họ tắt vào cuối tháng này, nên là em phải viết lại gần như toàn bộ phần kết nối.",
+      "segment_html": "in tem luôn. Bên thứ hai là bên Tốc Hành, thì hôm tuần trước họ đổi sang API phiên bản ba mà không báo trước, cái phiên bản hai mình đang dùng thì họ tắt vào cuối tháng này, nên là em phải viết lại gần như toàn bộ phần kết nối.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 471.848,
+      "end_time": 494.457,
+      "point_id": "daf1d766-1637-5168-910e-fceed57f5cb3",
+      "ref_id": [
+        "e5110e28-cc26-58f3-b9ca-9b6376fcf8ae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Bên thứ ba là một công ty nhỏ ở miền Tây, họ không có API gì cả, họ chỉ nhận file Excel qua email thôi.",
+      "segment_html": "Bên thứ ba là một công ty nhỏ ở miền Tây, họ không có API gì cả, họ chỉ nhận file Excel qua email thôi.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 494.707,
+      "end_time": 505.576,
+      "point_id": "daf1d766-1637-5168-910e-fceed57f5cb3",
+      "ref_id": [
+        "e5110e28-cc26-58f3-b9ca-9b6376fcf8ae"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Thế sản lượng mỗi bên bao nhiêu? Anh nhớ là Tốc Hành là bên lớn nhất đúng không.",
+      "segment_html": "Thế sản lượng mỗi bên bao nhiêu? Anh nhớ là Tốc Hành là bên lớn nhất đúng không.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 506.576,
+      "end_time": 514.402,
+      "point_id": "3940c1f4-5db5-53e6-9f6e-44af74cb4eff",
+      "ref_id": [
+        "3d948a81-4be3-53a0-9ba8-a5deeb00cdf6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Đúng rồi anh, Tốc Hành là chiếm khoảng sáu mươi phần trăm đơn ngoại tỉnh của kho chị, Giao Nhanh khoảng ba mươi, còn cái bên miền Tây thì chỉ khoảng mười phần trăm, chủ yếu là đi các tỉnh đồng bằng.",
+      "segment_html": "Đúng rồi anh, Tốc Hành là chiếm khoảng sáu mươi phần trăm đơn ngoại tỉnh của kho chị, Giao Nhanh khoảng ba mươi, còn cái bên miền Tây thì chỉ khoảng mười phần trăm, chủ yếu là đi các tỉnh đồng bằng.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 515.402,
+      "end_time": 533.663,
+      "point_id": "0c88749e-ac88-5474-b446-ef634712deca",
+      "ref_id": [
+        "1ca5c9cd-33b2-5cb9-bb42-96325e1049bd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Thế thì em nghĩ là phải ưu tiên Tốc Hành trước anh. Cuối tháng này họ tắt phiên bản hai là mình mất sáu mươi phần trăm đơn không tạo được vận đơn tự động, mấy bạn kho lại phải lên trang web của họ gõ tay từng đơn.",
+      "segment_html": "Thế thì em nghĩ là phải ưu tiên Tốc Hành trước anh. Cuối tháng này họ tắt phiên bản hai là mình mất sáu mươi phần trăm đơn không tạo được vận đơn tự động, mấy bạn kho lại phải lên trang web của họ gõ tay từng đơn.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 534.663,
+      "end_time": 555.967,
+      "point_id": "71b9c19d-c025-5916-8a54-9dce3635dee7",
+      "ref_id": [
+        "57126f3c-4dc2-576d-8d68-aa6ab1753cbb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Em ước viết lại mất khoảng tám ngày làm việc, tức là phải bắt đầu ngay thì mới kịp.",
+      "segment_html": "Em ước viết lại mất khoảng tám ngày làm việc, tức là phải bắt đầu ngay thì mới kịp.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 556.217,
+      "end_time": 564.478,
+      "point_id": "71b9c19d-c025-5916-8a54-9dce3635dee7",
+      "ref_id": [
+        "57126f3c-4dc2-576d-8d68-aa6ab1753cbb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Anh Khoa ơi, cái phiên bản ba của Tốc Hành em có đọc qua tài liệu, nó có cái webhook báo trạng thái giao hàng, cái này hay đấy, mình không phải gọi hỏi trạng thái liên tục như bây giờ nữa.",
+      "segment_html": "Anh Khoa ơi, cái phiên bản ba của Tốc Hành em có đọc qua tài liệu, nó có cái webhook báo trạng thái giao hàng, cái này hay đấy, mình không phải gọi hỏi trạng thái liên tục như bây giờ nữa.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 565.478,
+      "end_time": 583.739,
+      "point_id": "d3e7b109-49cc-5b40-b6d8-5b9fe5952564",
+      "ref_id": [
+        "22ecee08-d5cf-5046-bb3d-cc973316b907"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Nhưng mà nó yêu cầu mình phải có cái địa chỉ công khai có https để họ gọi về, mà server WMS của mình đang nằm trong mạng nội bộ.",
+      "segment_html": "Nhưng mà nó yêu cầu mình phải có cái địa chỉ công khai có https để họ gọi về, mà server WMS của mình đang nằm trong mạng nội bộ.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 583.989,
+      "end_time": 597.033,
+      "point_id": "d3e7b109-49cc-5b40-b6d8-5b9fe5952564",
+      "ref_id": [
+        "22ecee08-d5cf-5046-bb3d-cc973316b907"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Ừ đúng, cái đó thì phải nhờ bên hạ tầng mở một cái cổng qua cái reverse proxy. Hay là giai đoạn này mình chưa dùng webhook, vẫn gọi hỏi trạng thái mỗi mười lăm phút như cũ, cho nhanh.",
+      "segment_html": "Ừ đúng, cái đó thì phải nhờ bên hạ tầng mở một cái cổng qua cái reverse proxy. Hay là giai đoạn này mình chưa dùng webhook, vẫn gọi hỏi trạng thái mỗi mười lăm phút như cũ, cho nhanh.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 598.033,
+      "end_time": 615.424,
+      "point_id": "4a0bb1fd-1faf-5d18-8289-ab12bad791dc",
+      "ref_id": [
+        "645eb423-2dd7-5497-9743-a078a26cafc2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Ừ, anh chốt thế này. Ưu tiên số một là chuyển kết nối Tốc Hành sang phiên bản ba, phải xong trước ngày hai mươi tám để kịp trước khi họ tắt bản cũ. Giai đoạn này chưa làm webhook, vẫn gọi hỏi trạng thái định kỳ, webhook để sau.",
+      "segment_html": "Ừ, anh chốt thế này. Ưu tiên số một là chuyển kết nối Tốc Hành sang phiên bản ba, phải xong trước ngày hai mươi tám để kịp trước khi họ tắt bản cũ. Giai đoạn này chưa làm webhook, vẫn gọi hỏi trạng thái định kỳ, webhook để sau.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 616.424,
+      "end_time": 638.163,
+      "point_id": "67d27c52-08bb-5e39-8372-12658eedc32b",
+      "ref_id": [
+        "6a31d6a9-3d6c-5de5-b86f-a41150444ba2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Còn cái bên miền Tây thì không làm API, WMS chỉ cần có nút xuất file Excel đúng mẫu của họ, bạn kho gửi email thủ công, mười phần trăm thì chấp nhận được.",
+      "segment_html": "Còn cái bên miền Tây thì không làm API, WMS chỉ cần có nút xuất file Excel đúng mẫu của họ, bạn kho gửi email thủ công, mười phần trăm thì chấp nhận được.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 638.413,
+      "end_time": 653.196,
+      "point_id": "67d27c52-08bb-5e39-8372-12658eedc32b",
+      "ref_id": [
+        "6a31d6a9-3d6c-5de5-b86f-a41150444ba2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Cái mẫu Excel của bên miền Tây thì chị có, chị gửi cho Khoa.",
+      "segment_html": "Cái mẫu Excel của bên miền Tây thì chị có, chị gửi cho Khoa.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 654.196,
+      "end_time": 660.283,
+      "point_id": "ccd05943-79df-550b-8f42-d43b636525a2",
+      "ref_id": [
+        "df8e222e-9aaf-562b-94f9-07be3cb13ccd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Dạ vâng chị gửi em. Anh Việt, thế còn cái việc xuất file Excel đấy thì ai làm ạ, vì em thì em dồn hết cho Tốc Hành rồi.",
+      "segment_html": "Dạ vâng chị gửi em. Anh Việt, thế còn cái việc xuất file Excel đấy thì ai làm ạ, vì em thì em dồn hết cho Tốc Hành rồi.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 661.283,
+      "end_time": 673.891,
+      "point_id": "96e68e83-0067-5daa-83b2-591b011db4db",
+      "ref_id": [
+        "d6c32bbe-4b86-5148-8ff7-a50c20f86094"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Cái nút xuất file đấy thì đơn giản, để Toàn làm, sau khi xong cái khóa chống trùng. Toàn ok không?",
+      "segment_html": "Cái nút xuất file đấy thì đơn giản, để Toàn làm, sau khi xong cái khóa chống trùng. Toàn ok không?",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 674.891,
+      "end_time": 684.022,
+      "point_id": "fe759ac1-66b3-5590-9c92-6a7d6bfdbfd0",
+      "ref_id": [
+        "d01c12a1-9ddf-5866-9801-d932aa111128"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Dạ ok anh, cái này em làm một ngày là xong.",
+      "segment_html": "Dạ ok anh, cái này em làm một ngày là xong.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 685.022,
+      "end_time": 689.804,
+      "point_id": "dad6d4ac-80cc-54f3-9e56-b0bd13c7693b",
+      "ref_id": [
+        "4003e5ad-27b4-593c-9638-ec390dc90c85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Rồi, sang phần đào tạo với quy trình. Dung ơi em nói đi.",
+      "segment_html": "Rồi, sang phần đào tạo với quy trình. Dung ơi em nói đi.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 690.804,
+      "end_time": 696.457,
+      "point_id": "ba0a2cf8-67d4-5b5b-8b73-e34a90780a79",
+      "ref_id": [
+        "4393b7a3-89b8-5ff2-9691-c844e8c413c8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Dạ vâng. Em báo cáo là về đào tạo thì kho Bin Dương có tổng cộng tám mươi hai nhân viên, chia ba ca. Đến giờ em đã đào tạo được năm mươi tám bạn, tức là khoảng bảy mươi phần trăm. Hai ca ngày thì gần như đủ rồi,",
+      "segment_html": "Dạ vâng. Em báo cáo là về đào tạo thì kho Bin Dương có tổng cộng tám mươi hai nhân viên, chia ba ca. Đến giờ em đã đào tạo được năm mươi tám bạn, tức là khoảng bảy mươi phần trăm. Hai ca ngày thì gần như đủ rồi,",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 697.457,
+      "end_time": 719.196,
+      "point_id": "2c1424e7-e3e0-57d5-a28d-fc09171e2a8e",
+      "ref_id": [
+        "170afa91-6ab5-5608-8b6c-1f042ab40286"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "nhưng mà ca đêm thì mới đào tạo được có năm bạn, vì là giờ đào tạo của em là giờ hành chính, ca đêm các bạn đi làm từ mười giờ tối thì ban ngày các bạn ngủ, không ai lên học. Mà cái lỗi thao tác nhiều nhất lại là ở ca đêm,",
+      "segment_html": "nhưng mà ca đêm thì mới đào tạo được có năm bạn, vì là giờ đào tạo của em là giờ hành chính, ca đêm các bạn đi làm từ mười giờ tối thì ban ngày các bạn ngủ, không ai lên học. Mà cái lỗi thao tác nhiều nhất lại là ở ca đêm,",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 719.446,
+      "end_time": 743.359,
+      "point_id": "2c1424e7-e3e0-57d5-a28d-fc09171e2a8e",
+      "ref_id": [
+        "170afa91-6ab5-5608-8b6c-1f042ab40286"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "em xem log thì là quét nhầm vị trí kệ, quét mã thùng thay vì quét mã sản phẩm, hoặc là lấy hàng xong không bấm xác nhận.",
+      "segment_html": "em xem log thì là quét nhầm vị trí kệ, quét mã thùng thay vì quét mã sản phẩm, hoặc là lấy hàng xong không bấm xác nhận.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 743.609,
+      "end_time": 755.783,
+      "point_id": "2c1424e7-e3e0-57d5-a28d-fc09171e2a8e",
+      "ref_id": [
+        "170afa91-6ab5-5608-8b6c-1f042ab40286"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Đúng rồi đấy anh Việt, ca đêm là ca nhập hàng nhiều nhất, xe container về toàn đêm, mà các bạn ấy thì chưa quen máy, nhiều bạn lớn tuổi, nhìn cái màn hình nhỏ không quen. Chị nghĩ cái lệch tồn cũng có một phần là từ đây chứ không phải chỉ do mạng.",
+      "segment_html": "Đúng rồi đấy anh Việt, ca đêm là ca nhập hàng nhiều nhất, xe container về toàn đêm, mà các bạn ấy thì chưa quen máy, nhiều bạn lớn tuổi, nhìn cái màn hình nhỏ không quen. Chị nghĩ cái lệch tồn cũng có một phần là từ đây chứ không phải chỉ do mạng.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 756.783,
+      "end_time": 780.696,
+      "point_id": "b493ccb5-ce32-5166-947f-593b4304c8ad",
+      "ref_id": [
+        "22b47877-8841-547a-9237-d81f99d808f4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Thế Dung tính đào tạo ca đêm thế nào?",
+      "segment_html": "Thế Dung tính đào tạo ca đêm thế nào?",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 781.696,
+      "end_time": 785.609,
+      "point_id": "50aab46b-06c9-58f2-938e-cccb267a55a2",
+      "ref_id": [
+        "9b919975-1b81-5141-a362-85742d5a8012"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "Dạ em nghĩ là em phải lên kho ca đêm để đào tạo tại chỗ, kiểu là cầm tay chỉ việc luôn trong ca, chứ gọi lên phòng học thì không được. Em tính là làm ba đêm, mỗi đêm khoảng mười bạn.",
+      "segment_html": "Dạ em nghĩ là em phải lên kho ca đêm để đào tạo tại chỗ, kiểu là cầm tay chỉ việc luôn trong ca, chứ gọi lên phòng học thì không được. Em tính là làm ba đêm, mỗi đêm khoảng mười bạn.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 786.609,
+      "end_time": 805.304,
+      "point_id": "1f1a6a6d-52b1-591a-ae55-4db4a8239bef",
+      "ref_id": [
+        "87fd2c80-e830-5392-8d78-cf4e75ff7c25"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "Nhưng mà em cũng cần có chị Hằng cử một bạn tổ trưởng ca đêm làm cùng, để sau này bạn ấy kèm lại các bạn mới.",
+      "segment_html": "Nhưng mà em cũng cần có chị Hằng cử một bạn tổ trưởng ca đêm làm cùng, để sau này bạn ấy kèm lại các bạn mới.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 805.554,
+      "end_time": 817.293,
+      "point_id": "1f1a6a6d-52b1-591a-ae55-4db4a8239bef",
+      "ref_id": [
+        "87fd2c80-e830-5392-8d78-cf4e75ff7c25"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Ừ được, chị cử bạn Thắng tổ trưởng ca đêm, bạn ấy nhanh nhẹn, dùng máy quen rồi.",
+      "segment_html": "Ừ được, chị cử bạn Thắng tổ trưởng ca đêm, bạn ấy nhanh nhẹn, dùng máy quen rồi.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 818.293,
+      "end_time": 826.12,
+      "point_id": "f4b33321-ddf3-5495-99dd-4a961dfeee26",
+      "ref_id": [
+        "4b6e6092-569d-548e-9d69-91f983e9f4e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Dạ em cảm ơn chị. Còn một việc nữa em muốn xin ý kiến anh Việt là về quy trình kiểm kê. Hiện nay theo quy trình cũ thì kho làm kiểm kê toàn bộ vào cuối mỗi tháng, dừng kho cả ngày. Nhưng mà WMS thì nó hỗ trợ kiểm kê chu kỳ,",
+      "segment_html": "Dạ em cảm ơn chị. Còn một việc nữa em muốn xin ý kiến anh Việt là về quy trình kiểm kê. Hiện nay theo quy trình cũ thì kho làm kiểm kê toàn bộ vào cuối mỗi tháng, dừng kho cả ngày. Nhưng mà WMS thì nó hỗ trợ kiểm kê chu kỳ,",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 827.12,
+      "end_time": 850.598,
+      "point_id": "5d8476a1-3091-5d4f-a162-8b0118ad5404",
+      "ref_id": [
+        "04a34242-bd9d-5720-88aa-20b6afa1a212"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "tức là mỗi ngày đếm một ít, chia hàng thành nhóm A B C theo giá trị với tần suất xuất. Nhóm A là hàng giá trị cao, xuất nhiều thì đếm hằng tuần, nhóm B thì hằng tháng, nhóm C thì mỗi quý. Làm như vậy thì không phải dừng kho, mà sai lệch cũng phát hiện sớm hơn.",
+      "segment_html": "tức là mỗi ngày đếm một ít, chia hàng thành nhóm A B C theo giá trị với tần suất xuất. Nhóm A là hàng giá trị cao, xuất nhiều thì đếm hằng tuần, nhóm B thì hằng tháng, nhóm C thì mỗi quý. Làm như vậy thì không phải dừng kho, mà sai lệch cũng phát hiện sớm hơn.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 850.848,
+      "end_time": 876.935,
+      "point_id": "5d8476a1-3091-5d4f-a162-8b0118ad5404",
+      "ref_id": [
+        "04a34242-bd9d-5720-88aa-20b6afa1a212"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Chị thì chị ủng hộ cái này, vì cái dừng kho cuối tháng là cực kỳ khổ, mà khách hàng họ cũng không thích. Nhưng mà cái việc phân nhóm A B C thì ai làm, chị không có số liệu giá trị hàng.",
+      "segment_html": "Chị thì chị ủng hộ cái này, vì cái dừng kho cuối tháng là cực kỳ khổ, mà khách hàng họ cũng không thích. Nhưng mà cái việc phân nhóm A B C thì ai làm, chị không có số liệu giá trị hàng.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 877.935,
+      "end_time": 897.065,
+      "point_id": "afc7da1b-c83f-5e6b-8bc6-a626ead5ff96",
+      "ref_id": [
+        "84395229-1123-5d97-bfaf-add5fbcf5450"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Cái đó thì em chạy được từ dữ liệu ê rờ pê chị ạ, có giá vốn với số lần xuất trong sáu tháng rồi, em chạy ra danh sách phân nhóm.",
+      "segment_html": "Cái đó thì em chạy được từ dữ liệu ê rờ pê chị ạ, có giá vốn với số lần xuất trong sáu tháng rồi, em chạy ra danh sách phân nhóm.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 898.065,
+      "end_time": 911.978,
+      "point_id": "380ad245-1c2f-52e6-8128-fa0e0a409197",
+      "ref_id": [
+        "cb7d7282-c20a-5437-a1a2-7b8955a851d9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Được. Anh chốt là chuyển sang kiểm kê chu kỳ theo nhóm A B C, bỏ kiểm kê toàn kho hằng tháng, áp dụng từ tháng sau, sau khi mình đã làm cái lần kiểm kê toàn kho chủ nhật tuần sau để đưa số về đúng. Dung soạn cái quy trình kiểm kê chu kỳ, trình anh ký ban hành.",
+      "segment_html": "Được. Anh chốt là chuyển sang kiểm kê chu kỳ theo nhóm A B C, bỏ kiểm kê toàn kho hằng tháng, áp dụng từ tháng sau, sau khi mình đã làm cái lần kiểm kê toàn kho chủ nhật tuần sau để đưa số về đúng. Dung soạn cái quy trình kiểm kê chu kỳ, trình anh ký ban hành.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 912.978,
+      "end_time": 939.5,
+      "point_id": "acae5e22-7e17-5572-b645-4f0ad656f8d4",
+      "ref_id": [
+        "285ce20f-33ad-5838-a184-ff7b46d04e72"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "Dạ vâng, em soạn xong trong tuần này gửi anh.",
+      "segment_html": "Dạ vâng, em soạn xong trong tuần này gửi anh.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 940.5,
+      "end_time": 944.848,
+      "point_id": "171cd908-c827-554c-92f5-3f63e8b97a7c",
+      "ref_id": [
+        "c0eec33c-7e00-5e39-bb37-5cb320b36545"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "Còn đào tạo ca đêm thì em làm luôn ba đêm đó trong tuần sau nhé, cùng với bạn Thắng. Toàn thì chạy cái danh sách phân nhóm A B C gửi cho Dung với chị Hằng.",
+      "segment_html": "Còn đào tạo ca đêm thì em làm luôn ba đêm đó trong tuần sau nhé, cùng với bạn Thắng. Toàn thì chạy cái danh sách phân nhóm A B C gửi cho Dung với chị Hằng.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 945.848,
+      "end_time": 961.935,
+      "point_id": "ba92e32f-7f2e-52fc-8faf-ba5e40417bcb",
+      "ref_id": [
+        "1899bb32-0da9-58ee-99a1-83a7d9e3cd1b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "Dạ vâng anh, em chạy xong trước thứ tư.",
+      "segment_html": "Dạ vâng anh, em chạy xong trước thứ tư.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 962.935,
+      "end_time": 966.848,
+      "point_id": "89b6a887-0823-5e1e-b53d-457dcd18f2db",
+      "ref_id": [
+        "fab6631d-10c2-5cc1-bdad-e2e2d1916d81"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "Rồi, phần cuối là cái Long An. Theo kế hoạch ban đầu thì là mình go live kho Long An vào ngày mùng một tháng mười hai. Giám đốc thì vẫn muốn giữ ngày đó. Mọi người thấy sao?",
+      "segment_html": "Rồi, phần cuối là cái Long An. Theo kế hoạch ban đầu thì là mình go live kho Long An vào ngày mùng một tháng mười hai. Giám đốc thì vẫn muốn giữ ngày đó. Mọi người thấy sao?",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 967.848,
+      "end_time": 984.804,
+      "point_id": "bb3d387e-dbde-52b7-a283-3e7ef292ec5d",
+      "ref_id": [
+        "e24bb3aa-6633-5b1e-85a7-9c6d17f1f24b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Về kỹ thuật thì kho Long An nó dùng chung cái server WMS với Bin Dương, chỉ cần khai báo thêm kho, vị trí kệ, người dùng thôi, cái phần đấy thì nhanh. Cái lo nhất là tích hợp,",
+      "segment_html": "Về kỹ thuật thì kho Long An nó dùng chung cái server WMS với Bin Dương, chỉ cần khai báo thêm kho, vị trí kệ, người dùng thôi, cái phần đấy thì nhanh. Cái lo nhất là tích hợp,",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 985.804,
+      "end_time": 1002.761,
+      "point_id": "3a3e24c2-3254-58e0-9757-ea230d02a94b",
+      "ref_id": [
+        "ac7a331d-081d-59df-a9e1-2e5d2149deb2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "vì Long An có thêm một đối tác giao hàng nữa là bên Hỏa Tốc Miền Nam mà mình chưa làm bao giờ.",
+      "segment_html": "vì Long An có thêm một đối tác giao hàng nữa là bên Hỏa Tốc Miền Nam mà mình chưa làm bao giờ.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 1003.011,
+      "end_time": 1013.011,
+      "point_id": "3a3e24c2-3254-58e0-9757-ea230d02a94b",
+      "ref_id": [
+        "ac7a331d-081d-59df-a9e1-2e5d2149deb2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Chị thì chị nói thật là chị hơi lo. Bin Dương hai tuần mà còn đang lệch tồn thế này, giờ mà Long An lại go live ngày mùng một thì cả đội dự án sẽ bị chia đôi, Bin Dương không ai lo. Mà kho Long An là kho hàng lạnh, hàng thực phẩm, có hạn sử dụng,",
+      "segment_html": "Chị thì chị nói thật là chị hơi lo. Bin Dương hai tuần mà còn đang lệch tồn thế này, giờ mà Long An lại go live ngày mùng một thì cả đội dự án sẽ bị chia đôi, Bin Dương không ai lo. Mà kho Long An là kho hàng lạnh, hàng thực phẩm, có hạn sử dụng,",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 1014.011,
+      "end_time": 1039.663,
+      "point_id": "773c0f07-8160-588c-9080-0e85c58a7547",
+      "ref_id": [
+        "a36bb04a-d990-5431-8c6a-29a505631683"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "cái phần quản lý lô với hạn dùng mình chưa test kỹ.",
+      "segment_html": "cái phần quản lý lô với hạn dùng mình chưa test kỹ.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 1039.913,
+      "end_time": 1045.13,
+      "point_id": "773c0f07-8160-588c-9080-0e85c58a7547",
+      "ref_id": [
+        "a36bb04a-d990-5431-8c6a-29a505631683"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Ừ, thế này, anh vẫn nghiêng về giữ ngày mùng một vì là đã báo cáo lên rồi, nhưng mà phải có điều kiện.",
+      "segment_html": "Ừ, thế này, anh vẫn nghiêng về giữ ngày mùng một vì là đã báo cáo lên rồi, nhưng mà phải có điều kiện.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 1046.13,
+      "end_time": 1056.565,
+      "point_id": "f545b0e1-77c4-56c8-8df5-1937498ea891",
+      "ref_id": [
+        "d5c29d33-9374-57b1-83eb-683621cd54f6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "Anh Việt, ngày mùng một thì em không kịp đào tạo cho Long An đâu ạ, Long An có sáu mươi người, mà em đang còn nợ ca đêm Bin Dương.",
+      "segment_html": "Anh Việt, ngày mùng một thì em không kịp đào tạo cho Long An đâu ạ, Long An có sáu mươi người, mà em đang còn nợ ca đêm Bin Dương.",
+      "speaker_name": "SPEAKER_04",
+      "speaker_org_unit": null,
+      "start_time": 1057.565,
+      "end_time": 1071.043,
+      "point_id": "4cd3c0b5-700a-5d6d-b2b9-6ee1aa9ebf09",
+      "ref_id": [
+        "2a7297fb-4e53-56fa-9bc5-bc786827c8e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Với lại phần quản lý hạn dùng thì em mới code xong phần xuất theo hạn dùng trước, cái phần cảnh báo hàng sắp hết hạn thì chưa làm, mà kho lạnh thì cái này là bắt buộc anh ạ.",
+      "segment_html": "Với lại phần quản lý hạn dùng thì em mới code xong phần xuất theo hạn dùng trước, cái phần cảnh báo hàng sắp hết hạn thì chưa làm, mà kho lạnh thì cái này là bắt buộc anh ạ.",
+      "speaker_name": "SPEAKER_02",
+      "speaker_org_unit": null,
+      "start_time": 1072.043,
+      "end_time": 1089.435,
+      "point_id": "f9c597f4-584a-5d7e-9cfb-62182b1254bf",
+      "ref_id": [
+        "9f4d5a6b-0bc6-5b9f-bdf0-7f8ccb3eae84"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "Ừ. Vậy thì thôi, anh đổi lại. Không go live Long An ngày mùng một nữa, lùi sang ngày mười lăm tháng một năm sau. Và có điều kiện là chỉ go live khi tỷ lệ lệch tồn ở Bin Dương dưới không phẩy năm phần trăm trong hai tuần liên tiếp.",
+      "segment_html": "Ừ. Vậy thì thôi, anh đổi lại. Không go live Long An ngày mùng một nữa, lùi sang ngày mười lăm tháng một năm sau. Và có điều kiện là chỉ go live khi tỷ lệ lệch tồn ở Bin Dương dưới không phẩy năm phần trăm trong hai tuần liên tiếp.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 1090.435,
+      "end_time": 1113.043,
+      "point_id": "ee4c028d-2e81-5da8-9753-00728ca0ce7b",
+      "ref_id": [
+        "6e6555e2-cfc4-5a77-8769-6460a87d81ec"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "Anh sẽ tự báo cáo giám đốc về việc lùi lịch này.",
+      "segment_html": "Anh sẽ tự báo cáo giám đốc về việc lùi lịch này.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 1113.293,
+      "end_time": 1118.511,
+      "point_id": "ee4c028d-2e81-5da8-9753-00728ca0ce7b",
+      "ref_id": [
+        "6e6555e2-cfc4-5a77-8769-6460a87d81ec"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Ừ như thế thì chị yên tâm hơn.",
+      "segment_html": "Ừ như thế thì chị yên tâm hơn.",
+      "speaker_name": "SPEAKER_01",
+      "speaker_org_unit": null,
+      "start_time": 1119.511,
+      "end_time": 1122.989,
+      "point_id": "0828b4ac-04ef-5c91-8afb-bb7fc1577e23",
+      "ref_id": [
+        "b18f8dda-33af-589e-9306-0f2ef480eee4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 70,
+      "segment": "Toàn thì làm cho xong cái phần cảnh báo hàng sắp hết hạn trước khi go live Long An. Còn cái đối tác Hỏa Tốc Miền Nam thì Khoa làm sau khi xong Tốc Hành, tháng mười hai làm.",
+      "segment_html": "Toàn thì làm cho xong cái phần cảnh báo hàng sắp hết hạn trước khi go live Long An. Còn cái đối tác Hỏa Tốc Miền Nam thì Khoa làm sau khi xong Tốc Hành, tháng mười hai làm.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 1123.989,
+      "end_time": 1140.946,
+      "point_id": "e101b462-cabf-51c1-ad5d-a610430c1f2f",
+      "ref_id": [
+        "6c2dfdf2-2320-54b2-8408-1462a249f012"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 71,
+      "segment": "Dạ vâng anh.",
+      "segment_html": "Dạ vâng anh.",
+      "speaker_name": "SPEAKER_03",
+      "speaker_org_unit": null,
+      "start_time": 1141.946,
+      "end_time": 1143.25,
+      "point_id": "7ab665c8-0144-5dd1-bd0d-09692d7c93c0",
+      "ref_id": [
+        "8c4c6855-957f-5975-a977-ae91cbff3053"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 72,
+      "segment": "Rồi, còn anh thì anh sẽ làm việc với giám đốc về lùi lịch Long An với cái tiền làm thêm giờ chủ nhật cho kho, trong tuần này. Thôi hôm nay đến đây, cảm ơn mọi người.",
+      "segment_html": "Rồi, còn anh thì anh sẽ làm việc với giám đốc về lùi lịch Long An với cái tiền làm thêm giờ chủ nhật cho kho, trong tuần này. Thôi hôm nay đến đây, cảm ơn mọi người.",
+      "speaker_name": "SPEAKER_00",
+      "speaker_org_unit": null,
+      "start_time": 1144.25,
+      "end_time": 1160.772,
+      "point_id": "8385c82f-e043-5f81-9c14-16f1ff3d7dee",
+      "ref_id": [
+        "6c94abc2-a17f-5344-ac0e-fb0164d5f3b3"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi alo alo mọi người nghe rõ không. Ok. Thế thì hôm nay là mình họp cái tuần thứ hai sau khi go live cái kho Bin Dương nhé. Anh muốn là mình nói cái vụ lệch tồn trước vì là cái này là cái nóng nhất, hôm qua bên kinh doanh họ gọi anh ba lần rồi. Chị Hằng nói qua tình hình ở kho đi chị. À ừ thì là bên chị thì thế này. Từ hôm thứ hai tuần trước đến giờ là bên chị phát hiện là cái số tồn trên hệ thống với cái số thực tế ngoài kệ nó bị lệch. Không phải là lệch hết đâu, mà là chị cho mấy bạn đi đếm thử mấy dãy A với dãy C thì là khoảng, chị ước là khoảng ba phần trăm cái mã hàng là bị lệch. Có mã thì hệ thống ghi là có hai mươi thùng mà ngoài kệ có mười, có mã thì ngược lại. Cái nguy hiểm là bên bán hàng họ nhìn cái tồn trên hệ thống họ chốt đơn cho khách, xong bên chị ra lấy thì không có hàng. Tuần vừa rồi là có mười bảy đơn bị như vậy rồi, phải gọi xin lỗi khách, có một khách lớn là bên chuỗi siêu thị họ phàn nàn ghê lắm. Rồi mấy bạn nhân viên kho thì bắt đầu là không tin cái hệ thống nữa, lại quay ra ghi sổ tay, cái này chị thấy là rất là nguy hiểm vì mình bỏ bao nhiêu công ra để chuyển sang hệ thống mới. Toàn em đã tìm ra nguyên nhân chưa? Dạ rồi anh, em với anh Khoa ngồi soi log cả ngày hôm qua. Thì nguyên nhân là như này anh. Cái WMS của mình nó đồng bộ hai chiều với cái ê rờ pê, chiều từ WMS sang ê rờ pê là cái phiếu xuất nhập, còn chiều từ ê rờ pê về WMS là cái đơn hàng với cái điều chỉnh tồn do kế toán làm. Cái kho Bin Dương thì cái mạng wifi ở khu dãy C nó rất là chập chờn, các máy quét cầm tay nó mất kết nối liên tục. Khi mà mất kết nối thì cái máy quét nó lưu tạm giao dịch ở trong máy, có mạng lại thì nó gửi lại. Nhưng mà có trường hợp là cái giao dịch đã lên server rồi nhưng mà cái phản hồi về máy thì bị mất, thế là máy nó tưởng là chưa gửi, nó gửi lại lần nữa. Thế là một lần xuất hàng bị ghi thành hai lần. Em đếm trong log thì có khoảng hai trăm bốn mươi giao dịch bị trùng như vậy trong hai tuần. Với lại anh Việt ơi còn một cái nữa là cái chiều ngược lại. Bên kế toán họ vẫn đang làm cái điều chỉnh tồn ở trên ê rờ pê theo thói quen cũ, tức là cuối ngày họ nhìn cái phiếu giấy họ điều chỉnh. Mà cái điều chỉnh đó nó lại đồng bộ về WMS, trong khi WMS đã ghi nhận cái giao dịch đó từ máy quét rồi. Thế là lại bị cộng hai lần theo kiểu khác. Cho nên nó mới lệch cả hai chiều, có mã thừa có mã thiếu. Hừm. Thế giờ xử lý thế nào? Toàn đề xuất đi. Dạ em đề xuất là ba việc anh. Một là cái máy quét thì em phải thêm cái khóa chống trùng, tức là mỗi giao dịch nó sinh ra một cái mã duy nhất ngay trên máy, server nhận được mã nào rồi thì bỏ qua, không ghi lần hai, cái này gọi là cái ai đem pô ten sì ấy anh. Cái này em làm khoảng ba ngày. Hai là trong thời gian chờ thì mình tạm tắt cái chiều đồng bộ từ ê rờ pê về WMS với các loại điều chỉnh tồn, chỉ giữ đơn hàng thôi, để kế toán không làm lệch thêm. Ba là sau khi sửa xong thì phải kiểm kê lại toàn bộ kho một lần để đưa số về đúng, chứ giờ sửa code thì số cũ nó vẫn sai. Kiểm kê toàn kho thì bên chị phải dừng xuất nhập ít nhất là một ngày đấy, kho mình hơn bốn nghìn vị trí kệ. Mà tuần này là cao điểm cuối tháng. Thế này. Anh chốt là tạm dừng cái đồng bộ điều chỉnh tồn từ ê rờ pê về WMS ngay từ chiều nay, chỉ giữ đồng bộ đơn hàng. Cái khóa chống trùng thì làm luôn. Còn kiểm kê toàn kho thì không làm tuần này, dời sang chủ nhật tuần sau, làm ngày chủ nhật để không ảnh hưởng xuất hàng. Chị Hằng thu xếp người giúp anh nhé. Ừ chủ nhật thì được, chị sẽ xếp ca, nhưng mà phải có tiền làm thêm giờ cho anh em đấy nhé. Được, cái đó anh trình giám đốc. À còn cái wifi dãy C thì sao, cái đó mới là gốc mà. Dạ cái wifi thì em hỏi bên hạ tầng rồi, họ bảo là phải lắp thêm hai cái access point ở cuối dãy C, nhưng mà họ đang báo giá, chưa biết bao giờ lắp. Cái này em nghĩ là cần có người đôn đốc chứ không là để đấy lâu lắm. Ừ cái wifi thì đúng là phải có ai theo dõi, để anh xem sau. Thôi mình sang phần tích hợp vận tải. Khoa nói phần tích hợp đi em. Dạ. Phần tích hợp thì có hai mảng anh. Mảng thứ nhất là WMS với cái TMS, cái hệ thống điều xe nội bộ của mình, cái này thì xong rồi anh, khi mà kho đóng gói xong một đơn thì WMS nó đẩy sang TMS cái thông tin kiện hàng, cân nặng, kích thước, TMS nó tự ghép chuyến. Chạy hai tuần nay ổn, chưa thấy lỗi gì lớn. Mảng thứ hai là với các bên giao hàng bên ngoài, mình đang làm với ba bên. Bên thứ nhất là bên Giao Nhanh thì xong rồi, đơn nào giao ngoại tỉnh thì WMS tự tạo vận đơn bên họ, in tem luôn. Bên thứ hai là bên Tốc Hành, thì hôm tuần trước họ đổi sang API phiên bản ba mà không báo trước, cái phiên bản hai mình đang dùng thì họ tắt vào cuối tháng này, nên là em phải viết lại gần như toàn bộ phần kết nối. Bên thứ ba là một công ty nhỏ ở miền Tây, họ không có API gì cả, họ chỉ nhận file Excel qua email thôi. Thế sản lượng mỗi bên bao nhiêu? Anh nhớ là Tốc Hành là bên lớn nhất đúng không. Đúng rồi anh, Tốc Hành là chiếm khoảng sáu mươi phần trăm đơn ngoại tỉnh của kho chị, Giao Nhanh khoảng ba mươi, còn cái bên miền Tây thì chỉ khoảng mười phần trăm, chủ yếu là đi các tỉnh đồng bằng. Thế thì em nghĩ là phải ưu tiên Tốc Hành trước anh. Cuối tháng này họ tắt phiên bản hai là mình mất sáu mươi phần trăm đơn không tạo được vận đơn tự động, mấy bạn kho lại phải lên trang web của họ gõ tay từng đơn. Em ước viết lại mất khoảng tám ngày làm việc, tức là phải bắt đầu ngay thì mới kịp. Anh Khoa ơi, cái phiên bản ba của Tốc Hành em có đọc qua tài liệu, nó có cái webhook báo trạng thái giao hàng, cái này hay đấy, mình không phải gọi hỏi trạng thái liên tục như bây giờ nữa. Nhưng mà nó yêu cầu mình phải có cái địa chỉ công khai có https để họ gọi về, mà server WMS của mình đang nằm trong mạng nội bộ. Ừ đúng, cái đó thì phải nhờ bên hạ tầng mở một cái cổng qua cái reverse proxy. Hay là giai đoạn này mình chưa dùng webhook, vẫn gọi hỏi trạng thái mỗi mười lăm phút như cũ, cho nhanh. Ừ, anh chốt thế này. Ưu tiên số một là chuyển kết nối Tốc Hành sang phiên bản ba, phải xong trước ngày hai mươi tám để kịp trước khi họ tắt bản cũ. Giai đoạn này chưa làm webhook, vẫn gọi hỏi trạng thái định kỳ, webhook để sau. Còn cái bên miền Tây thì không làm API, WMS chỉ cần có nút xuất file Excel đúng mẫu của họ, bạn kho gửi email thủ công, mười phần trăm thì chấp nhận được. Cái mẫu Excel của bên miền Tây thì chị có, chị gửi cho Khoa. Dạ vâng chị gửi em. Anh Việt, thế còn cái việc xuất file Excel đấy thì ai làm ạ, vì em thì em dồn hết cho Tốc Hành rồi. Cái nút xuất file đấy thì đơn giản, để Toàn làm, sau khi xong cái khóa chống trùng. Toàn ok không? Dạ ok anh, cái này em làm một ngày là xong. Rồi, sang phần đào tạo với quy trình. Dung ơi em nói đi. Dạ vâng. Em báo cáo là về đào tạo thì kho Bin Dương có tổng cộng tám mươi hai nhân viên, chia ba ca. Đến giờ em đã đào tạo được năm mươi tám bạn, tức là khoảng bảy mươi phần trăm. Hai ca ngày thì gần như đủ rồi, nhưng mà ca đêm thì mới đào tạo được có năm bạn, vì là giờ đào tạo của em là giờ hành chính, ca đêm các bạn đi làm từ mười giờ tối thì ban ngày các bạn ngủ, không ai lên học. Mà cái lỗi thao tác nhiều nhất lại là ở ca đêm, em xem log thì là quét nhầm vị trí kệ, quét mã thùng thay vì quét mã sản phẩm, hoặc là lấy hàng xong không bấm xác nhận. Đúng rồi đấy anh Việt, ca đêm là ca nhập hàng nhiều nhất, xe container về toàn đêm, mà các bạn ấy thì chưa quen máy, nhiều bạn lớn tuổi, nhìn cái màn hình nhỏ không quen. Chị nghĩ cái lệch tồn cũng có một phần là từ đây chứ không phải chỉ do mạng. Thế Dung tính đào tạo ca đêm thế nào? Dạ em nghĩ là em phải lên kho ca đêm để đào tạo tại chỗ, kiểu là cầm tay chỉ việc luôn trong ca, chứ gọi lên phòng học thì không được. Em tính là làm ba đêm, mỗi đêm khoảng mười bạn. Nhưng mà em cũng cần có chị Hằng cử một bạn tổ trưởng ca đêm làm cùng, để sau này bạn ấy kèm lại các bạn mới. Ừ được, chị cử bạn Thắng tổ trưởng ca đêm, bạn ấy nhanh nhẹn, dùng máy quen rồi. Dạ em cảm ơn chị. Còn một việc nữa em muốn xin ý kiến anh Việt là về quy trình kiểm kê. Hiện nay theo quy trình cũ thì kho làm kiểm kê toàn bộ vào cuối mỗi tháng, dừng kho cả ngày. Nhưng mà WMS thì nó hỗ trợ kiểm kê chu kỳ, tức là mỗi ngày đếm một ít, chia hàng thành nhóm A B C theo giá trị với tần suất xuất. Nhóm A là hàng giá trị cao, xuất nhiều thì đếm hằng tuần, nhóm B thì hằng tháng, nhóm C thì mỗi quý. Làm như vậy thì không phải dừng kho, mà sai lệch cũng phát hiện sớm hơn. Chị thì chị ủng hộ cái này, vì cái dừng kho cuối tháng là cực kỳ khổ, mà khách hàng họ cũng không thích. Nhưng mà cái việc phân nhóm A B C thì ai làm, chị không có số liệu giá trị hàng. Cái đó thì em chạy được từ dữ liệu ê rờ pê chị ạ, có giá vốn với số lần xuất trong sáu tháng rồi, em chạy ra danh sách phân nhóm. Được. Anh chốt là chuyển sang kiểm kê chu kỳ theo nhóm A B C, bỏ kiểm kê toàn kho hằng tháng, áp dụng từ tháng sau, sau khi mình đã làm cái lần kiểm kê toàn kho chủ nhật tuần sau để đưa số về đúng. Dung soạn cái quy trình kiểm kê chu kỳ, trình anh ký ban hành. Dạ vâng, em soạn xong trong tuần này gửi anh. Còn đào tạo ca đêm thì em làm luôn ba đêm đó trong tuần sau nhé, cùng với bạn Thắng. Toàn thì chạy cái danh sách phân nhóm A B C gửi cho Dung với chị Hằng. Dạ vâng anh, em chạy xong trước thứ tư. Rồi, phần cuối là cái Long An. Theo kế hoạch ban đầu thì là mình go live kho Long An vào ngày mùng một tháng mười hai. Giám đốc thì vẫn muốn giữ ngày đó. Mọi người thấy sao? Về kỹ thuật thì kho Long An nó dùng chung cái server WMS với Bin Dương, chỉ cần khai báo thêm kho, vị trí kệ, người dùng thôi, cái phần đấy thì nhanh. Cái lo nhất là tích hợp, vì Long An có thêm một đối tác giao hàng nữa là bên Hỏa Tốc Miền Nam mà mình chưa làm bao giờ. Chị thì chị nói thật là chị hơi lo. Bin Dương hai tuần mà còn đang lệch tồn thế này, giờ mà Long An lại go live ngày mùng một thì cả đội dự án sẽ bị chia đôi, Bin Dương không ai lo. Mà kho Long An là kho hàng lạnh, hàng thực phẩm, có hạn sử dụng, cái phần quản lý lô với hạn dùng mình chưa test kỹ. Ừ, thế này, anh vẫn nghiêng về giữ ngày mùng một vì là đã báo cáo lên rồi, nhưng mà phải có điều kiện. Anh Việt, ngày mùng một thì em không kịp đào tạo cho Long An đâu ạ, Long An có sáu mươi người, mà em đang còn nợ ca đêm Bin Dương. Với lại phần quản lý hạn dùng thì em mới code xong phần xuất theo hạn dùng trước, cái phần cảnh báo hàng sắp hết hạn thì chưa làm, mà kho lạnh thì cái này là bắt buộc anh ạ. Ừ. Vậy thì thôi, anh đổi lại. Không go live Long An ngày mùng một nữa, lùi sang ngày mười lăm tháng một năm sau. Và có điều kiện là chỉ go live khi tỷ lệ lệch tồn ở Bin Dương dưới không phẩy năm phần trăm trong hai tuần liên tiếp. Anh sẽ tự báo cáo giám đốc về việc lùi lịch này. Ừ như thế thì chị yên tâm hơn. Toàn thì làm cho xong cái phần cảnh báo hàng sắp hết hạn trước khi go live Long An. Còn cái đối tác Hỏa Tốc Miền Nam thì Khoa làm sau khi xong Tốc Hành, tháng mười hai làm. Dạ vâng anh. Rồi, còn anh thì anh sẽ làm việc với giám đốc về lùi lịch Long An với cái tiền làm thêm giờ chủ nhật cho kho, trong tuần này. Thôi hôm nay đến đây, cảm ơn mọi người.",
+  "metadata": {
+    "meeting_id": "synth_003",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

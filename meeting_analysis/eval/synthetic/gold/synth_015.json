@@ -1,0 +1,881 @@
+{
+  "meeting_id": "synth_015",
+  "n_turns": 170,
+  "total_chars": 47655,
+  "boundaries": [
+    18,
+    33,
+    52,
+    70,
+    86,
+    101,
+    118,
+    136,
+    154
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Tình hình thu ngân sách và giải ngân vốn đầu tư công 11 tháng",
+      "summary": "Thu ngân sách huyện đạt 86% dự toán, thu tiền sử dụng đất chỉ 41%; giải ngân đầu tư công 63%; thống nhất tổ chức thêm 2 phiên đấu giá đất trong tháng 12 và đôn đốc 5 chủ đầu tư giải ngân thấp.",
+      "turn_range": [
+        0,
+        18
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000018"
+      ],
+      "chars": 5892,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Giải phóng mặt bằng cụm công nghiệp Yên Trị",
+      "summary": "Đã thu hồi 38/52 ha, còn 21 hộ chưa nhận tiền; 6 hộ có mồ mả chưa di dời; thống nhất thành lập tổ vận động gồm Mặt trận và trưởng xóm, hỗ trợ di dời mộ theo mức mới, hoàn thành bàn giao trước 31/12.",
+      "turn_range": [
+        18,
+        33
+      ],
+      "turn_ids": [
+        "TURN_000019",
+        "TURN_000033"
+      ],
+      "chars": 4958,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Sản xuất vụ đông và phòng chống đói rét cho gia súc",
+      "summary": "Vụ đông gieo trồng 1.240 ha, đạt 92% kế hoạch; dự báo rét đậm từ giữa tháng 12; thống nhất hướng dẫn hộ chăn nuôi che chắn chuồng trại, dự trữ 2.000 tấn rơm cỏ, cấm thả rông trâu bò khi nhiệt độ dưới 12 độ.",
+      "turn_range": [
+        33,
+        52
+      ],
+      "turn_ids": [
+        "TURN_000034",
+        "TURN_000052"
+      ],
+      "chars": 4978,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Tình hình an ninh trật tự và phòng chống ma túy trên địa bàn huyện",
+      "summary": "Tháng 11 phát hiện 7 vụ ma túy, 1 vụ cờ bạc qua mạng; tình trạng thanh thiếu niên đua xe đêm cuối tuần trên quốc lộ 12B; thống nhất lập chốt kiểm soát tối thứ Bảy và Chủ nhật, các xã rà soát người sử dụng ma túy.",
+      "turn_range": [
+        52,
+        70
+      ],
+      "turn_ids": [
+        "TURN_000053",
+        "TURN_000070"
+      ],
+      "chars": 4942,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Công tác tuyển chọn và gọi công dân nhập ngũ năm 2027",
+      "summary": "Chỉ tiêu giao quân năm 2027 là 186 công dân; đã khám sơ tuyển 412 người; một số xã chưa hoàn thành khám sơ tuyển; thống nhất hoàn thành khám tuyển trước 20/12, tổ chức giao quân tập trung ngày 18 tháng Giêng.",
+      "turn_range": [
+        70,
+        86
+      ],
+      "turn_ids": [
+        "TURN_000071",
+        "TURN_000086"
+      ],
+      "chars": 4371,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Rà soát sắp xếp điểm trường lẻ và tình trạng học sinh bỏ học",
+      "summary": "Huyện còn 34 điểm trường lẻ, đề xuất sáp nhập 9 điểm dưới 15 học sinh; 47 học sinh trung học cơ sở bỏ học từ đầu năm học; thống nhất chỉ sáp nhập khi có xe đưa đón hoặc bán trú, giao nhà trường vận động học sinh bỏ học quay lại.",
+      "turn_range": [
+        86,
+        101
+      ],
+      "turn_ids": [
+        "TURN_000087",
+        "TURN_000101"
+      ],
+      "chars": 4232,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Phòng chống sốt xuất huyết và tiến độ tiêm chủng mở rộng",
+      "summary": "Ghi nhận 63 ca sốt xuất huyết, tập trung ở thị trấn; tiêm chủng sởi cho trẻ chỉ đạt 87%; thống nhất phun hóa chất diện rộng tại thị trấn, tổ chức chiến dịch tiêm vét sởi trong tháng 12.",
+      "turn_range": [
+        101,
+        118
+      ],
+      "turn_ids": [
+        "TURN_000102",
+        "TURN_000118"
+      ],
+      "chars": 4171,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Chi trả chế độ người có công và chăm lo Tết cho hộ nghèo",
+      "summary": "Dự kiến chi quà Tết cho 2.180 người có công và 1.460 hộ nghèo, tổng 3,1 tỷ; một số xã chưa rà soát xong danh sách; thống nhất hoàn thành chi trả trước 23 tháng Chạp, quà Tết của huyện mức 500.000 đồng.",
+      "turn_range": [
+        118,
+        136
+      ],
+      "turn_ids": [
+        "TURN_000119",
+        "TURN_000136"
+      ],
+      "chars": 4924,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Triển khai dịch vụ công trực tuyến và chuyển đổi số cấp xã",
+      "summary": "Tỷ lệ hồ sơ trực tuyến cấp xã chỉ đạt 38%; 5 xã dưới 20%; thống nhất bố trí tổ công nghệ số cộng đồng hỗ trợ người dân tại bộ phận một cửa, xếp hạng các xã hằng tháng.",
+      "turn_range": [
+        136,
+        154
+      ],
+      "turn_ids": [
+        "TURN_000137",
+        "TURN_000154"
+      ],
+      "chars": 4794,
+      "same_topic_as": null
+    },
+    {
+      "index": 9,
+      "title": "Kết luận của Chủ tịch UBND huyện và nhiệm vụ trọng tâm tháng 12",
+      "summary": "Chủ tịch kết luận các nhiệm vụ trọng tâm tháng 12: đấu giá đất, bàn giao mặt bằng cụm công nghiệp, khám tuyển quân, chăm lo Tết; giao Văn phòng ra thông báo kết luận trong 2 ngày.",
+      "turn_range": [
+        154,
+        170
+      ],
+      "turn_ids": [
+        "TURN_000155",
+        "TURN_000170"
+      ],
+      "chars": 4393,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng Tài nguyên"
+      ],
+      "task": "Hoàn thiện hồ sơ đấu giá đất khu Hàng Trạm, trình phê duyệt phương án",
+      "deadline": "trước ngày 5 tháng 12",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng"
+      ],
+      "task": "Rà soát quỹ đất nhỏ lẻ xen kẹt ở xã Lạc Lương có thể giao không qua đấu giá",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Quách Thị Lụa (Chủ tịch UBND xã Đoàn Kết)",
+      "actor_aliases": [
+        "Xã Đoàn Kết"
+      ],
+      "task": "Làm việc với nhà thầu nhà văn hóa xóm Mới, quá 10 ngày không chuyển biến thì chấm dứt hợp đồng",
+      "deadline": "tuần này; 10 ngày",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Bùi Văn Hưởng (Chủ tịch UBND xã Lạc Lương)",
+      "actor_aliases": [
+        "Xã Lạc Lương",
+        "tôi"
+      ],
+      "task": "Thành lập và làm tổ trưởng tổ vận động GPMB cụm công nghiệp Yên Trị",
+      "deadline": "trong tuần này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Bùi Văn Hưởng (Chủ tịch UBND xã Lạc Lương)",
+      "actor_aliases": [
+        "xã"
+      ],
+      "task": "Hỗ trợ thủ tục cho hộ muốn đưa mộ về quê gốc",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng Tài nguyên"
+      ],
+      "task": "Lập phương án bổ sung hỗ trợ di dời mộ theo mức mới, trình phê duyệt",
+      "deadline": "trong 7 ngày",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000100"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Hoa (Trưởng phòng Nông nghiệp)",
+      "actor_aliases": [
+        "Phòng Nông nghiệp"
+      ],
+      "task": "Ban hành văn bản hướng dẫn phòng chống rét cho gia súc gửi các xã",
+      "deadline": "trước ngày 1 tháng 12",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Hoa (Trưởng phòng Nông nghiệp)",
+      "actor_aliases": [
+        "Phòng"
+      ],
+      "task": "Làm việc với doanh nghiệp thu mua khoai lang tím yêu cầu thực hiện đúng giá sàn hợp đồng",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đ/c Bùi Văn Hưởng (Chủ tịch UBND xã Lạc Lương)",
+      "actor_aliases": [
+        "Xã"
+      ],
+      "task": "Lập danh sách hộ thả rông trâu bò gửi phòng Nông nghiệp",
+      "deadline": "trước ngày 10 tháng 12",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+      "actor_aliases": [
+        "Công an huyện"
+      ],
+      "task": "Triển khai chốt kiểm soát đua xe trên quốc lộ 12B tối thứ Bảy, Chủ nhật",
+      "deadline": "từ tối thứ Bảy tuần này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000069"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Thơm (Trưởng phòng Nội vụ)",
+      "actor_aliases": [
+        "Phòng Nội vụ"
+      ],
+      "task": "Phối hợp Công an hướng dẫn các xã mẫu biểu rà soát người sử dụng ma túy",
+      "deadline": "trước ngày 5 tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Đ/c Quách Thị Lụa (Chủ tịch UBND xã Đoàn Kết)",
+      "actor_aliases": [
+        "Xã Đoàn Kết",
+        "tôi"
+      ],
+      "task": "Hoàn thành sơ tuyển nghĩa vụ quân sự",
+      "deadline": "trước ngày 5 tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Đ/c Quách Thị Lụa (Chủ tịch UBND xã Đoàn Kết)",
+      "actor_aliases": [
+        "Xã"
+      ],
+      "task": "Gửi hồ sơ xác minh 2 trường hợp xin tạm hoãn nhập ngũ về Hội đồng nghĩa vụ quân sự huyện",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000080"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Đ/c Trung tá Tú (Chỉ huy trưởng Ban CHQS huyện)",
+      "actor_aliases": [
+        "Ban Chỉ huy quân sự huyện"
+      ],
+      "task": "Phối hợp Trung tâm Y tế lập kế hoạch khám tuyển chi tiết trình Hội đồng",
+      "deadline": "tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000086"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Đ/c Hạnh (Trưởng phòng Giáo dục và Đào tạo)",
+      "actor_aliases": [
+        "Phòng Giáo dục"
+      ],
+      "task": "Lập phương án sáp nhập điểm trường lẻ có ý kiến xã và phụ huynh, trình UBND",
+      "deadline": "trước ngày 15 tháng 1",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000100"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Đ/c Hạnh (Trưởng phòng Giáo dục và Đào tạo)",
+      "actor_aliases": [
+        "phòng"
+      ],
+      "task": "Gửi danh sách 47 học sinh bỏ học cho các xã phối hợp vận động",
+      "deadline": "trong tuần này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000101"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+      "actor_aliases": [
+        "Trung tâm Y tế"
+      ],
+      "task": "Tổ chức phun hóa chất phòng sốt xuất huyết tại thị trấn; điều chuyển tủ vắc xin cho trạm y tế Đoàn Kết",
+      "deadline": "phun từ thứ Hai tuần sau trong 5 ngày; tủ vắc xin trong tuần này",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000117"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+      "actor_aliases": [
+        "Trung tâm"
+      ],
+      "task": "Bố trí bác sĩ luân phiên về trạm y tế vùng cao 2 buổi/tuần, ưu tiên Lạc Lương, Đoàn Kết, Bảo Hiệu, Ngọc Lương",
+      "deadline": "từ tháng 12",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Đ/c Diệu (Phó Chủ tịch UBND huyện)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Chỉ đạo thị trấn và Huyện đoàn huy động diệt lăng quăng",
+      "deadline": null,
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000118"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Đ/c Minh (Trưởng phòng Tài chính - Kế hoạch)",
+      "actor_aliases": [
+        "phòng"
+      ],
+      "task": "Tạm ứng ngân sách huyện chi hỗ trợ 7 hộ sập nhà ở Đoàn Kết và 4 hộ ở Bảo Hiệu",
+      "deadline": "tuần sau",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000129"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Đ/c Thơm (Trưởng phòng Nội vụ)",
+      "actor_aliases": [
+        "Phòng Nội vụ"
+      ],
+      "task": "Tổng hợp danh sách tặng quà Tết, trình UBND quyết định",
+      "deadline": "trước ngày 15 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000136"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Đ/c Vượng (Chánh Văn phòng HĐND-UBND huyện)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Xây dựng bảng xếp hạng tỷ lệ hồ sơ trực tuyến các xã",
+      "deadline": "giao ban tháng 12",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000153"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+      "actor_aliases": [
+        "Công an huyện"
+      ],
+      "task": "Cấp căn cước, kích hoạt định danh lưu động tại 5 xã vùng cao",
+      "deadline": "các cuối tuần tháng 12",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000154"
+      ]
+    },
+    {
+      "id": "A24",
+      "actor": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng"
+      ],
+      "task": "Lập phương án mở rộng ô chôn lấp bãi rác Ngọc Lương, báo cáo riêng",
+      "deadline": null,
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000158"
+      ]
+    },
+    {
+      "id": "A25",
+      "actor": "Đ/c Hoa (Trưởng phòng Nông nghiệp)",
+      "actor_aliases": [
+        "Phòng Nông nghiệp",
+        "đoàn kiểm tra liên ngành"
+      ],
+      "task": "Đoàn liên ngành kiểm tra an toàn thực phẩm tại chợ Hàng Trạm và 3 chợ phiên vùng cao",
+      "deadline": "từ ngày 15 tháng 12",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000162"
+      ]
+    },
+    {
+      "id": "A26",
+      "actor": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+      "actor_aliases": [
+        "Công an huyện"
+      ],
+      "task": "Chủ trì kiểm tra PCCC tại chợ, nhà trọ, karaoke",
+      "deadline": "trước 20 tháng 12",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000166"
+      ]
+    },
+    {
+      "id": "A27",
+      "actor": "Đ/c Vượng (Chánh Văn phòng HĐND-UBND huyện)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Ra thông báo kết luận giao ban",
+      "deadline": "trong vòng 2 ngày",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000168"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Dừng các công trình dùng nguồn thu tiền sử dụng đất chưa khởi công, không ký hợp đồng mới",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Tổ chức thêm 2 phiên đấu giá đất khu Hàng Trạm trong tháng 12; 5 chủ đầu tư giải ngân dưới 50% báo cáo hằng tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Áp dụng mức hỗ trợ di dời mộ mới; lập tổ vận động; cho hộ tự khai thác keo trước bàn giao; bàn giao mặt bằng trước 31/12",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Hướng dẫn che chắn chuồng trại, dự trữ 2.000 tấn rơm cỏ, cấm thả rông khi dưới 12 độ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Lập chốt kiểm soát đua xe quốc lộ 12B tối thứ Bảy, Chủ nhật đến hết tháng Giêng; các xã rà soát người sử dụng ma túy",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000068"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Hoàn thành khám tuyển trước 20/12, giao quân 18 tháng Giêng; 3 xã xong sơ tuyển trước 5/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Doanh nghiệp liên kết không thực hiện đúng hợp đồng thu mua thì không được tham gia chương trình hỗ trợ của huyện",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Giao ban tháng vẫn họp trực tiếp; các cuộc họp chuyên đề có thể họp trực tuyến",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000164"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Chỉ sáp nhập điểm trường lẻ dưới 15 học sinh khi có xe đưa đón hoặc bán trú",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Phun hóa chất diện rộng tại thị trấn Hàng Trạm, tiêm vét sởi trong tháng 12",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000116"
+      ]
+    },
+    {
+      "id": "D11",
+      "text": "Quà Tết huyện 500.000 đồng/suất; danh sách trước 10/12; chi trả trước 23 tháng Chạp; niêm yết công khai",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000135"
+      ]
+    },
+    {
+      "id": "D12",
+      "text": "Bố trí tổ công nghệ số cộng đồng tại một cửa các xã; xếp hạng xã hằng tháng",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000152"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Kiến nghị tỉnh tạm dừng khai thác với doanh nghiệp khoáng sản nợ thuế (Chủ tịch xem sau khi có hồ sơ)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Tặng quà Tết 1 triệu cho 23 gia đình quân nhân hộ nghèo và hỗ trợ 2 triệu tân binh hộ nghèo (mới là đề xuất)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000078"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Tổ chức giao ban tháng trực tuyến kết nối các xã",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000163",
+        "TURN_000164"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "unassigned_task",
+      "text": "Các xã gửi danh sách hộ thiếu đói ngay trong tháng 12 để kịp xin gạo (hướng dẫn chung)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000133"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Ngân sách huyện tạm hỗ trợ bằng tiền thay gạo nếu gạo Trung ương về chậm (phương án, chưa chốt)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000134"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "unassigned_task",
+      "text": "Lập kế hoạch tuyển 31 chỉ tiêu giáo viên trong học kỳ 2 (Phòng Nội vụ đề nghị, chưa chốt)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000092"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "unassigned_task",
+      "text": "Các phòng gửi báo cáo, tờ trình kỳ họp HĐND huyện trước 10/12 (nhắc chung)",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000156"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "hedged_proposal",
+      "text": "Huyện hỗ trợ tiền làm chuồng trâu bò cho hộ nghèo",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000038",
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "unassigned_task",
+      "text": "Các phòng, các xã nêu cao tinh thần trách nhiệm hoàn thành nhiệm vụ năm (khẩu hiệu chung)",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000170"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Minh (Trưởng phòng Tài chính - Kế hoạch)",
+      "point": "Thu ngân sách 86% dự toán, tiền sử dụng đất chỉ 41%; giải ngân 63%, 5 chủ đầu tư dưới 50%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Minh (Trưởng phòng Tài chính - Kế hoạch)",
+      "point": "Nợ thuế 6,8 tỷ, 4,1 tỷ của 5 doanh nghiệp khoáng sản; thu tiền đất năm nay chỉ khoảng 45-50%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Bùi Văn Hưởng (Chủ tịch UBND xã Lạc Lương)",
+      "point": "Nhiều hộ chưa nhận tiền vì lo sinh kế sau thu hồi đất, cần nhà đầu tư cam kết tuyển lao động",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+      "point": "14 vụ lừa đảo qua mạng thiệt hại 1,9 tỷ, nạn nhân chủ yếu trên 50 tuổi và giáo viên",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+      "point": "21% công dân sơ tuyển không đạt sức khỏe, 9 trường hợp dương tính ma túy",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000075"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Hạnh (Trưởng phòng Giáo dục và Đào tạo)",
+      "point": "Huyện thiếu 46 giáo viên, chủ yếu tiếng Anh, tin học, mầm non",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000091"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+      "point": "Thiếu thuốc bảo hiểm do thầu tỉnh chậm; thiếu khoảng 15 bác sĩ",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000110"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Vượng (Chánh Văn phòng HĐND-UBND huyện)",
+      "point": "Huyện xếp thứ 18/26 về chỉ số phục vụ, giảm 5 bậc; 47 hồ sơ đất đai quá hạn",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000144"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+      "point": "Cụm công nghiệp Yên Trị đã thu hồi 38/52 ha, còn 21 hộ chưa nhận tiền, 6 mộ chưa di dời",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Đ/c Hoa (Trưởng phòng Nông nghiệp)",
+      "point": "Vụ đông 1.240 ha (92%); dự báo rét đậm giữa tháng 12, năm 2024 chết gần 300 trâu bò",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+      "point": "7 vụ ma túy, 1 đường dây cờ bạc mạng 3 tỷ; đua xe đêm cuối tuần trên quốc lộ 12B",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Đ/c Trung tá Tú (Chỉ huy trưởng Ban CHQS huyện)",
+      "point": "Chỉ tiêu 186 công dân nhập ngũ; đã sơ tuyển 412, 3 xã chưa xong",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000072"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Đ/c Hạnh (Trưởng phòng Giáo dục và Đào tạo)",
+      "point": "34 điểm trường lẻ, 9 điểm dưới 15 học sinh; 47 học sinh THCS bỏ học",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000088"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+      "point": "63 ca sốt xuất huyết, tháng 11 có 21 ca; tiêm sởi mũi 2 chỉ 87%",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000103"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Đ/c Thơm (Trưởng phòng Nội vụ)",
+      "point": "Quà Tết cho 2.180 người có công và 1.460 hộ nghèo, khoảng 3,1 tỷ; 4 xã chưa gửi danh sách",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000120"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Đ/c Vượng (Chánh Văn phòng HĐND-UBND huyện)",
+      "point": "Hồ sơ trực tuyến cấp xã 38%, 5 xã dưới 20%; chỉ tiêu 50%",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000138"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Đ/c Lương (Chủ tịch UBND huyện)",
+      "point": "5 nhiệm vụ trọng tâm tháng 12: đấu giá đất, bàn giao mặt bằng, khám tuyển, chăm lo Tết, an ninh trật tự",
+      "topic_index": 9,
+      "evidence_turn_ids": [
+        "TURN_000155"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Lương (Chủ tịch UBND huyện)",
+    "PCT": "Đ/c Diệu (Phó Chủ tịch UBND huyện)",
+    "TCKH": "Đ/c Minh (Trưởng phòng Tài chính - Kế hoạch)",
+    "TNMT": "Đ/c Chiến (Trưởng phòng Tài nguyên và Môi trường)",
+    "NN": "Đ/c Hoa (Trưởng phòng Nông nghiệp)",
+    "CA": "Đ/c Thượng tá Dũng (Trưởng Công an huyện)",
+    "QS": "Đ/c Trung tá Tú (Chỉ huy trưởng Ban CHQS huyện)",
+    "GD": "Đ/c Hạnh (Trưởng phòng Giáo dục và Đào tạo)",
+    "YT": "Đ/c BS. Quyết (Giám đốc Trung tâm Y tế huyện)",
+    "NV": "Đ/c Thơm (Trưởng phòng Nội vụ)",
+    "VP": "Đ/c Vượng (Chánh Văn phòng HĐND-UBND huyện)",
+    "XA1": "Đ/c Bùi Văn Hưởng (Chủ tịch UBND xã Lạc Lương)",
+    "XA2": "Đ/c Quách Thị Lụa (Chủ tịch UBND xã Đoàn Kết)"
+  },
+  "tags": [
+    "long",
+    "many_speakers"
+  ]
+}

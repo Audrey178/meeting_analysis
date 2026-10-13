@@ -1,0 +1,914 @@
+{
+  "meeting_id": "synth_018",
+  "n_turns": 197,
+  "total_chars": 45382,
+  "boundaries": [
+    24,
+    48,
+    72,
+    97,
+    123,
+    151,
+    174
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát kế hoạch thu mua cà phê nhân vụ 2026-2027 và chính sách giá",
+      "summary": "Giá cà phê nhân trong nước 112.000 đồng/kg, biến động mạnh; kế hoạch thu mua 18.000 tấn; thống nhất mua theo giá sàn London trừ chênh lệch, cho nông dân chốt giá sau trong 60 ngày, không ứng tiền trước cho đại lý mới.",
+      "turn_range": [
+        0,
+        24
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000024"
+      ],
+      "chars": 6571,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Kiểm soát chất lượng hạt cà phê đầu vụ và tỷ lệ lỗi",
+      "summary": "Mẫu hàng đầu vụ có độ ẩm 14-15% và tỷ lệ hạt đen vỡ 6%, vượt tiêu chuẩn; thống nhất trừ tiền theo bảng độ ẩm, kiểm 100% lô bằng máy đo độ ẩm, từ chối nhận lô có tạp chất trên 1%.",
+      "turn_range": [
+        24,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000025",
+        "TURN_000048"
+      ],
+      "chars": 5681,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Thực hiện hợp đồng xuất khẩu đi châu Âu và yêu cầu quy định chống phá rừng EUDR",
+      "summary": "Đã ký 6.500 tấn hợp đồng với khách châu Âu, giao từ tháng 1; EUDR có hiệu lực, mỗi lô phải có tọa độ vùng trồng và cam kết không phá rừng; thống nhất chỉ dùng hàng vùng liên kết đã có bản đồ cho đơn châu Âu, đơn châu Á dùng hàng đại lý; đề xuất tạm ngừng bán đi châu Âu bị gạt.",
+      "turn_range": [
+        48,
+        72
+      ],
+      "turn_ids": [
+        "TURN_000049",
+        "TURN_000072"
+      ],
+      "chars": 5784,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Mở rộng bản đồ vùng trồng và hệ thống truy xuất nguồn gốc đến từng hộ",
+      "summary": "Bản đồ đa giác mới có 4.200/6.800 hộ liên kết; thống nhất thuê thêm 15 cộng tác viên đo đạc bằng ứng dụng, đối chiếu với bản đồ rừng của Bộ, hộ có diện tích trồng trên đất rừng thì loại khỏi chuỗi châu Âu.",
+      "turn_range": [
+        72,
+        97
+      ],
+      "turn_ids": [
+        "TURN_000073",
+        "TURN_000097"
+      ],
+      "chars": 5777,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Khắc phục sự cố máy sấy tầng sôi và công suất nhà máy chế biến",
+      "summary": "Máy sấy số 2 hỏng quạt và lò đốt, nhà máy chỉ chạy 60% công suất; thống nhất thuê thợ hãng sửa trong 10 ngày, tạm thời thuê sân phơi của hợp tác xã, chạy thêm ca đêm cho dây chuyền phân loại.",
+      "turn_range": [
+        97,
+        123
+      ],
+      "turn_ids": [
+        "TURN_000098",
+        "TURN_000123"
+      ],
+      "chars": 5459,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Thu xếp vốn lưu động vụ mới với ngân hàng",
+      "summary": "Nhu cầu vốn lưu động cao điểm khoảng 1.100 tỷ, hạn mức hiện có 800 tỷ; thống nhất đề nghị Vietcombank nâng hạn mức lên 950 tỷ, vay thêm 150 tỷ tại ngân hàng thứ hai bằng thế chấp hàng tồn kho; đề xuất phát hành trái phiếu bị gạt.",
+      "turn_range": [
+        123,
+        151
+      ],
+      "turn_ids": [
+        "TURN_000124",
+        "TURN_000151"
+      ],
+      "chars": 6406,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Tuyển lao động thời vụ cho nhà máy mùa thu hoạch",
+      "summary": "Cần thêm 80 lao động thời vụ cho phân loại và đóng bao; khó tuyển do cạnh tranh với thu hái; thống nhất tăng lương ngày lên 300.000 đồng, hỗ trợ ăn trưa, ưu tiên tuyển người đồng bào tại chỗ, đóng bảo hiểm tai nạn.",
+      "turn_range": [
+        151,
+        174
+      ],
+      "turn_ids": [
+        "TURN_000152",
+        "TURN_000174"
+      ],
+      "chars": 4895,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Chuẩn bị tham gia hội chợ cà phê đặc sản quốc tế",
+      "summary": "Thống nhất tham gia hội chợ cà phê đặc sản ở Hà Lan tháng 3 với gian hàng 9m², mang 5 mẫu cà phê đặc sản lên men; giao phòng xuất khẩu chuẩn bị; đề xuất mời diễn viên nổi tiếng làm đại sứ thương hiệu bị gạt.",
+      "turn_range": [
+        174,
+        197
+      ],
+      "turn_ids": [
+        "TURN_000175",
+        "TURN_000197"
+      ],
+      "chars": 4809,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Chị Duyên (trưởng phòng thu mua)",
+      "actor_aliases": [
+        "duyên",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Làm bảng chênh lệch giá theo hạng chất lượng gửi tổng giám đốc duyệt",
+      "deadline": "trong tuần này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Mở thêm hạn mức giao dịch kỳ hạn với ngân hàng để phòng hộ giá",
+      "deadline": "trước ngày 15",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "actor_aliases": [
+        "thắm",
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Đặt que thử nhanh ochratoxin và hướng dẫn tổ kiểm hàng",
+      "deadline": "tuần này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000044",
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Y Kông (tổng giám đốc)",
+      "actor_aliases": [
+        "tôi",
+        "SPEAKER_00"
+      ],
+      "task": "Làm việc với UBND huyện Krông Ana và Cư M'gar về xác nhận canh tác cho hộ chưa có giấy chứng nhận",
+      "deadline": "trong tháng này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000058"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Chị Bích (trưởng phòng xuất khẩu)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Hỏi khách Đức về chấp nhận truy xuất theo mẻ sấy",
+      "deadline": "trước khi lô đầu đóng hàng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000063"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Duyên (trưởng phòng thu mua)",
+      "actor_aliases": [
+        "bên em",
+        "SPEAKER_01"
+      ],
+      "task": "In phiếu cân có mã hộ, chỉ nhận hàng vùng liên kết khi có thẻ hộ liên kết",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000069"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "anh sơn",
+        "SPEAKER_02"
+      ],
+      "task": "Làm đề xuất đầu tư máy sấy mới",
+      "deadline": "sau vụ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000106"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Bố trí thợ cơ điện trực máy sấy ca đêm, có lịch trực",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000107"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Chị Bích (trưởng phòng xuất khẩu)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Làm việc với VCCI đăng ký cấp chứng nhận xuất xứ điện tử",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000144"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Mua bản quyền phần mềm quản lý bản đồ vùng trồng",
+      "deadline": "trong tuần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Làm mẫu hợp đồng lao động thời vụ 3 tháng và đăng ký bảo hiểm xã hội cho người thời vụ",
+      "deadline": null,
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000170"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Gắn khoản vay USD với từng hợp đồng thư tín dụng châu Âu",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000136"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Đưa chi phí hội chợ vào kế hoạch chi phí bán hàng quý 1 và trình hội đồng quản trị",
+      "deadline": "quý 1",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000187"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Huấn luyện an toàn cho người thời vụ và lắp rào che băng tải",
+      "deadline": "trước khi người thời vụ vào",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000171"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "anh sơn",
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Mua 3 máy đo độ ẩm đặt ở 3 điểm nhận hàng",
+      "deadline": "tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Chị Duyên (trưởng phòng thu mua)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Làm thông báo tiêu chuẩn nhận hàng gửi đại lý, hợp tác xã và dán tại điểm thu mua",
+      "deadline": "trong hai ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Chị Bích (trưởng phòng xuất khẩu)",
+      "actor_aliases": [
+        "bích",
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Chuẩn bị hồ sơ thẩm định EUDR mẫu cho lô đầu gửi khách Đức",
+      "deadline": "trước ngày 20",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000071"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Dành kho số 3 riêng cho hàng vùng liên kết có bản đồ",
+      "deadline": "từ tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000072"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "actor_aliases": [
+        "thắm",
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Tuyển 15 cộng tác viên đo đạc và tập huấn dùng ứng dụng",
+      "deadline": "bắt đầu đo từ thứ Hai tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000096"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Gửi danh sách 140 hộ chồng đất rừng cho chị Duyên và chị Bích để tách hàng",
+      "deadline": "trong tuần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000097"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Ký hợp đồng với hãng sửa máy sấy số 2",
+      "deadline": "hôm nay; hãng vào trong 10 ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Anh Sơn (quản đốc nhà máy)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Làm việc với HTX Ea Tiêu thuê sân phơi; sắp xếp tổ chạy ca đêm",
+      "deadline": "ngày mai",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000123"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "nhật",
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Hoàn thiện hồ sơ nâng hạn mức tín dụng gửi Vietcombank",
+      "deadline": "trong tuần này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000150"
+      ]
+    },
+    {
+      "id": "A24",
+      "actor": "Anh Y Kông (tổng giám đốc)",
+      "actor_aliases": [
+        "tôi",
+        "SPEAKER_00"
+      ],
+      "task": "Gặp giám đốc chi nhánh BIDV về hạn mức 150 tỷ",
+      "deadline": "tuần sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000151"
+      ]
+    },
+    {
+      "id": "A25",
+      "actor": "Chị Duyên (trưởng phòng thu mua)",
+      "actor_aliases": [
+        "chị duyên",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Làm việc với già làng, trưởng buôn tuyển đủ 80 lao động thời vụ",
+      "deadline": "cuối tháng",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000173"
+      ]
+    },
+    {
+      "id": "A26",
+      "actor": "Anh Nhật (kế toán trưởng)",
+      "actor_aliases": [
+        "kế toán",
+        "SPEAKER_04"
+      ],
+      "task": "Mua bảo hiểm tai nạn cho lao động thời vụ",
+      "deadline": "ngay khi có danh sách",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000174"
+      ]
+    },
+    {
+      "id": "A27",
+      "actor": "Chị Bích (trưởng phòng xuất khẩu)",
+      "actor_aliases": [
+        "bích",
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Đăng ký gian hàng hội chợ Amsterdam và chuẩn bị tài liệu tiếng Anh",
+      "deadline": "trước ngày 30",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000195"
+      ]
+    },
+    {
+      "id": "A28",
+      "actor": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Gửi 5 mẫu cà phê đặc sản đi chấm điểm",
+      "deadline": "trong tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000196"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thu mua 18.000 tấn theo giá sàn London trừ chênh lệch chất lượng; cho gửi kho chốt giá sau 60 ngày có phòng hộ; không ứng tiền đại lý mới, đại lý cũ tối đa 30% có tài sản bảo đảm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Hộ liên kết được thanh toán trong ngày nếu cân hàng trước 15 giờ, sau 15 giờ thì sáng hôm sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Miễn phí lưu kho 60 ngày cho hàng gửi chốt giá sau, quá hạn thì chốt theo giá ngày cuối",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Rang thử cảm quan ngẫu nhiên 20% lô đại lý, 100% lô đại lý từng vi phạm; trộn cà phê cũ thì cảnh cáo lần 1, lần 2 ngừng mua",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Giữ thanh toán xuất khẩu bằng USD, không nhận EUR",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000142"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Mua que thử nhanh ochratoxin để sàng lọc hàng vào kho châu Âu",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Kiểm 100% lô bằng máy đo độ ẩm; trừ 1,2% khối lượng mỗi % ẩm trên 12,5%; tạp chất trên 1% từ chối nhận; thống nhất một bảng trừ, in phiếu cho người bán ký, hiệu chuẩn máy đo hằng tháng; thưởng hàng đạt chuẩn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Tách luồng hàng: hàng vùng liên kết có bản đồ đa giác kho riêng, chỉ dùng cho đơn châu Âu; hàng đại lý dùng cho đơn châu Á",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Thuê 15 cộng tác viên đo bản đồ toàn bộ hộ liên kết trong 2 tháng; hộ chồng đất rừng loại khỏi chuỗi châu Âu",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000095"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Thuê thợ hãng sửa buồng đốt máy sấy số 2 trong 10 ngày; thuê sân phơi HTX Ea Tiêu 1 tháng; chạy ca đêm dây chuyền phân loại có thợ trực; ưu tiên hàng vùng liên kết cho lô châu Âu đầu",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000121"
+      ]
+    },
+    {
+      "id": "D11",
+      "text": "Hàng vùng liên kết chỉ sấy tại nhà máy, không đưa gia công; hàng đại lý quá tải thì thuê sấy gia công ở Cư Kuin",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000119"
+      ]
+    },
+    {
+      "id": "D12",
+      "text": "Vốn mua hàng vùng liên kết làm hồ sơ vay theo chương trình tín dụng ưu đãi nông nghiệp",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000145"
+      ]
+    },
+    {
+      "id": "D13",
+      "text": "Lao động thời vụ làm trên 1 tháng phải ký hợp đồng lao động và đóng bảo hiểm xã hội bắt buộc",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000169"
+      ]
+    },
+    {
+      "id": "D14",
+      "text": "Đề nghị Vietcombank nâng hạn mức lên 950 tỷ, mở 150 tỷ tại BIDV thế chấp hàng tồn kho; vay khoảng 40% dư nợ bằng USD gắn hợp đồng xuất khẩu; không phát hành trái phiếu",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000149"
+      ]
+    },
+    {
+      "id": "D15",
+      "text": "Lương thời vụ 300.000 đồng/ngày, hỗ trợ ăn trưa, thưởng 1,5 triệu nếu đủ vụ; ưu tiên người đồng bào tại chỗ; đóng bảo hiểm tai nạn; cho làm ca 4 tiếng ở khâu phân loại tay",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000172"
+      ]
+    },
+    {
+      "id": "D16",
+      "text": "Tham gia hội chợ cà phê đặc sản Amsterdam tháng 3, gian 9 m², 5 mẫu có điểm trên 80; đoàn 3 người (Bích, Thắm, 1 người pha chế)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000194"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Tạm ngừng bán cà phê đi châu Âu vụ này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000052",
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Trả thêm 25.000 đồng/kg cho cà phê lên men đạt từ 80 điểm (chờ sau hội chợ)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000186"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Lập góc trông trẻ cho con lao động thời vụ",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000167"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Dành khoảng 1/3 cà phê đặc sản bán trong nước (chờ kết quả chấm điểm)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000192"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Để tổ trưởng người đồng bào kèm người mới và trả phụ cấp tổ trưởng",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000168"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "hedged_proposal",
+      "text": "Sửa nhà kho cũ làm chỗ nghỉ cho người làm ca đêm (khoảng 150 triệu)",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000164"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "hedged_proposal",
+      "text": "Chuyển phần chạy máy giờ cao điểm sang ca đêm để tiết kiệm điện",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000120"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "hedged_proposal",
+      "text": "Bảo lãnh của cổ đông lớn cho khoản vay (sẽ bàn nếu ngân hàng yêu cầu)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000147"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "hedged_proposal",
+      "text": "Phát hành trái phiếu doanh nghiệp huy động vốn",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000128",
+        "TURN_000129"
+      ]
+    },
+    {
+      "id": "N10",
+      "type": "hedged_proposal",
+      "text": "Mời diễn viên nổi tiếng làm đại sứ thương hiệu",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000178",
+        "TURN_000179"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Chị Duyên (trưởng phòng thu mua)",
+      "point": "Kế hoạch thu mua 18.000 tấn; giá 112.000 đồng/kg biến động mạnh; nông dân giữ hàng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Nhật (kế toán trưởng)",
+      "point": "Phòng hộ trên sàn London phải ký quỹ, vụ trước có tuần phải nộp thêm gần 10 tỷ ký quỹ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "point": "Que thử nhanh ochratoxin chính xác khoảng 85%, cả vụ khoảng 120 triệu",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Bích (trưởng phòng xuất khẩu)",
+      "point": "Khách Đức yêu cầu truy xuất đến từng bao, khách Ý chấp nhận hồ sơ theo lô",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "point": "Khoảng 90/140 hộ chồng đất rừng có vườn từ trước 2015, chỉ khoảng 50 hộ mở rộng sau 2020",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000080"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Anh Nhật (kế toán trưởng)",
+      "point": "Khoản nợ 3 tỷ của đại lý khó thu hồi, đã trích lập dự phòng 100%",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000134"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Anh Sơn (quản đốc nhà máy)",
+      "point": "Vụ trước có 2 tai nạn lao động với người thời vụ chưa được hướng dẫn",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000157"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Bích (trưởng phòng xuất khẩu)",
+      "point": "Vụ trước bán 20 tấn robusta đặc sản giá khoảng 7.000 USD/tấn; mục tiêu 80 tấn",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000182"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Sơn (quản đốc nhà máy)",
+      "point": "Hàng đầu vụ ẩm 14-15%, hạt đen vỡ 6%, có lô lẫn tạp chất 2%",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Chị Bích (trưởng phòng xuất khẩu)",
+      "point": "Đã ký 6.500 tấn với khách châu Âu; EUDR yêu cầu tọa độ vườn và chứng minh không phá rừng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Thắm (phụ trách truy xuất nguồn gốc)",
+      "point": "Mới có bản đồ 4.200/6.800 hộ; 140 hộ chồng lên đất rừng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000074"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Anh Sơn (quản đốc nhà máy)",
+      "point": "Máy sấy số 2 hỏng quạt và buồng đốt, nhà máy chỉ chạy 60% công suất",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Anh Nhật (kế toán trưởng)",
+      "point": "Nhu cầu vốn cao điểm 1.100 tỷ, hạn mức hiện có 800 tỷ",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000125"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Chị Duyên (trưởng phòng thu mua)",
+      "point": "Cần 80 lao động thời vụ, mới tuyển 23 do lương thấp hơn hái thuê",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000153"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Chị Bích (trưởng phòng xuất khẩu)",
+      "point": "Đề xuất tham gia hội chợ cà phê đặc sản Amsterdam, được hỗ trợ 50% gian hàng",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000176"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04",
+    "S5": "SPEAKER_05"
+  },
+  "tags": [
+    "asr_noise",
+    "long",
+    "diarized_labels"
+  ]
+}

@@ -1,0 +1,383 @@
+{
+  "meeting_id": "synth_022",
+  "n_turns": 48,
+  "total_chars": 11427,
+  "boundaries": [
+    11,
+    22,
+    30,
+    39
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xử lý sự cố vỡ ống truyền dẫn D600 trên đường Lê Lợi",
+      "summary": "Ống truyền dẫn D600 vỡ đêm thứ Ba làm mất nước khoảng 9.000 hộ trong 14 giờ; nguyên nhân do thi công cống thoát nước của nhà thầu khác; thống nhất lập hồ sơ yêu cầu bồi thường, thay đoạn ống gang cũ 120 mét và lập phương án cấp nước dự phòng bằng xe bồn.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 2948,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Ứng phó xâm nhập mặn nước thô tại nhà máy nước Sông Mã mùa khô",
+      "summary": "Độ mặn nước thô tại cửa thu nhà máy Sông Mã đã có lúc lên 0,8‰ khi triều cường; thống nhất lịch bơm né triều, dự trữ đầy hồ sơ lắng, phối hợp thủy điện xả nước đẩy mặn; đề xuất mua hệ thống lọc thẩm thấu ngược bị gạt.",
+      "turn_range": [
+        11,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000022"
+      ],
+      "chars": 2531,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Giảm tỷ lệ thất thoát nước tại khu vực phường Quảng Thắng",
+      "summary": "Tỷ lệ thất thoát toàn công ty 19,6%, riêng khu Quảng Thắng 34%; đo kiểm phát hiện 2 điểm rò lớn và nhiều đấu nối trái phép; thống nhất lắp đồng hồ tổng theo vùng, thay 400 đồng hồ cũ; yêu cầu cắt nước ngay các hộ đấu nối trái phép bị gạt.",
+      "turn_range": [
+        22,
+        30
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000030"
+      ],
+      "chars": 2218,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Thu tiền nước và chuyển đổi hóa đơn điện tử theo quy định mới",
+      "summary": "Tỷ lệ thu tiền nước đạt 96,2%, nợ đọng chủ yếu ở khối cơ quan; hóa đơn điện tử khởi tạo từ máy tính tiền theo Nghị định 70 cần cập nhật; thống nhất nâng cấp phần mềm hóa đơn trước 1/12 và đẩy mạnh thanh toán qua ngân hàng.",
+      "turn_range": [
+        30,
+        39
+      ],
+      "turn_ids": [
+        "TURN_000031",
+        "TURN_000039"
+      ],
+      "chars": 1818,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Xử lý phản ánh của khách hàng về hóa đơn tăng bất thường và nước đục",
+      "summary": "Trong tuần có 142 phản ánh, 38% về hóa đơn tăng bất thường sau khi thay đồng hồ, 21% về nước đục sau sự cố; thống nhất kiểm định đồng hồ miễn phí khi khách khiếu nại, xả cặn mạng khu phía Đông và gửi tin nhắn xin lỗi.",
+      "turn_range": [
+        39,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000040",
+        "TURN_000048"
+      ],
+      "chars": 1912,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh",
+        "em"
+      ],
+      "task": "Lập hồ sơ, công văn yêu cầu Ban QLDA thành phố và nhà thầu bồi thường sự cố vỡ ống",
+      "deadline": "thứ Năm (trong tuần này)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007",
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh Phong",
+        "em"
+      ],
+      "task": "Lập dự toán thay 120 m ống gang Lê Lợi và xin giấy phép đào đường",
+      "deadline": "trong tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Vân (Trưởng bộ phận Chăm sóc khách hàng)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lập danh sách điểm nhạy cảm ưu tiên cấp nước bằng xe bồn, gửi phòng kỹ thuật",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Toàn (Quản đốc nhà máy nước Sông Mã)",
+      "actor_aliases": [
+        "Toàn",
+        "em"
+      ],
+      "task": "Lập lịch bơm né triều cả tháng, gửi giám đốc và phòng kỹ thuật",
+      "deadline": "mai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Mua và lắp trạm đo mặn tự động cách cửa thu 3 km",
+      "deadline": "hai tuần",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Bảo (Giám đốc công ty)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Ký văn bản đề nghị UBND tỉnh chỉ đạo thủy điện xả nước đẩy mặn và làm việc với Sở Nông nghiệp và Môi trường",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Chị Diệp (Trưởng phòng Kinh doanh)",
+      "actor_aliases": [
+        "em",
+        "phòng kinh doanh"
+      ],
+      "task": "Lên danh sách và kế hoạch thay 400 đồng hồ cũ ở Quảng Thắng",
+      "deadline": "tháng sau bắt đầu thay",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Thiết kế phương án chia 6 vùng và lắp đồng hồ tổng ở Quảng Thắng",
+      "deadline": "tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Chị Hồng (Kế toán trưởng)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Chủ trì nâng cấp phần mềm hóa đơn điện tử theo Nghị định 70",
+      "deadline": "trước ngày 1 tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Hồng (Kế toán trưởng)",
+      "actor_aliases": [
+        "chị Hồng"
+      ],
+      "task": "Soạn văn bản đôn đốc nợ của 2 bệnh viện và doanh nghiệp may",
+      "deadline": "trong tuần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh Phong"
+      ],
+      "task": "Bố trí đội vận hành xả cặn mạng khu phía Đông",
+      "deadline": "đêm thứ Bảy và Chủ nhật này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Chị Vân (Trưởng bộ phận Chăm sóc khách hàng)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Soạn và gửi tin nhắn xin lỗi 9.000 hộ; tổng hợp danh sách hộ cần kiểm định đồng hồ",
+      "deadline": "hôm nay",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Lập hồ sơ yêu cầu bồi thường; thay 120 m ống gang cũ bằng gang dẻo; có phương án xe bồn cho điểm nhạy cảm khi mất nước trên 4 giờ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Áp dụng lịch bơm né triều, giữ hồ sơ lắng đầy; văn bản đề nghị thủy điện xả nước đẩy mặn; lắp trạm đo mặn tự động",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Thí điểm chia 6 vùng đo lưu lượng ở Quảng Thắng; thay 400 đồng hồ cũ; xử lý đấu nối trái phép đúng trình tự",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Nâng cấp phần mềm hóa đơn điện tử trước 1/12, gửi link tra cứu qua Zalo; đôn đốc nợ khối cơ quan, quá 3 tháng báo Sở Tài chính",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Kiểm định đồng hồ miễn phí khi khách khiếu nại; xả cặn mạng phía Đông; gửi tin nhắn xin lỗi 9.000 hộ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Mua hệ thống lọc thẩm thấu ngược khử mặn dự phòng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016",
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "rejected_task",
+      "text": "Cắt nước ngay các hộ đấu nối trái phép",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000026",
+        "TURN_000027"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "point": "Ống D600 Lê Lợi vỡ, 9.000 hộ mất nước 14 giờ, do nhà thầu cống thoát nước thi công sát ống",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Toàn (Quản đốc nhà máy nước Sông Mã)",
+      "point": "Độ mặn nước thô lên 0,8‰ khi triều cường, đã ngừng bơm 2 lần; dự báo mặn còn nặng hơn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Diệp (Trưởng phòng Kinh doanh)",
+      "point": "Thất thoát toàn công ty 19,6%, khu Quảng Thắng 34%, do đồng hồ cũ, đấu nối trái phép, rò rỉ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Phong (Trưởng phòng Kỹ thuật)",
+      "point": "Phát hiện 2 điểm rò lớn và 17 điểm đấu nối trái phép ở Quảng Thắng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Chị Hồng (Kế toán trưởng)",
+      "point": "Thu tiền nước 96,2%, nợ 2,1 tỷ chủ yếu khối cơ quan; cần cập nhật hóa đơn theo Nghị định 70",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Vân (Trưởng bộ phận Chăm sóc khách hàng)",
+      "point": "142 phản ánh, 38% hóa đơn tăng sau thay đồng hồ, 21% nước đục sau sự cố",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Anh Bảo (Giám đốc công ty)",
+    "KT": "Anh Phong (Trưởng phòng Kỹ thuật)",
+    "KD": "Chị Diệp (Trưởng phòng Kinh doanh)",
+    "NM": "Anh Toàn (Quản đốc nhà máy nước Sông Mã)",
+    "TC": "Chị Hồng (Kế toán trưởng)",
+    "CS": "Chị Vân (Trưởng bộ phận Chăm sóc khách hàng)"
+  },
+  "tags": [
+    "pronoun_actor",
+    "rejected_task"
+  ]
+}

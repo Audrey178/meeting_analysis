@@ -1,0 +1,327 @@
+{
+  "meeting_id": "synth_003",
+  "n_turns": 49,
+  "total_chars": 11521,
+  "boundaries": [
+    13,
+    25,
+    38
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xử lý lỗi lệch tồn kho sau go-live kho Bình Dương",
+      "summary": "Sau hai tuần vận hành WMS ở kho Bình Dương, tồn kho trên hệ thống lệch với thực tế khoảng 3% mã hàng do đồng bộ hai chiều với ERP bị trùng giao dịch khi mất mạng; thống nhất tạm dừng đồng bộ chiều ERP sang WMS, thêm khóa chống trùng và kiểm kê lại toàn kho.",
+      "turn_range": [
+        0,
+        13
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000013"
+      ],
+      "chars": 4065,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Tích hợp WMS với hệ thống vận tải và các đối tác giao hàng",
+      "summary": "Khoa báo cáo tích hợp API với hệ thống TMS nội bộ đã xong nhưng tích hợp với ba đối tác giao hàng mới xong một; đối tác thứ hai đổi phiên bản API, đối tác thứ ba chỉ nhận file Excel; thống nhất ưu tiên đối tác chiếm 60% sản lượng và tạm dùng xuất file cho đối tác nhỏ.",
+      "turn_range": [
+        13,
+        25
+      ],
+      "turn_ids": [
+        "TURN_000014",
+        "TURN_000025"
+      ],
+      "chars": 2776,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Đào tạo nhân viên kho và chuẩn hóa quy trình kiểm kê trên WMS",
+      "summary": "Dung báo cáo mới đào tạo được khoảng 70% nhân viên kho, ca đêm chưa được đào tạo và nhiều người vẫn ghi sổ tay; thống nhất đào tạo bổ sung cho ca đêm, ban hành quy trình kiểm kê chu kỳ theo nhóm hàng ABC thay cho kiểm kê toàn kho hằng tháng.",
+      "turn_range": [
+        25,
+        38
+      ],
+      "turn_ids": [
+        "TURN_000026",
+        "TURN_000038"
+      ],
+      "chars": 2733,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Kế hoạch mở rộng triển khai WMS sang kho Long An",
+      "summary": "Thảo luận thời điểm go-live kho Long An; ban đầu định go-live 1/12 nhưng sau khi cân nhắc các lỗi còn tồn ở Bình Dương, thống nhất lùi sang 15/1 và chỉ go-live khi tỷ lệ lệch tồn Bình Dương dưới 0.5% trong hai tuần liên tiếp.",
+      "turn_range": [
+        38,
+        49
+      ],
+      "turn_ids": [
+        "TURN_000039",
+        "TURN_000049"
+      ],
+      "chars": 1947,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Toàn",
+      "actor_aliases": [
+        "SPEAKER_02",
+        "Toàn",
+        "em"
+      ],
+      "task": "Thêm khóa chống trùng giao dịch (idempotency) cho máy quét",
+      "deadline": "khoảng 3 ngày",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007",
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Hằng",
+      "actor_aliases": [
+        "SPEAKER_01",
+        "chị Hằng"
+      ],
+      "task": "Thu xếp người kiểm kê toàn kho vào chủ nhật tuần sau",
+      "deadline": "chủ nhật tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Toàn",
+      "actor_aliases": [
+        "SPEAKER_02",
+        "Toàn"
+      ],
+      "task": "Làm nút xuất file Excel theo mẫu cho đối tác giao hàng miền Tây",
+      "deadline": "sau khi xong khóa chống trùng, 1 ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024",
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Khoa",
+      "actor_aliases": [
+        "SPEAKER_03",
+        "Khoa"
+      ],
+      "task": "Chuyển kết nối Tốc Hành sang API phiên bản 3",
+      "deadline": "trước ngày 28",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Chị Hằng",
+      "actor_aliases": [
+        "SPEAKER_01"
+      ],
+      "task": "Gửi mẫu Excel của đối tác miền Tây cho Khoa",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Dung",
+      "actor_aliases": [
+        "SPEAKER_04",
+        "Dung",
+        "em"
+      ],
+      "task": "Soạn quy trình kiểm kê chu kỳ theo nhóm ABC trình ký ban hành",
+      "deadline": "trong tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035",
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Dung",
+      "actor_aliases": [
+        "SPEAKER_04",
+        "em"
+      ],
+      "task": "Đào tạo tại chỗ ca đêm kho Bình Dương trong 3 đêm cùng tổ trưởng Thắng",
+      "deadline": "tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Toàn",
+      "actor_aliases": [
+        "SPEAKER_02"
+      ],
+      "task": "Chạy danh sách phân nhóm hàng ABC gửi Dung và chị Hằng",
+      "deadline": "trước thứ Tư",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037",
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Toàn",
+      "actor_aliases": [
+        "SPEAKER_02"
+      ],
+      "task": "Hoàn thành chức năng cảnh báo hàng sắp hết hạn trước go-live Long An",
+      "deadline": "trước 15/1",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Khoa",
+      "actor_aliases": [
+        "SPEAKER_03"
+      ],
+      "task": "Tích hợp đối tác Hỏa Tốc Miền Nam sau khi xong Tốc Hành",
+      "deadline": "tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047",
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Việt",
+      "actor_aliases": [
+        "SPEAKER_00",
+        "anh"
+      ],
+      "task": "Làm việc với giám đốc về lùi lịch Long An và tiền làm thêm giờ chủ nhật",
+      "deadline": "trong tuần này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000049"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Tạm dừng đồng bộ điều chỉnh tồn từ ERP về WMS từ chiều nay, chỉ giữ đồng bộ đơn hàng; làm khóa chống trùng; kiểm kê toàn kho dời sang chủ nhật tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Ưu tiên chuyển kết nối Tốc Hành sang API v3 trước ngày 28, chưa làm webhook; đối tác miền Tây dùng xuất file Excel gửi email thủ công",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Chuyển sang kiểm kê chu kỳ theo nhóm ABC, bỏ kiểm kê toàn kho hằng tháng, áp dụng từ tháng sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Lùi go-live kho Long An sang 15/1, chỉ go-live khi lệch tồn Bình Dương dưới 0.5% trong hai tuần liên tiếp",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "unassigned_task",
+      "text": "Đôn đốc bên hạ tầng lắp thêm access point wifi dãy C",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "superseded_decision",
+      "text": "Giữ ngày go-live Long An 1/12 có điều kiện",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "SPEAKER_02",
+      "point": "Nguyên nhân lệch tồn: máy quét gửi lại giao dịch khi mất phản hồi do wifi dãy C, khoảng 240 giao dịch bị trùng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "SPEAKER_03",
+      "point": "Tích hợp TMS xong; Giao Nhanh xong; Tốc Hành đổi API v3 phải viết lại; đối tác miền Tây chỉ nhận Excel",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "SPEAKER_04",
+      "point": "Đã đào tạo 58/82 nhân viên, ca đêm mới 5 người, lỗi thao tác tập trung ở ca đêm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04"
+  },
+  "tags": [
+    "short_meeting",
+    "asr_noise",
+    "pronoun_actor",
+    "diarized_labels"
+  ]
+}

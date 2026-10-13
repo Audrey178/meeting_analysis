@@ -1,0 +1,441 @@
+{
+  "meeting_id": "synth_035",
+  "n_turns": 62,
+  "total_chars": 13471,
+  "boundaries": [
+    10,
+    20,
+    30,
+    39
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tiến độ đơn hàng áo khoác chần bông xuất khách Kaname",
+      "summary": "Đơn 48.000 áo chia 3 lô; lô 2 (16.000 áo) hạn xuất 8/11 mới đạt 58% do thiếu 9.000 khóa kéo, nhà cung cấp hẹn giao 25/10; Giám đốc chốt tạm thời tăng ca toàn nhà máy hai Chủ nhật để bù tiến độ.",
+      "turn_range": [
+        0,
+        10
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000010"
+      ],
+      "chars": 2767,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xử lý lỗi chất lượng sau đợt kiểm hàng cuối của khách Kaname",
+      "summary": "Lô 1 bị khách kiểm cuối phát hiện tỷ lệ lỗi 4,1% vượt AQL 2.5, phải tái kiểm 3.200 áo; lỗi chính là đường chần lệch, nhãn cỡ sai và một mũi kim gãy trong áo; thống nhất kiểm 100% qua máy dò kim, siết quy trình quản lý kim gãy, bố trí QC kiểm tra trên chuyền ở công đoạn chần; đề xuất mua thêm máy dò kim băng tải chưa được duyệt.",
+      "turn_range": [
+        10,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000011",
+        "TURN_000020"
+      ],
+      "chars": 2658,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát nhân sự, giờ làm thêm và phương án bù tiến độ lô 2",
+      "summary": "Phòng Nhân sự báo nhiều công nhân đã gần trần 300 giờ làm thêm/năm, tăng ca hai Chủ nhật sẽ khiến khoảng 140 người vượt trần; chuyền 7 thiếu 18 người; Giám đốc hủy quyết định tăng ca Chủ nhật, thay bằng thuê gia công ngoài 6.000 áo và chỉ tăng ca ngày thường tối đa 2 giờ cho người dưới 250 giờ.",
+      "turn_range": [
+        20,
+        30
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000030"
+      ],
+      "chars": 2863,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Chuẩn bị kiểm tra phòng cháy chữa cháy và khắc phục tồn tại về an toàn, thiết bị",
+      "summary": "Đoàn kiểm tra PCCC của Công an tỉnh dự kiến xuống đầu tháng 11; kho vải xếp lấn lối thoát hiểm, 3 đầu báo khói khu B lỗi, máy nén khí số 2 rò dầu; thống nhất giải phóng lối thoát hiểm, kẻ vạch 1 m và thay đầu báo trước khi đoàn kiểm tra.",
+      "turn_range": [
+        30,
+        39
+      ],
+      "turn_ids": [
+        "TURN_000031",
+        "TURN_000039"
+      ],
+      "chars": 2122,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Kết luận giao ban và phân công công việc tuần tới",
+      "summary": "Giám đốc giao dồn dập khoảng 12 việc cho các bộ phận với các mốc thời hạn khác nhau: chiều nay, ngày 24/10, trước thứ Sáu, tuần sau, cuối tháng, quý IV và khi có số liệu tái kiểm.",
+      "turn_range": [
+        39,
+        62
+      ],
+      "turn_ids": [
+        "TURN_000040",
+        "TURN_000062"
+      ],
+      "chars": 3061,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Chị Loan (Trưởng phòng Kế hoạch sản xuất)",
+      "actor_aliases": [
+        "chị Loan",
+        "em"
+      ],
+      "task": "Lập lại kế hoạch sản xuất lô 2 theo phương án mới (bỏ tăng ca Chủ nhật, có phần gia công ở Hòa Lợi), gửi Giám đốc",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Loan (Trưởng phòng Kế hoạch sản xuất)",
+      "actor_aliases": [
+        "chị Loan",
+        "chị"
+      ],
+      "task": "Ký hợp đồng gia công phần may thân 6.000 áo với xưởng Hòa Lợi và chuyển bán thành phẩm xuống xưởng",
+      "deadline": "tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Ngọc (Điều phối đơn hàng khách Nhật)",
+      "actor_aliases": [
+        "chị Ngọc",
+        "em"
+      ],
+      "task": "Gửi báo cáo khắc phục (CAPA) cho khách Kaname, trình Giám đốc duyệt trước một ngày",
+      "deadline": "ngày 24/10 (gửi Giám đốc duyệt ngày 23/10)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+      "actor_aliases": [
+        "anh Tùng"
+      ],
+      "task": "Cung cấp nội dung nguyên nhân và biện pháp khắc phục cho chị Ngọc để làm CAPA",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+      "actor_aliases": [
+        "anh Tùng"
+      ],
+      "task": "Tái kiểm toàn bộ bán thành phẩm chuyền 6 đang treo và kiểm cữ tất cả máy chần; cử một QC xuống xưởng Hòa Lợi từ ngày đầu nhận hàng",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+      "actor_aliases": [
+        "anh",
+        "em"
+      ],
+      "task": "Làm báo cáo phân tích lỗi theo từng chuyền, từng công đoạn, gửi Giám đốc và chị Loan",
+      "deadline": "khi có số liệu tái kiểm đầy đủ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048",
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Phát (Phụ trách kho nguyên phụ liệu)",
+      "actor_aliases": [
+        "anh Phát",
+        "Phát"
+      ],
+      "task": "Xuất 1.100 bộ khóa kéo của lô 3 cho chuyền 4 và chuyển 40 cuộn vải khỏi lối thoát hiểm sang kho thành phẩm cũ",
+      "deadline": "ngay trong chiều nay",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Phát (Phụ trách kho nguyên phụ liệu)",
+      "actor_aliases": [
+        "anh Phát"
+      ],
+      "task": "Theo dõi lô khóa kéo, báo Giám đốc và chị Loan ngay khi hàng về kho",
+      "deadline": "khi khóa về kho (dự kiến 25/10)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Anh Phát (Phụ trách kho nguyên phụ liệu)",
+      "actor_aliases": [
+        "anh Phát"
+      ],
+      "task": "Kiểm kê nguyên phụ liệu tồn của đơn Kaname, đối chiếu định mức, xác định phần lô 3 cần đặt bổ sung",
+      "deadline": "cuối tháng này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+      "actor_aliases": [
+        "chị Mai Anh"
+      ],
+      "task": "Gửi các chuyền danh sách công nhân còn được tăng ca (dưới 250 giờ); cập nhật bảng theo dõi giờ làm thêm hằng tuần",
+      "deadline": "sáng mai; sau đó hằng tuần",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+      "actor_aliases": [
+        "chị",
+        "em"
+      ],
+      "task": "Tuyển bổ sung 18 công nhân cho chuyền 7 (ít nhất 10 người vào chuyền), làm đề xuất tăng thưởng giới thiệu nếu cần",
+      "deadline": "tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+      "actor_aliases": [
+        "chị",
+        "em"
+      ],
+      "task": "Phối hợp anh Vũ tổ chức diễn tập phòng cháy chữa cháy toàn nhà máy trước khi đoàn kiểm tra xuống",
+      "deadline": "cuối tháng này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Vũ (Trưởng ban Cơ điện - An toàn)",
+      "actor_aliases": [
+        "anh Vũ"
+      ],
+      "task": "Thay 3 đầu báo khói khu B, nạp sạc 6 bình chữa cháy, kẻ vạch sơn lối thoát hiểm",
+      "deadline": "ngày 30/10",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000058"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Vũ (Trưởng ban Cơ điện - An toàn)",
+      "actor_aliases": [
+        "anh",
+        "em"
+      ],
+      "task": "Làm tờ trình đại tu hoặc thay mới máy nén khí số 2 (so sánh chi phí) để đưa vào kế hoạch mua sắm; kiểm tra máy hằng ngày",
+      "deadline": "kế hoạch mua sắm quý IV",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000060"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Không tăng ca Chủ nhật; thuê xưởng Hòa Lợi gia công phần may thân 6.000 áo (tra khóa, hoàn thiện, dò kim làm tại nhà máy, có QC kiểm tại xưởng); tăng ca ngày thường tối đa 2 giờ/ngày chỉ cho người làm thêm dưới 250 giờ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Lô 2 giữ nguyên ngày xuất 8/11, không xin khách lùi",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Xuất trước 1.100 bộ khóa kéo của lô 3 cho lô 2 dùng, bù lại khi khóa về",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "100% áo kể cả áo sửa lại phải qua máy dò kim trước khi đóng thùng; siết quy trình nộp kim gãy; bố trí QC trên chuyền ở công đoạn chần chuyền 6; mỗi bàn hoàn thiện chỉ để một hộp nhãn một cỡ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Lối thoát hiểm phải trống hoàn toàn, kẻ vạch sơn cách 1 m; vải lô 3 dồn sang kho thành phẩm cũ; xử lý đầu báo khói và bình chữa cháy trước khi đoàn kiểm tra xuống",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Tăng ca toàn nhà máy Chủ nhật này và Chủ nhật tuần sau để bù tiến độ lô 2",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Mua thêm một máy dò kim băng tải khoảng 280 triệu đặt ở khu đóng gói tầng hai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016",
+        "TURN_000017"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Chị Loan (Trưởng phòng Kế hoạch sản xuất)",
+      "point": "Lô 2 (16.000 áo, xuất 8/11) mới may xong khoảng 58%, chậm khoảng 2.700 áo do thiếu 9.000 bộ khóa kéo",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Phát (Phụ trách kho nguyên phụ liệu)",
+      "point": "Khóa kéo dự kiến về kho 25/10, có thể trễ nếu hải quan phân luồng vàng; kho còn 1.100 bộ cùng mã của lô 3",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+      "point": "Lô 1 bị khách kiểm cuối đánh rớt với tỷ lệ lỗi 4,1% (vượt AQL 2.5), tái kiểm 3.200 áo; lỗi chần lệch, nhãn cỡ sai và một mũi kim gãy trong áo",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+      "point": "Kim gãy lọt do áo sửa lại không qua máy dò kim lần hai, chỉ có một máy dò kim; công nhân không nộp đủ mảnh kim gãy",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+      "point": "214 công nhân đã làm thêm trên 260 giờ; tăng ca hai Chủ nhật sẽ khiến khoảng 140 người vượt trần 300 giờ/năm, ảnh hưởng đánh giá trách nhiệm xã hội tháng 12",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+      "point": "Chuyền 7 thiếu 18 người, tỷ lệ nghỉ việc tháng 9 khoảng 6%, mới có 7 hồ sơ ứng tuyển",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Chị Loan (Trưởng phòng Kế hoạch sản xuất)",
+      "point": "Đề xuất thuê xưởng vệ tinh Hòa Lợi gia công phần may thân cho khoảng 6.000 áo, đơn giá khoảng 38 nghìn/áo",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Anh Vũ (Trưởng ban Cơ điện - An toàn)",
+      "point": "Đoàn PCCC dự kiến xuống đầu tháng 11; 40 cuộn vải lấn lối thoát hiểm, 3 đầu báo khói khu B lỗi, 6 bình chữa cháy hết hạn",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Vũ (Trưởng ban Cơ điện - An toàn)",
+      "point": "Máy nén khí số 2 rò dầu, chạy 11 năm, cần đại tu hoặc thay mới khoảng 350 triệu",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Ông Hiếu (Giám đốc nhà máy)",
+    "KH": "Chị Loan (Trưởng phòng Kế hoạch sản xuất)",
+    "MER": "Chị Ngọc (Điều phối đơn hàng khách Nhật)",
+    "KHO": "Anh Phát (Phụ trách kho nguyên phụ liệu)",
+    "QC": "Anh Tùng (Trưởng bộ phận Quản lý chất lượng)",
+    "NS": "Chị Mai Anh (Trưởng phòng Nhân sự - Hành chính)",
+    "CD": "Anh Vũ (Trưởng ban Cơ điện - An toàn)"
+  },
+  "tags": [
+    "dense_actions_closing",
+    "deadline_variety",
+    "superseded_decision"
+  ]
+}

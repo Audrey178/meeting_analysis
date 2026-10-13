@@ -1,0 +1,210 @@
+{
+  "meeting_id": "synth_019",
+  "n_turns": 26,
+  "total_chars": 6182,
+  "boundaries": [
+    10,
+    19
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Đánh giá doanh số tháng 10 và chốt chương trình khuyến mãi mùa lạnh",
+      "summary": "Doanh số tháng 10 giảm 6% do mưa kéo dài; ban đầu chốt giảm giá 20% đồ uống nóng, sau khi kế toán tính biên lợi nhuận thì đổi sang chương trình mua 2 tặng 1 bánh vào khung 14-17 giờ.",
+      "turn_range": [
+        0,
+        10
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000010"
+      ],
+      "chars": 2754,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Tuyển dụng nhân viên part-time cho mùa cao điểm Tết",
+      "summary": "Cần tuyển thêm khoảng 40 nhân viên part-time cho 18 chi nhánh từ giữa tháng 12; thống nhất tăng lương giờ cao điểm lên 30 nghìn, ưu tiên sinh viên ở lại Tết và giới thiệu nội bộ có thưởng.",
+      "turn_range": [
+        10,
+        19
+      ],
+      "turn_ids": [
+        "TURN_000011",
+        "TURN_000019"
+      ],
+      "chars": 1973,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xử lý sự cố máy pha cà phê chi nhánh Quận 7",
+      "summary": "Máy pha espresso chi nhánh Quận 7 hỏng lần thứ ba trong tháng, nhà cung cấp hết bảo hành; thống nhất điều chuyển máy dự phòng từ kho sang ngay và đưa máy cũ đi đại tu, cân nhắc thay máy mới trong ngân sách năm sau.",
+      "turn_range": [
+        19,
+        26
+      ],
+      "turn_ids": [
+        "TURN_000020",
+        "TURN_000026"
+      ],
+      "chars": 1455,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Khôi (Trưởng nhóm Marketing)",
+      "actor_aliases": [
+        "anh Khôi"
+      ],
+      "task": "Lên kế hoạch truyền thông và ấn phẩm tại quán cho chương trình mua 2 tặng 1 bánh",
+      "deadline": "gửi duyệt trước thứ Sáu (dự kiến thứ Năm)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Hồng (Kế toán trưởng)",
+      "actor_aliases": [
+        "chị Hồng"
+      ],
+      "task": "Theo dõi hiệu quả chương trình hằng tuần, báo cáo nếu sau 2 tuần lợi nhuận khung chiều không tăng",
+      "deadline": "báo cáo mỗi thứ Hai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Diệp (Phụ trách nhân sự)",
+      "actor_aliases": [
+        "chị Diệp"
+      ],
+      "task": "Đăng tuyển part-time Tết, đủ 40 người",
+      "deadline": "đăng ngay tuần này, đủ trước 10/12",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016",
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Lộc (Quản lý khu vực phía Nam)",
+      "actor_aliases": [
+        "anh Lộc"
+      ],
+      "task": "Điều chuyển và lắp máy pha dự phòng sang chi nhánh Quận 7; đưa máy cũ đi đại tu, xin báo giá",
+      "deadline": "trong ngày mai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000023",
+        "TURN_000024"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Chương trình mùa lạnh: mua 2 đồ uống tặng 1 bánh, khung 14-17h, từ 5/11 đến hết tháng 12, toàn chuỗi, không áp dụng đơn giao hàng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Lương giờ part-time 30 nghìn từ 15/12 đến hết tháng Giêng, phụ cấp Tết 50 nghìn/ca từ 26 Tết đến mùng 6, thưởng giới thiệu 300 nghìn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Điều chuyển máy dự phòng sang Quận 7, đại tu máy cũ thay vì sửa vặt",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Giảm giá 20% toàn bộ đồ uống nóng tháng 11 và 12",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Làm lại bộ câu hỏi phỏng vấn và bài kiểm tra pha chế cho part-time",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Thay máy pha mới 120 triệu cho chi nhánh Quận 7 (để xem ngân sách năm sau)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Khôi (Trưởng nhóm Marketing)",
+      "point": "Doanh số tháng 10 khoảng 4,1 tỷ, giảm 6%, khung 14-17h giảm 18% do mưa; đơn giao hàng tăng 11%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Chị Hồng (Kế toán trưởng)",
+      "point": "Giảm 20% làm biên lợi nhuận từ 58% xuống 47%, cần tăng lượng bán ≥25%; đề xuất mua 2 tặng 1 bánh khung chiều",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Diệp (Phụ trách nhân sự)",
+      "point": "Cần 40 part-time Tết, lương 25 nghìn/giờ thấp hơn thị trường 28-30 nghìn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    }
+  ],
+  "speakers": {
+    "QL": "Chị Vân (Giám đốc vận hành)",
+    "MK": "Anh Khôi (Trưởng nhóm Marketing)",
+    "NS": "Chị Diệp (Phụ trách nhân sự)",
+    "KV": "Anh Lộc (Quản lý khu vực phía Nam)",
+    "TC": "Chị Hồng (Kế toán trưởng)"
+  },
+  "tags": [
+    "short_meeting",
+    "superseded_decision",
+    "unassigned_task"
+  ]
+}
