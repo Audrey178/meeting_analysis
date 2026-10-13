@@ -135,11 +135,11 @@ Bước tiền xử lý chỉ dùng luật. Nó ưu tiên nội dung và tên ng
 \label{sec:dsvi}
 
 \paragraph{Mô hình.}
-\dsvi{} giữ kiến trúc hai nhánh của DialSTART với backbone BERT tiếng Việt vibert4news.\footnote{\url{https://huggingface.co/NlpHUST/vibert4news-base-cased}} Nhánh chủ đề sinh vector $e_i$ cho từng lượt nói (tối đa 256 token). Nhánh liền mạch là một bộ phân loại câu kế tiếp (NSP), chấm mức độ lượt $u_{i+1}$ tiếp nối hợp lý ngữ cảnh trước đó. Điểm của khe $i$, nằm giữa $u_i$ và $u_{i+1}$, với cửa sổ $w = 2$ là
+\dsvi{} giữ kiến trúc hai nhánh của DialSTART với backbone BERT tiếng Việt vibert4news.\footnote{\url{https://huggingface.co/NlpHUST/vibert4news-base-cased}} Nhánh chủ đề sinh vector $e_i$ cho từng lượt nói. Nhánh liền mạch là một bộ phân loại câu kế tiếp (NSP), chấm mức độ lượt $u_{i+1}$ tiếp nối hợp lý ngữ cảnh trước đó. Điểm của khe $i$, nằm giữa $u_i$ và $u_{i+1}$, với cửa sổ $w = 2$ là
 \begin{equation}
   s_i = \sigma\Big( \mathrm{NSP}\big(u_{\le i}, u_{i+1}\big) + \cos\big(\bar e_{i-w+1:i},\, \bar e_{i+1:i+w}\big) \Big),
 \end{equation}
-trong đó $\bar e_{a:b}$ là trung bình các vector chủ đề từ $a$ đến $b$, và ngữ cảnh trái giữ 256 token cuối, sát khe. Điểm càng thấp thì hai bên khe càng kém liền mạch.
+trong đó $\bar e_{a:b}$ là trung bình các vector chủ đề từ $a$ đến $b$. Điểm càng thấp thì hai bên khe càng kém liền mạch.
 
 \paragraph{Dữ liệu huấn luyện tiếng Việt.}
 Vì chưa có dữ liệu có nhãn, chúng tôi dùng LLM sinh các hội thoại đơn chủ đề theo từng lĩnh vực, rồi ghép thành phiên nhiều chủ đề. Bốn lĩnh vực được giữ riêng làm tập kiểm tra ngoài miền, và không tài liệu nguồn nào xuất hiện ở hai tập. Quá trình này phát hiện hai lỗi mà một mô hình dễ khai thác:
@@ -385,7 +385,6 @@ Dữ liệu Quốc hội là văn bản công khai. Biên bản họp dự án c
     \multicolumn{2}{l}{\emph{\dsvi{}}} \\
     Backbone & vibert4news \\
     Cửa sổ chủ đề $w$ & 2 \\
-    Số token tối đa mỗi lượt & 256 \\
     Batch / số epoch / dừng sớm & 32 / 5 / 2 \\
     \midrule
     \multicolumn{2}{l}{\emph{Post-processing}} \\
