@@ -1,0 +1,664 @@
+% DiVA -- bản thảo theo template ACL (acl-org/acl-style-files).
+% Biên dịch bằng pdfLaTeX: latexmk -pdf diva.tex
+% (cần gói vntex cho bảng mã T5 tiếng Việt; Overleaf có sẵn).
+\documentclass[11pt]{article}
+
+% "review" = bản nộp ẩn danh; "preprint" = bản có tên tác giả và số trang; "final" = bản camera-ready.
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T5]{fontenc}   % tiếng Việt (theo hướng dẫn của template ACL)
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric}
+
+\setlist{nosep,leftmargin=*}
+\renewcommand{\abstractname}{Tóm tắt}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\tablename}{Bảng}
+\newcommand{\pchot}{p_{\text{chốt}}}
+\newcommand{\diva}{\textsc{DiVA}}
+\newcommand{\code}[1]{{\fontencoding{T1}\selectfont\texttt{#1}}}
+
+\title{DiVA: Sinh biên bản họp tiếng Việt grounded\\
+bằng Topic Segmentation và Multi-Agent Verification}
+
+\author{Ẩn danh \\
+  \texttt{anonymous@example.com}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Ở cơ quan nhà nước, doanh nghiệp hay nhóm dự án, cuộc họp là nơi ra quyết định và giao việc. Biên bản
+họp vì thế phải đúng về \emph{trách nhiệm}: ai làm gì, hạn khi nào, đã thống nhất gì, và việc cũ tiến
+triển ra sao. Chúng tôi đề xuất \diva{}, một framework sinh biên bản \emph{grounded} từ ASR transcript
+tiếng Việt, trong đó mỗi mục đều trỏ về câu nói làm bằng chứng. \diva{} gồm ba thành phần: (i) topic
+segmentation dựa trên DialSTART huấn luyện lại cho tiếng Việt; (ii) một \emph{decision model} trả về xác
+suất đã calibrated cho từng dialogue act (giao việc, kết luận, đề xuất\ldots), dùng làm routing layer; và
+(iii) các LLM agent điều phối bằng LangGraph, trong đó chỉ các mục mơ hồ mới đi qua ReAct verifier và
+consensus protocol với extraction agent. Boundary selection nâng điểm segmentation trên dữ liệu thật từ
+0,39 lên 0,64. Decision model nhận diện lời giao việc với F1 0,89 (keyword rules: 0,68) và ECE 0,04, nên
+chỉ khoảng 20\% lượt nói cần đến bước verification. Trên một cuộc họp có danh sách việc, hệ thống xác định
+đúng trạng thái cả 4 việc.
+\end{abstract}
+
+%======================================================================
+\section{Giới thiệu}
+%======================================================================
+
+Phần lớn quyết định của một tổ chức được đưa ra trong cuộc họp: giao ban UBND, họp dự án đầu tư, họp
+sprint của nhóm phần mềm. Sau cuộc họp, tổ chức cần biên bản ghi rõ \emph{ai làm gì, hạn khi nào, đã thống
+nhất gì}; danh sách việc này cũng là chương trình kiểm điểm của cuộc họp sau. LLM đã viết tóm tắt rất trôi
+chảy, nhưng một biên bản dùng được đòi hỏi đúng trách nhiệm. Các lỗi thường gặp gồm: ghi một \emph{đề xuất}
+thành \emph{quyết định}; giao nhầm người (``anh Sơn'' khi có hai người tên Sơn); bỏ sót lời giao việc khẩu
+ngữ (``anh Phong gửi giúp em trong tuần này được không ạ?''); hay báo ``đã xong'' cho việc vừa bị yêu cầu
+làm lại.
+
+Bài toán khó vì bốn lý do: transcript dài, nhiều chủ đề đan xen; dialogue act phụ thuộc vai người nói và
+văn phong (cùng câu ``đề nghị\ldots'' là chỉ đạo khi chủ trì nói, là kiến nghị khi thành viên nói); người
+nhận việc có thể là cá nhân, phòng ban hay đối tác với cách gọi rất lỏng; và gần như chưa có dữ liệu tiếng
+Việt có nhãn. Gọi một LLM rồi tin kết quả thì không kiểm soát được hallucination, còn cho nhiều agent
+tranh luận về mọi mục thì quá đắt.
+
+\diva{} giải quyết theo hướng \emph{grounded extraction} cộng \emph{selective verification}: cuộc họp được
+cắt thành chủ đề và xử lý song song; mỗi mục trích ra phải chỉ được câu nói làm bằng chứng; một decision
+model rẻ và calibrated quyết định mục nào chắc chắn, mục nào mơ hồ; chỉ mục mơ hồ mới được chuyển cho
+verifier agent. Khi không chắc, mục được giữ lại và đánh dấu cho người duyệt thay vì bị xoá.
+
+\paragraph{Đóng góp.}
+\begin{enumerate}
+  \item Phát biểu bài toán sinh biên bản họp grounded gồm bốn đầu ra: diễn biến, giao việc, kết luận,
+        tiến độ (\S\ref{sec:problem}).
+  \item \diva{}, một framework selective verification trên LangGraph, dùng \emph{decision model} làm
+        routing layer giữa các LLM agent (\S\ref{sec:method}, \S\ref{sec:stack}).
+  \item Thực nghiệm trên ba bối cảnh họp (cơ quan nhà nước, doanh nghiệp/dự án, Quốc hội), cho thấy giá
+        trị của calibration khi routing và các điểm còn yếu (\S\ref{sec:results}).
+\end{enumerate}
+
+%======================================================================
+\section{Bài toán}
+\label{sec:problem}
+%======================================================================
+
+\subsection{Bối cảnh họp}
+
+Chúng tôi xét các cuộc họp có mục đích \emph{ra quyết định và phân công}, phân biệt với hội thảo hay buổi
+trình bày một chiều. Ba bối cảnh tiêu biểu có đặc điểm khác nhau (Bảng~\ref{tab:settings}), nhưng cùng
+cần một biên bản có căn cứ.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.22\linewidth}L{0.7\linewidth}@{}}
+\toprule
+\textbf{Bối cảnh} & \textbf{Đặc điểm} \\
+\midrule
+Cơ quan nhà nước & Có người chủ trì rõ; chỉ đạo theo thứ bậc (``đề nghị Sở\ldots''); việc thường giao
+cho đơn vị, có bên chủ trì và bên phối hợp; có thông báo kết luận. \\
+Doanh nghiệp, dự án & Văn phong khẩu ngữ; nhiều việc tự nhận (``để em làm''); giao cho cá nhân, nhóm
+hoặc đối tác; hạn tương đối (``thứ Sáu này'', ``sau sprint''). \\
+Nghị trường, hội đồng & Phát biểu dài, một lượt chứa nhiều vấn đề; ít giao việc, nhiều kiến nghị và
+biểu quyết. \\
+\bottomrule
+\end{tabular}
+\caption{Ba bối cảnh họp và đặc điểm ảnh hưởng tới việc soạn biên bản.}
+\label{tab:settings}
+\end{table}
+
+\subsection{Biên bản cần gì}
+
+Bảng~\ref{tab:requirements} tóm tắt các yêu cầu chung, rút ra từ quy trình soạn biên bản và các biên bản
+thật nhóm thu thập được. Cả bốn phần có chung một yêu cầu: \textbf{truy vết được}, tức mỗi mục chỉ ra
+được câu nói làm căn cứ để người duyệt kiểm tra trong vài giây thay vì nghe lại cả cuộc họp.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.2\linewidth}L{0.72\linewidth}@{}}
+\toprule
+\textbf{Phần} & \textbf{Yêu cầu} \\
+\midrule
+Diễn biến & Ý kiến chính của từng người theo nội dung; đúng người phát biểu. \\
+Giao việc & Chỉ ghi khi có người có thẩm quyền giao hoặc có người tự nhận; đúng người/đơn vị và vai
+trò chủ trì/phối hợp; hạn quy được về ngày. \\
+Kết luận & Phân biệt nội dung đã chốt với đề xuất chưa được chấp nhận. \\
+Tiến độ & Không bỏ việc cũ nào; biết việc nào chưa được báo cáo, quá hạn, bị yêu cầu làm lại. \\
+\bottomrule
+\end{tabular}
+\caption{Bốn phần của biên bản và yêu cầu tương ứng.}
+\label{tab:requirements}
+\end{table}
+
+\subsection{Phát biểu hình thức}
+
+Đầu vào là bản ghi $\mathcal{T}=(u_1,\dots,u_n)$, mỗi lượt nói có người nói và nội dung. Kèm theo có thể
+có ngày họp, người điều hành, danh sách người/đơn vị tham dự, và danh sách việc cần báo cáo $\mathcal{G}$
+(mỗi việc có bên phụ trách, hạn và trạng thái trước cuộc họp). Đầu ra gồm bốn tập:
+\begin{itemize}
+  \item \textbf{Diễn biến} $\mathcal{D}$: luận điểm (người nói, nội dung, $E$);
+  \item \textbf{Giao việc} $\mathcal{A}$: (nội dung, các bên nhận việc kèm vai trò, hạn, $E$, $t^{*}$);
+  \item \textbf{Kết luận} $\mathcal{C}$: (nội dung, $E$, $t^{*}$);
+  \item \textbf{Tiến độ} $\mathcal{P}$: mỗi $g\in\mathcal{G}$ có trạng thái mới trong \{xong, đang làm,
+        vướng mắc, phải làm lại, hoãn, chỉ được nhắc, không được báo cáo\} kèm bằng chứng.
+\end{itemize}
+$E$ là tập lượt nói làm bằng chứng; $t^{*}$ là \emph{lượt quyết định} (lượt giao/nhận việc hoặc lượt
+chốt). Ràng buộc căn cứ: mọi bằng chứng là lượt nói thật; mọi việc giao và kết luận sau verification phải
+có lượt quyết định, có thể nằm ở phần khác của cuộc họp; và không việc nào trong $\mathcal{G}$ bị bỏ
+khỏi đầu ra.
+
+\subsection{Thách thức}
+\begin{description}
+  \item[T1 Ngữ cảnh dài.] Phải cắt cuộc họp thành chủ đề, nhưng lời giao việc ở chủ đề này có thể được
+        chốt ở chủ đề khác.
+  \item[T2 Dialogue act.] Giao việc, tự nhận việc, kết luận, đề xuất và báo cáo phân biệt theo
+        \emph{nghĩa} và \emph{vai người nói}, không theo từ khoá; văn phong khác nhau giữa các bối cảnh.
+  \item[T3 Trách nhiệm.] Người nhận việc là cá nhân, nhóm hay đơn vị, nhiều bên, cách gọi không chuẩn.
+  \item[T4 Chi phí và độ tin cậy.] Verify mọi mục bằng LLM quá đắt; không verify thì hallucination lọt ra.
+  \item[T5 Dữ liệu ít và lệch.] Ít dữ liệu có nhãn, dữ liệu tổng hợp khác dữ liệu thật, nhãn người nói
+        không tin cậy.
+\end{description}
+
+%======================================================================
+\section{Công trình liên quan}
+%======================================================================
+
+\paragraph{Tóm tắt và trích xuất từ cuộc họp.} Các nghiên cứu trên AMI và ICSI
+\citep{carletta2005ami,janin2003icsi} gồm phát hiện việc cần làm \citep{purver2007actionitems} và tóm tắt
+theo truy vấn \citep{zhong2021qmsum}. Chúng chủ yếu cho tiếng Anh, ít đòi hỏi trích dẫn tới từng câu,
+không định danh đơn vị và không theo dõi tiến độ việc qua các cuộc họp. Các công cụ họp thương mại sinh
+tóm tắt và danh sách việc nhưng thường không cho biết mục nào dựa vào câu nói nào, và chưa hỗ trợ tốt
+tiếng Việt.
+
+\paragraph{Topic segmentation hội thoại.} Các phương pháp đi từ đo tương đồng giữa hai cửa sổ
+\citep{hearst1997texttiling} và phân cụm trên embedding \citep{gklezakos2024treeseg} tới chấm điểm mạch
+lạc giữa các lượt nói \citep{xing2021coherence,gao2023dialstart}. Hầu hết được đánh giá khi biết trước số
+chủ đề; chọn độ mịn khi chạy thật là điểm chúng tôi tập trung xử lý.
+
+\paragraph{LLM agent và self-verification.} ReAct \citep{yao2023react} xen kẽ suy luận và tra cứu. Multi-agent debate \citep{du2023debate,liang2023divergent} và self-correction \citep{madaan2023selfrefine,gou2024critic}
+dùng phản hồi để cải thiện đầu ra. Confidence-based routing
+\citep{geifman2017selective,chen2023frugalgpt} chỉ chuyển sang mô hình đắt khi cần. \diva{} kết hợp hai
+hướng: routing bằng xác suất calibrated, và tranh luận \emph{có neo bằng chứng, có ngân sách,
+có quy tắc an toàn}, chỉ dành cho phần mơ hồ.
+
+\paragraph{Structured output và decision model.} Cách phổ biến để dùng LLM làm classifier là ép
+đầu ra theo một JSON schema rồi đọc nhãn mô hình sinh ra. Cách này cho \emph{một} nhãn chứ không cho độ tin
+cậy đáng tin; xác suất của mạng nơ-ron hiện đại vốn thường calibrated kém \citep{guo2017calibration}.
+Decision model đi theo hướng khác: đầu ra là phân bố trên một tập lựa chọn được khai báo. \diva{} khai
+thác đúng tính chất này để biến ngưỡng xác suất thành chính sách routing giữa các agent.
+
+%======================================================================
+\section{Phương pháp \diva{}}
+\label{sec:method}
+%======================================================================
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  font=\small, x=0.96cm,
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=2.6em, inner sep=3pt, fill=white},
+  dec/.style={draw, diamond, aspect=2, align=center, inner sep=0pt, fill=white},
+  arr/.style={-{Latex[length=2mm]}}]
+  \node[box] (asr) at (-0.4,0) {ASR\\transcript};
+  \node[box] (seg) at (1.6,0) {Topic segmentation\\(\S\ref{sec:seg})\\{\scriptsize\itshape\color{blue!50!black} PyTorch, ViBERT}};
+  \node[box] (ext) at (5.6,0) {Extraction agents\\diễn biến $\cdot$ giao việc\\kết luận $\cdot$ tiến độ\\{\scriptsize\itshape\color{blue!50!black} generative LLM (gemma)}};
+  \node[dec] (tri) at (8.9,0) {Decision\\model\\{\scriptsize\itshape\color{blue!50!black} Decisions API}};
+  \node[box] (ok)  at (11.6,1.15) {Accept};
+  \node[box] (ver) at (11.6,-1.15) {ReAct verifier\\+ consensus\\{\scriptsize\itshape\color{blue!50!black} GPT-4o-mini}};
+  \node[box] (out) at (14.2,0) {Biên bản\\+ audit\\trail\\{\scriptsize\itshape\color{blue!50!black} FastAPI, Redis}};
+  \node[box, fill=gray!10, minimum height=1.8em] (reg) at (5.6,2.75)
+       {Danh bạ toàn cuộc họp: người nói, người điều hành, đơn vị, việc cũ};
+  \draw[arr] (asr) -- (seg);
+  \draw[arr] (seg) -- node[below, font=\scriptsize]{$K$ chủ đề} (ext);
+  \draw[arr] (ext) -- (tri);
+  \draw[arr] (tri.north) |- node[pos=0.25, left, font=\scriptsize]{chắc chắn} (ok.west);
+  \draw[arr] (tri.south) |- node[pos=0.25, left, font=\scriptsize]{mơ hồ} (ver.west);
+  \draw[arr] (ok.east) -| (out.north);
+  \draw[arr] (ver.east) -| (out.south);
+  \draw[arr, dashed] (reg) -- (ext);
+  \node[above=1pt of reg, font=\scriptsize\itshape, text=blue!50!black] {điều phối map--reduce bằng LangGraph};
+  \begin{scope}[on background layer]
+    \node[draw, dashed, rounded corners, fill=blue!4, inner xsep=5pt, inner ysep=4pt,
+          fit=(ext) (tri) (ok) (ver),
+          label={[font=\scriptsize]below:xử lý song song cho từng chủ đề}] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{Tổng quan \diva{}. Kiểm tra rẻ chạy cho mọi mục; chỉ các mục mơ hồ được chuyển sang verifier agent có công cụ tra cứu toàn cuộc họp và consensus protocol.}
+\label{fig:overview}
+\end{figure*}
+
+Hình~\ref{fig:overview} tóm tắt \diva{}. Thiết kế dựa trên ba nguyên tắc:
+\begin{description}
+  \item[P1 Căn cứ trước, nội dung sau.] Mọi agent phải chỉ ra lượt nói làm căn cứ trước khi viết nội
+        dung hay đưa ra kết luận.
+  \item[P2 Chi phí tỉ lệ với mức nghi ngờ.] Kiểm tra rẻ chạy cho mọi mục; verification đắt chỉ chạy cho
+        mục mơ hồ.
+  \item[P3 An toàn khi không chắc.] Lỗi hệ thống hay bất đồng không giải quyết được thì \emph{giữ} mục
+        kèm dấu hiệu cho người duyệt, không tự xoá.
+\end{description}
+
+\subsection{Topic segmentation dựa trên coherence}
+\label{sec:seg}
+
+Chúng tôi huấn luyện lại DialSTART \citep{gao2023dialstart} cho tiếng Việt. Với mỗi gap $g$ giữa hai lượt
+nói liên tiếp, mô hình cho coherence score kết hợp hai tín hiệu: lượt sau có \emph{nối tiếp} lượt trước
+không, và hai cửa sổ hai bên có \emph{cùng chủ đề} không:
+\begin{equation}
+\mathrm{score}(g)=\sigma\big(\mathrm{coh}(u_{\le g},u_{g+1})+\cos(\bar{\mathbf{e}}_{\text{trái}},\bar{\mathbf{e}}_{\text{phải}})\big).
+\end{equation}
+Gap có điểm ``lõm'' sâu so với hai đỉnh lân cận là ứng viên ranh giới.
+
+Mô hình gốc được đánh giá với \emph{số chủ đề đã biết}, điều không có khi chạy thật. Chúng tôi đề xuất boundary selection gồm bốn bước: (1) làm mượt điểm để bỏ các chỗ lõm giả do câu xen ngang (``Vâng'', ``Mời
+anh\ldots''); (2) giữ gap sâu hơn một ngưỡng thích nghi theo phân bố điểm của chính cuộc họp đó; (3) bỏ
+đoạn quá ngắn, với độ dài tối thiểu tỉ lệ theo độ dài cuộc họp; (4) tách đoạn vượt giới hạn xử lý của LLM.
+Nhờ vậy cùng một cấu hình chạy được cho cuộc họp từ 5 nghìn tới 260 nghìn ký tự.
+
+\subsection{Xử lý song song với ngữ cảnh toàn cuộc họp}
+
+Xử lý chủ đề tuần tự để mang thông tin người nói sang chủ đề sau làm thời gian tăng tuyến tính theo số
+chủ đề. \diva{} dựng \emph{một lần} một \textbf{danh bạ} cho cả cuộc họp (người nói, người điều hành,
+người/đơn vị tham dự, danh sách việc), rồi xử lý mọi chủ đề song song và độc lập. Mỗi chủ đề có các extraction agent riêng cho diễn biến, giao việc, kết luận và tiến độ. Prompt mã hoá các quy tắc chung của
+cuộc họp ra quyết định, ví dụ: \emph{lời ``đề nghị/yêu cầu + người/đơn vị + việc'' của người có thẩm quyền
+là giao việc, kể cả khi không có chữ ``giao''; cùng câu đó của một thành viên khác chỉ là đề xuất}; và
+\emph{lời một người nói mình sẽ làm việc gì mà không ai phản đối là tự nhận việc}. Kết quả được ghép theo
+thứ tự chủ đề và gộp mục trùng giữa các chủ đề.
+
+\subsection{Decision model}
+\label{sec:decision}
+
+Một decision model $\mathcal{M}$ nhận đầu vào văn bản $x$ và một \emph{câu hỏi khai báo}
+$q=(\text{hướng dẫn},\{(c_j,\text{mô tả}_j)\}_{j=1}^{m})$, rồi trả về phân bố
+$\mathcal{M}(x,q)\in\Delta^{m-1}$ trên các lựa chọn $c_1,\dots,c_m$. Khác với generative LLM, mô hình không
+sinh văn bản, nên không cần phân tích đầu ra và không có lỗi định dạng. \diva{} dùng bốn câu hỏi
+(Bảng~\ref{tab:questions}), đều viết bằng tiếng Việt, với đầu vào là lượt cần xét kèm 2 lượt ngữ cảnh
+đứng trước. Lượt dài hơn 2.500 ký tự được cắt theo câu thành nhiều cửa sổ, cửa sổ trước làm ngữ cảnh cho
+cửa sổ sau. Kết quả được nhớ theo nội dung đầu vào, nên gating và bước triage dùng
+chung lời gọi khi xét cùng một lượt.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.24\linewidth}L{0.68\linewidth}@{}}
+\toprule
+\textbf{Câu hỏi} & \textbf{Lựa chọn và vai trò} \\
+\midrule
+Dialogue act & giao việc, kết luận, đề xuất, bác bỏ, thảo luận, khác. Gating và triage (\S\ref{sec:routing}). \\
+Kiểu việc & báo cáo tại họp / làm ra sản phẩm. Chọn câu hỏi kiểm tiến độ (\S\ref{sec:progress}). \\
+Trạng thái việc & báo cáo xong, đang làm, vướng mắc, yêu cầu làm lại, hoãn, chỉ nhắc, không liên quan. \\
+Trạng thái báo cáo & đã báo cáo, chưa có báo cáo, xin hoãn, yêu cầu báo cáo lại, chỉ nhắc, không liên quan. \\
+\bottomrule
+\end{tabular}
+\caption{Bốn câu hỏi khai báo cho decision model.}
+\label{tab:questions}
+\end{table}
+
+\subsection{Routing theo dialogue act}
+\label{sec:routing}
+
+Gọi $h(\cdot\mid u)=\mathcal{M}(u,q_{\text{DA}})$ là phân bố trên sáu dialogue act của lượt $u$: \emph{giao
+việc} (gồm cả tự nhận việc), \emph{kết luận}, \emph{đề xuất}, \emph{bác bỏ}, \emph{thảo luận}, \emph{khác}.
+Hướng dẫn của câu hỏi yêu cầu xét theo nghĩa và theo vai người nói. Xác suất ``chốt'' là
+\begin{equation}
+\pchot(u)=h(\text{giao việc}\mid u)+h(\text{kết luận}\mid u).
+\end{equation}
+Vì xác suất này calibrated tốt (\S\ref{sec:rq2}), hai ngưỡng $\tau_{\text{thấp}}=0{,}2$ và
+$\tau_{\text{cao}}=0{,}8$ chia lượt nói thành ba vùng có ý nghĩa thực tế: \emph{rõ là không chốt},
+\emph{mơ hồ}, \emph{rõ là chốt}. Câu hỏi này được dùng ở hai chỗ:
+\begin{itemize}
+  \item \textbf{Gating.} Agent giao việc và kết luận chỉ chạy trên chủ đề có ít nhất một lượt
+        với $\pchot\ge\tau_{\text{thấp}}$. Ngưỡng thấp có chủ đích: chạy thừa chỉ tốn chi phí, bỏ nhầm
+        thì mất nội dung.
+  \item \textbf{Triage.} Lượt quyết định mà agent khai cho mỗi mục được đưa qua $h$. Vùng
+        \emph{rõ là chốt} được chấp nhận ngay nếu các kiểm tra luật khác cũng đạt (người nhận việc có
+        thật, không mơ hồ giữa nhiều người); các vùng còn lại chuyển sang verification.
+\end{itemize}
+
+\subsection{Verification có tra cứu và consensus}
+\label{sec:consensus}
+
+\paragraph{Verifier agent} hoạt động theo kiểu ReAct \citep{yao2023react} với ba công cụ chỉ đọc trên
+\emph{toàn bộ cuộc họp}: đọc một lượt nói, tìm lượt liên quan theo từ khoá, và tra ứng viên người/đơn vị
+cho một cách gọi. Kết luận là \emph{giữ}, \emph{sửa}, \emph{bỏ} hoặc \emph{chưa kết luận được}. Agent
+phải chỉ ra lượt quyết định \emph{trước} khi kết luận (P1); kết luận giữ/sửa mà không có lượt quyết định
+có thật bị hạ thành bỏ. Dấu hiệu nghi ngờ của bước triage chỉ là gợi ý, không phải bằng chứng,
+và số bước tra cứu bị giới hạn.
+
+\paragraph{Consensus.} Khi verifier agent không giữ nguyên một mục, phản hồi được gửi lại cho chính
+agent đã trích ra mục đó. Agent này chọn \emph{chấp nhận}, \emph{sửa} (kèm lượt quyết định có thật) hoặc
+\emph{bảo vệ} (chỉ ra lượt quyết định bị bỏ sót). Hai bên trao đổi tối đa $R$ vòng; quy tắc kết thúc ở
+Bảng~\ref{tab:termination} cụ thể hoá P3. Mọi vòng được lưu thành \emph{audit trail} để người duyệt
+xem vì sao một mục được giữ, sửa hay bỏ.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.56\linewidth}L{0.36\linewidth}@{}}
+\toprule
+\textbf{Kết thúc} & \textbf{Kết quả} \\
+\midrule
+Hai bên thống nhất & Theo kết quả thống nhất \\
+Hết vòng, verifier đã kết luận & Theo verifier \\
+Hết vòng, vẫn chưa kết luận được & Giữ mục \textbf{gốc}, đánh dấu \\
+Lỗi hệ thống & Giữ mục \textbf{gốc}, đánh dấu \\
+\bottomrule
+\end{tabular}
+\caption{Quy tắc kết thúc của consensus protocol.}
+\label{tab:termination}
+\end{table}
+
+\subsection{Định danh trách nhiệm}
+
+Mỗi cách gọi người nhận việc (``anh Sơn'', ``team backend'', ``Sở Tài chính chủ trì, phối hợp Sở Xây
+dựng'') được tách thành các bên kèm vai trò (chủ trì, phối hợp, cùng thực hiện). Mỗi bên được chấm điểm
+ứng viên theo ba nguồn, lần lượt ưu tiên: \emph{tên} (khớp đầy đủ, một phần, hay chỉ tên gọi); \emph{ngữ
+cảnh hội thoại} (người đáp lời ngay sau lời giao thường là người nhận việc; người giao việc không tự gọi
+mình bằng tên); và \emph{chức năng} (chức danh hay chức năng của đơn vị khớp nội dung việc). Khi không ứng
+viên nào đủ rõ, việc giao vẫn được giữ kèm danh sách ứng viên và điểm để người duyệt chọn; hệ thống không
+tự đoán.
+
+\subsection{Theo dõi tiến độ việc đã giao}
+\label{sec:progress}
+
+Khi có danh sách việc cũ, progress agent trích trạng thái từng việc được nhắc tới, rồi trạng thái được
+kiểm bằng decision model. Quan sát then chốt là có \textbf{hai kiểu việc}: \emph{việc báo cáo} (``báo cáo
+tình hình các dự án'', ``cập nhật số liệu doanh thu'') xong khi nội dung đã được trình bày tại cuộc họp,
+còn \emph{việc làm ra sản phẩm} (tờ trình, hồ sơ, bản thiết kế, tính năng phần mềm) xong khi sản phẩm đã
+có. Với việc báo cáo, tình trạng của \emph{đối tượng} được báo cáo (``dự án đang làm thủ tục'') là nội
+dung báo cáo, không phải trạng thái của \emph{việc}. Vì vậy \diva{} phân loại kiểu việc trước rồi đặt câu
+hỏi kiểm phù hợp.
+
+Các cập nhật của cùng một việc được gộp theo hai quy tắc: \textbf{lời chỉ đạo của người có thẩm quyền
+thắng lời báo cáo} (báo cáo ``xong'' rồi người điều hành yêu cầu làm lại thì kết quả là \emph{phải làm
+lại}, kèm cờ mâu thuẫn), và cùng loại thì lời muộn hơn thắng. Việc không ai nhắc tới được đánh dấu
+\emph{không được báo cáo}; việc quá hạn mà chưa xong được đánh dấu \emph{quá hạn}. Mỗi việc giao mới cũng
+được xếp quan hệ với danh sách cũ: \emph{việc mới}, \emph{tiếp nối}, \emph{giao lại cho bên khác} hoặc
+\emph{đổi hạn}, giúp cập nhật sổ theo dõi hay công cụ quản lý công việc.
+
+%======================================================================
+\section{Hiện thực hoá và tech stack}
+\label{sec:stack}
+%======================================================================
+
+\diva{} được hiện thực thành một dịch vụ hoàn chỉnh. Bảng~\ref{tab:stack} liệt kê công nghệ ở từng lớp.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.26\linewidth}L{0.66\linewidth}@{}}
+\toprule
+\textbf{Lớp} & \textbf{Công nghệ} \\
+\midrule
+Topic segmentation & PyTorch, HuggingFace Transformers; DialSTART trên \code{vibert4news-base-cased} \\
+Điều phối agent & LangGraph: \code{StateGraph}, subgraph theo chủ đề, \code{Send} cho map--reduce, reducer cộng dồn \\
+Generative LLM & gemma tự triển khai (endpoint tương thích OpenAI) cho gán nhãn chủ đề và trích xuất; GPT-4o-mini với JSON schema strict cho verifier agent \\
+Decision model & OpenAI Decisions API (\code{gpt-6-luna}) \\
+Công cụ tra cứu & BM25 trên âm tiết và cặp âm tiết tiếng Việt, không cần CSDL vector \\
+Dịch vụ & FastAPI; Redis cho cache kết quả và khoá chạy-một-lần; Docker Compose \\
+Giao diện & React 19, TypeScript, Vite, Tailwind CSS \\
+\bottomrule
+\end{tabular}
+\caption{Tech stack của \diva{}.}
+\label{tab:stack}
+\end{table}
+
+\paragraph{Điều phối bằng LangGraph.} Pipeline là một đồ thị trạng thái hai tầng. Đồ thị cha dựng danh
+bạ cuộc họp rồi phát mỗi chủ đề vào một subgraph bằng \code{Send}; các subgraph chạy song song và trả
+kết quả qua reducer cộng dồn; nút tổng hợp sắp lại theo thứ tự chủ đề. Trong subgraph, các extraction agent là các nhánh song song, và mỗi candidate mơ hồ lại được \code{Send} riêng sang verifier agent.
+Một semaphore dùng chung bọc mọi lời gọi LLM để giới hạn tải bất kể số chủ đề.
+
+\paragraph{ReAct không cần tool calling.} Verifier agent được dựng trên giao diện sinh JSON một lượt:
+mỗi bước mô hình trả \{suy nghĩ, hành động, tham số, lượt quyết định, kết luận\}, mã nguồn chạy công cụ và
+đưa observation vào bước sau. Nhờ vậy agent chạy được trên mọi nhà cung cấp tương thích OpenAI, kể cả
+mô hình mở không hỗ trợ tool calling. Thứ tự trường trong schema được dùng như một ràng buộc suy luận:
+lượt quyết định đứng trước kết luận.
+
+\paragraph{Phân vai mô hình.} Mỗi loại mô hình làm đúng việc nó giỏi: mô hình mã hoá chuyên biệt cho topic segmentation (nhanh, chạy cục bộ), decision model cho các câu hỏi phân loại cần xác suất, LLM mở tự triển
+khai cho phần trích xuất chiếm nhiều token, và một LLM khác họ cho bước verification để giảm self-agreement bias.
+
+\paragraph{Vận hành.} Kết quả được cache theo hash của nội dung yêu cầu cùng dấu vân tay của mã nguồn và
+cấu hình, nên đổi prompt là tự vô hiệu cache cũ; từng phần biên bản có thể chạy lại riêng mà không cắt lại
+chủ đề. Giao diện cho người duyệt bấm vào từng mục để xem câu nói làm căn cứ và audit trail.
+
+%======================================================================
+\section{Thiết lập thực nghiệm}
+%======================================================================
+
+\paragraph{Câu hỏi nghiên cứu.}
+\textbf{RQ1}: Có cắt được chủ đề cuộc họp thật mà không cần biết trước số chủ đề?
+\textbf{RQ2}: Decision model có routing sang verification tốt hơn luật từ khoá, trên các bối cảnh
+họp khác nhau?
+\textbf{RQ3}: Có thể bỏ qua trích xuất ở chủ đề không có giao việc/kết luận mà không mất nội dung?
+\textbf{RQ4}: Theo dõi tiến độ có đúng không, và yếu tố nào quyết định độ chính xác?
+\textbf{RQ5}: Thời gian chạy trên cuộc họp dài có chấp nhận được?
+
+\paragraph{Dữ liệu.} Bảng~\ref{tab:data} liệt kê các tập dữ liệu. Tập tổng hợp được sinh có chủ đích để
+phủ cả ba bối cảnh: khoảng 12 cuộc họp cơ quan nhà nước (UBND, sở ngành, công an, phòng chống thiên tai),
+14 cuộc họp doanh nghiệp và dự án (phần mềm, xây dựng, cấp nước, ngân hàng, bán lẻ, bệnh viện, trường
+học), và 4 cuộc họp chỉ có nhãn người nói ẩn danh như đầu ra của speaker diarization.
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.27\linewidth}L{0.65\linewidth}@{}}
+\toprule
+\textbf{Tập} & \textbf{Mô tả} \\
+\midrule
+Quốc hội & 47 phiên Quốc hội khoá XIII có chủ đề gán tay; 12 phiên dùng đánh giá topic segmentation \\
+Họp thật (gold) & 3 cuộc họp cơ quan nhà nước, ranh giới chủ đề đã duyệt \\
+Tổng hợp & 30 cuộc họp thuộc ba bối cảnh; 869 lượt có nhãn dialogue act; 166 kết luận gold \\
+Có danh sách việc & 1 cuộc họp thật (32 lượt, 3 chủ đề), 4 việc có trạng thái gold \\
+Họp dài & 1 cuộc họp thật, 1.259 lượt nói, 14 chủ đề \\
+\bottomrule
+\end{tabular}
+\caption{Dữ liệu thực nghiệm.}
+\label{tab:data}
+\end{table}
+
+\paragraph{Độ đo.} Topic segmentation: $P_k$ \citep{beeferman1999pk}, F1 ranh giới theo dung sai 2k/5k ký tự, và
+điểm tổng hợp $S=\tfrac14(\mathrm{F1}_{2k}+\mathrm{F1}_{5k}+2-2P_k)$. Dialogue act: P, R, F1 và calibration error
+ECE \citep{guo2017calibration}. Tiến độ: số việc có trạng thái khớp gold. Thời gian chạy.
+
+\paragraph{Mô hình.} Theo Bảng~\ref{tab:stack}. Các so sánh ở RQ2--RQ4 dùng cùng decision model với
+các câu hỏi ở Bảng~\ref{tab:questions}; đường cơ sở là bộ luật từ khoá của hệ thống trước. $R=3$ vòng consensus, tối đa 3 lần tra cứu mỗi vòng.
+
+%======================================================================
+\section{Kết quả và phân tích}
+\label{sec:results}
+%======================================================================
+
+Các kết quả dưới đây đánh giá từng thành phần trên các tập khác nhau; chất lượng end-to-end của phần
+Giao việc và Kết luận chưa được đo trên dữ liệu thật có nhãn (xem phần Hạn chế).
+
+\subsection{RQ1: Topic segmentation}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.38\linewidth}ll@{}}
+\toprule
+\textbf{Cấu hình} & \textbf{Dữ liệu} & \textbf{Kết quả} \\
+\midrule
+Biết trước số chủ đề & Tổng hợp & $P_k=0{,}011$ \\
+Chưa có boundary selection & Thật & $P_k=0{,}485$ \\
++ boundary selection (ban đầu) & Thật / TH & $S=0{,}392$ / $0{,}336$ \\
+\textbf{+ boundary selection (đề xuất)} & Thật / TH & $S=\mathbf{0{,}637}$ / $\mathbf{0{,}686}$ \\
+\bottomrule
+\end{tabular}
+\caption{Khoảng cách giữa dữ liệu tổng hợp (TH) và dữ liệu thật trong topic segmentation.}
+\label{tab:seg}
+\end{table}
+
+Bảng~\ref{tab:seg} cho thấy mô hình gần như hoàn hảo trên dữ liệu tổng hợp nhưng hỏng trên cuộc họp thật
+(cắt quá vụn). Boundary selection thu hẹp phần lớn khoảng cách. Tương quan giữa điểm trên hai loại dữ liệu
+chỉ ở mức vừa (Spearman 0,56), nên không nên tinh chỉnh chỉ dựa trên dữ liệu tổng hợp. Trên 12 phiên Quốc
+hội, bỏ bước làm mượt làm F1 giảm từ 0,418 xuống 0,297, là bước có ảnh hưởng lớn nhất. Bối cảnh nghị
+trường cũng cho thấy giới hạn của việc cắt theo lượt nói: ít nhất 49,5\% cặp (đại biểu, phiên họp) có một
+lượt phát biểu chứa nhiều chủ đề, nên mọi phương pháp cắt theo lượt nói đều có một mức sai số không tránh
+được ở bối cảnh này.
+
+\subsection{RQ2: Dialogue act và routing sang verification}
+\label{sec:rq2}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Phương pháp} & \textbf{P} & \textbf{R} & \textbf{F1} \\
+\midrule
+Luật từ khoá & 0,774 & 0,610 & 0,682 \\
+Decision model, $p\ge0{,}5$ & \textbf{0,863} & \textbf{0,928} & \textbf{0,894} \\
+Decision model, $p\ge0{,}8$ & 0,923 & 0,816 & 0,866 \\
+\bottomrule
+\end{tabular}
+\caption{Nhận diện lượt chốt (giao việc/kết luận) trên 869 lượt nói của tập tổng hợp.}
+\label{tab:turnact}
+\end{table}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}lccl@{}}
+\toprule
+\textbf{Vùng} & \textbf{\% lượt} & \textbf{\% là chốt} & \textbf{Xử lý} \\
+\midrule
+$p<0{,}2$ & 31 & 4 & không chốt \\
+$0{,}2\le p<0{,}8$ & 20 & 45 & verification \\
+$p\ge0{,}8$ & 49 & 92 & chấp nhận \\
+\bottomrule
+\end{tabular}
+\caption{Ba vùng routing theo $\pchot$.}
+\label{tab:zones}
+\end{table}
+
+Decision model vượt luật từ khoá rõ rệt (Bảng~\ref{tab:turnact}), với ECE 0,040: khi mô hình nói 90\%
+thì thực tế đúng xấp xỉ 90\%. Tính chất này cho phép dùng ngưỡng như một chính sách vận hành.
+Bảng~\ref{tab:zones} cho thấy chỉ khoảng 20\% lượt nói thật sự mơ hồ, với tỉ lệ đúng gần như tung đồng
+xu; đây đúng là phần nên dành cho bước verification đắt tiền.
+
+Lợi ích lớn nhất nằm ở \textbf{lời giao việc khẩu ngữ}, vốn phổ biến trong họp doanh nghiệp và dự án:
+tỉ lệ nhận ra tăng từ 51\% lên 91\%. Câu ``Anh Phong gửi giúp em trong tuần này được không ạ?'' bị luật
+từ khoá bỏ qua vì là câu hỏi, còn decision model cho $p=0{,}95$; lời đáp ``Được, thứ Sáu này anh gửi cả
+hai'' cũng được nhận là tự nhận việc ($p=0{,}99$). Hai loại còn khó là \emph{việc chưa có người nhận} và
+\emph{quyết định bị thay thế sau đó}; cả hai cần ngữ cảnh rộng hơn vài lượt, đó là lý do verifier agent
+được tra cứu toàn bộ cuộc họp.
+
+\subsection{RQ3: Bỏ qua trích xuất an toàn}
+
+\begin{table}[t]
+\centering\small
+\begin{tabular}{@{}L{0.52\linewidth}L{0.4\linewidth}@{}}
+\toprule
+\textbf{Tiêu chí bỏ qua} & \textbf{Nội dung gold bị mất} \\
+\midrule
+Không có từ khoá giao/chốt & 1 việc giao + 2 kết luận (chỉ bỏ được 3/304 lần chạy) \\
+Lọc riêng theo $p(\text{kết luận})$ & 5/166 kết luận \\
+\textbf{Không lượt nào có $\pchot\ge0{,}2$} & \textbf{0} \\
+\bottomrule
+\end{tabular}
+\caption{Mô phỏng các tiêu chí bỏ qua agent giao việc/kết luận trên 30 cuộc họp tổng hợp.}
+\label{tab:gate}
+\end{table}
+
+Từ khoá vừa không tiết kiệm được gì vừa làm mất nội dung (Bảng~\ref{tab:gate}). Lọc riêng theo từng nhãn
+cũng mất kết luận, vì một số lời chốt kết luận bị xếp vào nhãn giao việc. Gộp hai nhãn thành $\pchot$ ở
+ngưỡng thấp thì không mất mục nào. Phần tiết kiệm bị chặn trên bởi tỉ lệ chủ đề không có giao việc lẫn
+kết luận, khoảng 18\% trên dữ liệu tổng hợp.
+
+\subsection{RQ4: Theo dõi tiến độ}
+
+Trên cuộc họp có danh sách việc (3 việc thật giao từ trước và 1 việc giả lập không được nhắc tới),
+\diva{} xác định đúng trạng thái \textbf{4/4 việc} ở cả 4 lần chạy. Việc giả lập được đánh dấu đúng là
+\emph{không được báo cáo}; yêu cầu ``làm lại tờ trình'' được xếp là \emph{tiếp nối} việc cũ, còn các việc
+phát sinh trong cuộc họp là \emph{việc mới}. Cả cuộc họp tốn 20 lời gọi decision model, so với 13
+khi không có danh sách việc. Ba yếu tố quyết định độ chính xác:
+
+\paragraph{Chất lượng danh sách việc đầu vào.} Ở phiên bản danh sách đầu tiên, 3/6 ``việc cũ'' thực ra
+phát sinh ngay trong cuộc họp. Hệ thống chỉ khớp 3/6, và mỗi lần chạy khớp một bộ 3 việc khác nhau. Định
+nghĩa thế nào là ``việc cũ'' là quyết định của người dùng, không phải lỗi mô hình.
+
+\paragraph{Câu hỏi kiểm phải hợp với kiểu việc.} Với việc ``báo cáo tình hình các dự án'', câu hỏi chung
+xếp lượt trả lời là ``đang làm'' (0,92) vì các dự án đang làm thủ tục; câu hỏi dành cho việc báo cáo xếp
+đúng là ``đã báo cáo'' (0,99). Câu hỏi kiểu việc tách được việc báo cáo (1,00) khỏi việc làm ra sản
+phẩm (tờ trình 0,35; tiếp thu góp ý 0,03).
+
+\paragraph{Phân công giữa generative LLM và decision model.} Câu ``đã giải trình, tiếp thu'' nằm trong một đoạn dài
+nói về đề án ``tiếp tục hoàn thiện'' bị decision model xếp ``đang làm'', và ba cách viết lại câu hỏi đều
+không sửa được mà không làm hỏng trường hợp khác. Vì vậy agent, vốn đọc cả chủ đề, quyết ``xong hay đang
+làm''; decision model chỉ quyết lượt nói là báo cáo, chỉ đạo hay chỉ nhắc tới, và ngăn một kiến nghị của
+thành viên biến việc đã xong thành ``phải làm lại''.
+
+Ngoài ra, LLM mở vẫn có thể cho kết quả khác nhau giữa các lần chạy với cùng đầu vào, và topic segmentation khác
+đi cũng làm prompt thay đổi; so sánh hai cấu hình chỉ có ý nghĩa khi cố định phân đoạn và chạy lặp.
+
+\subsection{RQ5: Thời gian chạy}
+
+Cuộc họp 1.259 lượt, 14 chủ đề được xử lý trong khoảng \textbf{78 giây}, trong đó topic segmentation mất 12 giây
+(đo trước khi có vòng consensus). Nhờ xử lý song song, thời gian không còn tăng tuyến tính theo số chủ
+đề. Chi phí verification mỗi mục mơ hồ bị chặn trên ở 15 lần gọi LLM; trong ví dụ điển hình, verifier agent tìm thấy lời giao việc thật của người điều hành ở lượt khác, extraction agent sửa người nhận việc
+theo đó, và hai bên thống nhất sau 2 vòng, tổng cộng 4 lần gọi.
+
+%======================================================================
+\section{Thảo luận}
+%======================================================================
+
+\paragraph{Ý nghĩa thực tiễn.} \diva{} không thay người soạn biên bản mà chuyển công việc từ \emph{nghe
+lại và viết} sang \emph{duyệt có trích dẫn}. Mỗi mục kèm câu nói làm căn cứ; mục mơ hồ được đánh dấu kèm
+lý do và ứng viên người nhận việc; audit trail cho biết vì sao một mục được giữ hay bỏ. Thiết kế
+``không chắc thì giữ lại và đánh dấu'' chấp nhận nhiều mục cần duyệt hơn để đổi lấy việc không âm thầm mất
+nội dung; ở mọi bối cảnh, sót một việc được giao thường đắt hơn duyệt thừa một mục.
+
+\paragraph{Tổng quát hoá giữa các bối cảnh.} Phần lớn khác biệt giữa các bối cảnh nằm ở \emph{đầu vào
+tuỳ chọn} (người điều hành, danh sách thành viên và đơn vị, danh sách việc cũ) và ở văn phong, chứ không ở
+kiến trúc. Câu hỏi dialogue act của decision model xét theo nghĩa và vai người nói nên xử lý được cả chỉ đạo theo thứ
+bậc lẫn tự nhận việc khẩu ngữ. Những điểm còn phụ thuộc bối cảnh là quy tắc ``ai có thẩm quyền giao việc''
+(rõ ở cơ quan nhà nước, mờ hơn ở nhóm dự án) và cách đặt tên đơn vị.
+
+\paragraph{Giao thức đánh giá đề xuất.} Bước tiếp theo là xây gold end-to-end gồm biên bản thật của
+\emph{cả ba} bối cảnh, có danh sách việc, hai người gán nhãn độc lập, và đo các ablation: tắt cổng trích
+xuất; danh bạ toàn cuộc họp so với ngữ cảnh chuyển dồn; thay đổi hoặc bỏ vòng consensus; verification tra
+cứu toàn cuộc họp so với tranh luận trong đoạn; các topic segmenter khác nhau; câu hỏi tiến độ chung so với
+tuỳ kiểu việc. Kết quả nên được báo cáo riêng theo từng bối cảnh.
+
+%======================================================================
+\section{Kết luận}
+%======================================================================
+
+Chúng tôi phát biểu bài toán sinh biên bản họp tiếng Việt có căn cứ cho các cuộc họp ra quyết định và
+phân công, trong đó đúng \emph{trách nhiệm} quan trọng hơn đẹp câu chữ, và đề xuất \diva{}. \diva{} cắt
+cuộc họp thành chủ đề, xử lý song song bằng LangGraph, và dùng một decision model calibrated để quyết
+định nơi cần trích xuất và nơi cần verification; verification dành cho một agent tra cứu toàn cuộc họp,
+làm việc theo consensus protocol có quy tắc an toàn. Thực nghiệm thành phần trên ba bối cảnh họp cho thấy
+calibration là điều kiện để routing hiệu quả, từ khoá không đủ để nhận ra lời giao việc tiếng
+Việt, và theo dõi tiến độ cần phân biệt việc báo cáo với việc làm ra sản phẩm. Đánh giá end-to-end trên dữ
+liệu thật mở rộng là bước tiếp theo cần thiết.
+
+%======================================================================
+\section*{Hạn chế (Limitations)}
+%======================================================================
+
+\textbf{Chưa có đánh giá end-to-end} cho Giao việc và Kết luận trên dữ liệu thật có nhãn, và chưa kiểm
+chứng được rằng vòng consensus không khiến một bên nhượng bộ sai. \textbf{Dữ liệu thật lệch về cơ quan
+nhà nước}: dữ liệu thật có nhãn (topic segmentation, tiến độ) đều là họp cơ quan nhà nước hoặc Quốc hội; bối cảnh
+doanh nghiệp và dự án hiện chỉ được đánh giá trên dữ liệu tổng hợp. \textbf{Dữ liệu đánh giá nhỏ}: 3 cuộc
+họp cho topic segmentation và 1 cuộc họp cho tiến độ, đều do một người gán nhãn; các khác biệt nhỏ có thể nằm
+trong vùng nhiễu. \textbf{Lệch giữa dữ liệu tổng hợp và thật}: topic segmenter và ngưỡng của decision model
+được chọn phần lớn trên dữ liệu tổng hợp; ngưỡng cho phần tiến độ chưa được calibrate riêng.
+\textbf{Đơn vị là lượt nói}: không tách được lượt nói chứa nhiều chủ đề, và khi speaker diarization gộp
+nhiều người vào một nhãn thì vai người nói có thể bị hiểu sai. \textbf{Self-agreement bias}: agent trả
+lời phản hồi chính là agent đã trích ra mục đó; dùng mô hình khác họ cho verifier chỉ giảm chứ không
+loại bỏ rủi ro này.
+
+\section*{Cân nhắc đạo đức (Ethical Considerations)}
+
+Nội dung họp của cơ quan nhà nước và doanh nghiệp có thể nhạy cảm hoặc là bí mật kinh doanh. Hệ thống nên
+chạy trên hạ tầng được phép, ưu tiên mô hình triển khai nội bộ cho các bước xử lý toàn văn, và chỉ ghi âm
+khi người tham dự đã được thông báo. \diva{} được thiết kế để hỗ trợ, không thay thế, người soạn và người
+duyệt biên bản; biên bản cuối cùng phải do người có trách nhiệm duyệt.
+
+\bibliography{references}
+
+\end{document}
