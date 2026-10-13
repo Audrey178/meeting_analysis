@@ -1,0 +1,54 @@
+% Paper draft on the agentic_v3 meeting-analysis pipeline (ACL template).
+% Only the Method section (sections/method.tex) and its appendix are written so far.
+% acl_latex.tex is the untouched template example, kept for reference.
+\documentclass[11pt]{article}
+
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+% T5 for Vietnamese examples (\vi{...}), T1 stays the default encoding.
+\usepackage[T5,T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\IfFileExists{inconsolata.sty}{\usepackage{inconsolata}}{}
+\usepackage{graphicx}
+
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage[inline]{enumitem}
+\usepackage{xspace}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
+
+% System name: placeholder, pick the final name before submission.
+\newcommand{\method}{\textsc{AgenticV3}\xspace}
+\newcommand{\vi}[1]{{\fontencoding{T5}\selectfont #1}}
+
+\title{\method: Parallel, Verifier-Gated Agents for Grounded Meeting Minutes}
+
+\author{Anonymous submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+% TODO: write after the benchmark (benchmark/PLAN.md, Table 1/2) has numbers.
+\end{abstract}
+
+% \section{Introduction}   % TODO
+% \section{Related Work}   % TODO
+
+\input{sections/method}
+
+% \section{Experiments}    % TODO: benchmark/PLAN.md
+% \section{Limitations}    % TODO
+
+\bibliography{references}
+
+\appendix
+\input{sections/appendix_progress}
+
+\end{document}

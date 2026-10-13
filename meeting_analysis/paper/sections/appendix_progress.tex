@@ -1,0 +1,28 @@
+% Appendix: progress tracking (nodes/progress.py, nodes/progress_act.py).
+\section{Progress tracking against a task agenda}
+\label{app:progress}
+
+When the meeting comes with a task agenda $\mathcal{G}$, \method{} also reports the status of each agenda task.
+This path is deliberately simpler than the one for action items and decisions: updates are checked by a classifier in the evidence-check node and do not enter the Verifier.
+
+\paragraph{Extraction.}
+The Progress agent makes one LLM call per segment.
+It receives the whole agenda (identifier, title, owner, supporting parties, due date, status before the meeting) and selects the tasks the segment talks about itself; there is no keyword pre-filter, because tasks are often discussed without their title being said.
+For each selected task it reports a status in \{\texttt{done}, \texttt{in\_progress}, \texttt{blocked}, \texttt{returned}, \texttt{deferred}, \texttt{mentioned}\}, a status turn, evidence turns, and optionally blockers, a directive and a new deadline.
+
+\paragraph{Checking.}
+A hosted multiple-choice classifier reads the status turn (windowed when long, as in \S\ref{sec:method:evidence}) and returns a distribution over statuses, including ``only mentioned or asked'' and ``not about this task''.
+A separate question first decides whether the task only asks for a report to the meeting or must produce a deliverable (a document, a submission, an approved procedure); report-only tasks are judged with their own status question (reported, not yet ready, asks to postpone, asked to report again).
+\begin{itemize}[nosep,leftmargin=*]
+  \item \emph{Update with a status.} If the classifier confirms the status, it is kept; if it is confident in a different status, the status is corrected; otherwise the update is downgraded to \texttt{mentioned} and flagged uncertain.
+  A generic question about the task's deliverable tends to score the state of a project being mentioned rather than of the task, so it is not allowed to flip between \texttt{done}, \texttt{in\_progress} and \texttt{blocked}.
+  \item \emph{Update marked \texttt{mentioned}.} If every evidence turn is classified as not about the task, the update is removed (the agent linked the wrong task).
+  If a turn about the task is confidently a report (done, in progress, blocked), the status is raised accordingly.
+  A request to redo or postpone is raised to \texttt{returned}/\texttt{deferred} only if the commitment-act test (\S\ref{sec:method:evidence}) also classifies that turn as a directive or conclusion, because the status classifier sees only two preceding turns and cannot tell whether a member's proposal was accepted by the chair.
+\end{itemize}
+
+\paragraph{Aggregation.}
+Finalize reduces the updates of each task across all segments to one row: an update whose status turn is a directive or conclusion overrides a report; between updates of the same kind, the later one wins.
+The reduction never relies on speaker names, because a diarised speaker label may cover several people.
+A task without any update is reported as \texttt{not\_reported}; agenda tasks are never removed.
+New action items are related to the agenda as \texttt{new}, \texttt{follow\_up}, \texttt{reassign} or \texttt{reschedule}: the Action agent may tag an item with an agenda identifier (the schema gains an enumerated \texttt{task\_id} field only when an agenda exists), and the relation is derived from the item's identifier, status, assignees and deadline compared with the agenda entry.

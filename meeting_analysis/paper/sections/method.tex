@@ -1,0 +1,287 @@
+% =====================================================================
+% Section: the agentic_v3 pipeline.
+% Source of truth: meeting_analysis/src/agentic_v3 (graph/, nodes/, actors/, core/).
+% Every number in this section is either a default in V3Config / a constant
+% in the code, or was re-computed from experiments/009_decisions_api on the
+% dev split (synth_001-030). No test-split number appears here.
+% =====================================================================
+
+\section{Method}
+\label{sec:method}
+
+\method{} turns a transcript that has already been split into speaker turns and topic segments into a structured meeting report: topic labels, discussion points, action items (who does what by when), decisions, and, when the meeting reviews a list of ongoing tasks, a progress status per task.
+Three goals shape the design.
+\textbf{(G1)} Wall-clock time should not grow with the number of topics, so topics must be processed independently.
+\textbf{(G2)} LLM verification is expensive, so it should run only on items that cheap signals cannot settle.
+\textbf{(G3)} Every action item or decision in the report must be anchored to the turn in which it was assigned or agreed, and every keep/drop judgement must leave an auditable trace.
+Figure~\ref{fig:pipeline} shows the resulting control flow; the rest of this section follows it from left to right.
+
+\input{figures/pipeline}
+
+% ---------------------------------------------------------------------
+\subsection{Problem setting}
+\label{sec:method:setting}
+
+A meeting is a sequence of speaker turns $\mathcal{T}=(t_1,\dots,t_N)$, where each turn $t_i=(\mathrm{id}_i, s_i, x_i)$ has an identifier, a speaker label, and verbatim text.
+An upstream segmenter partitions $\mathcal{T}$ into contiguous topic segments $S_1,\dots,S_K$; segmentation is outside the scope of this section.
+The meeting may come with optional side information: the chair $c$, the meeting date $d$, an attendee roster $\mathcal{A}$ (people with positions and affiliations, organisations with aliases and areas of responsibility), and a task agenda $\mathcal{G}$ (tasks with an owner, supporting parties, a due date and a status before the meeting).
+
+The pipeline produces four kinds of items.
+An \emph{action item} is $a=(\text{actor}, \text{task}, \text{deadline}, \sigma, \tau, E)$, where $\sigma$ is the status the extractor reports (e.g.\ \texttt{assigned}, \texttt{self\_committed}, \texttt{proposed}), $\tau$ is the \emph{commitment turn} in which the task was assigned or accepted, and $E\subseteq\mathcal{T}$ is the set of evidence turns.
+A \emph{decision} has the same form without actor and deadline; $\tau$ is the turn in which it was concluded or agreed.
+A \emph{discussion point} summarises an issue debated within one segment and lists its participants.
+A \emph{progress update} assigns an agenda task $g\in\mathcal{G}$ one of six statuses (\texttt{done}, \texttt{in\_progress}, \texttt{blocked}, \texttt{returned}, \texttt{deferred}, \texttt{mentioned}) with a status turn.
+Every item must cite turn identifiers that exist in $\mathcal{T}$; items whose citations do not resolve are removed by rule.
+We call an extracted action item or decision a \emph{candidate} until it has passed the checks below.
+
+% ---------------------------------------------------------------------
+\subsection{Meeting-level planning}
+\label{sec:method:planner}
+
+A sequential pipeline that carries context from topic $k$ to topic $k{+}1$ (for instance the names resolved so far, so that ``anh S\ldots'' in topic~5 can be linked to a full name introduced in topic~2) must wait for topic $k$ to finish before it starts topic $k{+}1$.
+In our earlier pipeline this dependency was the only reason for sequential processing, and it made latency linear in $K$.
+
+\method{} replaces the running context with a \emph{speaker registry} $\mathcal{R}$, built once by a rule-based Planner before any topic is processed (zero LLM tokens).
+$\mathcal{R}$ contains the distinct speaker labels of the whole meeting, the roster $\mathcal{A}$, the agenda $\mathcal{G}$, and the chair, whose name is mapped to a speaker label when exactly one label matches it (the chair may also never speak).
+$\mathcal{R}$ is rendered into the prompt of the Action agent as a list of speakers, attendees with positions and affiliations, organisations with aliases, and agenda tasks with identifiers.
+Because $\mathcal{R}$ depends only on the input, the parent graph can dispatch all $K$ segments at once (Figure~\ref{fig:pipeline}, \texttt{Send}$\times K$).
+The registry also changes what each topic sees: an extractor now knows about people who first speak in a \emph{later} topic, and a name that an extractor guesses wrongly in one topic can no longer propagate to the next.
+
+% ---------------------------------------------------------------------
+\subsection{Topic subgraph: labelling and extraction}
+\label{sec:method:extract}
+
+Each segment runs in its own subgraph with private state; the subgraph returns only its output lists, which the parent graph concatenates.
+
+\paragraph{Labelling.}
+The first node gives the segment a title and a short summary.
+Labelling happens inside the subgraph rather than as a global pass, so a segment starts extraction as soon as its own label is ready instead of waiting for the slowest label.
+When a label already exists (e.g.\ when a single report section is recomputed later), it is reused, so all sections of a report refer to the same topic titles.
+
+\paragraph{Extractors.}
+Four extractors then run in parallel on the segment, each with one structured-output (JSON) LLM call:
+the \emph{Content agent} writes discussion points, whose participant lists are derived by rule from the speakers of the cited turns rather than taken from names the model writes;
+the \emph{Action agent} and the \emph{Decision agent} propose action-item and decision candidates;
+the \emph{Progress agent}, active only when $\mathcal{G}\neq\emptyset$, receives the whole agenda, chooses which tasks the segment talks about, and reports a status and a status turn for each.
+Discussion points are a narrative of what was said rather than claims that can be true or false, so they skip verification.
+A failed call is retried inside the subgraph up to $A$ times (Table~\ref{tab:hparams}), so a transient error delays only its own topic.
+
+\paragraph{A shared rubric for assignment.}
+Administrative meetings rarely use an explicit ``X will do Y''.
+We therefore rank evidence for an assignment:
+(i) the chair assigns a task directly;
+(ii) the chair endorses a member's suggestion (``take note of the comments'', ``as Mr.~X said'');
+(iii) a member makes a concrete request that the recipient accepts or does not contest.
+A chair's ``request/propose + party + task'' counts as an assignment even when its grammatical subject is a document (``the proposal needs to clarify \ldots'').
+A chair's closing remarks about authority, procedure, overall assessment or timeline count as decisions.
+The extractors and the Verifier (\S\ref{sec:method:verify}) receive the same rubric text, so the two sides grade a candidate against the same standard.
+Extractors are told to output \texttt{proposed}/\texttt{reported} items only when they are unsure: an item that is certainly not a commitment should be omitted, since each uncertain item costs several verification calls.
+
+\paragraph{Field order as a commitment device.}
+Decoding is left to right, so the order of fields in the output schema is the order in which the model commits to them.
+Every schema places the evidence field before the judgement it supports: the commitment turn precedes the status, the Verifier's \texttt{deciding\_turn\_id} precedes its verdict, and the Proposer's \texttt{confirm\_turn\_id} precedes its stance (\S\ref{sec:method:verify}).
+With the opposite order we observed models choosing a label first and then writing a rationale that contradicts it.
+Free-text fields come last, because our backbone tended to emit unbounded whitespace when a required field followed a long free-text field.
+
+% ---------------------------------------------------------------------
+\subsection{Evidence check: zero-token triage}
+\label{sec:method:evidence}
+
+The evidence check splits the raw candidates of a segment into CLEAR, which go straight to the output, and UNCERTAIN, which go to the Verifier.
+It uses no generative LLM call.
+For an action-item candidate $a$ it collects a set of flags $F(a)$:
+\begin{enumerate}[nosep,leftmargin=*,label=(\arabic*)]
+  \item the actor is missing or does not identify a person or group (a bare pronoun, ``the households'');
+  \item the actor is not grounded: after removing role words such as ``lead'' or ``in coordination with'', some party of the actor appears neither in the segment (text or speaker labels) nor in $\mathcal{R}$;
+  \item the reported status $\sigma\notin\{\texttt{assigned},\texttt{self\_committed}\}$;
+  \item the commitment turn $\tau$ is missing, or the commitment-act test below rejects it;
+  \item $\sigma=\texttt{self\_committed}$ but $\tau$ was spoken by someone other than the actor;
+  \item the actor matches two or more roster candidates and none is clear (\S\ref{sec:method:finalize}).
+\end{enumerate}
+For a decision, the flags are $\sigma\neq\texttt{agreed}$ and a failed commitment-act test on $\tau$.
+A candidate is CLEAR iff $F=\emptyset$.
+All flags are computed on the verbatim turn $\tau$, not on the sentence the extractor wrote, because extractors routinely rewrite proposals into assertive form (``Agreed to \ldots'').
+
+\paragraph{Commitment-act test.}
+Whether $\tau$ actually assigns, accepts or concludes something is the single most informative signal, and keyword rules miss colloquial commitments (\vi{``cứ làm cái này nhá''}, roughly ``just go ahead with this'') while firing on incidental phrases.
+We instead classify $\tau$, given its two preceding turns, into six speech acts: \emph{assign}, \emph{conclude}, \emph{propose}, \emph{reject}, \emph{discuss}, \emph{other}.
+The classifier is a hosted multiple-choice endpoint that returns a probability per label; we use $p_{\text{commit}}=p(\textit{assign})+p(\textit{conclude})$ with two thresholds:
+$p_{\text{commit}}\ge 0.8$ raises no flag; $p_{\text{commit}}<0.2$ raises ``not a commitment''; values in between raise ``unclear'' and attach the label distribution to the flag.
+Turns longer than 2{,}500 characters are cut at sentence boundaries into windows, each window is classified with the previous window as context, and the turn takes the maximum $p_{\text{commit}}$ over windows.
+If the classifier fails, the test falls back to a cue lexicon.
+
+Table~\ref{tab:turnact} motivates this choice on 869 gold-labelled commitment turns from the development meetings.
+The classifier is well calibrated (ECE $=0.040$; \citealp{guo2017calibration}), and the two thresholds leave only 20\% of turns (174/869) in the middle band, where the gold commitment rate is 45\%; above $0.8$ it is 92\% and below $0.2$ it is 4\%.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Commitment test & P & R & F1 \\
+\midrule
+Cue lexicon             & 0.774 & 0.610 & 0.682 \\
+Classifier, $p\ge0.5$   & 0.863 & 0.928 & \textbf{0.894} \\
+Classifier, $p\ge0.8$   & \textbf{0.923} & 0.816 & 0.866 \\
+\midrule
+Band of $p_{\text{commit}}$ & $n$ & \multicolumn{2}{c@{}}{gold-positive rate} \\
+\midrule
+$[0, 0.2)$   & 267 & \multicolumn{2}{c@{}}{0.04} \\
+$[0.2, 0.8)$ & 174 & \multicolumn{2}{c@{}}{0.45} \\
+$[0.8, 1]$   & 428 & \multicolumn{2}{c@{}}{0.92} \\
+\bottomrule
+\end{tabular}
+\caption{Detecting commitment turns on 869 gold-labelled turns from the 30 development meetings (484 positive). The calibrated classifier is used in three bands: confident turns are decided by rule and only the middle band is flagged for the Verifier.}
+\label{tab:turnact}
+\end{table}
+
+The flags are passed on to the Verifier as the reason the candidate was sent, explicitly labelled as hints from an automatic filter rather than evidence (\S\ref{sec:method:verify}).
+Progress updates are checked in the same node with the same kind of classifier (on the status turn instead of the commitment turn) and do not enter the Verifier; Appendix~\ref{app:progress} gives the rules.
+
+% ---------------------------------------------------------------------
+\subsection{Tool-using Verifier with proposer--verifier consensus}
+\label{sec:method:verify}
+
+Each UNCERTAIN candidate is dispatched to its own Verifier instance (\texttt{Send} per item), so verification also runs in parallel.
+The Verifier replaces the debate-and-judge stage of our earlier pipeline, in which a supporter, an opponent and a judge made three sequential calls over the current segment only, in the spirit of multi-agent debate \citep{du2024debate,liang2024mad}.
+That design had two weaknesses on meeting data.
+First, the commitment for a candidate often lies \emph{outside} its segment, typically in the chair's closing summary, which none of the three roles could see.
+Second, it spent three calls on every flagged item regardless of difficulty.
+
+\paragraph{ReAct over JSON.}
+The Verifier is a ReAct agent \citep{yao2023react} built on a single JSON-generation primitive, so it needs no native function calling.
+At each step the model returns \texttt{thought}, \texttt{action}, \texttt{argument}, and, when \texttt{action}$=$\texttt{final}, the fields \texttt{deciding\_turn\_id}, \texttt{verdict}$\in\{$\texttt{keep}, \texttt{revise}, \texttt{drop}, \texttt{unresolved}$\}$, an optional actor choice with a reason, and a free-text \texttt{reasoning}.
+The code executes the tool and appends thought, action and observation to the next prompt.
+After $T$ tool calls the prompt demands a final answer, so a round costs at most $T{+}1$ calls.
+A repeated query is answered with an error observation instead of the same result, and tool errors (unknown turn, empty argument) are returned as observations so the model can correct itself.
+The prompt states the candidate, the extractor's own claims (status, commitment turn, evidence), the evidence-check flags marked as non-evidence, and the transcript of the segment.
+It instructs the Verifier to read the chair's turns near the end of the segment before concluding \texttt{drop}, and, in later rounds, to judge the extractor's argument against the transcript rather than concede because the extractor objected.
+
+\paragraph{Read-only tools over the whole meeting.}
+In the spirit of tool-interactive critiquing \citep{gou2024critic}, the Verifier checks claims against the source rather than against its own recollection.
+All three tools are deterministic and side-effect free:
+\texttt{get\_turn} returns any turn of the meeting verbatim (abbreviated identifiers such as \texttt{T30} are resolved when unambiguous);
+\texttt{search\_meeting} returns the top-$k$ turns of the \emph{whole} meeting for a keyword query, ranked by BM25 \citep{robertson2009bm25} over content syllables and adjacent-syllable pairs (pairs weighted $2\times$, which captures Vietnamese compounds), printed in chronological order with snippets centred on the matches.
+We use BM25 rather than raw term overlap because overlap ranks long turns first and pushes the short closing remarks of the chair, which usually carry the commitment, out of the top-$k$.
+\texttt{lookup\_speaker} takes a mention and optionally the commitment turn (``S\ldots{} @T12'') and returns ranked person and organisation candidates with scores and reasons, using the scoring of \S\ref{sec:method:finalize}.
+
+\paragraph{Grounding rule.}
+A verdict passes through a deterministic check: \texttt{keep} or \texttt{revise} without a \texttt{deciding\_turn\_id} that exists in the meeting is downgraded to \texttt{drop}.
+Unlike the earlier pipeline, the deciding turn may lie in another segment, since the tools expose the whole meeting.
+\texttt{revise} applies only to action items (it corrects the actor); for a decision it is read as \texttt{keep}.
+An actor choice is accepted only if the chosen name is one of the candidates returned by \texttt{lookup\_speaker} and comes with a reason.
+
+\paragraph{Consensus protocol.}
+A Verifier verdict is not final on its own.
+If the verdict is \texttt{keep}, the candidate is settled.
+Otherwise the verdict, the feedback and the Verifier's tool trace go back to the \emph{Proposer}, i.e.\ the same extractor LLM that produced the candidate, which answers with one stance:
+\textbf{accept} settles the candidate as the Verifier proposed (the revised item for \texttt{revise}, removal for \texttt{drop} or \texttt{unresolved});
+\textbf{amend} rewrites the task text and/or actor and names a commitment turn, and the Verifier re-examines the amended candidate in the next round;
+\textbf{defend} keeps the candidate and names the commitment turn the Verifier missed, and the Verifier re-examines it together with the argument.
+The loop ends at consensus or after $R$ rounds (Algorithm~\ref{alg:consensus}).
+This is related to self-refinement with feedback \citep{madaan2023selfrefine} and to verification-then-revision \citep{dhuliawala2024cove}, but feedback and revision come from two roles, and the revising role may push back.
+
+Three safeguards keep the protocol from being gamed by inconsistent outputs.
+\emph{Stance consistency}: an \texttt{accept} of a removal that still names a valid commitment turn is self-contradictory and is read as \texttt{defend}; if an \texttt{accept} names no turn but its argument cites real turn identifiers, one short call (without the transcript) asks whether the argument supports keeping or dropping, and a ``keep'' answer turns the stance into \texttt{defend}.
+\emph{Amendment drift}: an amendment must retain at least half of the content syllables of the original (overlap coefficient over the shorter text); otherwise the Proposer has switched to a different task, the original text is kept and only the new commitment turn or actor is applied.
+\emph{Evidence invariant}: when a commitment turn moves to a turn outside $E$, that turn is added to $E$.
+
+\paragraph{Termination and fail-safe.}
+Without consensus after $R$ rounds the last Verifier verdict is applied (recorded as \texttt{decided\_by}$=$\texttt{verifier}).
+If that verdict is \texttt{unresolved}, or if any LLM call fails, the \emph{original} candidate is kept and marked \texttt{fallback}: infrastructure errors must not delete extracted content, and an amendment that the Verifier has not re-examined never reaches the report.
+Every candidate, whatever its outcome, yields a verification record with all rounds, tool steps, the verdict, the deciding turn and \texttt{decided\_by}$\in\{$\texttt{consensus}, \texttt{verifier}, \texttt{fallback}$\}$, which serves goal G3.
+One round costs at most $T{+}3$ LLM calls ($T{+}1$ Verifier calls, one Proposer reply, at most one stance check), so a candidate costs at most $R(T{+}3)$ calls.
+% TODO(results): report the measured distribution of rounds / tool calls per
+% candidate from the verification records of the test run (code comments say
+% "usually 1-2 calls", but that is not measured yet -- do not claim it here).
+
+\begin{algorithm}[t]
+\caption{Verification of one UNCERTAIN candidate. \textsc{Verify} is one ReAct round ($\le T$ tool calls, then a final verdict $v$ with deciding turn $\tau^\ast$, revised item $\hat a$, feedback $f$ and tool trace $\mathit{tr}$); \textsc{Propose} is the extractor's reply. Any LLM error returns $a_0$ (fallback).}
+\label{alg:consensus}
+\small
+\begin{algorithmic}[1]
+\Require candidate $a_0$, flags $F$
+\State $a \gets a_0$;\; $H \gets [\,]$ \Comment{rounds so far}
+\For{$r = 1,\dots,R$}
+  \State $(v, \tau^\ast, \hat a, f, \mathit{tr}) \gets \Call{Verify}{a, F, H}$
+  \If{$v \neq \texttt{drop}$ \textbf{and} $\tau^\ast \notin \mathcal{T}$}
+    \State $v \gets \texttt{drop}$ \Comment{grounding rule}
+  \EndIf
+  \If{$v = \texttt{keep}$} \Return $\hat a$ \EndIf
+  \State $(\mathit{st}, \tau', \Delta) \gets \Call{Propose}{a, v, f, \mathit{tr}, H}$
+  \State $\mathit{st} \gets \Call{Consistent}{\mathit{st}, v, \tau'}$
+  \State $H \gets H \cup \{(a, v, f, \mathit{st})\}$
+  \If{$\mathit{st} = \texttt{accept}$}
+    \State \Return $\hat a$ \textbf{if} $v = \texttt{revise}$ \textbf{else} $\varnothing$
+  \EndIf
+  \State $a \gets \Call{Apply}{a, \Delta, \tau'}$ \Comment{drift guard}
+\EndFor
+\If{$v = \texttt{unresolved}$} \Return $a_0$ \Comment{fallback} \EndIf
+\State \Return $\varnothing$ \textbf{if} $v = \texttt{drop}$ \textbf{else} $\hat a$
+\end{algorithmic}
+\end{algorithm}
+
+% ---------------------------------------------------------------------
+\subsection{Meeting-level aggregation}
+\label{sec:method:finalize}
+
+When all subgraphs have finished, a rule-based Finalize node assembles the report.
+Subgraphs finish in a nondeterministic order, so all lists are first re-sorted by topic index.
+
+\paragraph{Actor resolution.}
+Administrative meetings often assign tasks to organisations (``the Department of Finance leads, in coordination with the Department of Construction'') and refer to people by given name only, which may be shared.
+A compound actor is first split into parties with roles (\emph{lead}, \emph{support}, \emph{joint}); names on the roster that contain ``and'' (\vi{``Sở Nông nghiệp và Môi trường''}) are protected from splitting.
+Each mention is then scored against speakers, roster people and organisations, in order of priority:
+name match (full name 1.0, partial organisation name 0.7, given name 0.6, organisation-like name absent from the roster 0.6);
+transcript context around $\tau$ ($+0.3$ for the person who speaks right after $\tau$, typically the assignee; $-0.3$ for the speaker of $\tau$ when the task was assigned, since nobody refers to themself as ``Mr.~S\ldots''; $+0.3$ for the speaker of a self-commitment);
+and, only when context does not separate the candidates, overlap between the task text and a candidate's position or areas of responsibility ($+0.1$ per term, at most $+0.3$).
+A candidate is \emph{clear} when its score is at least 0.6 and exceeds the runner-up by at least 0.2.
+Otherwise the actor type becomes \texttt{unknown}, the ranked candidates are kept, and the item is flagged as ambiguous; it is never dropped.
+Items that passed the Verifier keep the Verifier's actor choice.
+
+\paragraph{Duplicate merging.}
+The same task is often discussed in one topic and restated with a deadline in the closing summary.
+Two action items with the same normalised actor are merged when their content syllables have Jaccard similarity $\ge0.45$ \emph{and} overlap coefficient $\ge0.7$; items linked to different agenda tasks are never merged.
+The merged item keeps the version with a deadline (otherwise the longer text), the position of the earlier one, and the union of the evidence.
+Decisions are merged by the same test without the actor condition.
+We set the thresholds on 30 development outputs: they merge 12 pairs, of which 11 are true duplicates; overlap alone over-merges short sentences contained in long conclusions.
+
+\paragraph{Deadlines, progress and agenda links.}
+Spoken deadlines (``before the 15th of November'', ``next week'', ``end of Q4'') are normalised by rule, anchored at the meeting date $d$, into a date and a kind (\texttt{exact}, \texttt{before}, \texttt{end\_of\_period}, \texttt{relative}, \texttt{unknown}); the date proposed by the Action agent is used only when the rule finds none.
+When an agenda is present, progress updates are reduced to one row per task (directive or conclusion turns override report turns; otherwise the later turn wins), a task with no update is reported as \texttt{not\_reported} rather than removed, and each new action item is related to the agenda as \texttt{new}, \texttt{follow\_up}, \texttt{reassign} or \texttt{reschedule} from its fields, without text matching.
+
+% ---------------------------------------------------------------------
+\subsection{Implementation}
+\label{sec:method:impl}
+
+The pipeline is a LangGraph \citep{langgraph} state graph with two levels of fan-out (segments, then UNCERTAIN candidates), both expressed with \texttt{Send}; per-topic outputs are combined with list-concatenation reducers.
+The graph contains no human-in-the-loop interrupt and runs from start to end in one invocation, so it needs no checkpointer.
+Graph-level parallelism and LLM load are controlled separately: the graph may run up to 16 tasks per superstep, while one process-wide semaphore wrapped around every LLM adapter (labeller, extractors, Verifier) caps concurrent LLM calls.
+All generative roles use the same open-weight backbone, \texttt{gemma-4-26B-A4B-it}, served behind an OpenAI-compatible gateway; the commitment classifier of \S\ref{sec:method:evidence} is a separate hosted endpoint.
+Because each extractor produces exactly one report section, a caller can recompute a single section (e.g.\ only action items) on top of stored topic labels without touching the others.
+Table~\ref{tab:hparams} lists all pipeline hyperparameters.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}llr@{}}
+\toprule
+Symbol & Meaning & Value \\
+\midrule
+$A$ & attempts per extractor and topic & 2 \\
+$T$ & Verifier tool calls per round & 3 \\
+$R$ & max.\ consensus rounds & 3 \\
+$k$ & turns returned by \texttt{search\_meeting} & 5 \\
+$k_1, b$ & BM25 parameters & 1.2, 0.75 \\
+-- & commitment bands of $p_{\text{commit}}$ & 0.2 / 0.8 \\
+-- & context turns for the classifier & 2 \\
+-- & amendment retention (min.) & 0.5 \\
+-- & actor clear: score / margin & 0.6 / 0.2 \\
+-- & duplicate: Jaccard / overlap & 0.45 / 0.7 \\
+-- & graph tasks per superstep & 16 \\
+-- & concurrent LLM calls (default) & 8 \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameters of \method{} (defaults of the released configuration). With these values a single UNCERTAIN candidate costs at most $R(T{+}3)=18$ LLM calls.}
+\label{tab:hparams}
+\end{table}

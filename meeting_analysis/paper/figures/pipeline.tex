@@ -1,0 +1,56 @@
+% Figure: control flow of the agentic_v3 graph (graph/meeting.py + graph/topic.py).
+\begin{figure*}[t]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  >={Stealth[length=2mm]},
+  box/.style={draw, rounded corners=2pt, align=center, minimum height=9mm, inner sep=3pt, fill=white},
+  rule/.style={box, fill=gray!15},
+  llm/.style={box, fill=blue!8, draw=blue!55!black},
+  io/.style={align=left, font=\sffamily\footnotesize, inner sep=2pt},
+  arr/.style={->, thick},
+  lab/.style={font=\sffamily\scriptsize, inner sep=1.5pt, align=center},
+]
+% ---------------- inputs and planner ----------------
+\node[io] (in) {\textbf{Input}\\speaker turns $\mathcal{T}$\\segments $S_1,\dots,S_K$\\chair $c$, date $d$\\roster $\mathcal{A}$, agenda $\mathcal{G}$};
+\node[rule, right=7mm of in, minimum width=18mm] (plan) {Planner\\{\scriptsize registry $\mathcal{R}$}};
+
+% ---------------- topic subgraph ----------------
+\node[llm, right=16mm of plan, minimum width=14mm] (label) {Label\\{\scriptsize topic $k$}};
+\node[llm, right=10mm of label, yshift=16.5mm, minimum width=24mm] (content) {Content agent};
+\node[llm, below=2mm of content, minimum width=24mm] (action) {Action agent};
+\node[llm, below=2mm of action, minimum width=24mm] (decision) {Decision agent};
+\node[llm, below=2mm of decision, minimum width=24mm, dashed] (progress) {Progress agent};
+\node[rule, right=46mm of label, minimum width=20mm] (ec) {Evidence check\\{\scriptsize rules + $p_{\text{commit}}$}};
+
+\node[llm, right=24mm of ec, minimum width=24mm] (ver) {Verifier\\{\scriptsize ReAct, $\le T{+}1$ calls/round}};
+\node[llm, above=13mm of ver, minimum width=24mm] (prop) {Proposer\\{\scriptsize extractor that proposed it}};
+\node[io, below=1.5mm of ver, align=center, font=\sffamily\scriptsize] (tools) {read-only tools over the whole meeting:\\\texttt{get\_turn}, \texttt{search\_meeting} (BM25),\\\texttt{lookup\_speaker}};
+
+\begin{scope}[on background layer]
+  \node[draw, dashed, rounded corners=4pt, fill=gray!4, fit=(label)(content)(progress)(ec)(ver)(prop)(tools), inner xsep=6pt, inner ysep=6pt, yshift=2.5mm, minimum height=0pt] (topic) {};
+\end{scope}
+\node[anchor=north west, font=\sffamily\scriptsize\bfseries, inner sep=4pt] at (topic.north west) {Topic subgraph: one instance per segment, all $K$ run concurrently};
+
+% ---------------- finalize and output ----------------
+\node[rule, right=20mm of topic.east |- ver, anchor=west, minimum width=20mm] (fin) {Finalize\\{\scriptsize order, actors,}\\[-2pt]{\scriptsize dedup, progress}};
+\node[io, right=5mm of fin] (out) {\textbf{Report}\\topic labels\\discussion points\\action items\\decisions\\task progress\\audit records};
+
+% ---------------- edges ----------------
+\draw[arr] (in) -- (plan);
+\draw[arr] (plan) -- node[lab, above] {\texttt{Send}\,$\times K$} (label);
+\foreach \n in {content, action, decision, progress} {
+  \draw[arr] (label.east) -- (\n.west);
+  \draw[arr] (\n.east) -- (ec.west);
+}
+\draw[arr] (ec) -- node[lab, above] {UNCERTAIN} node[lab, below] {\texttt{Send}/item} (ver);
+\draw[arr, blue!55!black] ([xshift=-5mm]ver.north) -- node[lab, left] {verdict,\\feedback,\\tool trace} ([xshift=-5mm]prop.south);
+\draw[arr, blue!55!black] ([xshift=5mm]prop.south) -- node[lab, right] {accept /\\amend /\\defend} ([xshift=5mm]ver.north);
+\draw[arr] (ver) -- node[lab, above, pos=0.62] {keep / revise\\/ drop} (fin);
+\draw[arr] (ec.south) -- ++(0,-18mm) coordinate (c1) -- node[lab, below, pos=0.5] {CLEAR (no flags): straight to output} (c1 -| fin.south) -- (fin.south);
+\draw[arr] (fin) -- (out);
+\end{tikzpicture}}
+\caption{Control flow of \method. A rule-based Planner builds a meeting-wide speaker registry once, which removes the cross-topic dependency of a sequential pipeline and lets every topic segment run as an independent subgraph. Inside a subgraph, LLM extractors (blue) propose items; a zero-token evidence check (grey) routes each item either straight to the output (CLEAR) or to a tool-using Verifier (UNCERTAIN), which negotiates with the extractor that proposed the item until both agree or a round budget is reached. The Progress agent (dashed) runs only when the meeting comes with a task agenda. Finalize restores topic order, resolves actors, merges duplicates across topics and summarises progress per agenda task.}
+\label{fig:pipeline}
+\end{figure*}
