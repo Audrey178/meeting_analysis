@@ -2,7 +2,9 @@
 
     python eval/bench/report.py --run bench_v1 [--ref v3] [--split dev|heldout|all]
 
-Ghi ``eval/results/<run>/REPORT.md`` và ``report.json``. Mỗi arm:
+Ghi ``eval/results/<run>/REPORT[_<split>].md`` và ``report[_<split>].json``. Bảng tự động (không cần judge) có
+cho mọi arm đã chạy: metric ranh giới, proxy trích dẫn (``auto_metrics.evidence_overlap``), số mục dự đoán,
+chủ đề lỗi, chi phí. Bảng judge chỉ có cho arm đã chấm. Mỗi arm:
     P/R/F1 việc giao và kết luận (micro: cộng đếm trên mọi cuộc họp), độ đúng người nhận/hạn chót trên việc
     giao khớp gold, tỷ lệ dính bẫy, recall ý chính (partial = 0,5), metric ranh giới, chi phí.
 Arm có nhiều lần chạy (r1, r2, ...) báo trung bình ± độ lệch chuẩn giữa các lần chạy.
@@ -24,6 +26,14 @@ RESULTS_DIR = _REPO_ROOT / "eval" / "results"
 MANIFEST = _REPO_ROOT / "eval" / "synthetic" / "manifest.json"
 CORRECT_LABELS = {"ok", "extra_valid"}
 SEG_KEYS = ("Pk", "WD", "F1@2k")
+# Cột bảng tự động: (khoá trong ``auto_metrics``, tiêu đề, số chữ số).
+AUTO_COLUMNS = (
+    ("Pk", "Pk ↓", 3), ("WD", "WD ↓", 3), ("F1@2k", "F1@2k", 3), ("abs_dK", "|ΔK|", 2),
+    ("touch_A", "Chạm giao", 3), ("touch_D", "Chạm kết luận", 3), ("touch_K", "Chạm ý chính", 3),
+    ("trap_touch", "Chạm bẫy ↓", 3), ("pred_assignments", "Giao/họp", 1), ("pred_decisions", "KL/họp", 1),
+    ("pred_failed_topics", "CĐ lỗi/họp", 2), ("usd_per_meeting", "$/họp", 4), ("seconds_per_meeting", "Giây/họp", 0),
+)
+AUTO_KEYS = tuple(key for key, _, _ in AUTO_COLUMNS)
 # Metric chính và hướng tốt (+1 cao là tốt, -1 thấp là tốt).
 MAIN_METRICS = {"F1_A": 1, "F1_D": 1, "P_A": 1, "R_A": 1, "P_D": 1, "R_D": 1, "actor_acc": 1,
                 "deadline_acc": 1, "trap_rate": -1, "R_K": 1}
@@ -83,6 +93,8 @@ def load_repeat(repeat_dir: Path, meeting_ids: set[str]) -> dict:
                  if p.stem in meeting_ids}
     seg_path = repeat_dir / "segmentation.json"
     seg = {k: v for k, v in (json.loads(seg_path.read_text()) if seg_path.exists() else {}).items() if k in meeting_ids}
+    ev_path = repeat_dir / "evidence_overlap.json"
+    evidence = {k: v for k, v in (json.loads(ev_path.read_text()) if ev_path.exists() else {}).items() if k in meeting_ids}
     costs = []
     for out_file in sorted((repeat_dir / "outputs").glob("*.json")):
         if out_file.stem in meeting_ids:
@@ -90,7 +102,42 @@ def load_repeat(repeat_dir: Path, meeting_ids: set[str]) -> dict:
             cost = output.get("_cost", {})
             paid = sum(r["calls"] for r in cost.get("roles", []) if r.get("usd") != 0.0)
             costs.append((cost.get("usd_known", 0.0), paid, output["_segments"]["seconds"]))
-    return {"counts": {m: meeting_counts(j) for m, j in judgments.items()}, "seg": seg, "costs": costs}
+    return {"counts": {m: meeting_counts(j) for m, j in judgments.items()}, "seg": seg, "evidence": evidence,
+            "costs": costs}
+
+
+def auto_metrics(rep: dict, n_traps: dict[str, int]) -> dict[str, float | None]:
+    """Metric không cần judge của một lần chạy: ranh giới, proxy trích dẫn (micro), số mục, chi phí.
+
+    Đầu vào: rep - kết quả ``load_repeat``; n_traps - số bẫy gold của từng cuộc họp (manifest).
+    Đầu ra: dict metric; None khi lần chạy chưa có cuộc họp nào.
+    """
+
+    seg, evidence = rep["seg"], rep["evidence"]
+    if not seg:
+        return {key: None for key in AUTO_KEYS}
+    out: dict[str, float | None] = {k: float(np.mean([r[k] for r in seg.values()])) for k in SEG_KEYS}
+    out["abs_dK"] = float(np.mean([abs(r["dK"]) for r in seg.values()]))
+    for kind, short in (("assignments", "A"), ("decisions", "D"), ("key_points", "K")):
+        gold = sum(e[kind]["gold"] for e in evidence.values())
+        out[f"touch_{short}"] = sum(e[kind]["touched"] for e in evidence.values()) / gold if gold else None
+    traps = sum(n_traps[m] for m in evidence)
+    out["trap_touch"] = sum(len(e["negatives_touched"]) for e in evidence.values()) / traps if traps else None
+    for key in ("assignments", "decisions", "failed_topics"):
+        out[f"pred_{key}"] = float(np.mean([e["n_pred"][key] for e in evidence.values()]))
+    costs = np.array(rep["costs"]) if rep["costs"] else np.zeros((0, 3))
+    out["usd_per_meeting"] = float(costs[:, 0].mean()) if len(costs) else None
+    out["seconds_per_meeting"] = float(costs[:, 2].mean()) if len(costs) else None
+    return out
+
+
+def _mean_std(values: list[float | None]) -> tuple[float | None, float | None]:
+    """Trung bình và độ lệch chuẩn (None nếu chỉ một giá trị) của các lần chạy, bỏ None."""
+
+    values = [v for v in values if v is not None]
+    if not values:
+        return None, None
+    return float(np.mean(values)), float(np.std(values)) if len(values) > 1 else None
 
 
 def bootstrap_delta(arm: dict[str, Counter], ref: dict[str, Counter], metric: str,
@@ -135,13 +182,32 @@ def main() -> None:
     manifest = json.loads(MANIFEST.read_text())
     meeting_ids = {m["meeting_id"] for m in manifest if args.split == "all" or m.get("split", "dev") == args.split}
 
-    arms: dict[str, list[dict]] = {}
+    n_traps = {m["meeting_id"]: m["n_negatives"] for m in manifest}
+    all_arms: dict[str, list[dict]] = {}
     for arm_dir in sorted(p for p in run_dir.iterdir() if p.is_dir() and not p.name.startswith(("_", "judge"))):
-        repeats = [load_repeat(r, meeting_ids) for r in sorted(arm_dir.glob("r*"))]
-        if any(rep["counts"] for rep in repeats):
-            arms[arm_dir.name] = repeats
+        all_arms[arm_dir.name] = [load_repeat(r, meeting_ids) for r in sorted(arm_dir.glob("r*"))]
+    arms = {name: repeats for name, repeats in all_arms.items() if any(rep["counts"] for rep in repeats)}
 
-    rows, report = [], {"split": args.split, "ref": args.ref, "arms": {}}
+    report = {"split": args.split, "ref": args.ref, "n_meetings_in_split": len(meeting_ids), "auto": {}, "arms": {}}
+    lines = [f"# Kết quả `{args.run}` (split = {args.split}, {len(meeting_ids)} cuộc họp)", "",
+             "## Chỉ số tự động (không cần judge)", "",
+             "Ranh giới: trung bình theo cuộc họp. Chạm = tỷ lệ mục gold có turn bằng chứng được output trích dẫn "
+             "(micro; proxy rẻ, KHÔNG thay F1 của judge). `±` = độ lệch chuẩn giữa các lần chạy.", "",
+             "| Arm | n | lần | " + " | ".join(title for _, title, _ in AUTO_COLUMNS) + " |",
+             "|---|---|---|" + "---|" * len(AUTO_COLUMNS)]
+    for name, repeats in all_arms.items():
+        per_repeat = [auto_metrics(rep, n_traps) for rep in repeats]
+        summary = {key: _mean_std([m[key] for m in per_repeat]) for key in AUTO_KEYS}
+        n_done = len(repeats[0]["seg"]) if repeats else 0
+        report["auto"][name] = {"n_meetings": n_done, "n_repeats": len(repeats), "metrics": summary}
+        if not n_done:
+            continue
+        cells = [_fmt(summary[key][0], digits) + (f" ± {summary[key][1]:.{digits}f}" if summary[key][1] is not None else "")
+                 for key, _, digits in AUTO_COLUMNS]
+        lines.append(f"| {name} | {n_done}/{len(meeting_ids)} | {len(repeats)} | " + " | ".join(cells) + " |")
+    lines.append("")
+
+    rows = []
     for name, repeats in arms.items():
         per_repeat = []
         for rep in repeats:
@@ -164,10 +230,13 @@ def main() -> None:
                                 "segmentation": seg, "cost": cost}
         rows.append((name, n_meetings, len(repeats), summary, seg, cost))
 
-    lines = [f"# Kết quả `{args.run}` (split = {args.split})", "",
-             "Micro trên các cuộc họp đã chấm; `±` = độ lệch chuẩn giữa các lần chạy. Recall tính partial = 0,5.", "",
-             "| Arm | n | lần | F1 giao | P giao | R giao | F1 kết luận | P kết luận | R kết luận | Đúng người | Đúng hạn | Dính bẫy | R ý chính | Pk | $ | Lời gọi trả tiền/họp | Giây/họp |",
+    lines += ["## Chỉ số judge", "",
+              "Micro trên các cuộc họp đã chấm; `±` = độ lệch chuẩn giữa các lần chạy. Recall tính partial = 0,5.", "",
+              "(chưa có arm nào được chấm)" if not rows else "",
+              "| Arm | n | lần | F1 giao | P giao | R giao | F1 kết luận | P kết luận | R kết luận | Đúng người | Đúng hạn | Dính bẫy | R ý chính | Pk | $ | Lời gọi trả tiền/họp | Giây/họp |",
              "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    if not rows:
+        lines = lines[:-2]
     for name, n, reps, summary, seg, cost in rows:
         def cell(key: str) -> str:
             mean, std = summary[key]
@@ -202,8 +271,9 @@ def main() -> None:
             lines.append(f"| {name} | {n_shared} | " + " | ".join(cells) + " |")
         lines += ["", "▲/▼: CI không chứa 0 và arm tốt hơn/kém hơn `ref` theo hướng của metric (dính bẫy: thấp là tốt)."]
 
-    (run_dir / "REPORT.md").write_text("\n".join(lines) + "\n")
-    (run_dir / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=1))
+    suffix = "" if args.split == "all" else f"_{args.split}"
+    (run_dir / f"REPORT{suffix}.md").write_text("\n".join(lines) + "\n")
+    (run_dir / f"report{suffix}.json").write_text(json.dumps(report, ensure_ascii=False, indent=1))
     print("\n".join(lines))
 
 
