@@ -21,9 +21,13 @@ from pathlib import Path
 
 import numpy as np
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+_BENCH_DIR = Path(__file__).resolve().parent
+_REPO_ROOT = _BENCH_DIR.parents[1]
 RESULTS_DIR = _REPO_ROOT / "eval" / "results"
 MANIFEST = _REPO_ROOT / "eval" / "synthetic" / "manifest.json"
+GOLD_DIR = _REPO_ROOT / "eval" / "synthetic" / "gold"
+# Mô tả thiết lập viết tay của từng run (pipeline, model, metric, giới hạn), chèn đầu báo cáo.
+SETUPS_DIR = _BENCH_DIR / "setups"
 CORRECT_LABELS = {"ok", "extra_valid"}
 SEG_KEYS = ("Pk", "WD", "F1@2k")
 # Cột bảng tự động: (khoá trong ``auto_metrics``, tiêu đề, số chữ số).
@@ -168,6 +172,100 @@ def bootstrap_delta(arm: dict[str, Counter], ref: dict[str, Counter], metric: st
     return point_a - point_r, float(low), float(high), len(shared)
 
 
+def dataset_section(manifest: list[dict], splits: tuple[str, ...]) -> list[str]:
+    """Bảng mô tả bộ test theo split: số cuộc họp, độ dài, loại họp và số mục gold trung bình.
+
+    Đầu vào: manifest - ``eval/synthetic/manifest.json``; splits - các split cần mô tả.
+    Đầu ra: các dòng markdown.
+    """
+
+    lines = ["### Bộ dữ liệu", "",
+             "40 transcript tiếng Việt tổng hợp (`eval/synthetic/`), gold cài sẵn lúc viết: ranh giới chủ đề, việc giao "
+             "(người nhận, hạn chót, lượt bằng chứng), kết luận, bẫy, ý chính. Số liệu là trung bình mỗi cuộc họp.", "",
+             "| Split | Cuộc họp | S / M / L | Loại (gov / software / ops / stt) | Lượt | Ký tự | Chủ đề "
+             "| Việc giao | Kết luận | Bẫy | Ý chính |",
+             "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for split in splits:
+        rows = [m for m in manifest if split == "all" or m.get("split", "dev") == split]
+        if not rows:
+            continue
+        sizes, types = Counter(m["length_bucket"] for m in rows), Counter(m["meeting_type"] for m in rows)
+        key_points = [len(json.loads((GOLD_DIR / f"{m['meeting_id']}.json").read_text())["key_points"]) for m in rows]
+        ids = sorted(m["meeting_id"] for m in rows)
+
+        def avg(key: str, digits: int = 1) -> str:
+            return f"{np.mean([m[key] for m in rows]):.{digits}f}"
+
+        lines.append(
+            f"| {split} ({ids[0]}–{ids[-1].removeprefix('synth_')}) | {len(rows)} "
+            f"| {sizes['S']} / {sizes['M']} / {sizes['L']} "
+            f"| {types['gov']} / {types['software_project']} / {types['ops']} / {types['stt_diarized']} "
+            f"| {avg('n_turns')} | {avg('total_chars', 0)} | {avg('n_topics')} | {avg('n_assignments')} "
+            f"| {avg('n_decisions')} | {avg('n_negatives')} | {np.mean(key_points):.1f} |")
+    return lines + [""]
+
+
+def _arm_components(arm: dict) -> tuple[str, str, str, str]:
+    """(bộ cắt, Decisions, Verifier, ghi đè V3Config) của một cấu hình arm, dạng chữ cho bảng."""
+
+    if arm.get("baseline") == "single_prompt":
+        return "LLM tự chia", "–", "–", "một lời gọi gemma"
+    verifier = {"separate": "gpt-4o-mini", "main": "gemma (model chính)"}[arm["verifier"]]
+    if arm["config"].get("verifier_mode") == "keep_uncertain":
+        verifier = "tắt, giữ UNCERTAIN"
+    elif arm["config"].get("verifier_mode") == "drop_uncertain":
+        verifier = "tắt, bỏ UNCERTAIN"
+    overrides = ", ".join(f"`{k}={v}`" for k, v in arm["config"].items() if k != "verifier_mode") or "–"
+    if arm["turn_judge"]:
+        decisions = "có"
+    else:
+        decisions = "không (luật từ khoá)" if arm["config"].get("evidence_check", True) else "không"
+    return arm["segmenter"], decisions, verifier, overrides
+
+
+def arms_section(run_dir: Path, n_meetings: int) -> list[str]:
+    """Bảng các arm (từ ``arms.json``) kèm trạng thái chạy trong run, và bảng nguồn gốc từng lần chạy.
+
+    Đầu vào: run_dir - thư mục run; n_meetings - số cuộc họp của split (để báo tiến độ).
+    Đầu ra: các dòng markdown.
+    """
+
+    defaults = {"segmenter": "dialstart", "config": {}, "turn_judge": True, "verifier": "separate", "baseline": None}
+    arms = json.loads((_BENCH_DIR / "arms.json").read_text())
+    lines = ["### Các arm", "",
+             "Mỗi arm đổi đúng một thành phần so với `v3`. \"Đã chạy\" đếm cuộc họp có output ở lần chạy r1 (mọi split).", "",
+             "| Arm | Mô tả | Bộ cắt | Decisions | Verifier | Ghi đè cấu hình | Lần chạy | Đã chạy |",
+             "|---|---|---|---|---|---|---|---|"]
+    provenance = []
+    for name, spec in arms.items():
+        arm = {**defaults, **spec}
+        repeats = sorted((run_dir / name).glob("r*")) if (run_dir / name).exists() else []
+        done = len(list((repeats[0] / "outputs").glob("*.json"))) if repeats else 0
+        segmenter, decisions, verifier, overrides = _arm_components(arm)
+        lines.append(f"| `{name}` | {spec.get('description', '')} | {segmenter} | {decisions} | {verifier} | {overrides} "
+                     f"| {len(repeats) or '–'} | {done if repeats else 'chưa chạy'} |")
+        for repeat in repeats:
+            manifest_path = repeat / "manifest.json"
+            if manifest_path.exists():
+                provenance.append((f"{name}/{repeat.name}", json.loads(manifest_path.read_text())))
+    lines += ["", "### Nguồn gốc từng lần chạy", "",
+              "Fingerprint băm mã nguồn + biến môi trường của pipeline: các lần chạy cùng fingerprint chạy cùng một "
+              "pipeline dù commit khác (commit sau chỉ sửa công cụ báo cáo).", "",
+              "| Lần chạy | Commit | Cây sạch | Fingerprint | Bắt đầu | Model chính / Verifier / Decisions (đã dùng) |",
+              "|---|---|---|---|---|---|"]
+    for label, m in provenance:
+        models, arm = m.get("models", {}), {**defaults, **m["arm_config"]}
+        uses_openai = arm.get("baseline") is None
+        verifier = models.get("VERIFIER_MODEL_NAME") if uses_openai and arm["verifier"] == "separate" else "–"
+        if arm["config"].get("verifier_mode") in ("keep_uncertain", "drop_uncertain"):
+            verifier = "–"
+        decisions = models.get("TURN_ACT_MODEL") if uses_openai and arm["turn_judge"] else "–"
+        lines.append(f"| {label} | `{m['git_sha'][:8]}` | {'có' if not m['git_dirty'] else '**không**'} "
+                     f"| `{m['fingerprint'][:12]}` | {m['started_at'].replace('T', ' ')} "
+                     f"| {models.get('MODEL_NAME')} / {verifier} / {decisions} |")
+    return lines + [""]
+
+
 def _fmt(value: float | None, digits: int = 3) -> str:
     return "–" if value is None else f"{value:.{digits}f}"
 
@@ -189,8 +287,14 @@ def main() -> None:
     arms = {name: repeats for name, repeats in all_arms.items() if any(rep["counts"] for rep in repeats)}
 
     report = {"split": args.split, "ref": args.ref, "n_meetings_in_split": len(meeting_ids), "auto": {}, "arms": {}}
+    setup_path = SETUPS_DIR / f"{args.run}.md"
     lines = [f"# Kết quả `{args.run}` (split = {args.split}, {len(meeting_ids)} cuộc họp)", "",
-             "## Chỉ số tự động (không cần judge)", "",
+             "## Thiết lập thực nghiệm", ""]
+    if setup_path.exists():
+        lines += [setup_path.read_text().rstrip(), ""]
+    lines += dataset_section(manifest, ("dev", "heldout") if args.split == "all" else (args.split,))
+    lines += arms_section(run_dir, len(meeting_ids))
+    lines += ["## Chỉ số tự động (không cần judge)", "",
              "Ranh giới: trung bình theo cuộc họp. Chạm = tỷ lệ mục gold có turn bằng chứng được output trích dẫn "
              "(micro; proxy rẻ, KHÔNG thay F1 của judge). `±` = độ lệch chuẩn giữa các lần chạy.", "",
              "| Arm | n | lần | " + " | ".join(title for _, title, _ in AUTO_COLUMNS) + " |",
