@@ -1,0 +1,416 @@
+{
+ "meeting_id": "synth_005",
+ "method": "zero_shot",
+ "model": "google/gemma-4-26B-A4B-it",
+ "cache_key": "a4baa8e8691c585d",
+ "git_sha": "0f934992",
+ "finished_at": "2026-10-13T09:11:27+00:00",
+ "status": "ok",
+ "output": {
+  "topics": [
+   {
+    "start_turn": "TURN_000001",
+    "title": "Phân hệ phản ánh hiện trường qua ứng dụng di động"
+   },
+   {
+    "start_turn": "TURN_000018",
+    "title": "Tích hợp tổng đài 1022"
+   },
+   {
+    "start_turn": "TURN_000036",
+    "title": "Giám sát giao thông bằng camera AI"
+   },
+   {
+    "start_turn": "TURN_000052",
+    "title": "Camera an ninh trật tự"
+   },
+   {
+    "start_turn": "TURN_000069",
+    "title": "Bảng điều khiển kinh tế xã hội"
+   },
+   {
+    "start_turn": "TURN_000085",
+    "title": "Bản đồ số quy hoạch"
+   },
+   {
+    "start_turn": "TURN_000100",
+    "title": "Bản đồ hạ tầng kỹ thuật ngầm"
+   },
+   {
+    "start_turn": "TURN_000116",
+    "title": "An toàn thông tin"
+   },
+   {
+    "start_turn": "TURN_000132",
+    "title": "Kế hoạch nghiệm thu giai đoạn 1"
+   }
+  ],
+  "assignments": [
+   {
+    "actor": "Anh Kha",
+    "task": "Đưa mô hình gợi ý lên môi trường chính thức kèm màn hình duyệt",
+    "deadline": "trong hai tuần",
+    "evidence_turn_ids": [
+     "TURN_000015"
+    ]
+   },
+   {
+    "actor": "Chị Phượng",
+    "task": "Cấu hình ba nhóm thời hạn và ràng buộc ảnh sau xử lý",
+    "deadline": "ngay sau khi Sở ban hành quy chế",
+    "evidence_turn_ids": [
+     "TURN_000016"
+    ]
+   },
+   {
+    "actor": "Anh Quý",
+    "task": "Làm việc với Viễn thông tỉnh về chuyển đổi đầu số 1022",
+    "deadline": "dự kiến trong tháng 12",
+    "evidence_turn_ids": [
+     "TURN_000034"
+    ]
+   },
+   {
+    "actor": "Anh Kha",
+    "task": "Làm chuyển giọng nói thành văn bản và gom nhóm trùng",
+    "deadline": "cùng lúc với tổng đài",
+    "evidence_turn_ids": [
+     "TURN_000035"
+    ]
+   },
+   {
+    "actor": "Anh Kha",
+    "task": "Lập danh sách 40 camera và dự toán đèn hồng ngoại",
+    "deadline": "trong tuần sau",
+    "evidence_turn_ids": [
+     "TURN_000050"
+    ]
+   },
+   {
+    "actor": "Đ/c Thiếu tá Bình",
+    "task": "Cử 3 cán bộ Phòng Cảnh sát giao thông được phân quyền xác nhận trên hệ thống",
+    "deadline": "trước ngày 20",
+    "evidence_turn_ids": [
+     "TURN_000051"
+    ]
+   },
+   {
+    "actor": "Chị Diễm",
+    "task": "Thiết kế phương án đường truyền riêng và mã hóa, gửi Công an tỉnh thẩm định",
+    "deadline": "trước cuối tháng",
+    "evidence_turn_ids": [
+     "TURN_000067"
+    ]
+   },
+   {
+    "actor": "Anh Kha",
+    "task": "Cấu hình lại ngưỡng tụ tập theo khung giờ và vị trí, chạy thử",
+    "deadline": "hai tuần",
+    "evidence_turn_ids": [
+     "TURN_000068"
+    ]
+   },
+   {
+    "actor": "Chị Phượng",
+    "task": "Hoàn thiện danh mục 32 chỉ số kèm đơn vị chịu trách nhiệm và nguồn dữ liệu",
+    "deadline": "trước thứ Sáu",
+    "evidence_turn_ids": [
+     "TURN_000083"
+    ]
+   },
+   {
+    "actor": "Anh Lợi",
+    "task": "Gửi danh sách 7 đồ án sai lệch kèm bản chồng lớp cho Sở Xây dựng",
+    "deadline": "trong tuần này",
+    "evidence_turn_ids": [
+     "TURN_000098"
+    ]
+   },
+   {
+    "actor": "Anh Lợi",
+    "task": "Soạn chuẩn dữ liệu và mẫu biểu cung cấp dữ liệu ngầm gửi kèm văn bản của Sở",
+    "deadline": "trước ngày 25",
+    "evidence_turn_ids": [
+     "TURN_000114"
+    ]
+   },
+   {
+    "actor": "Chị Diễm",
+    "task": "Kiểm tra lỗi API và máy chủ thử nghiệm",
+    "deadline": "ngay hôm nay",
+    "evidence_turn_ids": [
+     "TURN_000130"
+    ]
+   },
+   {
+    "actor": "Chị Diễm",
+    "task": "Làm việc với hãng để nâng cấp phần mềm camera",
+    "deadline": "trước ngày 10 tháng 12",
+    "evidence_turn_ids": [
+     "TURN_000130"
+    ]
+   },
+   {
+    "actor": "Anh Quý",
+    "task": "Lập kế hoạch đào tạo thực hành chi tiết",
+    "deadline": "tuần sau",
+    "evidence_turn_ids": [
+     "TURN_000147"
+    ]
+   }
+  ],
+  "decisions": [
+   {
+    "text": "Triển khai mô hình gợi ý đơn vị xử lý (cán bộ duyệt), cấu hình 3 nhóm thời hạn (24h/5 ngày/15 ngày), bắt buộc đính kèm ảnh sau xử lý mới được đóng phản ánh, ẩn thông tin an ninh trật tự/tố cáo cá nhân trên bản đồ, bổ sung lớp tài sản hạ tầng để chuyển thẳng cho doanh nghiệp công ích.",
+    "evidence_turn_ids": [
+     "TURN_000014"
+    ]
+   },
+   {
+    "text": "Thay tổng đài cũ bằng tổng đài IP tích hợp IOC, tự nhận diện người gọi, ghi âm gắn vào phản ánh (có thông báo lời chào, lưu 12 tháng), chuyển giọng nói thành văn bản làm bản nháp, gom nhóm phản ánh trùng (bán kính cấu hình theo lĩnh vực, mặc định 200m), xây dựng cơ sở tri thức do các sở chuyên ngành duyệt.",
+    "evidence_turn_ids": [
+     "TURN_000033"
+    ]
+   },
+   {
+    "text": "Lắp đèn hồng ngoại cho 40 camera nút giao trọng điểm; thêm bước cán bộ CSGT xác nhận vi phạm trước khi xuất thông báo phạt nguội; loại trừ xe ưu tiên khi phát hiện vượt đèn đỏ.",
+    "evidence_turn_ids": [
+     "TURN_000049"
+    ]
+   },
+   {
+    "text": "Bỏ chức năng nhận diện khuôn mặt; dữ liệu camera an ninh lưu tại máy chủ Công an tỉnh, IOC chỉ nhận cảnh báo và ảnh trích đoạn đã làm mờ; mọi thao tác xem/trích xuất phải ghi nhật ký không sửa xóa, lưu tối thiểu 2 năm.",
+    "evidence_turn_ids": [
+     "TURN_000066"
+    ]
+   },
+   {
+    "text": "Giảm bảng điều khiển xuống 32 chỉ số cốt lõi; kết nối tự động với hệ thống thuế và đầu tư công; 8 chỉ số nhập tay giao đơn vị chịu trách nhiệm (nhắc trước 3 ngày); chi tiết đơn vị quá hạn chỉ hiện khi bấm vào; mỗi chỉ số ghi nguồn, thời điểm cập nhật và nhãn số tạm tính/chính thức.",
+    "evidence_turn_ids": [
+     "TURN_000082"
+    ]
+   },
+   {
+    "text": "Chỉ công khai đồ án đã được Sở Xây dựng xác nhận; 7 đồ án sai lệch tạm ẩn; 12 đồ án điều chỉnh cục bộ phải cập nhật trước khi công khai; có cảnh báo giá trị tham khảo; người dân chỉ xem, tra cứu và in phiếu từng thửa, không cho tải dữ liệu vector.",
+    "evidence_turn_ids": [
+     "TURN_000097"
+    ]
+   },
+   {
+    "text": "Ủy ban yêu cầu doanh nghiệp cung cấp dữ liệu công trình ngầm theo chuẩn có cao độ trước 31/12; bản đồ hạ tầng ngầm không công khai, phân quyền 3 mức (Quản lý/Chủ sở hữu/Nhà thầu); cáp chuyên dùng quản lý riêng theo chế độ mật.",
+    "evidence_turn_ids": [
+     "TURN_000113"
+    ]
+   },
+   {
+    "text": "Khắc phục 3 lỗ hổng cao trước 15/12; 11 lỗ hổng trung bình trước nghiệm thu; bỏ tài khoản quản trị dùng chung, bật xác thực hai yếu tố; kết nối nhật ký với SOC của tỉnh.",
+    "evidence_turn_ids": [
+     "TURN_000129"
+    ]
+   },
+   {
+    "text": "Hoàn thành nội dung chốt trước 15/12; vận hành thử 30 ngày từ 15/12; nghiệm thu giai đoạn 1 cuối tháng 1; khai trương trước Tết với các phân hệ sẵn sàng; đào tạo thực hành 12 cán bộ điều phối và 4 kỹ sư quản trị; Công an cử cán bộ trực tại IOC.",
+    "evidence_turn_ids": [
+     "TURN_000145"
+    ]
+   }
+  ],
+  "discussion": [
+   {
+    "text": "Chị Phượng: Báo cáo tình hình ứng dụng Phú Hòa-S (38.000 người dùng, 4.100 phản ánh/tháng), tỷ lệ xử lý đúng hạn 71%, vấn đề chuyển sai đơn vị (31%) và thời hạn xử lý chưa linh hoạt.",
+    "speakers": [
+     "Chị Phượng"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000003",
+     "TURN_000004"
+    ]
+   },
+   {
+    "text": "Anh Kha: Đề xuất mô hình AI gợi ý đơn vị xử lý (độ chính xác 86%) thay vì tự động hoàn toàn để giảm thời gian xử lý.",
+    "speakers": [
+     "Anh Kha"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000005"
+    ]
+   },
+   {
+    "text": "Đ/c Hải: Chốt mô hình gợi ý, phân nhóm thời hạn xử lý (khẩn cấp/thông thường/phức tạp) và bắt buộc có ảnh sau xử lý.",
+    "speakers": [
+     "Đ/c Hải"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000006"
+    ]
+   },
+   {
+    "text": "Đ/c Thiếu tá Bình: Yêu cầu ẩn thông tin phản ánh an ninh trật tự trên bản đồ công khai để bảo vệ người dân và đối tượng.",
+    "speakers": [
+     "Đ/c Thiếu tá Bình"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000010"
+    ]
+   },
+   {
+    "text": "Chị Phượng: Báo cáo về việc điện thoại viên phải nhập liệu thủ công (4 phút/phản ánh) và tình trạng trùng lặp phản ánh giữa ứng dụng và tổng đài.",
+    "speakers": [
+     "Chị Phượng"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000019"
+    ]
+   },
+   {
+    "text": "Anh Kha: Đề xuất chuyển giọng nói thành văn bản (độ chính xác 85-90%) và gom nhóm phản ánh trùng theo bán kính.",
+    "speakers": [
+     "Anh Kha"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000021",
+     "TURN_000028"
+    ]
+   },
+   {
+    "text": "Anh Quý: Đề xuất thay tổng đài cũ bằng tổng đài IP tích hợp IOC và xây dựng cơ sở tri thức hỗ trợ điện thoại viên.",
+    "speakers": [
+     "Anh Quý"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000020",
+     "TURN_000026"
+    ]
+   },
+   {
+    "text": "Anh Kha: Báo cáo hiệu quả camera AI (nhận diện biển số 94% ban ngày, phát hiện ùn tắc sớm 6 phút) và đề xuất lắp đèn hồng ngoại cho các nút giao trọng điểm.",
+    "speakers": [
+     "Anh Kha"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000037",
+     "TURN_000040",
+     "TURN_000042"
+    ]
+   },
+   {
+    "text": "Đ/c Thiếu tá Bình: Lưu ý hình ảnh camera chưa kiểm định chỉ dùng để phát hiện, không dùng làm căn cứ phạt nguội trực tiếp; yêu cầu phân biệt thời gian dừng/đỗ xe.",
+    "speakers": [
+     "Đ/c Thiếu tá Bình"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000038",
+     "TURN_000043",
+     "TURN_000046"
+    ]
+   },
+   {
+    "text": "Anh Kha: Báo cáo phân hệ an ninh (phát hiện tụ tập, xô xát, người ngã, vật thể bỏ quên) và đề xuất cấu hình ngưỡng theo khung giờ/vị trí.",
+    "speakers": [
+     "Anh Kha"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000053",
+     "TURN_000057",
+     "TURN_000063"
+    ]
+   },
+   {
+    "text": "Đ/c Thiếu tá Bình: Yêu cầu lưu dữ liệu camera an ninh tại máy chủ Công an, bỏ chức năng nhận diện khuôn mặt khỏi IOC và rà soát quyền xem hình ảnh.",
+    "speakers": [
+     "Đ/c Thiếu tá Bình"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000054",
+     "TURN_000060"
+    ]
+   },
+   {
+    "text": "Chị Phượng: Báo cáo về việc 40% chỉ số kinh tế xã hội phải nhập tay và sự thiếu chính xác/cập nhật của dữ liệu.",
+    "speakers": [
+     "Chị Phượng"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000070"
+    ]
+   },
+   {
+    "text": "Đ/c Hải: Yêu cầu giảm số lượng chỉ số xuống 30 cốt lõi, không hiển thị tên đơn vị quá hạn công khai trên màn hình chính.",
+    "speakers": [
+     "Đ/c Hải"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000071",
+     "TURN_000077"
+    ]
+   },
+   {
+    "text": "Anh Lợi: Báo cáo về sai lệch ranh giới trong 7 đồ án quy hoạch và đề xuất chỉ công khai các đồ án đã được xác nhận.",
+    "speakers": [
+     "Anh Lợi"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000086",
+     "TURN_000088",
+     "TURN_000091"
+    ]
+   },
+   {
+    "text": "Anh Lợi: Báo cáo về hạ tầng ngầm (thiếu cao độ, thiếu dữ liệu cáp điện) và rủi ro đứt cáp do thiếu thông tin.",
+    "speakers": [
+     "Anh Lợi"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000101",
+     "TURN_000106"
+    ]
+   },
+   {
+    "text": "Chị Diễm: Đề xuất phân quyền 3 mức cho bản đồ hạ tầng ngầm và yêu cầu lưu nhật ký truy cập.",
+    "speakers": [
+     "Chị Diễm"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000103",
+     "TURN_000107"
+    ]
+   },
+   {
+    "text": "Chị Diễm: Báo cáo các lỗ hổng bảo mật (API, phần mềm camera cũ, máy chủ thử nghiệm mở) và đề xuất tách tài khoản quản trị.",
+    "speakers": [
+     "Chị Diễm"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000117",
+     "TURN_000125"
+    ]
+   },
+   {
+    "text": "Anh Quý: Báo cáo rủi ro về tiến độ kết nối tổng đài 1022 và Cục Thuế.",
+    "speakers": [
+     "Anh Quý"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000138"
+    ]
+   },
+   {
+    "text": "Đ/c Hải: Nhấn mạnh tiêu chí nghiệm thu (tỷ lệ xử lý >80%, uptime >99,5%, không lỗ hổng cao, cán bộ tự vận hành được).",
+    "speakers": [
+     "Đ/c Hải"
+    ],
+    "evidence_turn_ids": [
+     "TURN_000143"
+    ]
+   }
+  ]
+ },
+ "usage": {
+  "calls": 1,
+  "failed_attempts": 0,
+  "prompt_tokens": 15544,
+  "completion_tokens": 3079,
+  "seconds": 38.1
+ },
+ "input_chars": 48050
+}

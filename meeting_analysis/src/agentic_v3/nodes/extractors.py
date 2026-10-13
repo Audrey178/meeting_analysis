@@ -1,11 +1,10 @@
-"""Ba agent trích xuất của v3: node của v1 (giữ nguyên phần làm sạch output) chạy với prompt v3.
+"""Ba agent trích xuất của v3: node trong ``core/nodes`` (phần làm sạch output) chạy với prompt v3.
 
-Mỗi node v1 gọi ``llm.generate_json`` đúng MỘT lần với system prompt của v1. v3 đưa cho
-node v1 một adapter bọc (``_V3PromptLLM``): adapter này thay system prompt bằng bản v3
-(``prompts.py``) và thêm dòng người chủ trì vào đầu user prompt. Schema và phần đọc kết
-quả vẫn là của v1.
+Mỗi node gọi ``llm.generate_json`` đúng MỘT lần với system prompt được truyền vào lúc tạo
+(``prompts.py``). v3 đưa cho node một adapter bọc (``_ChairPrefixedLLM``) thêm dòng người chủ
+trì vào đầu user prompt và (tuỳ chọn) sửa schema. Phần đọc kết quả là của node.
 
-Node v1 được dựng lại ở mỗi lần chạy (rẻ: chỉ là một closure) vì dòng người chủ trì đổi
+Node được dựng lại ở mỗi lần chạy (rẻ: chỉ là một closure) vì dòng người chủ trì đổi
 theo cuộc họp, trong khi graph dùng chung cho mọi cuộc họp chạy song song.
 
 Phiên họp có danh sách việc cần báo cáo thì Action agent nhận thêm ``ACTION_TASK_ID_RULE``
@@ -31,7 +30,7 @@ from .prompts import (
     format_chair_line,
 )
 
-# Tên node -> (hàm tạo node v1, system prompt v3).
+# Tên node -> (hàm tạo node, system prompt).
 _AGENTS = {
     "content_agent": (make_content_agent, CONTENT_SYSTEM_PROMPT),
     "action_agent": (make_action_agent, ACTION_SYSTEM_PROMPT),
@@ -39,30 +38,26 @@ _AGENTS = {
 }
 
 
-class _V3PromptLLM:
-    """``LLMAdapter`` thay system prompt và thêm phần đầu user prompt trước khi gọi LLM thật.
+class _ChairPrefixedLLM:
+    """``LLMAdapter`` thêm phần đầu user prompt (và sửa schema) trước khi gọi LLM thật.
 
-    Đầu vào khi tạo: llm - adapter thật; system_prompt - system prompt v3; user_prefix -
-        dòng đặt trước user prompt của v1; schema_hook - hàm sửa schema của node v1 trước
-        khi gọi (None = giữ nguyên).
+    Đầu vào khi tạo: llm - adapter thật; user_prefix - dòng đặt trước user prompt của node;
+        schema_hook - hàm sửa schema của node trước khi gọi (None = giữ nguyên).
     """
 
     def __init__(
         self,
         llm: LLMAdapter,
-        system_prompt: str,
         user_prefix: str,
         schema_hook: Callable[[Mapping[str, object]], Mapping[str, object]] | None = None,
     ) -> None:
         self._llm = llm
-        self._system_prompt = system_prompt
         self._user_prefix = user_prefix
         self._schema_hook = schema_hook
 
     def generate_json(self, *, system_prompt: str, user_prompt: str, schema: Mapping[str, object]):
-        del system_prompt  # prompt v1, thay bằng bản v3
         return self._llm.generate_json(
-            system_prompt=self._system_prompt,
+            system_prompt=system_prompt,
             user_prompt=f"{self._user_prefix}\n\n{user_prompt}",
             schema=self._schema_hook(schema) if self._schema_hook else schema,
         )
@@ -96,7 +91,7 @@ def make_extractor(name: str, llm: LLMAdapter) -> Callable[[SegmentTask, Speaker
     """Tạo agent trích xuất ``name`` ("content_agent"/"action_agent"/"decision_agent") của v3.
 
     Đầu vào: name - tên agent; llm - adapter LLM.
-    Đầu ra: hàm ``(task, registry) -> dict`` trả đúng kết quả của node v1.
+    Đầu ra: hàm ``(task, registry) -> dict`` trả đúng kết quả của node.
     """
 
     factory, system_prompt = _AGENTS[name]
@@ -110,8 +105,8 @@ def make_extractor(name: str, llm: LLMAdapter) -> Callable[[SegmentTask, Speaker
             def schema_hook(schema: Mapping[str, object]) -> dict:
                 return with_task_id_field(schema, task_ids)
 
-        prompted = _V3PromptLLM(llm, prompt, format_chair_line(registry.chair), schema_hook)
-        return factory(prompted)(task)
+        prefixed = _ChairPrefixedLLM(llm, format_chair_line(registry.chair), schema_hook)
+        return factory(prefixed, prompt)(task)
 
     return extractor
 

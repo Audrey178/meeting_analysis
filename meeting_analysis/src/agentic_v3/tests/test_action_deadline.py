@@ -3,11 +3,8 @@ QUY TẮC CHUẨN HOÁ HẠN, luật ``normalize_deadline`` làm dự phòng, b�
 
 from __future__ import annotations
 
-from src.agentic_v3.core.nodes.action_agent import (
-    ACTION_SYSTEM_PROMPT,
-    _strip_deadline_echo,
-    make_action_agent,
-)
+from src.agentic_v3.core.nodes.action_agent import _strip_deadline_echo, make_action_agent
+from src.agentic_v3.nodes.prompts import ACTION_SYSTEM_PROMPT
 from src.utils.contracts import SpeakerTurn
 
 TURNS = (SpeakerTurn("T1", "Anh Tuấn", "Thiện làm phần Billing, khoảng 3 tuần nhé.", (), None, None),)
@@ -29,7 +26,7 @@ def _run(item: dict, meeting_date: str | None = "2026-10-08"):
     llm = _ScriptedLLM(item)
     task = {"segment_id": "S1", "title": "", "summary": "", "turns": TURNS,
             "previous_context": "", "meeting_date": meeting_date}
-    (candidate,) = make_action_agent(llm)(task)["action_item_candidates_raw"]
+    (candidate,) = make_action_agent(llm, ACTION_SYSTEM_PROMPT)(task)["action_item_candidates_raw"]
     return candidate, llm.user_prompts[0]
 
 

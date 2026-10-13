@@ -64,7 +64,7 @@ from ...utils.ports import LLMAdapter, LLMUpstreamError
 from ..actors.resolution import apply_verifier_actor_choice
 from ..config import V3Config
 from ..schemas import ConsensusRound, VerificationRecord, VerifierStep, VerifyTask
-from .prompts import CHAIR_HINT, VERIFY_RUBRICS, format_chair_line
+from .prompts import CHAIR_HINT, JSON_ONE_LINE_RULE, VERIFY_RUBRICS, format_chair_line
 from .verifier_tools import TOOL_DESCRIPTIONS, TOOL_NAMES, MeetingTools
 
 logger = logging.getLogger(__name__)
@@ -115,6 +115,9 @@ trước thì xét lập luận của agent trên bản ghi, không nhượng b�
 
 Chỉ dựa vào bằng chứng có thật trong bản ghi. "Nội dung có nhắc trong bản ghi" CHƯA đủ
 để giữ. Tra ít nhất có thể.
+
+KHÔNG dùng dấu nháy kép (") trong thought, reasoning, actor_reason: dẫn lượt nói bằng
+turn_id, không trích nguyên văn. {json_rule}
 """.strip()
 
 # ``deciding_turn_id`` đứng TRƯỚC ``verdict``: model phải chỉ ra lượt giao/chốt trước khi
@@ -164,7 +167,7 @@ TUYỆT ĐỐI KHÔNG bịa nội dung không có trong bản ghi. Không tìm �
 thì chọn "accept". Trường không dùng để null.
 
 argument: TỐI ĐA 2 câu ngắn (dưới 300 ký tự), dẫn chứng bằng turn_id. KHÔNG trích
-nguyên văn lượt nói và KHÔNG dùng dấu nháy kép (") trong bất kỳ trường nào.
+nguyên văn lượt nói và KHÔNG dùng dấu nháy kép (") trong bất kỳ trường nào. {json_rule}
 """.strip()
 
 # ``confirm_turn_id`` đứng TRƯỚC ``stance``: model sinh JSON theo thứ tự trường, nếu
@@ -197,6 +200,7 @@ chiều của lập luận, KHÔNG tự đánh giá lại candidate:
 - "drop": lập luận cho rằng KHÔNG có căn cứ (chỉ là ý kiến, thảo luận, đề xuất chưa ai
   chấp nhận...), đồng ý bỏ candidate.
 turn_id: lượt mà lập luận dẫn làm căn cứ GIỮ (chọn trong các lượt được dẫn), null nếu "drop".
+{json_rule}
 """.strip()
 
 STANCE_CHECK_SCHEMA: dict = {
@@ -497,7 +501,8 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
             is_self_committed=getattr(candidate, "status", None) == "self_committed",
         )
         system_prompt = VERIFIER_SYSTEM_PROMPT.format(
-            kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT, tools=TOOL_DESCRIPTIONS
+            kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT, tools=TOOL_DESCRIPTIONS,
+            json_rule=JSON_ONE_LINE_RULE,
         )
         base_prompt = _build_candidate_prompt(task, candidate)
         if rounds:
@@ -564,7 +569,8 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
             return dict(
                 proposer_llms[kind].generate_json(
                     system_prompt=PROPOSER_SYSTEM_PROMPT.format(
-                        kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT
+                        kind_label=_KIND_LABELS[kind], rubric=VERIFY_RUBRICS[kind], chair_hint=CHAIR_HINT,
+                        json_rule=JSON_ONE_LINE_RULE,
                     ),
                     user_prompt=user_prompt,
                     schema=PROPOSER_SCHEMA,
@@ -593,7 +599,9 @@ def make_verifier(llm: LLMAdapter, proposer_llms: Mapping[str, LLMAdapter], conf
             with llm_call("stance_check", segment_id=task["segment_id"], prompt_chars=len(user_prompt)):
                 result = dict(
                     proposer_llms[kind].generate_json(
-                        system_prompt=STANCE_CHECK_SYSTEM_PROMPT.format(kind_label=_KIND_LABELS[kind]),
+                        system_prompt=STANCE_CHECK_SYSTEM_PROMPT.format(
+                            kind_label=_KIND_LABELS[kind], json_rule=JSON_ONE_LINE_RULE
+                        ),
                         user_prompt=user_prompt,
                         schema=STANCE_CHECK_SCHEMA,
                     )

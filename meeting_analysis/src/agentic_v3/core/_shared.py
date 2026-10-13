@@ -46,7 +46,7 @@ _FIRST_OR_SECOND_PERSON_PRONOUNS = frozenset(
     }
 )
 
-# Cụm trung tính mà ACTION_SYSTEM_PROMPT dặn model dùng TRONG TEXT khi không đủ căn cứ
+# Cụm trung tính mà prompt (``THIRD_PERSON_RULE``) dặn model dùng TRONG TEXT khi không đủ căn cứ
 # xác định actor thật ("một thành viên", "nhóm phụ trách") -- nhưng model có thể nhét
 # nhầm đúng cụm này vào field actor thay vì để actor=null. Không định danh được MỘT
 # người/nhóm cụ thể nào, nên không được coi là actor hợp lệ (đã xác nhận qua đo trên dữ

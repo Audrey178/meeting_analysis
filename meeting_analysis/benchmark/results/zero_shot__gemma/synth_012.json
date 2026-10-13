@@ -1,0 +1,18 @@
+{
+ "meeting_id": "synth_012",
+ "method": "zero_shot",
+ "model": "google/gemma-4-26B-A4B-it",
+ "cache_key": "a4baa8e8691c585d",
+ "git_sha": "0f934992",
+ "finished_at": "2026-10-13T09:12:23+00:00",
+ "status": "error",
+ "error": "LLMUpstreamError: google/gemma-4-26B-A4B-it: hết 3 lần thử: Connection error.",
+ "usage": {
+  "calls": 1,
+  "failed_attempts": 3,
+  "prompt_tokens": 6584,
+  "completion_tokens": 8192,
+  "seconds": 194.8
+ },
+ "input_chars": 20451
+}
