@@ -1,0 +1,932 @@
+{
+  "meeting_id": "synth_021",
+  "n_turns": 171,
+  "total_chars": 44031,
+  "boundaries": [
+    20,
+    42,
+    63,
+    82,
+    104,
+    126,
+    147
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng mở tài khoản thanh toán trực tuyến bằng eKYC",
+      "summary": "eKYC đối chiếu chip CCCD và sinh trắc khuôn mặt đạt tỷ lệ thành công 81%, thất bại chủ yếu do điện thoại không có NFC và người lớn tuổi; thống nhất cho phép hoàn tất tại quầy giao dịch khi eKYC thất bại, hạn mức giao dịch thấp cho tài khoản mở trực tuyến.",
+      "turn_range": [
+        0,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000020"
+      ],
+      "chars": 6334,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng chuyển tiền nhanh liên ngân hàng qua Napas 247",
+      "summary": "Chuyển tiền nhanh qua Napas đã chạy trên môi trường thử, thời gian xử lý 3,2 giây; lỗi treo giao dịch khi Napas trả kết quả chậm; thống nhất cơ chế tra soát tự động và hoàn tiền trong 15 phút, hiển thị tên người nhận trước khi xác nhận.",
+      "turn_range": [
+        20,
+        42
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000042"
+      ],
+      "chars": 5906,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng vay tiêu dùng trực tuyến cho thành viên quỹ",
+      "summary": "Vay tiêu dùng trực tuyến tối đa 50 triệu cho thành viên có lịch sử tín dụng; mô hình chấm điểm dùng dữ liệu nội bộ, tỷ lệ phê duyệt tự động 42%; thống nhất giới hạn vay trực tuyến cho thành viên trên 12 tháng, cán bộ tín dụng duyệt hồ sơ trên 20 triệu; đề xuất dùng dữ liệu mạng xã hội để chấm điểm bị gạt.",
+      "turn_range": [
+        42,
+        63
+      ],
+      "turn_ids": [
+        "TURN_000043",
+        "TURN_000063"
+      ],
+      "chars": 6604,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xây dựng chức năng mở tài khoản thanh toán trực tuyến bằng eKYC",
+      "summary": "Quay lại eKYC: nhà cung cấp eKYC thông báo tăng phí 60% và chưa đạt kiểm định của Bộ Công an về đối chiếu sinh trắc; thống nhất đổi sang dùng dịch vụ xác thực qua ứng dụng VNeID kết hợp nhà cung cấp eKYC mới đã được kiểm định.",
+      "turn_range": [
+        63,
+        82
+      ],
+      "turn_ids": [
+        "TURN_000064",
+        "TURN_000082"
+      ],
+      "chars": 5198,
+      "same_topic_as": 0
+    },
+    {
+      "index": 4,
+      "title": "Xây dựng chức năng thông báo biến động số dư và cảnh báo chống lừa đảo",
+      "summary": "Thông báo biến động số dư qua ứng dụng đã chạy, tin nhắn SMS tốn 1,1 tỷ/năm; thống nhất miễn phí thông báo qua ứng dụng, SMS thu phí theo đăng ký; bổ sung cảnh báo khi chuyển tiền đến tài khoản nằm trong danh sách nghi ngờ lừa đảo và giới hạn chuyển tiền trên thiết bị mới.",
+      "turn_range": [
+        82,
+        104
+      ],
+      "turn_ids": [
+        "TURN_000083",
+        "TURN_000104"
+      ],
+      "chars": 5874,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Rà soát kết quả kiểm thử hiệu năng và chịu tải hệ thống",
+      "summary": "Kiểm thử tải 2.000 giao dịch/giây đạt, nhưng máy chủ cơ sở dữ liệu lõi lên 92% CPU; thống nhất tách cơ sở dữ liệu đọc, bổ sung bộ nhớ đệm và kiểm thử lại với 3.000 giao dịch/giây trước ra mắt.",
+      "turn_range": [
+        104,
+        126
+      ],
+      "turn_ids": [
+        "TURN_000105",
+        "TURN_000126"
+      ],
+      "chars": 5078,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Chuẩn bị hồ sơ đề nghị Ngân hàng Nhà nước chấp thuận triển khai dịch vụ ngân hàng số",
+      "summary": "Hồ sơ gửi Ngân hàng Nhà nước còn thiếu báo cáo đánh giá an toàn thông tin cấp độ 4 và phương án dự phòng thảm họa; thống nhất thuê đơn vị được cấp phép đánh giá, hoàn thiện hồ sơ trước 15/12.",
+      "turn_range": [
+        126,
+        147
+      ],
+      "turn_ids": [
+        "TURN_000127",
+        "TURN_000147"
+      ],
+      "chars": 5538,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Thống nhất phân công công việc trước ngày ra mắt ứng dụng ngân hàng số",
+      "summary": "Chốt phân công cuối: 10 đầu việc cho các trưởng nhóm với hạn cụ thể trước ngày ra mắt 15/1; ra mắt chính thức vẫn giữ 15/1, thí điểm 8 quỹ trước.",
+      "turn_range": [
+        147,
+        171
+      ],
+      "turn_ids": [
+        "TURN_000148",
+        "TURN_000171"
+      ],
+      "chars": 3499,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "Vy",
+        "em"
+      ],
+      "task": "Làm chức năng lưu hồ sơ eKYC dở dang và đặt lịch hoàn tất tại quầy",
+      "deadline": "hai tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "bọn em"
+      ],
+      "task": "Bổ sung ràng buộc mỗi thiết bị chỉ đăng ký một tài khoản",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "actor_aliases": [],
+      "task": "Ghi lỗi kiểm tra người thật vào biên bản đánh giá nhà cung cấp eKYC",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "Lâm"
+      ],
+      "task": "Hoàn thành toàn bộ kịch bản chứng nhận Napas",
+      "deadline": "trước ngày 20 tháng 12",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "bên kiểm thử"
+      ],
+      "task": "Chạy song song các kịch bản chứng nhận Napas trên môi trường thử",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "bọn em"
+      ],
+      "task": "Hiện cảnh báo toàn màn hình khi khách mở ứng dụng chuyển tiền trong lúc đang có cuộc gọi; hướng dẫn tắt tối ưu pin",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000093"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "bên kiểm thử"
+      ],
+      "task": "Bổ sung kịch bản kiểm thử hai giao dịch đồng thời, không âm số dư",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000117"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Chị Hiền (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Điều động thêm 1 lập trình viên iOS từ dự án khác trong 4 tuần",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000078"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [],
+      "task": "Đặt nút khóa tài khoản khẩn cấp ở màn hình đăng nhập",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000101"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [],
+      "task": "Thêm luật giám sát gian lận cho sự kiện điều khiển từ xa",
+      "deadline": "khoảng 2 ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "actor_aliases": [
+        "phòng nghiệp vụ"
+      ],
+      "task": "Chuẩn bị mẫu nghị quyết và thỏa thuận cho các quỹ mở rộng",
+      "deadline": null,
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000146"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "bọn em"
+      ],
+      "task": "Xử lý 14 lỗi mức cao của ứng dụng di động",
+      "deadline": "2 tuần",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000150"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm tiến trình tra soát tự động giao dịch treo Napas",
+      "deadline": "trong sprint này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Hiển thị tên người nhận trước khi xác nhận chuyển tiền",
+      "deadline": "ba ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "actor_aliases": [
+        "Phòng nghiệp vụ"
+      ],
+      "task": "Soạn quy trình duyệt vay trực tuyến cho cán bộ tín dụng, gửi chị Mỹ thẩm định",
+      "deadline": "trước ngày 20",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000063"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm hồ sơ đăng ký tích hợp VNeID với Trung tâm dữ liệu dân cư",
+      "deadline": "tuần này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000081"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Làm việc với 2 nhà cung cấp eKYC có tên trong danh sách chính thức, có báo giá và đánh giá",
+      "deadline": "5 ngày",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000082"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm kết nối hệ thống SIMO",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000103"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm giới hạn chuyển tiền trên thiết bị mới và màn hình cảnh báo",
+      "deadline": "trong sprint này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000104"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Tách cơ sở dữ liệu chỉ đọc và thêm bộ nhớ đệm số dư",
+      "deadline": "hai tuần",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000124"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "bên em"
+      ],
+      "task": "Chạy lại kiểm thử tải 3.000 giao dịch/giây",
+      "deadline": "tuần thứ ba",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000125"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa lỗi rò rỉ bộ nhớ dịch vụ thông báo đẩy, gửi anh Toản kiểm thử lại",
+      "deadline": "trong tuần này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000126"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Gửi dự thảo quy chế quản lý rủi ro CNTT cho thư ký Hội đồng quản trị",
+      "deadline": "trước ngày 5 tháng 12",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000134"
+      ]
+    },
+    {
+      "id": "A24",
+      "actor": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "actor_aliases": [
+        "chị Mỹ",
+        "chị"
+      ],
+      "task": "Ký hợp đồng với đơn vị đánh giá an toàn thông tin cấp độ 4",
+      "deadline": "trong tuần này",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000154"
+      ]
+    },
+    {
+      "id": "A25",
+      "actor": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "actor_aliases": [
+        "anh Lâm",
+        "anh"
+      ],
+      "task": "Chủ trì diễn tập dự phòng thảm họa",
+      "deadline": "cuối tuần ngày 6 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000156"
+      ]
+    },
+    {
+      "id": "A26",
+      "actor": "Chị Hiền (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Tổng hợp hồ sơ gửi Ngân hàng Nhà nước, trình anh Trí ký",
+      "deadline": "trước ngày 15 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000158"
+      ]
+    },
+    {
+      "id": "A27",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "Vy"
+      ],
+      "task": "Làm tài liệu hướng dẫn khách hàng và video mở tài khoản",
+      "deadline": "trước ngày 1 tháng 1",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000159"
+      ]
+    },
+    {
+      "id": "A28",
+      "actor": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "actor_aliases": [
+        "anh Đông",
+        "anh"
+      ],
+      "task": "Đào tạo giao dịch viên 8 quỹ thí điểm, hai buổi trực tuyến",
+      "deadline": "tuần đầu tháng 1",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000161"
+      ]
+    },
+    {
+      "id": "A29",
+      "actor": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "anh Toản",
+        "anh"
+      ],
+      "task": "Chuẩn bị kịch bản kiểm thử chấp nhận người dùng với 8 quỹ",
+      "deadline": "chạy từ ngày 20 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000163"
+      ]
+    },
+    {
+      "id": "A30",
+      "actor": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "actor_aliases": [
+        "chị Mỹ"
+      ],
+      "task": "Ban hành quy trình xử lý khiếu nại giao dịch treo và lừa đảo cho tổng đài",
+      "deadline": "trước ngày 5 tháng 1",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000165"
+      ]
+    },
+    {
+      "id": "A31",
+      "actor": "Vy (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "Vy"
+      ],
+      "task": "Nộp ứng dụng lên Apple App Store và Google Play để duyệt",
+      "deadline": "trước ngày 28 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000167"
+      ]
+    },
+    {
+      "id": "A32",
+      "actor": "Chị Hiền (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm phương án truyền thông ra mắt với phòng truyền thông, trình anh Trí",
+      "deadline": "trước ngày 20 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000169"
+      ]
+    },
+    {
+      "id": "A33",
+      "actor": "Ông Trí (Phó Tổng giám đốc phụ trách công nghệ)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Làm việc với Ngân hàng Nhà nước chi nhánh khu vực về lịch ra mắt",
+      "deadline": "sau khi nộp hồ sơ",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000170"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "eKYC thất bại thì lưu hồ sơ và hoàn tất tại quầy bằng thiết bị đọc chip; tài khoản mở hoàn toàn trực tuyến hạn mức 100 triệu/tháng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Hiển thị tên người nhận trước khi xác nhận; giao dịch treo quá 60 giây tự tra soát, thất bại hoàn tiền trong 15 phút; miễn phí chuyển tiền năm đầu; chỉ hỗ trợ QR chuẩn VietQR, báo lỗi rõ ràng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Vay trực tuyến chỉ cho thành viên trên 12 tháng; đến 20 triệu duyệt tự động, trên 20 triệu cán bộ tín dụng xác minh; chỉ dùng dữ liệu nội bộ và CIC",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000062"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Không tiếp tục dùng nhà cung cấp eKYC hiện tại; luồng chính xác thực qua VNeID, dự phòng là nhà cung cấp mới có tên trong danh sách chính thức của Bộ Công an",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000080"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Thông báo qua ứng dụng miễn phí; SMS thu phí theo đăng ký (miễn phí cho khách trên 60 tuổi); kết nối SIMO cảnh báo tài khoản nghi ngờ; thiết bị mới giới hạn 10 triệu trong 24 giờ đầu; tích hợp phát hiện ứng dụng điều khiển từ xa; mục cảnh báo lừa đảo và nút khóa tài khoản khẩn cấp",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000102"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Tách cơ sở dữ liệu chỉ đọc, thêm bộ nhớ đệm, kiểm thử lại 3.000 giao dịch/giây, CPU cơ sở dữ liệu lõi dưới 70%",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000123"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Thuê đơn vị đánh giá an toàn thông tin cấp độ 4; diễn tập dự phòng thảm họa, khôi phục dưới 4 giờ; nộp hồ sơ NHNN trước 15/12",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000147"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Giữ ngày ra mắt chính thức 15/1, thí điểm 8 quỹ trước",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000148"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Ra mắt chỉ khi đủ 5 tiêu chí: chứng nhận Napas, đánh giá ATTT cấp độ 4 không còn lỗ hổng cao, kiểm thử tải 3.000 giao dịch/giây đạt, đã nộp hồ sơ NHNN, eKYC đủ điều kiện pháp lý; thiếu thì lùi ra mắt",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000152"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Vay trực tuyến: nhắc trước 3 ngày, trích nợ tự động, quá hạn 10 ngày cán bộ quỹ gọi điện; không thuê đơn vị đòi nợ bên ngoài",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000061"
+      ]
+    },
+    {
+      "id": "D11",
+      "text": "Không mở eKYC luồng hiện tại cho khách thật cho đến khi khắc phục lỗi kiểm tra người thật",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "D12",
+      "text": "Mỗi thiết bị chỉ đăng ký tối đa một tài khoản chính chủ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "D13",
+      "text": "Hạn mức chuyển tiền cá nhân 200 triệu/ngày; hộ kinh doanh đăng ký một lần tại quầy, tối đa 1 tỷ/ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D14",
+      "text": "Thí điểm vay trực tuyến tổng dư nợ tối đa 50 tỷ; quá hạn trên 30 ngày vượt 5% thì tạm dừng giải ngân mới; lãi suất tạm như vay tại quầy, Hội đồng quản trị quyết định sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    },
+    {
+      "id": "D15",
+      "text": "Nếu đến 5/1 VNeID chưa sẵn sàng thì ra mắt với nhà cung cấp eKYC mới làm luồng chính",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000074"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Tiếp tục dùng nhà cung cấp eKYC hiện tại (đã đổi sang VNeID + nhà cung cấp mới)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Chuyển tiền định kỳ (để giai đoạn 2)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Đóng băng tính năng giao diện chuyển tiền từ 15/12 (kiểm thử đề nghị)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Bảng giám sát hiệu năng thời gian thực và trực 24/7 tháng đầu (đề nghị, chưa chốt)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Thu phí SMS 8.000 đồng/tháng (đề xuất, chưa chốt mức)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000097"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "hedged_proposal",
+      "text": "Lãi suất vay trực tuyến cao hơn vay tại quầy 1-2 điểm % (chờ Hội đồng quản trị)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "hedged_proposal",
+      "text": "Dùng dữ liệu mạng xã hội, danh bạ để chấm điểm tín dụng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000046",
+        "TURN_000047"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Vy (Trưởng nhóm Mobile)",
+      "point": "eKYC thử nghiệm 1.200 khách đạt 81%; thất bại do điện thoại không NFC, người lớn tuổi, lỗi kết nối",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Tài khoản mở trực tuyến hạn mức 100 triệu/tháng; bắt buộc đối chiếu sinh trắc với chip",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Vy (Trưởng nhóm Mobile)",
+      "point": "Mở tài khoản trung bình 6 phút 40 giây; 11% bỏ ở bước đọc chip NFC",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Phải chống mở tài khoản hộ, mua bán tài khoản; mỗi thiết bị một tài khoản chính chủ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "point": "Đã đạt 118/140 kịch bản chứng nhận Napas, Napas cần 2 tuần thẩm định",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "point": "Nợ xấu vay tiêu dùng không bảo đảm 2,8%; vay trực tuyến thường cao hơn 1,5-2 lần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Chấm dứt hợp đồng eKYC cũ không phải bồi thường; kết nối VNeID mất 15-20 ngày làm việc",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000069"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "point": "23 vụ thành viên bị lừa khoảng 1,7 tỷ, chủ yếu giả danh cán bộ quỹ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000091"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "point": "Đỉnh dự báo khoảng 1.300 giao dịch/giây; 2.000 là hệ số an toàn 1,5",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Đánh giá cấp độ 4 khoảng 350-500 triệu, 3 tuần, kịp hạn nếu ký trong tuần",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000136"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Anh Lâm (Kiến trúc sư hệ thống)",
+      "point": "Chuyển tiền Napas 3,2 giây; 0,4% giao dịch bị treo chờ đối soát cuối ngày",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)",
+      "point": "Vay trực tuyến tối đa 50 triệu; chấm điểm duyệt tự động 42%, từ chối 21%",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Chỉ cho thành viên trên 12 tháng; khoản trên 20 triệu phải cán bộ duyệt",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Nhà cung cấp eKYC tăng phí 60% và chưa có tên trong danh sách kết nối chính thức của Bộ Công an",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000064"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Vy (Trưởng nhóm Mobile)",
+      "point": "Thông báo đẩy dưới 2 giây; SMS tốn 1,1 tỷ/năm; chưa có cảnh báo tài khoản lừa đảo",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Kết nối SIMO cảnh báo tài khoản nghi ngờ; giới hạn chuyển tiền trên thiết bị mới",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Anh Toản (Trưởng nhóm Kiểm thử)",
+      "point": "Kiểm thử 2.000 giao dịch/giây đạt 1,4 giây nhưng CPU cơ sở dữ liệu lõi 92%",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000106"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+      "point": "Hồ sơ NHNN thiếu đánh giá ATTT cấp độ 4 và phương án dự phòng thảm họa",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000128"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Ông Trí (Phó Tổng giám đốc phụ trách công nghệ)",
+    "PM": "Chị Hiền (Quản lý dự án)",
+    "BE": "Anh Lâm (Kiến trúc sư hệ thống)",
+    "MB": "Vy (Trưởng nhóm Mobile)",
+    "QA": "Anh Toản (Trưởng nhóm Kiểm thử)",
+    "RR": "Chị Mỹ (Trưởng phòng Quản lý rủi ro và Tuân thủ)",
+    "NV": "Anh Đông (Trưởng phòng Nghiệp vụ tín dụng)"
+  },
+  "tags": [
+    "topic_revisit",
+    "dense_actions_closing",
+    "long"
+  ]
+}

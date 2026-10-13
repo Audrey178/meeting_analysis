@@ -1,0 +1,827 @@
+{
+  "meeting_id": "synth_027",
+  "n_turns": 133,
+  "total_chars": 43716,
+  "boundaries": [
+    9,
+    22,
+    37,
+    53,
+    68,
+    85,
+    101,
+    117
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Báo cáo tổng kết tình hình thiên tai và thiệt hại năm 2026",
+      "summary": "Năm 2026 tỉnh chịu 4 cơn bão, 3 đợt lũ lớn, 9 người chết và mất tích, thiệt hại ước 2.840 tỷ đồng, cao nhất 10 năm; đợt lũ tháng 10 làm ngập 46.000 nhà.",
+      "turn_range": [
+        0,
+        9
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000009"
+      ],
+      "chars": 4690,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Đánh giá công tác dự báo, cảnh báo sớm thiên tai",
+      "summary": "Đài Khí tượng thủy văn nêu độ chính xác dự báo bão đạt 85%, nhưng thiếu trạm đo mưa tự động ở thượng nguồn, cảnh báo lũ quét chậm; đề nghị lắp thêm 40 trạm đo mưa tự động và hệ thống cảnh báo qua tin nhắn di động theo vùng.",
+      "turn_range": [
+        9,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000010",
+        "TURN_000022"
+      ],
+      "chars": 4772,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Ý kiến của huyện ven biển về sơ tán dân và nhà tránh trú bão",
+      "summary": "Huyện Hải Lăng nêu khó khăn sơ tán 11.000 dân, nhà tránh trú bão cộng đồng thiếu và xuống cấp, ngư dân không về bờ; đề nghị xây thêm 6 nhà tránh trú đa năng và có chế tài với chủ tàu không chấp hành lệnh cấm biển.",
+      "turn_range": [
+        22,
+        37
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000037"
+      ],
+      "chars": 5061,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Ý kiến của huyện miền núi về phòng chống sạt lở đất và lũ quét",
+      "summary": "Huyện Đakrông có 46 điểm sạt lở nguy hiểm, 312 hộ cần di dời khẩn cấp nhưng thiếu quỹ đất tái định cư; ngầm tràn chưa có rào chắn; đề nghị bố trí vốn di dời và lắp cột báo lũ, rào chắn tự động tại 23 ngầm tràn.",
+      "turn_range": [
+        37,
+        53
+      ],
+      "turn_ids": [
+        "TURN_000038",
+        "TURN_000053"
+      ],
+      "chars": 5085,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Rà soát an toàn hồ đập thủy lợi trước mùa mưa lũ năm 2027",
+      "summary": "Tỉnh có 142 hồ chứa, 38 hồ nhỏ do xã quản lý bị xuống cấp, 11 hồ chưa có quy trình vận hành; đề nghị chuyển giao hồ do xã quản lý về Công ty Khai thác thủy lợi và sửa chữa cấp bách 11 hồ.",
+      "turn_range": [
+        53,
+        68
+      ],
+      "turn_ids": [
+        "TURN_000054",
+        "TURN_000068"
+      ],
+      "chars": 4394,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Công tác tìm kiếm cứu nạn và năng lực lực lượng cứu hộ",
+      "summary": "Bộ Chỉ huy quân sự và Công an tỉnh huy động 15.000 lượt người; thiếu xuồng máy công suất lớn và thiết bị cứu hộ đêm; đề nghị mua bổ sung 12 xuồng cứu hộ, 2 thiết bị bay không người lái có camera nhiệt, tập huấn lực lượng xung kích xã.",
+      "turn_range": [
+        68,
+        85
+      ],
+      "turn_ids": [
+        "TURN_000069",
+        "TURN_000085"
+      ],
+      "chars": 5125,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Bảo đảm thông tin liên lạc và cung cấp điện trong thiên tai",
+      "summary": "Đợt lũ tháng 10 mất điện 210.000 khách hàng, 34 xã mất liên lạc hoàn toàn trên 24 giờ; Điện lực đề nghị ngầm hóa lưới điện ở khu vực trọng yếu; thống nhất trang bị điện thoại vệ tinh cho các xã vùng cao.",
+      "turn_range": [
+        85,
+        101
+      ],
+      "turn_ids": [
+        "TURN_000086",
+        "TURN_000101"
+      ],
+      "chars": 5384,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Nguồn lực tài chính cho phòng chống thiên tai và khắc phục hậu quả",
+      "summary": "Tổng nhu cầu vốn khắc phục và phòng ngừa khoảng 1.200 tỷ, nguồn hỗ trợ Trung ương 620 tỷ mới giải ngân 54%; Quỹ phòng chống thiên tai thu 38 tỷ; thống nhất ưu tiên di dời dân vùng sạt lở, sửa hồ đập nguy cơ cao, xuồng cứu hộ; yêu cầu giải ngân hết nguồn hỗ trợ trước 31/3.",
+      "turn_range": [
+        101,
+        117
+      ],
+      "turn_ids": [
+        "TURN_000102",
+        "TURN_000117"
+      ],
+      "chars": 4726,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Kết luận của Chủ tịch UBND tỉnh về nhiệm vụ phòng chống thiên tai năm 2027",
+      "summary": "Chủ tịch kết luận thứ tự ưu tiên vốn; giao Sở Nông nghiệp và Môi trường chủ trì di dời 312 hộ và chuyển giao 38 hồ; Sở Tài chính tham mưu bố trí vốn; các huyện rà soát điểm sơ tán; chế tài tàu cá không chấp hành lệnh cấm biển.",
+      "turn_range": [
+        117,
+        133
+      ],
+      "turn_ids": [
+        "TURN_000118",
+        "TURN_000133"
+      ],
+      "chars": 4479,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Thảo (Chánh Văn phòng thường trực Ban Chỉ huy PCTT)",
+      "actor_aliases": [
+        "Văn phòng thường trực",
+        "Văn phòng"
+      ],
+      "task": "Lập danh sách và dự toán trang bị điện thoại vệ tinh cho 30 xã thường bị chia cắt",
+      "deadline": "trình trong tháng 12; mua trước tháng 6 năm sau",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000099",
+        "TURN_000100"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường",
+        "Sở"
+      ],
+      "task": "Chủ trì lập dự án di dời 312 hộ vùng sạt lở; làm việc với Công ty Lâm nghiệp Đường 9 bàn giao 38 ha đất",
+      "deadline": "trước ngày 31 tháng 1",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000123"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Phối hợp Công ty thủy lợi lập phương án chuyển giao 38 hồ và hồ sơ sửa chữa cấp bách 11 hồ",
+      "deadline": "trước ngày 15 tháng 1",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000125"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Toàn (Giám đốc Công ty TNHH MTV Khai thác thủy lợi tỉnh)",
+      "actor_aliases": [
+        "Công ty Khai thác thủy lợi",
+        "Công ty"
+      ],
+      "task": "Phối hợp lập phương án chuyển giao 38 hồ và sửa chữa 11 hồ",
+      "deadline": "trước ngày 15 tháng 1",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000125"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Làm việc với Viện Khoa học địa chất về bản đồ nguy cơ chi tiết cho 46 điểm sạt lở",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Hồ Văn Thanh (Chủ tịch UBND huyện miền núi Đakrông)",
+      "actor_aliases": [
+        "Huyện Đakrông",
+        "huyện"
+      ],
+      "task": "Gửi hồ sơ đề nghị kéo dài thời gian giải ngân nguồn hỗ trợ thiên tai về Sở Tài chính",
+      "deadline": "trước ngày 20 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000106"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Nguyễn Văn Tư (Chủ tịch UBND huyện ven biển Hải Lăng)",
+      "actor_aliases": [
+        "Huyện Hải Lăng"
+      ],
+      "task": "Gửi hồ sơ đề nghị kéo dài giải ngân cho 4 công trình kè về Sở Tài chính",
+      "deadline": "trước ngày 20 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000106",
+        "TURN_000107"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Hà (Giám đốc Công ty Điện lực tỉnh)",
+      "actor_aliases": [
+        "Điện lực"
+      ],
+      "task": "Bổ sung trạm y tế xã vào danh mục phụ tải ưu tiên khôi phục điện",
+      "deadline": null,
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000091"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đ/c Hồ Văn Thanh (Chủ tịch UBND huyện miền núi Đakrông)",
+      "actor_aliases": [
+        "Huyện"
+      ],
+      "task": "Lập danh sách 87 hộ tạm cư gửi Sở Tài chính để trình hỗ trợ từ dự phòng",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000112"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Đ/c Liên (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Trình chi hỗ trợ tạm cư cho hộ di dời khẩn cấp từ nguồn dự phòng khi huyện gửi danh sách",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000112"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Đại tá Kiên (Phó Giám đốc Công an tỉnh)",
+      "actor_aliases": [
+        "Công an"
+      ],
+      "task": "Đề xuất Bộ Công an trang bị thiết bị bay không người lái camera nhiệt theo dự án chung",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Cấp giống đợt 2 cho các hộ bị thiệt hại",
+      "deadline": "đầu tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000116"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Đ/c Đại tá Kiên (Phó Giám đốc Công an tỉnh)",
+      "actor_aliases": [
+        "Công an"
+      ],
+      "task": "Phối hợp Văn phòng thường trực đính chính tin giả về thiên tai trong vòng 1 giờ",
+      "deadline": "mùa mưa bão năm sau",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000097"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Trình UBND kế hoạch phòng chống thiên tai năm 2027",
+      "deadline": "trong tháng 2",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000119"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Đ/c Liên (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Tham mưu bố trí vốn phòng chống thiên tai theo thứ tự ưu tiên",
+      "deadline": "trong tháng 12",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000127"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Đ/c Quỳnh (Giám đốc Đài Khí tượng thủy văn tỉnh)",
+      "actor_aliases": [
+        "Đài Khí tượng thủy văn",
+        "Đài"
+      ],
+      "task": "Làm việc với nhà mạng về cảnh báo tin nhắn quảng bá theo vùng, đề xuất phương án",
+      "deadline": "trước tháng 3",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000129"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Đ/c Thảo (Chánh Văn phòng thường trực Ban Chỉ huy PCTT)",
+      "actor_aliases": [
+        "Văn phòng thường trực",
+        "Văn phòng"
+      ],
+      "task": "Tổng hợp ý kiến, ban hành thông báo kết luận hội nghị",
+      "deadline": "trong tuần này",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000131",
+        "TURN_000132"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Trang bị điện thoại vệ tinh cho 30 xã thường bị chia cắt",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Thứ tự ưu tiên vốn: (1) di dời 312 hộ vùng sạt lở, (2) sửa 11 hồ nguy cơ cao, (3) rào chắn 23 ngầm tràn, 12 xuồng cứu hộ, 40 trạm đo mưa; thiết bị bay do Công an tự cân đối; nhà tránh trú lồng ghép chương trình trường học, nhà văn hóa",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Chuyển giao 38 hồ chứa xuống cấp do xã quản lý về Công ty Khai thác thủy lợi tỉnh",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Tàu cá không chấp hành lệnh cấm biển bị tước giấy phép khai thác có thời hạn và không được hỗ trợ nhiên liệu",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Triển khai cảnh báo qua tin nhắn quảng bá theo vùng và bằng tiếng dân tộc qua loa bản, già làng",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000122"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "unassigned_task",
+      "text": "Làm video tuyên truyền bằng tiếng Vân Kiều, Pa Kô về các vụ chết đuối (cần có đơn vị làm, không giao)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Trang bị loa cầm tay, còi báo động chạy pin cho trưởng thôn vùng trũng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "unassigned_task",
+      "text": "Phân biệt tàu cố tình không chấp hành và tàu không nhận được thông tin cấm biển",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "unassigned_task",
+      "text": "Có phương án đất sản xuất, sinh kế gần khu tái định cư Đakrông",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "unassigned_task",
+      "text": "Cơ chế hỗ trợ ngân sách bổ sung cho các hồ chuyển giao về Công ty thủy lợi (Sở Tài chính chưa cam kết)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000062"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "unassigned_task",
+      "text": "Thông tin cho dân về bảo vệ tài sản khi sơ tán để lần sau yên tâm đi",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "unassigned_task",
+      "text": "Phối hợp thường xuyên Biên phòng, Công an, kiểm lâm truy quét khai thác vàng trái phép",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "unassigned_task",
+      "text": "Lắp camera giám sát mực nước cho các hồ nhỏ của huyện",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000068"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "unassigned_task",
+      "text": "Chi trả ngay khoản hỗ trợ trực tiếp cho dân trước Tết (nhắc chung các huyện)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000114"
+      ]
+    },
+    {
+      "id": "N10",
+      "type": "hedged_proposal",
+      "text": "Cảnh sát PCCC hỗ trợ tập huấn bơi cứu đuối cho xung kích xã (đề nghị, chưa giao)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "N11",
+      "type": "hedged_proposal",
+      "text": "Đài cung cấp bản đồ ngập lụt theo kịch bản cho các huyện (đề nghị hỗ trợ, chưa giao)",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000121"
+      ]
+    },
+    {
+      "id": "N12",
+      "type": "unassigned_task",
+      "text": "Các huyện cập nhật phương án PCTT trước 31/3, các xã trước 30/4 (yêu cầu chung)",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000119"
+      ]
+    },
+    {
+      "id": "N13",
+      "type": "unassigned_task",
+      "text": "Lập trung tâm điều phối cứu hộ thống nhất trong đợt cao điểm",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000076"
+      ]
+    },
+    {
+      "id": "N14",
+      "type": "unassigned_task",
+      "text": "Diễn tập phối hợp chung các lực lượng trước mùa mưa bão, kể cả tình huống mất sóng (Bộ CHQS sẵn sàng nếu được giao, chưa giao)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000077"
+      ]
+    },
+    {
+      "id": "N15",
+      "type": "unassigned_task",
+      "text": "Trang bị máy phát điện dự phòng cho các trạm bơm tiêu úng quan trọng",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000092"
+      ]
+    },
+    {
+      "id": "N16",
+      "type": "unassigned_task",
+      "text": "Vận động dân không trồng cây cao trong hành lang lưới điện, chặt tỉa trước mùa mưa bão",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000089"
+      ]
+    },
+    {
+      "id": "N17",
+      "type": "unassigned_task",
+      "text": "Cần có nguồn kinh phí lắp trạm đo mưa và cơ chế để xã bảo vệ trạm (không giao ai)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "N18",
+      "type": "unassigned_task",
+      "text": "Rà soát toàn bộ điểm sơ tán bảo đảm nước, vệ sinh, máy phát (các địa phương cần làm, không giao cụ thể)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "N19",
+      "type": "unassigned_task",
+      "text": "Bố trí người trực chốt chặn ngầm tràn 24/24 khi có lũ",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "N20",
+      "type": "unassigned_task",
+      "text": "Hỗ trợ một phần chi phí di dời lồng bè ra khỏi luồng thoát lũ (huyện đề nghị, không ai nhận)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "N21",
+      "type": "unassigned_task",
+      "text": "Kiểm định lại an toàn đập các hồ cũ không còn hồ sơ thiết kế",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000060"
+      ]
+    },
+    {
+      "id": "N22",
+      "type": "unassigned_task",
+      "text": "Kiện toàn lực lượng xung kích xã, trang bị áo phao, đèn, dây cứu sinh",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000073"
+      ]
+    },
+    {
+      "id": "N23",
+      "type": "unassigned_task",
+      "text": "Nhà mạng nâng thời lượng ắc quy, máy phát dự phòng trạm phát sóng lên 24 giờ",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000101"
+      ]
+    },
+    {
+      "id": "N24",
+      "type": "unassigned_task",
+      "text": "Các địa phương đẩy nhanh hoàn thiện hồ sơ giải ngân nguồn hỗ trợ Trung ương",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000108"
+      ]
+    },
+    {
+      "id": "N25",
+      "type": "unassigned_task",
+      "text": "Các sở, ngành, địa phương chủ động, tuyên truyền không qua ngầm tràn (khẩu hiệu chung)",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000131"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Thảo (Chánh Văn phòng thường trực Ban Chỉ huy PCTT)",
+      "point": "4 cơn bão, 3 đợt lũ lớn; 9 người chết và mất tích; thiệt hại khoảng 2.840 tỷ, cao nhất 10 năm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Hưng (Phó Chủ tịch UBND tỉnh, Phó Trưởng ban thường trực)",
+      "point": "46 công điện, sơ tán tốt trước bão số 5 nhưng bị bất ngờ với lũ tháng 10 lên nhanh ban đêm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Quỳnh (Giám đốc Đài Khí tượng thủy văn tỉnh)",
+      "point": "La Nina có khả năng hình thành năm 2027 (xác suất 60%), mưa lũ có thể lớn và sớm hơn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Đại tá Kiên (Phó Giám đốc Công an tỉnh)",
+      "point": "Phạt 5-10 triệu/tàu không đủ răn đe, cần tước giấy phép 1-3 tháng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "38 ha đất tái định cư: khoảng 12 ha ở, 26 ha đất sản xuất, giao khoán bảo vệ rừng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Toàn (Giám đốc Công ty TNHH MTV Khai thác thủy lợi tỉnh)",
+      "point": "Vận hành 38 hồ chuyển giao cần 4,5 tỷ/năm, nguồn công ích chỉ 1,8 tỷ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000063"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Hà (Giám đốc Công ty Điện lực tỉnh)",
+      "point": "86 trạm biến áp ngập, 147 cột đổ chủ yếu do cây trồng sát hành lang lưới điện",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000089"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Đại tá Sáng (Chỉ huy trưởng Bộ CHQS tỉnh)",
+      "point": "Tập huấn 2.400 dân quân; chỉ khoảng 40% dân quân miền núi biết bơi thành thạo",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000083"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Liên (Giám đốc Sở Tài chính)",
+      "point": "Tỉnh tự cân đối khoảng 590 tỷ, còn thiếu khoảng 610 tỷ so với nhu cầu",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000109"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Đ/c Quỳnh (Giám đốc Đài Khí tượng thủy văn tỉnh)",
+      "point": "Dự báo bão chính xác 85%; cảnh báo lũ quét hạn chế do chỉ có 58 trạm đo mưa; đề xuất thêm 40 trạm và cảnh báo tin nhắn theo vùng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Đ/c Nguyễn Văn Tư (Chủ tịch UBND huyện ven biển Hải Lăng)",
+      "point": "Sơ tán 11.000 dân nhưng nhà tránh trú chỉ chứa 4.500; 17 tàu cá không chấp hành lệnh cấm biển",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Đ/c Hồ Văn Thanh (Chủ tịch UBND huyện miền núi Đakrông)",
+      "point": "46 điểm sạt lở, 312 hộ cần di dời, thiếu quỹ đất; 23 ngầm tràn không có rào chắn",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Đ/c Toàn (Giám đốc Công ty TNHH MTV Khai thác thủy lợi tỉnh)",
+      "point": "38/95 hồ do xã quản lý xuống cấp, 11 hồ chưa có quy trình vận hành",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Đ/c Đại tá Sáng (Chỉ huy trưởng Bộ CHQS tỉnh)",
+      "point": "Huy động 15.000 lượt, cứu 186 người; chỉ có 21 xuồng cứu hộ, thiếu thiết bị cứu hộ đêm",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Đ/c Đại tá Kiên (Phó Giám đốc Công an tỉnh)",
+      "point": "Đề nghị thiết bị bay không người lái có camera nhiệt tìm người mất tích",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000071"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Đ/c Hà (Giám đốc Công ty Điện lực tỉnh)",
+      "point": "Mất điện 210.000 khách hàng, 34 xã mất liên lạc trên 24 giờ",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000087"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Đ/c Liên (Giám đốc Sở Tài chính)",
+      "point": "Hỗ trợ Trung ương 620 tỷ mới giải ngân 54%; nhu cầu mới khoảng 1.200 tỷ",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000103"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Phong (Chủ tịch UBND tỉnh, Trưởng Ban Chỉ huy PCTT&TKCN)",
+    "PCT": "Đ/c Hưng (Phó Chủ tịch UBND tỉnh, Phó Trưởng ban thường trực)",
+    "NN": "Đ/c Lâm (Giám đốc Sở Nông nghiệp và Môi trường)",
+    "KTTV": "Đ/c Quỳnh (Giám đốc Đài Khí tượng thủy văn tỉnh)",
+    "H1": "Đ/c Nguyễn Văn Tư (Chủ tịch UBND huyện ven biển Hải Lăng)",
+    "H2": "Đ/c Hồ Văn Thanh (Chủ tịch UBND huyện miền núi Đakrông)",
+    "TL": "Đ/c Toàn (Giám đốc Công ty TNHH MTV Khai thác thủy lợi tỉnh)",
+    "QS": "Đ/c Đại tá Sáng (Chỉ huy trưởng Bộ CHQS tỉnh)",
+    "CA": "Đ/c Đại tá Kiên (Phó Giám đốc Công an tỉnh)",
+    "DL": "Đ/c Hà (Giám đốc Công ty Điện lực tỉnh)",
+    "TC": "Đ/c Liên (Giám đốc Sở Tài chính)",
+    "VP": "Đ/c Thảo (Chánh Văn phòng thường trực Ban Chỉ huy PCTT)"
+  },
+  "tags": [
+    "long",
+    "many_speakers",
+    "unassigned_task"
+  ]
+}

@@ -1,0 +1,811 @@
+{
+  "transcript": "Rồi, xin mời các đồng chí. Hôm nay thì Thường vụ cho ý kiến về cái Đề án chuyển đổi số ngành y tế của tỉnh, cái đề án này thì Ủy ban cũng đã chuẩn bị khá lâu rồi, đã lấy ý kiến các sở ngành. Tôi đề nghị đồng chí Hòa báo cáo ngắn gọn thôi, tập trung vào mục tiêu, nhiệm vụ với kinh phí, còn các cái phần căn cứ thì các đồng chí đã có tài liệu rồi. Mời đồng chí Hòa. Dạ, báo cáo đồng chí Bí thư, báo cáo các đồng chí trong Ban Thường vụ. Thay mặt Ban cán sự Đảng Ủy ban, Sở Y tế xin báo cáo tóm tắt Tờ trình số 215 về Đề án chuyển đổi số ngành y tế tỉnh giai đoạn 2026 đến 2030, tầm nhìn đến năm 2035. Về căn cứ thì đề án này bám theo Nghị quyết 57 của Bộ Chính trị về đột phá phát triển khoa học công nghệ, đổi mới sáng tạo và chuyển đổi số, rồi Chương trình chuyển đổi số quốc gia, rồi Đề án 06 của Chính phủ về phát triển ứng dụng dữ liệu dân cư, và cái kế hoạch của Bộ Y tế về triển khai hồ sơ sức khỏe điện tử, bệnh án điện tử trên toàn quốc. Ở tỉnh thì có Nghị quyết của Tỉnh ủy về chuyển đổi số đến năm 2030 mà Thường vụ đã ban hành năm ngoái. Về sự cần thiết thì báo cáo các đồng chí là hiện nay cái hạ tầng công nghệ thông tin của ngành mình thì còn rất là phân tán. Toàn tỉnh có 14 bệnh viện công lập tuyến tỉnh và tuyến huyện, 132 trạm y tế xã, nhưng mà mỗi nơi dùng một phần mềm quản lý bệnh viện khác nhau, có nơi thì dùng của Viettel, có nơi thì dùng của VNPT, có nơi thì dùng phần mềm tự phát triển từ những năm 2015, 2016, và dữ liệu thì hầu như không liên thông được với nhau. Người bệnh chuyển tuyến từ huyện lên tỉnh thì vẫn phải mang theo cái hồ sơ giấy, làm lại xét nghiệm, chụp chiếu lại, vừa tốn kém cho người dân vừa quá tải cho bệnh viện tuyến trên. Về hiện trạng cụ thể thì Sở cũng đã khảo sát trong quý 2 vừa rồi. Đến nay mới có 3 trên 14 bệnh viện triển khai được bệnh án điện tử theo Thông tư 46, cái tỷ lệ này thì là thấp so với bình quân chung cả nước. Cái hồ sơ sức khỏe điện tử thì đã tạo được cho khoảng 61% dân số, nhưng mà cái dữ liệu thì phần lớn là dữ liệu hành chính thôi, còn dữ liệu khám chữa bệnh thực tế thì cập nhật rất ít, người dân mở ra thì thấy trống. Về nhân lực thì cả ngành chỉ có khoảng 70 cán bộ chuyên trách công nghệ thông tin, trong đó các trạm y tế xã thì gần như không có ai chuyên trách, chủ yếu là kiêm nhiệm. Về an toàn thông tin thì năm vừa rồi có 2 bệnh viện bị tấn công mã độc, trong đó một bệnh viện phải dừng hệ thống gần hai ngày, phải quay lại ghi chép bằng tay. Cho nên báo cáo các đồng chí là việc xây dựng một cái đề án tổng thể để đầu tư có trọng tâm, tránh cái tình trạng mỗi đơn vị tự mua sắm manh mún thì là rất cần thiết. Về mục tiêu thì đề án đặt ra đến năm 2028 thì 100% bệnh viện công lập triển khai bệnh án điện tử, bỏ hoàn toàn bệnh án giấy. Đến năm 2030 thì 100% trạm y tế xã kết nối được với cái nền tảng dữ liệu y tế dùng chung của tỉnh, 90% người dân có hồ sơ sức khỏe điện tử được cập nhật dữ liệu khám chữa bệnh, và liên thông kết quả xét nghiệm, chẩn đoán hình ảnh giữa các tuyến để không phải làm lại. Về nhiệm vụ thì đề án chia thành ba nhóm. Nhóm thứ nhất là hạ tầng và nền tảng, tức là xây dựng một cái nền tảng dữ liệu y tế dùng chung đặt tại Trung tâm dữ liệu của tỉnh, chuẩn hóa theo chuẩn HL7 FHIR để các phần mềm khác nhau đều đẩy dữ liệu về được. Nhóm thứ hai là ứng dụng, gồm bệnh án điện tử cho các bệnh viện còn lại, hệ thống lưu trữ và truyền hình ảnh PACS dùng chung, rồi ứng dụng đặt lịch khám, thanh toán không dùng tiền mặt cho người dân. Nhóm thứ ba là nhân lực và an toàn thông tin, gồm đào tạo lại cán bộ, thành lập đội ứng cứu sự cố an toàn thông tin của ngành, và thuê giám sát an toàn thông tin 24 trên 7. Về kinh phí thì tổng kinh phí dự kiến là khoảng 1.180 tỷ đồng cho cả giai đoạn năm năm, trong đó ngân sách tỉnh khoảng 720 tỷ, còn lại là nguồn thu sự nghiệp của các bệnh viện, nguồn hỗ trợ của Trung ương qua chương trình mục tiêu và huy động xã hội hóa. Riêng năm 2026 thì đề xuất bố trí khoảng 210 tỷ để làm trước cái nền tảng dữ liệu dùng chung và bệnh án điện tử cho 5 bệnh viện lớn. Báo cáo các đồng chí là đề án cũng đã lấy ý kiến của 20 sở ngành và Ủy ban các huyện, cơ bản là thống nhất, có một số ý kiến về nguồn vốn và về mô hình đầu tư thì Sở đã tổng hợp trong báo cáo tiếp thu giải trình gửi kèm. Sở Y tế xin báo cáo đến đây, kính đề nghị Ban Thường vụ cho ý kiến. Cảm ơn đồng chí Hòa. Rồi, các đồng chí cho ý kiến. Tôi đề nghị đồng chí Lâm bên Tài chính nói trước về cái nguồn, vì cái con số 1.180 tỷ này là không nhỏ. Dạ báo cáo đồng chí Bí thư. Về cơ bản thì Sở Tài chính thống nhất với sự cần thiết của đề án. Tuy nhiên về nguồn thì xin báo cáo là cái kế hoạch đầu tư công trung hạn 2026 2030 của tỉnh hiện nay đang rất căng, các dự án giao thông trọng điểm, rồi dự án đường ven biển đã chiếm gần 60% rồi. Con số 720 tỷ ngân sách tỉnh mà Sở Y tế đề xuất thì theo tính toán sơ bộ của Sở Tài chính thì khả năng cân đối được chỉ khoảng 500 đến 550 tỷ trong cả giai đoạn thôi. Cho nên là đề nghị đề án phải phân kỳ lại cho rõ, cái gì làm trước cái gì làm sau, và phải có cái phương án nếu như nguồn Trung ương không về đúng như dự kiến thì mình cắt cái gì. Thứ hai là cái năm 2026 đề xuất 210 tỷ thì cũng khó, vì dự toán năm 2026 cơ bản đã chốt ở Hội đồng nhân dân rồi, nếu bổ sung thì chỉ có thể lấy từ nguồn dự phòng và nguồn tăng thu, khả năng là khoảng 120 đến 130 tỷ thôi. Tức là năm đầu chỉ khoảng 120, 130 tỷ, được. Đồng chí Vy. Dạ báo cáo đồng chí Bí thư. Về chuyên môn thì Sở Khoa học và Công nghệ thống nhất cao với cái hướng xây dựng nền tảng dữ liệu dùng chung, vì cái này nó đúng với cái kiến trúc chính quyền số của tỉnh. Nhưng mà em xin có một cái ý là về mô hình đầu tư, thì em nghĩ là mình có thể cân nhắc cái phương án thuê dịch vụ công nghệ thông tin thay vì đầu tư mua sắm toàn bộ. Tức là cái phần bệnh án điện tử, phần PACS thì hiện nay các doanh nghiệp đều có cung cấp dưới dạng dịch vụ, mình trả tiền theo năm, thì như vậy vừa giảm được áp lực vốn đầu tư ban đầu, vừa không phải lo cái chuyện bảo trì nâng cấp, mà cái chi phí thuê thì lại đi vào chi thường xuyên chứ không phải vốn đầu tư công. Cái này em nghĩ là nó cũng giải quyết một phần cái khó mà anh Lâm vừa nói. Đây là em đề xuất thôi, cũng cần tính thêm. Ý thứ hai là về dữ liệu, thì em đề nghị là toàn bộ cái nền tảng dữ liệu y tế dùng chung phải đặt tại Trung tâm dữ liệu của tỉnh, không được để doanh nghiệp giữ dữ liệu của người bệnh trên hạ tầng của doanh nghiệp, kể cả trường hợp thuê dịch vụ. Dữ liệu sức khỏe là dữ liệu cá nhân nhạy cảm theo Nghị định 13 rồi Luật bảo vệ dữ liệu cá nhân, nên cái này phải chặt. Và cái chuẩn liên thông thì phải thống nhất ngay từ đầu, cái HL7 FHIR mà Sở Y tế đưa ra là đúng, nhưng mà phải ra được cái văn bản bắt buộc các nhà cung cấp phần mềm hiện nay phải tuân thủ trong một cái thời hạn nhất định, chứ không thì lại mỗi nơi một kiểu. Rồi. Đồng chí Quang bên Ủy ban có ý kiến gì thêm không? Dạ báo cáo đồng chí Bí thư. Ủy ban thì cũng đã họp mấy lần về cái đề án này rồi. Về cái ý của đồng chí Vy về thuê dịch vụ thì thực ra Ủy ban cũng đã có bàn, nhưng mà báo cáo đồng chí là cái vướng hiện nay là hướng dẫn về thuê dịch vụ công nghệ thông tin theo Nghị định 73 nó còn nhiều cái chưa rõ, đặc biệt là cái phần định giá thuê và cái phần sau khi hết hợp đồng thì tài sản, dữ liệu thuộc về ai. Một số tỉnh làm rồi thì cũng đang vướng thanh tra. Cho nên là em nghĩ cái này chưa nên đưa vào đề án ngay bây giờ, có thể thí điểm ở một vài hạng mục nhỏ sau. Ý thứ hai thì em rất đồng tình với anh Lâm là phải phân kỳ, và theo em thì cái ưu tiên số một phải là cái nền tảng dữ liệu dùng chung với bệnh án điện tử cho các bệnh viện tuyến tỉnh, còn cái ứng dụng đặt lịch, thanh toán cho người dân thì doanh nghiệp làm rất nhiều rồi, mình có thể kết nối chứ không nhất thiết phải tự đầu tư. Còn một cái nữa là về nhân lực, thì báo cáo đồng chí là em thấy đây là cái khâu yếu nhất. Mình đầu tư phần mềm xong mà trạm y tế xã không có người vận hành thì cũng như không. Hiện nay sau sắp xếp đơn vị hành chính thì các trạm y tế cũng đang biến động về nhân sự. Cái này thì phải có cái rà soát tổng thể xem mỗi trạm, mỗi bệnh viện cần tối thiểu bao nhiêu người làm công nghệ thông tin, rồi có cơ chế đãi ngộ, chứ lương như hiện nay thì không giữ được người, các em giỏi ra doanh nghiệp hết. Dạ, xin phép đồng chí Bí thư em giải trình thêm một chút về cái phần nhân lực. Trong đề án thì Sở cũng đã có tính đến việc đào tạo lại khoảng 1.500 lượt cán bộ y tế về kỹ năng số, nhưng mà đúng như anh Quang nói là cái phần cán bộ chuyên trách thì chưa có cơ chế, vì cái này nó liên quan đến biên chế và chế độ chính sách, vượt thẩm quyền của Sở. Rồi, tôi xin kết luận nội dung này. Thứ nhất là Ban Thường vụ thống nhất cao về chủ trương ban hành Đề án chuyển đổi số ngành y tế giai đoạn 2026 2030. Đây là việc cần thiết, cấp bách, các đồng chí đã phân tích rồi, người dân chuyển tuyến vẫn cầm hồ sơ giấy là không chấp nhận được trong bối cảnh hiện nay. Thứ hai, về nội dung thì đề án phải phân kỳ lại. Giai đoạn một từ năm 2026 đến 2027 thì tập trung làm hai việc thôi, là nền tảng dữ liệu y tế dùng chung và bệnh án điện tử cho các bệnh viện tuyến tỉnh. Các hạng mục khác như là ứng dụng đặt lịch, thanh toán cho người dân thì chuyển sang giai đoạn hai, và theo hướng kết nối với các nền tảng sẵn có, không đầu tư mới. Tổng kinh phí thì phải tính toán lại cho phù hợp với khả năng cân đối mà Sở Tài chính vừa báo cáo, chứ không để con số 1.180 tỷ như hiện nay. Thứ ba là về dữ liệu, tôi thống nhất với ý kiến đồng chí Vy, toàn bộ dữ liệu y tế phải đặt tại Trung tâm dữ liệu của tỉnh, đây là nguyên tắc, không bàn lại. Chuẩn liên thông áp dụng thống nhất là HL7 FHIR. Còn cái đề xuất thuê dịch vụ thì như đồng chí Quang báo cáo, hiện nay khung pháp lý chưa rõ, cho nên chưa đưa vào đề án lần này. Sau này nếu có hướng dẫn rõ thì Ủy ban nghiên cứu thí điểm sau. Về tổ chức thực hiện. Giao Ban cán sự Đảng Ủy ban chỉ đạo Sở Y tế tiếp thu đầy đủ các ý kiến hôm nay, hoàn thiện đề án theo hướng phân kỳ như tôi vừa nói, trình Ủy ban ban hành trước ngày 30 tháng 11. Đồng chí Hòa chịu trách nhiệm việc này. Giao Sở Tài chính chủ trì, phối hợp Sở Y tế rà soát, đề xuất bố trí nguồn cho năm 2026 từ nguồn dự phòng và tăng thu như đồng chí Lâm đã báo cáo, báo cáo Thường trực trong tháng 11. Giao Sở Khoa học và Công nghệ xây dựng và ban hành văn bản hướng dẫn chuẩn liên thông dữ liệu y tế, yêu cầu các nhà cung cấp phần mềm quản lý bệnh viện hiện nay phải tuân thủ, thời hạn trong quý 1 năm 2026. Còn cái vấn đề nhân lực công nghệ thông tin cho trạm y tế xã mà đồng chí Quang nêu thì tôi thấy là đúng, là khâu yếu, cái này thì cũng phải tính, phải có cái rà soát tổng thể, nhưng mà nó liên quan biên chế và chế độ chính sách nên cần nghiên cứu thêm, lúc nào chín thì đưa ra. Rồi, nội dung này tôi kết luận như vậy, các đồng chí có ý kiến gì khác không? Không có thì chuyển sang nội dung tiếp theo.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi, xin mời các đồng chí. Hôm nay thì Thường vụ cho ý kiến về cái Đề án chuyển đổi số ngành y tế của tỉnh, cái đề án này thì Ủy ban cũng đã chuẩn bị khá lâu rồi, đã lấy ý kiến các sở ngành. Tôi đề nghị đồng chí Hòa báo cáo ngắn gọn thôi,",
+      "segment_html": "Rồi, xin mời các đồng chí. Hôm nay thì Thường vụ cho ý kiến về cái Đề án chuyển đổi số ngành y tế của tỉnh, cái đề án này thì Ủy ban cũng đã chuẩn bị khá lâu rồi, đã lấy ý kiến các sở ngành. Tôi đề nghị đồng chí Hòa báo cáo ngắn gọn thôi,",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 25.467,
+      "point_id": "ece91949-d236-5760-b934-cb32a648f56d",
+      "ref_id": [
+        "5daa5d08-93f7-53df-87e8-8cdaa44d0ae1"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "tập trung vào mục tiêu, nhiệm vụ với kinh phí, còn các cái phần căn cứ thì các đồng chí đã có tài liệu rồi. Mời đồng chí Hòa.",
+      "segment_html": "tập trung vào mục tiêu, nhiệm vụ với kinh phí, còn các cái phần căn cứ thì các đồng chí đã có tài liệu rồi. Mời đồng chí Hòa.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 25.717,
+      "end_time": 38.326,
+      "point_id": "ece91949-d236-5760-b934-cb32a648f56d",
+      "ref_id": [
+        "5daa5d08-93f7-53df-87e8-8cdaa44d0ae1"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Dạ, báo cáo đồng chí Bí thư, báo cáo các đồng chí trong Ban Thường vụ. Thay mặt Ban cán sự Đảng Ủy ban, Sở Y tế xin báo cáo tóm tắt Tờ trình số 215 về Đề án chuyển đổi số ngành y tế tỉnh giai đoạn 2026 đến 2030, tầm nhìn đến năm 2035.",
+      "segment_html": "Dạ, báo cáo đồng chí Bí thư, báo cáo các đồng chí trong Ban Thường vụ. Thay mặt Ban cán sự Đảng Ủy ban, Sở Y tế xin báo cáo tóm tắt Tờ trình số 215 về Đề án chuyển đổi số ngành y tế tỉnh giai đoạn 2026 đến 2030, tầm nhìn đến năm 2035.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 39.326,
+      "end_time": 63.674,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "Về căn cứ thì đề án này bám theo Nghị quyết 57 của Bộ Chính trị về đột phá phát triển khoa học công nghệ, đổi mới sáng tạo và chuyển đổi số, rồi Chương trình chuyển đổi số quốc gia, rồi Đề án 06 của Chính phủ về phát triển ứng dụng dữ liệu dân cư,",
+      "segment_html": "Về căn cứ thì đề án này bám theo Nghị quyết 57 của Bộ Chính trị về đột phá phát triển khoa học công nghệ, đổi mới sáng tạo và chuyển đổi số, rồi Chương trình chuyển đổi số quốc gia, rồi Đề án 06 của Chính phủ về phát triển ứng dụng dữ liệu dân cư,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 63.924,
+      "end_time": 88.707,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "và cái kế hoạch của Bộ Y tế về triển khai hồ sơ sức khỏe điện tử, bệnh án điện tử trên toàn quốc. Ở tỉnh thì có Nghị quyết của Tỉnh ủy về chuyển đổi số đến năm 2030 mà Thường vụ đã ban hành năm ngoái.",
+      "segment_html": "và cái kế hoạch của Bộ Y tế về triển khai hồ sơ sức khỏe điện tử, bệnh án điện tử trên toàn quốc. Ở tỉnh thì có Nghị quyết của Tỉnh ủy về chuyển đổi số đến năm 2030 mà Thường vụ đã ban hành năm ngoái.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 88.957,
+      "end_time": 109.826,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Về sự cần thiết thì báo cáo các đồng chí là hiện nay cái hạ tầng công nghệ thông tin của ngành mình thì còn rất là phân tán. Toàn tỉnh có 14 bệnh viện công lập tuyến tỉnh và tuyến huyện, 132 trạm y tế xã,",
+      "segment_html": "Về sự cần thiết thì báo cáo các đồng chí là hiện nay cái hạ tầng công nghệ thông tin của ngành mình thì còn rất là phân tán. Toàn tỉnh có 14 bệnh viện công lập tuyến tỉnh và tuyến huyện, 132 trạm y tế xã,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 110.076,
+      "end_time": 130.511,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "nhưng mà mỗi nơi dùng một phần mềm quản lý bệnh viện khác nhau, có nơi thì dùng của Viettel, có nơi thì dùng của VNPT, có nơi thì dùng phần mềm tự phát triển từ những năm 2015, 2016, và dữ liệu thì hầu như không liên thông được với nhau.",
+      "segment_html": "nhưng mà mỗi nơi dùng một phần mềm quản lý bệnh viện khác nhau, có nơi thì dùng của Viettel, có nơi thì dùng của VNPT, có nơi thì dùng phần mềm tự phát triển từ những năm 2015, 2016, và dữ liệu thì hầu như không liên thông được với nhau.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 130.761,
+      "end_time": 153.37,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Người bệnh chuyển tuyến từ huyện lên tỉnh thì vẫn phải mang theo cái hồ sơ giấy, làm lại xét nghiệm, chụp chiếu lại, vừa tốn kém cho người dân vừa quá tải cho bệnh viện tuyến trên.",
+      "segment_html": "Người bệnh chuyển tuyến từ huyện lên tỉnh thì vẫn phải mang theo cái hồ sơ giấy, làm lại xét nghiệm, chụp chiếu lại, vừa tốn kém cho người dân vừa quá tải cho bệnh viện tuyến trên.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 153.62,
+      "end_time": 170.141,
+      "point_id": "dfac7fbc-66c3-5aba-8727-00b1bcbd40d8",
+      "ref_id": [
+        "03d63b48-adcd-5851-9072-63a5355e12ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "Về hiện trạng cụ thể thì Sở cũng đã khảo sát trong quý 2 vừa rồi. Đến nay mới có 3 trên 14 bệnh viện triển khai được bệnh án điện tử theo Thông tư 46, cái tỷ lệ này thì là thấp so với bình quân chung cả nước.",
+      "segment_html": "Về hiện trạng cụ thể thì Sở cũng đã khảo sát trong quý 2 vừa rồi. Đến nay mới có 3 trên 14 bệnh viện triển khai được bệnh án điện tử theo Thông tư 46, cái tỷ lệ này thì là thấp so với bình quân chung cả nước.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 171.141,
+      "end_time": 192.88,
+      "point_id": "b72d1ab9-fae3-5d75-9c8c-2bd6e9a90b3f",
+      "ref_id": [
+        "16fd4a82-61fb-5768-927f-60cfa525255b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Cái hồ sơ sức khỏe điện tử thì đã tạo được cho khoảng 61% dân số, nhưng mà cái dữ liệu thì phần lớn là dữ liệu hành chính thôi, còn dữ liệu khám chữa bệnh thực tế thì cập nhật rất ít, người dân mở ra thì thấy trống.",
+      "segment_html": "Cái hồ sơ sức khỏe điện tử thì đã tạo được cho khoảng 61% dân số, nhưng mà cái dữ liệu thì phần lớn là dữ liệu hành chính thôi, còn dữ liệu khám chữa bệnh thực tế thì cập nhật rất ít, người dân mở ra thì thấy trống.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 193.13,
+      "end_time": 214.87,
+      "point_id": "b72d1ab9-fae3-5d75-9c8c-2bd6e9a90b3f",
+      "ref_id": [
+        "16fd4a82-61fb-5768-927f-60cfa525255b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Về nhân lực thì cả ngành chỉ có khoảng 70 cán bộ chuyên trách công nghệ thông tin, trong đó các trạm y tế xã thì gần như không có ai chuyên trách, chủ yếu là kiêm nhiệm. Về an toàn thông tin thì năm vừa rồi có 2 bệnh viện bị tấn công mã độc,",
+      "segment_html": "Về nhân lực thì cả ngành chỉ có khoảng 70 cán bộ chuyên trách công nghệ thông tin, trong đó các trạm y tế xã thì gần như không có ai chuyên trách, chủ yếu là kiêm nhiệm. Về an toàn thông tin thì năm vừa rồi có 2 bệnh viện bị tấn công mã độc,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 215.12,
+      "end_time": 239.467,
+      "point_id": "b72d1ab9-fae3-5d75-9c8c-2bd6e9a90b3f",
+      "ref_id": [
+        "16fd4a82-61fb-5768-927f-60cfa525255b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "trong đó một bệnh viện phải dừng hệ thống gần hai ngày, phải quay lại ghi chép bằng tay. Cho nên báo cáo các đồng chí là việc xây dựng một cái đề án tổng thể để đầu tư có trọng tâm,",
+      "segment_html": "trong đó một bệnh viện phải dừng hệ thống gần hai ngày, phải quay lại ghi chép bằng tay. Cho nên báo cáo các đồng chí là việc xây dựng một cái đề án tổng thể để đầu tư có trọng tâm,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 239.717,
+      "end_time": 257.978,
+      "point_id": "b72d1ab9-fae3-5d75-9c8c-2bd6e9a90b3f",
+      "ref_id": [
+        "16fd4a82-61fb-5768-927f-60cfa525255b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "tránh cái tình trạng mỗi đơn vị tự mua sắm manh mún thì là rất cần thiết.",
+      "segment_html": "tránh cái tình trạng mỗi đơn vị tự mua sắm manh mún thì là rất cần thiết.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 258.228,
+      "end_time": 265.62,
+      "point_id": "b72d1ab9-fae3-5d75-9c8c-2bd6e9a90b3f",
+      "ref_id": [
+        "16fd4a82-61fb-5768-927f-60cfa525255b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Về mục tiêu thì đề án đặt ra đến năm 2028 thì 100% bệnh viện công lập triển khai bệnh án điện tử, bỏ hoàn toàn bệnh án giấy. Đến năm 2030 thì 100% trạm y tế xã kết nối được với cái nền tảng dữ liệu y tế dùng chung của tỉnh,",
+      "segment_html": "Về mục tiêu thì đề án đặt ra đến năm 2028 thì 100% bệnh viện công lập triển khai bệnh án điện tử, bỏ hoàn toàn bệnh án giấy. Đến năm 2030 thì 100% trạm y tế xã kết nối được với cái nền tảng dữ liệu y tế dùng chung của tỉnh,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 266.62,
+      "end_time": 289.663,
+      "point_id": "b3440afd-af9e-5348-9370-05ff4430faf6",
+      "ref_id": [
+        "b2972729-2736-5d71-b5cf-6b2b1f1b02ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "90% người dân có hồ sơ sức khỏe điện tử được cập nhật dữ liệu khám chữa bệnh, và liên thông kết quả xét nghiệm, chẩn đoán hình ảnh giữa các tuyến để không phải làm lại. Về nhiệm vụ thì đề án chia thành ba nhóm. Nhóm thứ nhất là hạ tầng và nền tảng,",
+      "segment_html": "90% người dân có hồ sơ sức khỏe điện tử được cập nhật dữ liệu khám chữa bệnh, và liên thông kết quả xét nghiệm, chẩn đoán hình ảnh giữa các tuyến để không phải làm lại. Về nhiệm vụ thì đề án chia thành ba nhóm. Nhóm thứ nhất là hạ tầng và nền tảng,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 289.913,
+      "end_time": 314.261,
+      "point_id": "b3440afd-af9e-5348-9370-05ff4430faf6",
+      "ref_id": [
+        "b2972729-2736-5d71-b5cf-6b2b1f1b02ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "tức là xây dựng một cái nền tảng dữ liệu y tế dùng chung đặt tại Trung tâm dữ liệu của tỉnh, chuẩn hóa theo chuẩn HL7 FHIR để các phần mềm khác nhau đều đẩy dữ liệu về được. Nhóm thứ hai là ứng dụng, gồm bệnh án điện tử cho các bệnh viện còn lại,",
+      "segment_html": "tức là xây dựng một cái nền tảng dữ liệu y tế dùng chung đặt tại Trung tâm dữ liệu của tỉnh, chuẩn hóa theo chuẩn HL7 FHIR để các phần mềm khác nhau đều đẩy dữ liệu về được. Nhóm thứ hai là ứng dụng, gồm bệnh án điện tử cho các bệnh viện còn lại,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 314.511,
+      "end_time": 339.293,
+      "point_id": "b3440afd-af9e-5348-9370-05ff4430faf6",
+      "ref_id": [
+        "b2972729-2736-5d71-b5cf-6b2b1f1b02ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "hệ thống lưu trữ và truyền hình ảnh PACS dùng chung, rồi ứng dụng đặt lịch khám, thanh toán không dùng tiền mặt cho người dân. Nhóm thứ ba là nhân lực và an toàn thông tin, gồm đào tạo lại cán bộ,",
+      "segment_html": "hệ thống lưu trữ và truyền hình ảnh PACS dùng chung, rồi ứng dụng đặt lịch khám, thanh toán không dùng tiền mặt cho người dân. Nhóm thứ ba là nhân lực và an toàn thông tin, gồm đào tạo lại cán bộ,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 339.543,
+      "end_time": 358.239,
+      "point_id": "b3440afd-af9e-5348-9370-05ff4430faf6",
+      "ref_id": [
+        "b2972729-2736-5d71-b5cf-6b2b1f1b02ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "thành lập đội ứng cứu sự cố an toàn thông tin của ngành, và thuê giám sát an toàn thông tin 24 trên 7.",
+      "segment_html": "thành lập đội ứng cứu sự cố an toàn thông tin của ngành, và thuê giám sát an toàn thông tin 24 trên 7.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 358.489,
+      "end_time": 368.924,
+      "point_id": "b3440afd-af9e-5348-9370-05ff4430faf6",
+      "ref_id": [
+        "b2972729-2736-5d71-b5cf-6b2b1f1b02ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Về kinh phí thì tổng kinh phí dự kiến là khoảng 1.180 tỷ đồng cho cả giai đoạn năm năm, trong đó ngân sách tỉnh khoảng 720 tỷ, còn lại là nguồn thu sự nghiệp của các bệnh viện,",
+      "segment_html": "Về kinh phí thì tổng kinh phí dự kiến là khoảng 1.180 tỷ đồng cho cả giai đoạn năm năm, trong đó ngân sách tỉnh khoảng 720 tỷ, còn lại là nguồn thu sự nghiệp của các bệnh viện,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 369.924,
+      "end_time": 386.88,
+      "point_id": "f24a015a-cb1a-5fbb-888c-280ed0d8c064",
+      "ref_id": [
+        "3256ab2f-17fb-5ec5-b884-b4bc4b5e9572"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "nguồn hỗ trợ của Trung ương qua chương trình mục tiêu và huy động xã hội hóa. Riêng năm 2026 thì đề xuất bố trí khoảng 210 tỷ để làm trước cái nền tảng dữ liệu dùng chung và bệnh án điện tử cho 5 bệnh viện lớn.",
+      "segment_html": "nguồn hỗ trợ của Trung ương qua chương trình mục tiêu và huy động xã hội hóa. Riêng năm 2026 thì đề xuất bố trí khoảng 210 tỷ để làm trước cái nền tảng dữ liệu dùng chung và bệnh án điện tử cho 5 bệnh viện lớn.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 387.13,
+      "end_time": 408.0,
+      "point_id": "f24a015a-cb1a-5fbb-888c-280ed0d8c064",
+      "ref_id": [
+        "3256ab2f-17fb-5ec5-b884-b4bc4b5e9572"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Báo cáo các đồng chí là đề án cũng đã lấy ý kiến của 20 sở ngành và Ủy ban các huyện, cơ bản là thống nhất, có một số ý kiến về nguồn vốn và về mô hình đầu tư thì Sở đã tổng hợp trong báo cáo tiếp thu giải trình gửi kèm. Sở Y tế xin báo cáo đến đây, kính đề nghị Ban Thường vụ cho ý kiến.",
+      "segment_html": "Báo cáo các đồng chí là đề án cũng đã lấy ý kiến của 20 sở ngành và Ủy ban các huyện, cơ bản là thống nhất, có một số ý kiến về nguồn vốn và về mô hình đầu tư thì Sở đã tổng hợp trong báo cáo tiếp thu giải trình gửi kèm. Sở Y tế xin báo cáo đến đây, kính đề nghị Ban Thường vụ cho ý kiến.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 408.25,
+      "end_time": 439.554,
+      "point_id": "f24a015a-cb1a-5fbb-888c-280ed0d8c064",
+      "ref_id": [
+        "3256ab2f-17fb-5ec5-b884-b4bc4b5e9572"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Cảm ơn đồng chí Hòa. Rồi, các đồng chí cho ý kiến. Tôi đề nghị đồng chí Lâm bên Tài chính nói trước về cái nguồn, vì cái con số 1.180 tỷ này là không nhỏ.",
+      "segment_html": "Cảm ơn đồng chí Hòa. Rồi, các đồng chí cho ý kiến. Tôi đề nghị đồng chí Lâm bên Tài chính nói trước về cái nguồn, vì cái con số 1.180 tỷ này là không nhỏ.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 440.554,
+      "end_time": 456.207,
+      "point_id": "4a1eeb2d-0e82-596b-9718-be1c6417258a",
+      "ref_id": [
+        "2caae528-43ee-5d31-9d7e-b814856d63e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Dạ báo cáo đồng chí Bí thư. Về cơ bản thì Sở Tài chính thống nhất với sự cần thiết của đề án. Tuy nhiên về nguồn thì xin báo cáo là cái kế hoạch đầu tư công trung hạn 2026 2030 của tỉnh hiện nay đang rất căng, các dự án giao thông trọng điểm,",
+      "segment_html": "Dạ báo cáo đồng chí Bí thư. Về cơ bản thì Sở Tài chính thống nhất với sự cần thiết của đề án. Tuy nhiên về nguồn thì xin báo cáo là cái kế hoạch đầu tư công trung hạn 2026 2030 của tỉnh hiện nay đang rất căng, các dự án giao thông trọng điểm,",
+      "speaker_name": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "speaker_org_unit": null,
+      "start_time": 457.207,
+      "end_time": 481.554,
+      "point_id": "442716ec-12f2-5620-9647-308742478f30",
+      "ref_id": [
+        "4f531184-d843-55d9-891c-ac1ebe470fd2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "rồi dự án đường ven biển đã chiếm gần 60% rồi. Con số 720 tỷ ngân sách tỉnh mà Sở Y tế đề xuất thì theo tính toán sơ bộ của Sở Tài chính thì khả năng cân đối được chỉ khoảng 500 đến 550 tỷ trong cả giai đoạn thôi.",
+      "segment_html": "rồi dự án đường ven biển đã chiếm gần 60% rồi. Con số 720 tỷ ngân sách tỉnh mà Sở Y tế đề xuất thì theo tính toán sơ bộ của Sở Tài chính thì khả năng cân đối được chỉ khoảng 500 đến 550 tỷ trong cả giai đoạn thôi.",
+      "speaker_name": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "speaker_org_unit": null,
+      "start_time": 481.804,
+      "end_time": 503.978,
+      "point_id": "442716ec-12f2-5620-9647-308742478f30",
+      "ref_id": [
+        "4f531184-d843-55d9-891c-ac1ebe470fd2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Cho nên là đề nghị đề án phải phân kỳ lại cho rõ, cái gì làm trước cái gì làm sau, và phải có cái phương án nếu như nguồn Trung ương không về đúng như dự kiến thì mình cắt cái gì. Thứ hai là cái năm 2026 đề xuất 210 tỷ thì cũng khó,",
+      "segment_html": "Cho nên là đề nghị đề án phải phân kỳ lại cho rõ, cái gì làm trước cái gì làm sau, và phải có cái phương án nếu như nguồn Trung ương không về đúng như dự kiến thì mình cắt cái gì. Thứ hai là cái năm 2026 đề xuất 210 tỷ thì cũng khó,",
+      "speaker_name": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "speaker_org_unit": null,
+      "start_time": 504.228,
+      "end_time": 528.576,
+      "point_id": "442716ec-12f2-5620-9647-308742478f30",
+      "ref_id": [
+        "4f531184-d843-55d9-891c-ac1ebe470fd2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "vì dự toán năm 2026 cơ bản đã chốt ở Hội đồng nhân dân rồi, nếu bổ sung thì chỉ có thể lấy từ nguồn dự phòng và nguồn tăng thu, khả năng là khoảng 120 đến 130 tỷ thôi.",
+      "segment_html": "vì dự toán năm 2026 cơ bản đã chốt ở Hội đồng nhân dân rồi, nếu bổ sung thì chỉ có thể lấy từ nguồn dự phòng và nguồn tăng thu, khả năng là khoảng 120 đến 130 tỷ thôi.",
+      "speaker_name": "Đ/c Lâm (Giám đốc Sở Tài chính)",
+      "speaker_org_unit": null,
+      "start_time": 528.826,
+      "end_time": 546.217,
+      "point_id": "442716ec-12f2-5620-9647-308742478f30",
+      "ref_id": [
+        "4f531184-d843-55d9-891c-ac1ebe470fd2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Tức là năm đầu chỉ khoảng 120, 130 tỷ, được. Đồng chí Vy.",
+      "segment_html": "Tức là năm đầu chỉ khoảng 120, 130 tỷ, được. Đồng chí Vy.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 547.217,
+      "end_time": 552.87,
+      "point_id": "53d5c659-44b8-5a8e-a768-1bb847b3a353",
+      "ref_id": [
+        "84cd0023-ea75-527a-9d02-46210b3ade11"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Dạ báo cáo đồng chí Bí thư. Về chuyên môn thì Sở Khoa học và Công nghệ thống nhất cao với cái hướng xây dựng nền tảng dữ liệu dùng chung, vì cái này nó đúng với cái kiến trúc chính quyền số của tỉnh. Nhưng mà em xin có một cái ý là về mô hình đầu tư,",
+      "segment_html": "Dạ báo cáo đồng chí Bí thư. Về chuyên môn thì Sở Khoa học và Công nghệ thống nhất cao với cái hướng xây dựng nền tảng dữ liệu dùng chung, vì cái này nó đúng với cái kiến trúc chính quyền số của tỉnh. Nhưng mà em xin có một cái ý là về mô hình đầu tư,",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 553.87,
+      "end_time": 579.522,
+      "point_id": "73bd5bfc-0907-5f28-b23a-fa5436a189c0",
+      "ref_id": [
+        "22eae678-b42c-563c-9c83-63383f195432"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "thì em nghĩ là mình có thể cân nhắc cái phương án thuê dịch vụ công nghệ thông tin thay vì đầu tư mua sắm toàn bộ. Tức là cái phần bệnh án điện tử, phần PACS thì hiện nay các doanh nghiệp đều có cung cấp dưới dạng dịch vụ, mình trả tiền theo năm,",
+      "segment_html": "thì em nghĩ là mình có thể cân nhắc cái phương án thuê dịch vụ công nghệ thông tin thay vì đầu tư mua sắm toàn bộ. Tức là cái phần bệnh án điện tử, phần PACS thì hiện nay các doanh nghiệp đều có cung cấp dưới dạng dịch vụ, mình trả tiền theo năm,",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 579.772,
+      "end_time": 604.12,
+      "point_id": "73bd5bfc-0907-5f28-b23a-fa5436a189c0",
+      "ref_id": [
+        "22eae678-b42c-563c-9c83-63383f195432"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "thì như vậy vừa giảm được áp lực vốn đầu tư ban đầu, vừa không phải lo cái chuyện bảo trì nâng cấp, mà cái chi phí thuê thì lại đi vào chi thường xuyên chứ không phải vốn đầu tư công.",
+      "segment_html": "thì như vậy vừa giảm được áp lực vốn đầu tư ban đầu, vừa không phải lo cái chuyện bảo trì nâng cấp, mà cái chi phí thuê thì lại đi vào chi thường xuyên chứ không phải vốn đầu tư công.",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 604.37,
+      "end_time": 622.63,
+      "point_id": "73bd5bfc-0907-5f28-b23a-fa5436a189c0",
+      "ref_id": [
+        "22eae678-b42c-563c-9c83-63383f195432"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Cái này em nghĩ là nó cũng giải quyết một phần cái khó mà anh Lâm vừa nói. Đây là em đề xuất thôi, cũng cần tính thêm.",
+      "segment_html": "Cái này em nghĩ là nó cũng giải quyết một phần cái khó mà anh Lâm vừa nói. Đây là em đề xuất thôi, cũng cần tính thêm.",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 622.88,
+      "end_time": 635.054,
+      "point_id": "73bd5bfc-0907-5f28-b23a-fa5436a189c0",
+      "ref_id": [
+        "22eae678-b42c-563c-9c83-63383f195432"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Ý thứ hai là về dữ liệu, thì em đề nghị là toàn bộ cái nền tảng dữ liệu y tế dùng chung phải đặt tại Trung tâm dữ liệu của tỉnh, không được để doanh nghiệp giữ dữ liệu của người bệnh trên hạ tầng của doanh nghiệp, kể cả trường hợp thuê dịch vụ.",
+      "segment_html": "Ý thứ hai là về dữ liệu, thì em đề nghị là toàn bộ cái nền tảng dữ liệu y tế dùng chung phải đặt tại Trung tâm dữ liệu của tỉnh, không được để doanh nghiệp giữ dữ liệu của người bệnh trên hạ tầng của doanh nghiệp, kể cả trường hợp thuê dịch vụ.",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 636.054,
+      "end_time": 660.402,
+      "point_id": "3105c152-785f-51cd-bddc-d5a731a49d65",
+      "ref_id": [
+        "3ba1061b-9e0a-5d3e-aeb6-c2f70a1a2999"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Dữ liệu sức khỏe là dữ liệu cá nhân nhạy cảm theo Nghị định 13 rồi Luật bảo vệ dữ liệu cá nhân, nên cái này phải chặt. Và cái chuẩn liên thông thì phải thống nhất ngay từ đầu, cái HL7 FHIR mà Sở Y tế đưa ra là đúng,",
+      "segment_html": "Dữ liệu sức khỏe là dữ liệu cá nhân nhạy cảm theo Nghị định 13 rồi Luật bảo vệ dữ liệu cá nhân, nên cái này phải chặt. Và cái chuẩn liên thông thì phải thống nhất ngay từ đầu, cái HL7 FHIR mà Sở Y tế đưa ra là đúng,",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 660.652,
+      "end_time": 682.826,
+      "point_id": "3105c152-785f-51cd-bddc-d5a731a49d65",
+      "ref_id": [
+        "3ba1061b-9e0a-5d3e-aeb6-c2f70a1a2999"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "nhưng mà phải ra được cái văn bản bắt buộc các nhà cung cấp phần mềm hiện nay phải tuân thủ trong một cái thời hạn nhất định, chứ không thì lại mỗi nơi một kiểu.",
+      "segment_html": "nhưng mà phải ra được cái văn bản bắt buộc các nhà cung cấp phần mềm hiện nay phải tuân thủ trong một cái thời hạn nhất định, chứ không thì lại mỗi nơi một kiểu.",
+      "speaker_name": "Đ/c Vy (Giám đốc Sở Khoa học và Công nghệ)",
+      "speaker_org_unit": null,
+      "start_time": 683.076,
+      "end_time": 698.728,
+      "point_id": "3105c152-785f-51cd-bddc-d5a731a49d65",
+      "ref_id": [
+        "3ba1061b-9e0a-5d3e-aeb6-c2f70a1a2999"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Rồi. Đồng chí Quang bên Ủy ban có ý kiến gì thêm không?",
+      "segment_html": "Rồi. Đồng chí Quang bên Ủy ban có ý kiến gì thêm không?",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 699.728,
+      "end_time": 705.38,
+      "point_id": "0a2796bc-ca8b-5119-b231-acc0265a8139",
+      "ref_id": [
+        "8fc915ee-1778-57b7-8442-174c4cc4a7a4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Dạ báo cáo đồng chí Bí thư. Ủy ban thì cũng đã họp mấy lần về cái đề án này rồi. Về cái ý của đồng chí Vy về thuê dịch vụ thì thực ra Ủy ban cũng đã có bàn,",
+      "segment_html": "Dạ báo cáo đồng chí Bí thư. Ủy ban thì cũng đã họp mấy lần về cái đề án này rồi. Về cái ý của đồng chí Vy về thuê dịch vụ thì thực ra Ủy ban cũng đã có bàn,",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 706.38,
+      "end_time": 724.207,
+      "point_id": "c935a71b-7c8e-530c-84e9-b6e6fa1df33c",
+      "ref_id": [
+        "426e41a3-f03b-5f5e-930c-25e7a4485627"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "nhưng mà báo cáo đồng chí là cái vướng hiện nay là hướng dẫn về thuê dịch vụ công nghệ thông tin theo Nghị định 73 nó còn nhiều cái chưa rõ, đặc biệt là cái phần định giá thuê và cái phần sau khi hết hợp đồng thì tài sản, dữ liệu thuộc về ai.",
+      "segment_html": "nhưng mà báo cáo đồng chí là cái vướng hiện nay là hướng dẫn về thuê dịch vụ công nghệ thông tin theo Nghị định 73 nó còn nhiều cái chưa rõ, đặc biệt là cái phần định giá thuê và cái phần sau khi hết hợp đồng thì tài sản, dữ liệu thuộc về ai.",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 724.457,
+      "end_time": 748.804,
+      "point_id": "c935a71b-7c8e-530c-84e9-b6e6fa1df33c",
+      "ref_id": [
+        "426e41a3-f03b-5f5e-930c-25e7a4485627"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Một số tỉnh làm rồi thì cũng đang vướng thanh tra. Cho nên là em nghĩ cái này chưa nên đưa vào đề án ngay bây giờ, có thể thí điểm ở một vài hạng mục nhỏ sau. Ý thứ hai thì em rất đồng tình với anh Lâm là phải phân kỳ,",
+      "segment_html": "Một số tỉnh làm rồi thì cũng đang vướng thanh tra. Cho nên là em nghĩ cái này chưa nên đưa vào đề án ngay bây giờ, có thể thí điểm ở một vài hạng mục nhỏ sau. Ý thứ hai thì em rất đồng tình với anh Lâm là phải phân kỳ,",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 749.054,
+      "end_time": 772.098,
+      "point_id": "c935a71b-7c8e-530c-84e9-b6e6fa1df33c",
+      "ref_id": [
+        "426e41a3-f03b-5f5e-930c-25e7a4485627"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "và theo em thì cái ưu tiên số một phải là cái nền tảng dữ liệu dùng chung với bệnh án điện tử cho các bệnh viện tuyến tỉnh, còn cái ứng dụng đặt lịch, thanh toán cho người dân thì doanh nghiệp làm rất nhiều rồi,",
+      "segment_html": "và theo em thì cái ưu tiên số một phải là cái nền tảng dữ liệu dùng chung với bệnh án điện tử cho các bệnh viện tuyến tỉnh, còn cái ứng dụng đặt lịch, thanh toán cho người dân thì doanh nghiệp làm rất nhiều rồi,",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 772.348,
+      "end_time": 792.783,
+      "point_id": "c935a71b-7c8e-530c-84e9-b6e6fa1df33c",
+      "ref_id": [
+        "426e41a3-f03b-5f5e-930c-25e7a4485627"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "mình có thể kết nối chứ không nhất thiết phải tự đầu tư.",
+      "segment_html": "mình có thể kết nối chứ không nhất thiết phải tự đầu tư.",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 793.033,
+      "end_time": 798.685,
+      "point_id": "c935a71b-7c8e-530c-84e9-b6e6fa1df33c",
+      "ref_id": [
+        "426e41a3-f03b-5f5e-930c-25e7a4485627"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Còn một cái nữa là về nhân lực, thì báo cáo đồng chí là em thấy đây là cái khâu yếu nhất. Mình đầu tư phần mềm xong mà trạm y tế xã không có người vận hành thì cũng như không.",
+      "segment_html": "Còn một cái nữa là về nhân lực, thì báo cáo đồng chí là em thấy đây là cái khâu yếu nhất. Mình đầu tư phần mềm xong mà trạm y tế xã không có người vận hành thì cũng như không.",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 799.685,
+      "end_time": 817.946,
+      "point_id": "fdd2710f-e1ce-5e1b-8e83-21e8b8b30dd9",
+      "ref_id": [
+        "063eeccb-f038-5191-bb59-f6b3f8942a3b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Hiện nay sau sắp xếp đơn vị hành chính thì các trạm y tế cũng đang biến động về nhân sự. Cái này thì phải có cái rà soát tổng thể xem mỗi trạm, mỗi bệnh viện cần tối thiểu bao nhiêu người làm công nghệ thông tin, rồi có cơ chế đãi ngộ,",
+      "segment_html": "Hiện nay sau sắp xếp đơn vị hành chính thì các trạm y tế cũng đang biến động về nhân sự. Cái này thì phải có cái rà soát tổng thể xem mỗi trạm, mỗi bệnh viện cần tối thiểu bao nhiêu người làm công nghệ thông tin, rồi có cơ chế đãi ngộ,",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 818.196,
+      "end_time": 841.674,
+      "point_id": "fdd2710f-e1ce-5e1b-8e83-21e8b8b30dd9",
+      "ref_id": [
+        "063eeccb-f038-5191-bb59-f6b3f8942a3b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "chứ lương như hiện nay thì không giữ được người, các em giỏi ra doanh nghiệp hết.",
+      "segment_html": "chứ lương như hiện nay thì không giữ được người, các em giỏi ra doanh nghiệp hết.",
+      "speaker_name": "Đ/c Quang (Phó Chủ tịch UBND tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 841.924,
+      "end_time": 849.315,
+      "point_id": "fdd2710f-e1ce-5e1b-8e83-21e8b8b30dd9",
+      "ref_id": [
+        "063eeccb-f038-5191-bb59-f6b3f8942a3b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Dạ, xin phép đồng chí Bí thư em giải trình thêm một chút về cái phần nhân lực. Trong đề án thì Sở cũng đã có tính đến việc đào tạo lại khoảng 1.500 lượt cán bộ y tế về kỹ năng số,",
+      "segment_html": "Dạ, xin phép đồng chí Bí thư em giải trình thêm một chút về cái phần nhân lực. Trong đề án thì Sở cũng đã có tính đến việc đào tạo lại khoảng 1.500 lượt cán bộ y tế về kỹ năng số,",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 850.315,
+      "end_time": 869.011,
+      "point_id": "be198fcd-9ada-5d87-b2da-78bea9988ec3",
+      "ref_id": [
+        "7a3c5b2f-b1cb-5a94-a5c3-342b21f0c5c5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "nhưng mà đúng như anh Quang nói là cái phần cán bộ chuyên trách thì chưa có cơ chế, vì cái này nó liên quan đến biên chế và chế độ chính sách, vượt thẩm quyền của Sở.",
+      "segment_html": "nhưng mà đúng như anh Quang nói là cái phần cán bộ chuyên trách thì chưa có cơ chế, vì cái này nó liên quan đến biên chế và chế độ chính sách, vượt thẩm quyền của Sở.",
+      "speaker_name": "Đ/c Hòa (Giám đốc Sở Y tế)",
+      "speaker_org_unit": null,
+      "start_time": 869.261,
+      "end_time": 885.783,
+      "point_id": "be198fcd-9ada-5d87-b2da-78bea9988ec3",
+      "ref_id": [
+        "7a3c5b2f-b1cb-5a94-a5c3-342b21f0c5c5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "Rồi, tôi xin kết luận nội dung này. Thứ nhất là Ban Thường vụ thống nhất cao về chủ trương ban hành Đề án chuyển đổi số ngành y tế giai đoạn 2026 2030. Đây là việc cần thiết, cấp bách, các đồng chí đã phân tích rồi,",
+      "segment_html": "Rồi, tôi xin kết luận nội dung này. Thứ nhất là Ban Thường vụ thống nhất cao về chủ trương ban hành Đề án chuyển đổi số ngành y tế giai đoạn 2026 2030. Đây là việc cần thiết, cấp bách, các đồng chí đã phân tích rồi,",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 886.783,
+      "end_time": 907.652,
+      "point_id": "0b66d876-984f-53e1-91c1-0122e71e55d0",
+      "ref_id": [
+        "cb302dff-787f-5700-b0b8-7b4f17b568bb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "người dân chuyển tuyến vẫn cầm hồ sơ giấy là không chấp nhận được trong bối cảnh hiện nay.",
+      "segment_html": "người dân chuyển tuyến vẫn cầm hồ sơ giấy là không chấp nhận được trong bối cảnh hiện nay.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 907.902,
+      "end_time": 916.163,
+      "point_id": "0b66d876-984f-53e1-91c1-0122e71e55d0",
+      "ref_id": [
+        "cb302dff-787f-5700-b0b8-7b4f17b568bb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Thứ hai, về nội dung thì đề án phải phân kỳ lại. Giai đoạn một từ năm 2026 đến 2027 thì tập trung làm hai việc thôi, là nền tảng dữ liệu y tế dùng chung và bệnh án điện tử cho các bệnh viện tuyến tỉnh. Các hạng mục khác như là ứng dụng đặt lịch,",
+      "segment_html": "Thứ hai, về nội dung thì đề án phải phân kỳ lại. Giai đoạn một từ năm 2026 đến 2027 thì tập trung làm hai việc thôi, là nền tảng dữ liệu y tế dùng chung và bệnh án điện tử cho các bệnh viện tuyến tỉnh. Các hạng mục khác như là ứng dụng đặt lịch,",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 917.163,
+      "end_time": 941.946,
+      "point_id": "a80b68d9-f7c6-5bdb-b16a-5d702378ac53",
+      "ref_id": [
+        "040ac747-0700-5eda-8c61-ffc50f4412dc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "thanh toán cho người dân thì chuyển sang giai đoạn hai, và theo hướng kết nối với các nền tảng sẵn có, không đầu tư mới. Tổng kinh phí thì phải tính toán lại cho phù hợp với khả năng cân đối mà Sở Tài chính vừa báo cáo,",
+      "segment_html": "thanh toán cho người dân thì chuyển sang giai đoạn hai, và theo hướng kết nối với các nền tảng sẵn có, không đầu tư mới. Tổng kinh phí thì phải tính toán lại cho phù hợp với khả năng cân đối mà Sở Tài chính vừa báo cáo,",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 942.196,
+      "end_time": 963.5,
+      "point_id": "a80b68d9-f7c6-5bdb-b16a-5d702378ac53",
+      "ref_id": [
+        "040ac747-0700-5eda-8c61-ffc50f4412dc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "chứ không để con số 1.180 tỷ như hiện nay.",
+      "segment_html": "chứ không để con số 1.180 tỷ như hiện nay.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 963.75,
+      "end_time": 968.098,
+      "point_id": "a80b68d9-f7c6-5bdb-b16a-5d702378ac53",
+      "ref_id": [
+        "040ac747-0700-5eda-8c61-ffc50f4412dc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Thứ ba là về dữ liệu, tôi thống nhất với ý kiến đồng chí Vy, toàn bộ dữ liệu y tế phải đặt tại Trung tâm dữ liệu của tỉnh, đây là nguyên tắc, không bàn lại. Chuẩn liên thông áp dụng thống nhất là HL7 FHIR.",
+      "segment_html": "Thứ ba là về dữ liệu, tôi thống nhất với ý kiến đồng chí Vy, toàn bộ dữ liệu y tế phải đặt tại Trung tâm dữ liệu của tỉnh, đây là nguyên tắc, không bàn lại. Chuẩn liên thông áp dụng thống nhất là HL7 FHIR.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 969.098,
+      "end_time": 989.533,
+      "point_id": "49f967fe-e075-595e-96be-8c4240dab06b",
+      "ref_id": [
+        "0e9b0889-75c9-5940-a245-9a32f1961098"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Còn cái đề xuất thuê dịch vụ thì như đồng chí Quang báo cáo, hiện nay khung pháp lý chưa rõ, cho nên chưa đưa vào đề án lần này. Sau này nếu có hướng dẫn rõ thì Ủy ban nghiên cứu thí điểm sau.",
+      "segment_html": "Còn cái đề xuất thuê dịch vụ thì như đồng chí Quang báo cáo, hiện nay khung pháp lý chưa rõ, cho nên chưa đưa vào đề án lần này. Sau này nếu có hướng dẫn rõ thì Ủy ban nghiên cứu thí điểm sau.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 990.533,
+      "end_time": 1010.098,
+      "point_id": "600ecd38-9e72-5558-a0cb-dc8174d85069",
+      "ref_id": [
+        "43c084b4-622f-5e93-87b2-63a5667e5663"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Về tổ chức thực hiện. Giao Ban cán sự Đảng Ủy ban chỉ đạo Sở Y tế tiếp thu đầy đủ các ý kiến hôm nay, hoàn thiện đề án theo hướng phân kỳ như tôi vừa nói, trình Ủy ban ban hành trước ngày 30 tháng 11. Đồng chí Hòa chịu trách nhiệm việc này.",
+      "segment_html": "Về tổ chức thực hiện. Giao Ban cán sự Đảng Ủy ban chỉ đạo Sở Y tế tiếp thu đầy đủ các ý kiến hôm nay, hoàn thiện đề án theo hướng phân kỳ như tôi vừa nói, trình Ủy ban ban hành trước ngày 30 tháng 11. Đồng chí Hòa chịu trách nhiệm việc này.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 1011.098,
+      "end_time": 1035.446,
+      "point_id": "51bfff31-4074-5534-a7cc-470b46631df7",
+      "ref_id": [
+        "1e393855-1963-58c8-b496-4ba61147b7dc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Giao Sở Tài chính chủ trì, phối hợp Sở Y tế rà soát, đề xuất bố trí nguồn cho năm 2026 từ nguồn dự phòng và tăng thu như đồng chí Lâm đã báo cáo, báo cáo Thường trực trong tháng 11.",
+      "segment_html": "Giao Sở Tài chính chủ trì, phối hợp Sở Y tế rà soát, đề xuất bố trí nguồn cho năm 2026 từ nguồn dự phòng và tăng thu như đồng chí Lâm đã báo cáo, báo cáo Thường trực trong tháng 11.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 1036.446,
+      "end_time": 1054.707,
+      "point_id": "6a822abf-eb2c-5aed-a6e1-3b72f8a1bc0a",
+      "ref_id": [
+        "a1e932fe-8778-5467-92b2-65dcfce67133"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Giao Sở Khoa học và Công nghệ xây dựng và ban hành văn bản hướng dẫn chuẩn liên thông dữ liệu y tế, yêu cầu các nhà cung cấp phần mềm quản lý bệnh viện hiện nay phải tuân thủ, thời hạn trong quý 1 năm 2026.",
+      "segment_html": "Giao Sở Khoa học và Công nghệ xây dựng và ban hành văn bản hướng dẫn chuẩn liên thông dữ liệu y tế, yêu cầu các nhà cung cấp phần mềm quản lý bệnh viện hiện nay phải tuân thủ, thời hạn trong quý 1 năm 2026.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 1055.707,
+      "end_time": 1076.141,
+      "point_id": "9621bf6b-3e10-5d42-8c17-a9593d02544c",
+      "ref_id": [
+        "bef7d189-ee68-5e3c-8555-3a4e644b9fc5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Còn cái vấn đề nhân lực công nghệ thông tin cho trạm y tế xã mà đồng chí Quang nêu thì tôi thấy là đúng, là khâu yếu, cái này thì cũng phải tính, phải có cái rà soát tổng thể,",
+      "segment_html": "Còn cái vấn đề nhân lực công nghệ thông tin cho trạm y tế xã mà đồng chí Quang nêu thì tôi thấy là đúng, là khâu yếu, cái này thì cũng phải tính, phải có cái rà soát tổng thể,",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 1077.141,
+      "end_time": 1094.967,
+      "point_id": "49ec9891-8415-5b13-b72a-0c2901a76e3e",
+      "ref_id": [
+        "e8df0d72-f31e-57aa-98f0-4323f693f3bb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "nhưng mà nó liên quan biên chế và chế độ chính sách nên cần nghiên cứu thêm, lúc nào chín thì đưa ra. Rồi, nội dung này tôi kết luận như vậy, các đồng chí có ý kiến gì khác không? Không có thì chuyển sang nội dung tiếp theo.",
+      "segment_html": "nhưng mà nó liên quan biên chế và chế độ chính sách nên cần nghiên cứu thêm, lúc nào chín thì đưa ra. Rồi, nội dung này tôi kết luận như vậy, các đồng chí có ý kiến gì khác không? Không có thì chuyển sang nội dung tiếp theo.",
+      "speaker_name": "Đ/c Thành (Bí thư Tỉnh ủy)",
+      "speaker_org_unit": null,
+      "start_time": 1095.217,
+      "end_time": 1116.957,
+      "point_id": "49ec9891-8415-5b13-b72a-0c2901a76e3e",
+      "ref_id": [
+        "e8df0d72-f31e-57aa-98f0-4323f693f3bb"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi, xin mời các đồng chí. Hôm nay thì Thường vụ cho ý kiến về cái Đề án chuyển đổi số ngành y tế của tỉnh, cái đề án này thì Ủy ban cũng đã chuẩn bị khá lâu rồi, đã lấy ý kiến các sở ngành. Tôi đề nghị đồng chí Hòa báo cáo ngắn gọn thôi, tập trung vào mục tiêu, nhiệm vụ với kinh phí, còn các cái phần căn cứ thì các đồng chí đã có tài liệu rồi. Mời đồng chí Hòa. Dạ, báo cáo đồng chí Bí thư, báo cáo các đồng chí trong Ban Thường vụ. Thay mặt Ban cán sự Đảng Ủy ban, Sở Y tế xin báo cáo tóm tắt Tờ trình số 215 về Đề án chuyển đổi số ngành y tế tỉnh giai đoạn 2026 đến 2030, tầm nhìn đến năm 2035. Về căn cứ thì đề án này bám theo Nghị quyết 57 của Bộ Chính trị về đột phá phát triển khoa học công nghệ, đổi mới sáng tạo và chuyển đổi số, rồi Chương trình chuyển đổi số quốc gia, rồi Đề án 06 của Chính phủ về phát triển ứng dụng dữ liệu dân cư, và cái kế hoạch của Bộ Y tế về triển khai hồ sơ sức khỏe điện tử, bệnh án điện tử trên toàn quốc. Ở tỉnh thì có Nghị quyết của Tỉnh ủy về chuyển đổi số đến năm 2030 mà Thường vụ đã ban hành năm ngoái. Về sự cần thiết thì báo cáo các đồng chí là hiện nay cái hạ tầng công nghệ thông tin của ngành mình thì còn rất là phân tán. Toàn tỉnh có 14 bệnh viện công lập tuyến tỉnh và tuyến huyện, 132 trạm y tế xã, nhưng mà mỗi nơi dùng một phần mềm quản lý bệnh viện khác nhau, có nơi thì dùng của Viettel, có nơi thì dùng của VNPT, có nơi thì dùng phần mềm tự phát triển từ những năm 2015, 2016, và dữ liệu thì hầu như không liên thông được với nhau. Người bệnh chuyển tuyến từ huyện lên tỉnh thì vẫn phải mang theo cái hồ sơ giấy, làm lại xét nghiệm, chụp chiếu lại, vừa tốn kém cho người dân vừa quá tải cho bệnh viện tuyến trên. Về hiện trạng cụ thể thì Sở cũng đã khảo sát trong quý 2 vừa rồi. Đến nay mới có 3 trên 14 bệnh viện triển khai được bệnh án điện tử theo Thông tư 46, cái tỷ lệ này thì là thấp so với bình quân chung cả nước. Cái hồ sơ sức khỏe điện tử thì đã tạo được cho khoảng 61% dân số, nhưng mà cái dữ liệu thì phần lớn là dữ liệu hành chính thôi, còn dữ liệu khám chữa bệnh thực tế thì cập nhật rất ít, người dân mở ra thì thấy trống. Về nhân lực thì cả ngành chỉ có khoảng 70 cán bộ chuyên trách công nghệ thông tin, trong đó các trạm y tế xã thì gần như không có ai chuyên trách, chủ yếu là kiêm nhiệm. Về an toàn thông tin thì năm vừa rồi có 2 bệnh viện bị tấn công mã độc, trong đó một bệnh viện phải dừng hệ thống gần hai ngày, phải quay lại ghi chép bằng tay. Cho nên báo cáo các đồng chí là việc xây dựng một cái đề án tổng thể để đầu tư có trọng tâm, tránh cái tình trạng mỗi đơn vị tự mua sắm manh mún thì là rất cần thiết. Về mục tiêu thì đề án đặt ra đến năm 2028 thì 100% bệnh viện công lập triển khai bệnh án điện tử, bỏ hoàn toàn bệnh án giấy. Đến năm 2030 thì 100% trạm y tế xã kết nối được với cái nền tảng dữ liệu y tế dùng chung của tỉnh, 90% người dân có hồ sơ sức khỏe điện tử được cập nhật dữ liệu khám chữa bệnh, và liên thông kết quả xét nghiệm, chẩn đoán hình ảnh giữa các tuyến để không phải làm lại. Về nhiệm vụ thì đề án chia thành ba nhóm. Nhóm thứ nhất là hạ tầng và nền tảng, tức là xây dựng một cái nền tảng dữ liệu y tế dùng chung đặt tại Trung tâm dữ liệu của tỉnh, chuẩn hóa theo chuẩn HL7 FHIR để các phần mềm khác nhau đều đẩy dữ liệu về được. Nhóm thứ hai là ứng dụng, gồm bệnh án điện tử cho các bệnh viện còn lại, hệ thống lưu trữ và truyền hình ảnh PACS dùng chung, rồi ứng dụng đặt lịch khám, thanh toán không dùng tiền mặt cho người dân. Nhóm thứ ba là nhân lực và an toàn thông tin, gồm đào tạo lại cán bộ, thành lập đội ứng cứu sự cố an toàn thông tin của ngành, và thuê giám sát an toàn thông tin 24 trên 7. Về kinh phí thì tổng kinh phí dự kiến là khoảng 1.180 tỷ đồng cho cả giai đoạn năm năm, trong đó ngân sách tỉnh khoảng 720 tỷ, còn lại là nguồn thu sự nghiệp của các bệnh viện, nguồn hỗ trợ của Trung ương qua chương trình mục tiêu và huy động xã hội hóa. Riêng năm 2026 thì đề xuất bố trí khoảng 210 tỷ để làm trước cái nền tảng dữ liệu dùng chung và bệnh án điện tử cho 5 bệnh viện lớn. Báo cáo các đồng chí là đề án cũng đã lấy ý kiến của 20 sở ngành và Ủy ban các huyện, cơ bản là thống nhất, có một số ý kiến về nguồn vốn và về mô hình đầu tư thì Sở đã tổng hợp trong báo cáo tiếp thu giải trình gửi kèm. Sở Y tế xin báo cáo đến đây, kính đề nghị Ban Thường vụ cho ý kiến. Cảm ơn đồng chí Hòa. Rồi, các đồng chí cho ý kiến. Tôi đề nghị đồng chí Lâm bên Tài chính nói trước về cái nguồn, vì cái con số 1.180 tỷ này là không nhỏ. Dạ báo cáo đồng chí Bí thư. Về cơ bản thì Sở Tài chính thống nhất với sự cần thiết của đề án. Tuy nhiên về nguồn thì xin báo cáo là cái kế hoạch đầu tư công trung hạn 2026 2030 của tỉnh hiện nay đang rất căng, các dự án giao thông trọng điểm, rồi dự án đường ven biển đã chiếm gần 60% rồi. Con số 720 tỷ ngân sách tỉnh mà Sở Y tế đề xuất thì theo tính toán sơ bộ của Sở Tài chính thì khả năng cân đối được chỉ khoảng 500 đến 550 tỷ trong cả giai đoạn thôi. Cho nên là đề nghị đề án phải phân kỳ lại cho rõ, cái gì làm trước cái gì làm sau, và phải có cái phương án nếu như nguồn Trung ương không về đúng như dự kiến thì mình cắt cái gì. Thứ hai là cái năm 2026 đề xuất 210 tỷ thì cũng khó, vì dự toán năm 2026 cơ bản đã chốt ở Hội đồng nhân dân rồi, nếu bổ sung thì chỉ có thể lấy từ nguồn dự phòng và nguồn tăng thu, khả năng là khoảng 120 đến 130 tỷ thôi. Tức là năm đầu chỉ khoảng 120, 130 tỷ, được. Đồng chí Vy. Dạ báo cáo đồng chí Bí thư. Về chuyên môn thì Sở Khoa học và Công nghệ thống nhất cao với cái hướng xây dựng nền tảng dữ liệu dùng chung, vì cái này nó đúng với cái kiến trúc chính quyền số của tỉnh. Nhưng mà em xin có một cái ý là về mô hình đầu tư, thì em nghĩ là mình có thể cân nhắc cái phương án thuê dịch vụ công nghệ thông tin thay vì đầu tư mua sắm toàn bộ. Tức là cái phần bệnh án điện tử, phần PACS thì hiện nay các doanh nghiệp đều có cung cấp dưới dạng dịch vụ, mình trả tiền theo năm, thì như vậy vừa giảm được áp lực vốn đầu tư ban đầu, vừa không phải lo cái chuyện bảo trì nâng cấp, mà cái chi phí thuê thì lại đi vào chi thường xuyên chứ không phải vốn đầu tư công. Cái này em nghĩ là nó cũng giải quyết một phần cái khó mà anh Lâm vừa nói. Đây là em đề xuất thôi, cũng cần tính thêm. Ý thứ hai là về dữ liệu, thì em đề nghị là toàn bộ cái nền tảng dữ liệu y tế dùng chung phải đặt tại Trung tâm dữ liệu của tỉnh, không được để doanh nghiệp giữ dữ liệu của người bệnh trên hạ tầng của doanh nghiệp, kể cả trường hợp thuê dịch vụ. Dữ liệu sức khỏe là dữ liệu cá nhân nhạy cảm theo Nghị định 13 rồi Luật bảo vệ dữ liệu cá nhân, nên cái này phải chặt. Và cái chuẩn liên thông thì phải thống nhất ngay từ đầu, cái HL7 FHIR mà Sở Y tế đưa ra là đúng, nhưng mà phải ra được cái văn bản bắt buộc các nhà cung cấp phần mềm hiện nay phải tuân thủ trong một cái thời hạn nhất định, chứ không thì lại mỗi nơi một kiểu. Rồi. Đồng chí Quang bên Ủy ban có ý kiến gì thêm không? Dạ báo cáo đồng chí Bí thư. Ủy ban thì cũng đã họp mấy lần về cái đề án này rồi. Về cái ý của đồng chí Vy về thuê dịch vụ thì thực ra Ủy ban cũng đã có bàn, nhưng mà báo cáo đồng chí là cái vướng hiện nay là hướng dẫn về thuê dịch vụ công nghệ thông tin theo Nghị định 73 nó còn nhiều cái chưa rõ, đặc biệt là cái phần định giá thuê và cái phần sau khi hết hợp đồng thì tài sản, dữ liệu thuộc về ai. Một số tỉnh làm rồi thì cũng đang vướng thanh tra. Cho nên là em nghĩ cái này chưa nên đưa vào đề án ngay bây giờ, có thể thí điểm ở một vài hạng mục nhỏ sau. Ý thứ hai thì em rất đồng tình với anh Lâm là phải phân kỳ, và theo em thì cái ưu tiên số một phải là cái nền tảng dữ liệu dùng chung với bệnh án điện tử cho các bệnh viện tuyến tỉnh, còn cái ứng dụng đặt lịch, thanh toán cho người dân thì doanh nghiệp làm rất nhiều rồi, mình có thể kết nối chứ không nhất thiết phải tự đầu tư. Còn một cái nữa là về nhân lực, thì báo cáo đồng chí là em thấy đây là cái khâu yếu nhất. Mình đầu tư phần mềm xong mà trạm y tế xã không có người vận hành thì cũng như không. Hiện nay sau sắp xếp đơn vị hành chính thì các trạm y tế cũng đang biến động về nhân sự. Cái này thì phải có cái rà soát tổng thể xem mỗi trạm, mỗi bệnh viện cần tối thiểu bao nhiêu người làm công nghệ thông tin, rồi có cơ chế đãi ngộ, chứ lương như hiện nay thì không giữ được người, các em giỏi ra doanh nghiệp hết. Dạ, xin phép đồng chí Bí thư em giải trình thêm một chút về cái phần nhân lực. Trong đề án thì Sở cũng đã có tính đến việc đào tạo lại khoảng 1.500 lượt cán bộ y tế về kỹ năng số, nhưng mà đúng như anh Quang nói là cái phần cán bộ chuyên trách thì chưa có cơ chế, vì cái này nó liên quan đến biên chế và chế độ chính sách, vượt thẩm quyền của Sở. Rồi, tôi xin kết luận nội dung này. Thứ nhất là Ban Thường vụ thống nhất cao về chủ trương ban hành Đề án chuyển đổi số ngành y tế giai đoạn 2026 2030. Đây là việc cần thiết, cấp bách, các đồng chí đã phân tích rồi, người dân chuyển tuyến vẫn cầm hồ sơ giấy là không chấp nhận được trong bối cảnh hiện nay. Thứ hai, về nội dung thì đề án phải phân kỳ lại. Giai đoạn một từ năm 2026 đến 2027 thì tập trung làm hai việc thôi, là nền tảng dữ liệu y tế dùng chung và bệnh án điện tử cho các bệnh viện tuyến tỉnh. Các hạng mục khác như là ứng dụng đặt lịch, thanh toán cho người dân thì chuyển sang giai đoạn hai, và theo hướng kết nối với các nền tảng sẵn có, không đầu tư mới. Tổng kinh phí thì phải tính toán lại cho phù hợp với khả năng cân đối mà Sở Tài chính vừa báo cáo, chứ không để con số 1.180 tỷ như hiện nay. Thứ ba là về dữ liệu, tôi thống nhất với ý kiến đồng chí Vy, toàn bộ dữ liệu y tế phải đặt tại Trung tâm dữ liệu của tỉnh, đây là nguyên tắc, không bàn lại. Chuẩn liên thông áp dụng thống nhất là HL7 FHIR. Còn cái đề xuất thuê dịch vụ thì như đồng chí Quang báo cáo, hiện nay khung pháp lý chưa rõ, cho nên chưa đưa vào đề án lần này. Sau này nếu có hướng dẫn rõ thì Ủy ban nghiên cứu thí điểm sau. Về tổ chức thực hiện. Giao Ban cán sự Đảng Ủy ban chỉ đạo Sở Y tế tiếp thu đầy đủ các ý kiến hôm nay, hoàn thiện đề án theo hướng phân kỳ như tôi vừa nói, trình Ủy ban ban hành trước ngày 30 tháng 11. Đồng chí Hòa chịu trách nhiệm việc này. Giao Sở Tài chính chủ trì, phối hợp Sở Y tế rà soát, đề xuất bố trí nguồn cho năm 2026 từ nguồn dự phòng và tăng thu như đồng chí Lâm đã báo cáo, báo cáo Thường trực trong tháng 11. Giao Sở Khoa học và Công nghệ xây dựng và ban hành văn bản hướng dẫn chuẩn liên thông dữ liệu y tế, yêu cầu các nhà cung cấp phần mềm quản lý bệnh viện hiện nay phải tuân thủ, thời hạn trong quý 1 năm 2026. Còn cái vấn đề nhân lực công nghệ thông tin cho trạm y tế xã mà đồng chí Quang nêu thì tôi thấy là đúng, là khâu yếu, cái này thì cũng phải tính, phải có cái rà soát tổng thể, nhưng mà nó liên quan biên chế và chế độ chính sách nên cần nghiên cứu thêm, lúc nào chín thì đưa ra. Rồi, nội dung này tôi kết luận như vậy, các đồng chí có ý kiến gì khác không? Không có thì chuyển sang nội dung tiếp theo.",
+  "metadata": {
+    "meeting_id": "synth_002",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

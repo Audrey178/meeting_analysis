@@ -1,0 +1,403 @@
+{
+  "meeting_id": "synth_012",
+  "n_turns": 48,
+  "total_chars": 20451,
+  "boundaries": [
+    7,
+    14,
+    20,
+    28,
+    35
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Đánh giá tiến độ thi công Trường THCS Tân Lập",
+      "summary": "Công trình đạt 64% khối lượng, chậm 3 tuần so với kế hoạch do mưa và thiếu thép; nhà thầu cam kết tăng ca, bù tiến độ để hoàn thành phần thô trước 20/12.",
+      "turn_range": [
+        0,
+        7
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000007"
+      ],
+      "chars": 4208,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Tháo gỡ vướng mắc mặt bằng Trường mầm non Hoa Sen",
+      "summary": "Còn 2 hộ chưa bàn giao 320 m2 đất làm lối vào và sân chơi do chưa đồng ý giá bồi thường; thống nhất đề nghị UBND xã tổ chức đối thoại, điều chỉnh bản vẽ thi công để làm trước khối nhà chính.",
+      "turn_range": [
+        7,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000008",
+        "TURN_000014"
+      ],
+      "chars": 3525,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát tình hình thanh toán, giải ngân vốn các dự án",
+      "summary": "Giải ngân mới đạt 51% kế hoạch vốn năm; hồ sơ thanh toán đợt 3 Tân Lập bị Kho bạc trả lại do thiếu biên bản nghiệm thu; thống nhất hoàn thiện hồ sơ và đăng ký điều chuyển vốn dư của Hoa Sen.",
+      "turn_range": [
+        14,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000020"
+      ],
+      "chars": 3478,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Chấn chỉnh công tác an toàn lao động trên công trường sau sự cố ngã giàn giáo",
+      "summary": "Công nhân ngã từ giàn giáo tầng 2 công trường Tân Lập bị gãy tay do không đeo dây an toàn; thống nhất tạm dừng thi công trên cao 1 ngày để kiểm tra, bắt buộc dây an toàn và lưới chắn, phạt theo hợp đồng.",
+      "turn_range": [
+        20,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000028"
+      ],
+      "chars": 3489,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Chuẩn bị hồ sơ mời thầu gói thiết bị dạy học Trường THCS Tân Lập",
+      "summary": "Gói thiết bị khoảng 4,2 tỷ cần đấu thầu qua mạng; tranh luận chia lô hay gói chung, thống nhất chia 3 lô (bàn ghế, thiết bị phòng học bộ môn, thiết bị công nghệ thông tin) để tăng cạnh tranh và phát hành hồ sơ trước 15/12.",
+      "turn_range": [
+        28,
+        35
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000035"
+      ],
+      "chars": 3242,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Kết luận giao ban và phân công nhiệm vụ tháng 12",
+      "summary": "Giám đốc Ban chốt phân công cụ thể cho từng bộ phận và nhà thầu với các mốc thời hạn khác nhau, từ ngay hôm nay đến cuối quý.",
+      "turn_range": [
+        35,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000036",
+        "TURN_000048"
+      ],
+      "chars": 2509,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Ông Bình (Chỉ huy trưởng nhà thầu Công ty Xây dựng Trường An)",
+      "actor_aliases": [
+        "ông Bình",
+        "nhà thầu"
+      ],
+      "task": "Gửi tiến độ thi công chi tiết theo tuần cho Tân Lập đến ngày bàn giao, có kế hoạch làm việc dịp Tết",
+      "deadline": "17h thứ Sáu tuần này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000037",
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Ông Bình (Chỉ huy trưởng nhà thầu Công ty Xây dựng Trường An)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Tăng nhân lực công trường Tân Lập lên 55 người",
+      "deadline": "từ thứ Hai tuần sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Ông Bình (Chỉ huy trưởng nhà thầu Công ty Xây dựng Trường An)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Sửa giàn giáo, lắp lan can, lưới chắn trong ngày tạm dừng; bố trí cán bộ an toàn chuyên trách",
+      "deadline": "thứ Hai tuần sau",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Ông Bình (Chỉ huy trưởng nhà thầu Công ty Xây dựng Trường An)",
+      "actor_aliases": [
+        "chúng tôi"
+      ],
+      "task": "Khắc phục điện thi công và bố trí người hướng dẫn xe ra vào giờ tan học",
+      "deadline": "thứ Hai",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Đông (Cán bộ giám sát công trường)",
+      "actor_aliases": [
+        "anh Đông"
+      ],
+      "task": "Kiểm tra, nghiệm thu an toàn giàn giáo; lập biên bản vi phạm lần hai",
+      "deadline": "cuối ngày thứ Hai",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "actor_aliases": [
+        "chị Quyên"
+      ],
+      "task": "Khấu trừ tiền phạt 5 triệu vào đợt thanh toán gần nhất",
+      "deadline": "đợt thanh toán gần nhất",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Lực (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh Lực"
+      ],
+      "task": "Lấy bản gốc biên bản nghiệm thu móng; trình tờ trình phê duyệt khối lượng phát sinh",
+      "deadline": "bản gốc trong thứ Hai; tờ trình trong 3 ngày làm việc",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "actor_aliases": [
+        "chị Quyên"
+      ],
+      "task": "Ký phụ lục hợp đồng và nộp lại hồ sơ thanh toán đợt 3 Tân Lập cho Kho bạc",
+      "deadline": "chậm nhất thứ Sáu",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "actor_aliases": [
+        "chị Quyên"
+      ],
+      "task": "Làm văn bản đăng ký điều chuyển 2,5 tỷ từ Hoa Sen sang Tân Lập",
+      "deadline": "trước 5/12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "actor_aliases": [
+        "chị Quyên"
+      ],
+      "task": "Báo cáo tỷ lệ giải ngân hằng tuần",
+      "deadline": "sáng thứ Hai hằng tuần đến hết tháng 1",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Bà Thủy (Phó Giám đốc Ban QLDA)",
+      "actor_aliases": [
+        "chị Thủy"
+      ],
+      "task": "Làm văn bản đề nghị UBND xã và Hội đồng bồi thường tổ chức đối thoại với 2 hộ ở Hoa Sen",
+      "deadline": "ngay trong hôm nay",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Anh Lực (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh Lực"
+      ],
+      "task": "Làm việc với trưởng thôn, lập biên bản thỏa thuận dùng đường thôn; khởi công khối nhà chính Hoa Sen",
+      "deadline": "khởi công trước 10/12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Lực (Trưởng phòng Kỹ thuật)",
+      "actor_aliases": [
+        "anh Lực"
+      ],
+      "task": "Lập hồ sơ mời thầu gói thiết bị chia 3 lô, lấy ý kiến Phòng Giáo dục, trình phê duyệt và phát hành",
+      "deadline": "gửi góp ý trước 5/12; phát hành chậm nhất 15/12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "actor_aliases": [
+        "chị Quyên"
+      ],
+      "task": "Hoàn thành hồ sơ quyết toán đường nội thôn và nhà văn hóa, nộp thẩm tra",
+      "deadline": "trước 31/12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Mầm non Hoa Sen: điều chỉnh biện pháp thi công, khởi công khối nhà chính trước qua lối phía sau (thỏa thuận thôn, xe dưới 10 tấn, nhà thầu sửa đường); tổ chức đối thoại với 2 hộ; chưa cưỡng chế",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Hoàn thiện, nộp lại hồ sơ thanh toán đợt 3 Tân Lập trong tuần; đăng ký điều chuyển ~2,5 tỷ từ Hoa Sen sang Tân Lập trước 5/12",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Tạm dừng công việc trên cao tại Tân Lập ngày thứ Hai để sửa giàn giáo; bắt buộc dây an toàn từ 2 m; phạt theo hợp đồng; cán bộ an toàn chuyên trách",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Gói thiết bị Tân Lập chia 3 lô (bàn ghế, thiết bị bộ môn, CNTT), phát hành HSMT chậm nhất 15/12, lấy ý kiến Phòng Giáo dục về tiêu chuẩn kỹ thuật",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Để gói thiết bị thành một gói chung không chia lô",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Lực (Trưởng phòng Kỹ thuật)",
+      "point": "THCS Tân Lập đạt 64% khối lượng, chậm 3 tuần do 11 ngày mưa và thiếu thép",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Đông (Cán bộ giám sát công trường)",
+      "point": "Nhân lực nhà thầu bình quân 35 người so với cam kết 50",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Bà Thủy (Phó Giám đốc Ban QLDA)",
+      "point": "Hoa Sen còn 320 m2 của 2 hộ chưa bàn giao do không đồng ý giá bồi thường",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+      "point": "Giải ngân 16,1/31,5 tỷ (51%); hồ sơ đợt 3 Tân Lập 4,3 tỷ bị Kho bạc trả lại",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Đông (Cán bộ giám sát công trường)",
+      "point": "Công nhân ngã giàn giáo 5 m gãy tay do không đeo dây an toàn, thiếu lan can và lưới chắn",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Anh Lực (Trưởng phòng Kỹ thuật)",
+      "point": "Gói thiết bị khoảng 4,2 tỷ, phải phát hành HSMT giữa tháng 12 để kịp bàn giao giữa tháng 2",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Ông Tâm (Giám đốc Ban QLDA)",
+    "PGD": "Bà Thủy (Phó Giám đốc Ban QLDA)",
+    "KT": "Anh Lực (Trưởng phòng Kỹ thuật)",
+    "KH": "Chị Quyên (Trưởng phòng Kế hoạch - Tài chính)",
+    "GS": "Anh Đông (Cán bộ giám sát công trường)",
+    "NT": "Ông Bình (Chỉ huy trưởng nhà thầu Công ty Xây dựng Trường An)"
+  },
+  "tags": [
+    "dense_actions_closing",
+    "deadline_variety"
+  ]
+}

@@ -1,0 +1,776 @@
+{
+  "meeting_id": "synth_031",
+  "n_turns": 133,
+  "total_chars": 44766,
+  "boundaries": [
+    11,
+    24,
+    39,
+    55,
+    72,
+    86,
+    102,
+    117
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án bảo tồn, tu bổ và phát huy giá trị Khu di tích Thành cổ Long Hà",
+      "summary": "Sở Văn hóa, Thể thao và Du lịch trình bày hiện trạng thành cổ (tường thành 3,4 km, 1,1 km sạt lở, 318 hộ dân trong khu vực bảo vệ I), mục tiêu đến 2035, tổng vốn dự kiến 3.270 tỷ chia ba giai đoạn, giai đoạn 1 cần 1.650 tỷ; Chủ tịch xác định trình HĐND kỳ họp tháng 12.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 5367,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Thảo luận phương án di dời, tái định cư hộ dân trong khu vực bảo vệ I",
+      "summary": "Phường Thành Cổ báo cáo 318 hộ, chỉ 87 hộ có giấy chứng nhận, dân muốn tái định cư gần; Sở Nông nghiệp và Môi trường nêu quỹ đất khu Đông Hồ 9,6 ha bố trí được khoảng 260 lô; Chủ tịch chốt di dời toàn bộ 318 hộ trong giai đoạn 1, tái định cư tại Đông Hồ; giao phường đối thoại với dân, Sở lập quy hoạch chi tiết khu tái định cư.",
+      "turn_range": [
+        11,
+        24
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000024"
+      ],
+      "chars": 5074,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Thẩm định nguồn vốn và phân kỳ đầu tư của Đề án",
+      "summary": "Sở Tài chính cho biết ngân sách tỉnh giai đoạn 2027-2030 chỉ bố trí được khoảng 1.180 tỷ, riêng di dời 318 hộ đã mất khoảng 890 tỷ; đề xuất giao doanh nghiệp khai thác dịch vụ 30 năm để đổi vốn bị gạt vì trái Luật Di sản văn hóa; Chủ tịch điều chỉnh lại: giai đoạn 1 chỉ di dời 126 hộ trên nền tường thành và lòng hào, 192 hộ còn lại giữ nguyên và chỉnh trang; vốn giai đoạn 1 là 1.180 tỷ.",
+      "turn_range": [
+        24,
+        39
+      ],
+      "turn_ids": [
+        "TURN_000025",
+        "TURN_000039"
+      ],
+      "chars": 5292,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Cho ý kiến phương án kỹ thuật tu bổ tường thành và cổng thành",
+      "summary": "Sở Xây dựng nêu đề xuất dùng gạch nung công nghiệp mô phỏng gạch vồ để giảm khoảng 40% chi phí, Bảo tàng tỉnh phản đối vì trái nguyên tắc giữ yếu tố gốc; làng nghề Tân Mỹ làm được khoảng 30.000 viên gạch thủ công mỗi tháng; Chủ tịch chốt thí điểm tu bổ 120 m tường thành phía Nam bằng gạch thủ công, đánh giá sau 6 tháng rồi mới nhân rộng.",
+      "turn_range": [
+        39,
+        55
+      ],
+      "turn_ids": [
+        "TURN_000040",
+        "TURN_000055"
+      ],
+      "chars": 4996,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Thảo luận công tác khảo cổ học và trưng bày hiện vật Thành cổ",
+      "summary": "Bảo tàng tỉnh báo cáo kho đang giữ khoảng 4.700 hiện vật, 60% chưa đăng ký, hai khu vực nền hành cung và kho lương cần khai quật trước khi thi công; ý kiến số hóa 3D hiện vật và tường thành không có đơn vị nào nhận; Chủ tịch chốt khai quật hai khu vực trước khi thi công, giao Bảo tàng lập hồ sơ xin phép và xây dựng kịch bản trưng bày tại cổng Bắc.",
+      "turn_range": [
+        55,
+        72
+      ],
+      "turn_ids": [
+        "TURN_000056",
+        "TURN_000072"
+      ],
+      "chars": 4735,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Cho ý kiến phương án khai thác du lịch, thu phí tham quan và tổ chức sự kiện tại Thành cổ",
+      "summary": "Sở Văn hóa đề xuất thu phí 50.000 đồng và tổ chức lễ hội ánh sáng hằng tuần trên mặt tường thành; Bảo tàng và Phó Chủ tịch lo ngại tải trọng, rung chấn; Chủ tịch gạt sự kiện trên tường thành, chỉ cho tổ chức sự kiện đêm ở quảng trường ngoài cổng Nam tối đa 2 lần mỗi tháng; chốt mức phí 40.000 đồng từ 1/7/2027, miễn cho học sinh, người cao tuổi.",
+      "turn_range": [
+        72,
+        86
+      ],
+      "turn_ids": [
+        "TURN_000073",
+        "TURN_000086"
+      ],
+      "chars": 4916,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Thảo luận quản lý xây dựng và quy chế kiến trúc trong khu vực bảo vệ II của Thành cổ",
+      "summary": "Sở Xây dựng báo cáo hai năm qua phường cấp 64 giấy phép xây dựng trong khu vực bảo vệ II, có 9 công trình 5-7 tầng sát hào làm phá vỡ cảnh quan, chưa có quy chế quản lý kiến trúc; việc rà soát 9 công trình này chưa giao được cho đơn vị nào; Chủ tịch chốt tạm dừng cấp phép công trình trên 4 tầng hoặc cao trên 16 m cho đến khi ban hành quy chế; giao Sở Xây dựng trình quy chế, phường thông báo công khai.",
+      "turn_range": [
+        86,
+        102
+      ],
+      "turn_ids": [
+        "TURN_000087",
+        "TURN_000102"
+      ],
+      "chars": 5038,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Thống nhất hồ sơ, thủ tục và lộ trình trình HĐND tỉnh thông qua Đề án",
+      "summary": "Sở Tư pháp cho biết đề án phải có ý kiến thẩm định của Bộ Văn hóa, Thể thao và Du lịch (30-45 ngày) nên không kịp hạn gửi hồ sơ kỳ họp tháng 12; Chủ tịch đảo lại quyết định đầu buổi, chuyển sang trình kỳ họp chuyên đề tháng 3/2027 cùng nghị quyết thu phí; Phó Chủ tịch nhận làm việc với Cục Di sản văn hóa, Văn phòng đăng ký nội dung với Thường trực HĐND, Sở Tư pháp thẩm định trong 10 ngày.",
+      "turn_range": [
+        102,
+        117
+      ],
+      "turn_ids": [
+        "TURN_000103",
+        "TURN_000117"
+      ],
+      "chars": 4763,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Kết luận chung của Chủ tịch UBND tỉnh về Đề án Thành cổ Long Hà",
+      "summary": "Chủ tịch kết luận thống nhất chủ trương đề án với các điều chỉnh: giai đoạn 1 vốn 1.180 tỷ, di dời 126 hộ, thí điểm 120 m tường thành, khai quật khảo cổ, phí 40.000 đồng, tạm dừng cấp phép trên 4 tầng, trình HĐND kỳ họp chuyên đề tháng 3/2027; giao Sở Văn hóa hoàn chỉnh dự thảo đề án trước 10/11, Sở Nông nghiệp và Môi trường khảo sát hào và phương án nạo vét.",
+      "turn_range": [
+        117,
+        133
+      ],
+      "turn_ids": [
+        "TURN_000118",
+        "TURN_000133"
+      ],
+      "chars": 4585,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Trọng (Chủ tịch UBND phường Thành Cổ)",
+      "actor_aliases": [
+        "đồng chí Trọng",
+        "phường",
+        "phường Thành Cổ"
+      ],
+      "task": "Tổ chức đối thoại với các hộ dân thuộc diện di dời (sau điều chỉnh chỉ 126 hộ trên nền tường thành và lòng hào) ở bốn tổ dân phố và rà soát hồ sơ nguồn gốc đất của từng hộ",
+      "deadline": "trong tháng 11",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000022",
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Hảo (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "đồng chí Hảo",
+        "Sở"
+      ],
+      "task": "Trình phương án quy hoạch chi tiết 1/500 khu tái định cư Đông Hồ (có tính phương án chung cư thấp tầng)",
+      "deadline": "hai tuần",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Khiêm (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "đồng chí Khiêm",
+        "Sở Tài chính"
+      ],
+      "task": "Dựng lại bảng phân kỳ vốn giai đoạn 1 theo tổng 1.180 tỷ, tách rõ từng hạng mục, gửi Sở Văn hóa",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036",
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Khiêm (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Chuẩn bị hồ sơ, làm việc với Bộ Tài chính và Bộ Văn hóa đề nghị đưa đề án vào danh mục hỗ trợ có mục tiêu (khoảng 360 tỷ vốn Trung ương)",
+      "deadline": "trong quý 1 năm sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "đồng chí Khang",
+        "Sở Xây dựng"
+      ],
+      "task": "Chủ trì, phối hợp Sở Văn hóa lập hồ sơ thiết kế đoạn thí điểm 120 m tường thành phía Nam",
+      "deadline": "trong tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000050",
+        "TURN_000051"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "actor_aliases": [
+        "đồng chí Thục",
+        "Sở Văn hóa"
+      ],
+      "task": "Mời Viện Bảo tồn di tích khảo sát, phân tích mẫu gạch và vữa gốc; đặt làng nghề Tân Mỹ làm thử một lô gạch vồ theo đúng thông số",
+      "deadline": "trước khi khởi công đoạn thí điểm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+      "actor_aliases": [
+        "đồng chí Uyên",
+        "Bảo tàng"
+      ],
+      "task": "Hoàn thành hồ sơ đề nghị cấp giấy phép khai quật khảo cổ hai khu vực nền hành cung và kho lương, gửi Bộ Văn hóa",
+      "deadline": "trước ngày 30 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000069",
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+      "actor_aliases": [
+        "đồng chí",
+        "Bảo tàng"
+      ],
+      "task": "Xây dựng kịch bản trưng bày hiện vật tại vọng lâu cổng Bắc",
+      "deadline": "quý 2 năm 2027",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000072"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "actor_aliases": [
+        "Sở Văn hóa"
+      ],
+      "task": "Phối hợp Sở Tài chính xây dựng dự thảo nghị quyết quy định mức thu phí tham quan, trình cùng hồ sơ đề án",
+      "deadline": "trình cùng hồ sơ đề án",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000085",
+        "TURN_000086"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "đồng chí Khang",
+        "Sở Xây dựng"
+      ],
+      "task": "Chủ trì, phối hợp Sở Văn hóa và Sở Nông nghiệp và Môi trường soạn quy chế quản lý kiến trúc khu vực bảo vệ II, trình Ủy ban",
+      "deadline": "trước ngày 31 tháng 12 năm nay",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000098",
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Trọng (Chủ tịch UBND phường Thành Cổ)",
+      "actor_aliases": [
+        "đồng chí Trọng",
+        "phường"
+      ],
+      "task": "Niêm yết, thông báo công khai việc tạm dừng cấp phép công trình trên 4 tầng tại trụ sở, các tổ dân phố và trang thông tin điện tử của phường",
+      "deadline": "ngay trong tuần này",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000101"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Đ/c Ánh (Phó Chủ tịch UBND tỉnh phụ trách văn hóa - xã hội)",
+      "actor_aliases": [
+        "tôi",
+        "đồng chí Ánh"
+      ],
+      "task": "Trực tiếp cùng Sở Văn hóa làm việc với Cục Di sản văn hóa, báo cáo đề án và đề nghị Bộ thẩm định sớm",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Đ/c Sương (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "đồng chí Sương",
+        "Văn phòng"
+      ],
+      "task": "Có văn bản báo cáo Thường trực HĐND xin rút đề án khỏi kỳ họp tháng 12 và đăng ký vào kỳ họp chuyên đề tháng 3 năm 2027",
+      "deadline": "ngay tuần này",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000115"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Đ/c Tín (Giám đốc Sở Tư pháp)",
+      "actor_aliases": [
+        "Sở Tư pháp"
+      ],
+      "task": "Thẩm định dự thảo nghị quyết và hồ sơ đề án",
+      "deadline": "trong 10 ngày làm việc kể từ ngày nhận đủ hồ sơ",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000117"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "actor_aliases": [
+        "đồng chí",
+        "Sở Văn hóa"
+      ],
+      "task": "Hoàn chỉnh dự thảo đề án theo kết luận (mục tiêu khách theo hai kịch bản, phần di dân, phần vốn), gửi Sở Tư pháp thẩm định và gửi Bộ",
+      "deadline": "trước ngày 10 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000121"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Đ/c Hảo (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "đồng chí",
+        "Sở"
+      ],
+      "task": "Lấy mẫu phân tích chất lượng nước và bùn hào, đề xuất phương án nạo vét và vị trí đổ thải",
+      "deadline": "trước mùa mưa năm sau",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000124"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Trình dự thảo quyết định tạm dừng cấp phép xây dựng ở khu vực bảo vệ II, kèm bản đồ phạm vi áp dụng",
+      "deadline": "trong tuần sau",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000127"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Đ/c Sương (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Ban hành thông báo kết luận cuộc họp, ghi rõ nhiệm vụ và thời hạn của từng đơn vị",
+      "deadline": "trong vòng ba ngày làm việc",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000132"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thống nhất chủ trương Đề án bảo tồn, tu bổ và phát huy giá trị Khu di tích Thành cổ Long Hà giai đoạn 2027-2035, chia ba giai đoạn như dự thảo, với các điều chỉnh đã chốt trong cuộc họp",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000118"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Giai đoạn 1 chỉ di dời 126 hộ ở trên nền tường thành và trong lòng hào; 192 hộ còn lại trong khu vực bảo vệ I giữ nguyên, chỉnh trang, không xây mới, không cơi nới; việc di dời 192 hộ để sang giai đoạn 2",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Tái định cư tập trung tại khu Đông Hồ; hộ lấn chiếm không có chỗ ở khác được mua lô với giá gốc, trả chậm; người cao tuổi sống một mình ưu tiên bố trí nhà ở xã hội",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Vốn giai đoạn 1 là 1.180 tỷ (khoảng 820 tỷ ngân sách tỉnh, 360 tỷ xin Trung ương); ưu tiên di dời 126 hộ và hạ tầng Đông Hồ, tu bổ tường thành phía Nam, cổng Nam, nạo vét hào; tường thành phía Tây và cổng Tây làm nếu còn vốn, không thì chuyển giai đoạn 2",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Không giao độc quyền dịch vụ trong thành cho doanh nghiệp; xã hội hóa chỉ với dịch vụ ngoài khu vực bảo vệ I (bãi đỗ xe, khu ẩm thực bờ ngoài hào), cho thuê qua đấu giá, có thời hạn; tu bổ do nhà nước làm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Không dùng gạch công nghiệp mô phỏng trong tu bổ tường thành, lớp lõi đắp lại đất theo cấu tạo gốc; thí điểm tu bổ 120 m tường thành phía Nam (từ cổng Nam sang góc Đông Nam) bằng gạch vồ thủ công và vữa vôi, đánh giá sau 6 tháng rồi mới nhân rộng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Khai quật khảo cổ hai khu vực nền hành cung và kho lương trước khi thi công bất kỳ hạng mục nào ở đó, kinh phí trong phần chuẩn bị đầu tư giai đoạn 1; đoạn thí điểm phía Nam làm song song; đồng ý chủ trương trưng bày tại vọng lâu cổng Bắc",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000069"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Không tổ chức lễ hội, sự kiện đông người trên mặt tường thành; sự kiện đêm chỉ tổ chức tại quảng trường ngoài cổng Nam, trình chiếu từ bên ngoài, tối đa hai lần mỗi tháng, kết thúc trước 22 giờ",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000083"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Phí tham quan 40.000 đồng/lượt người lớn, áp dụng từ 1/7/2027; miễn cho học sinh, sinh viên trong tỉnh, người cao tuổi, người có công, người dân cư trú trong phường Thành Cổ; giảm 50% cho học sinh ngoài tỉnh; tiền phí để lại cho bảo tồn",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Tạm dừng cấp giấy phép xây dựng mới công trình trên 4 tầng hoặc cao trên 16 m trong khu vực bảo vệ II cho đến khi ban hành quy chế quản lý kiến trúc, không quá 6 tháng; nhà từ 4 tầng trở xuống, sửa chữa, cải tạo vẫn cấp phép nhưng phải có ý kiến Sở Văn hóa; quy chế phải có chỉ tiêu cụ thể về chiều cao, màu sắc, mái, quảng cáo, thoát nước",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000098"
+      ]
+    },
+    {
+      "id": "D11",
+      "text": "Không trình kỳ họp HĐND tháng 12; trình đề án và nghị quyết thu phí tham quan tại kỳ họp chuyên đề tháng 3/2027 khi đã có ý kiến thẩm định của Bộ; đoạn thí điểm 120 m dùng nguồn sự nghiệp tu bổ di tích, vẫn làm trong mùa khô này",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000112"
+      ]
+    },
+    {
+      "id": "D12",
+      "text": "Cho dùng khoảng 2,5 tỷ dự phòng ngân sách tỉnh bổ sung kinh phí đoạn thí điểm; giữ nguyên kinh phí 4 di tích cấp tỉnh đã đăng ký",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000129"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Giai đoạn 1 di dời toàn bộ 318 hộ ra khỏi khu vực bảo vệ I (đã đảo lại: chỉ di dời 126 hộ)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "superseded_decision",
+      "text": "Trình đề án tại kỳ họp thường lệ tháng 12 của HĐND tỉnh (đã đảo lại: trình kỳ họp chuyên đề tháng 3/2027)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000001"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Giao Công ty Du lịch Hoàng Long độc quyền khai thác toàn bộ dịch vụ trong thành 30 năm để đổi lấy khoảng 400 tỷ tu bổ cổng (bị gạt)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028",
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Dùng gạch nung công nghiệp mô phỏng gạch vồ cho phần lõi và các đoạn khuất để giảm khoảng 40% chi phí (không được chấp nhận)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Tổ chức lễ hội ánh sáng tối thứ Bảy hằng tuần ngay trên mặt tường thành phía Nam (không được chấp nhận)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000074"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "hedged_proposal",
+      "text": "Mức phí tham quan 50.000 đồng/lượt (không được chấp nhận, chốt 40.000 đồng)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000074"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "unassigned_task",
+      "text": "Số hóa 3D toàn bộ tường thành, các cổng và 4.700 hiện vật (cần làm nhưng chưa giao đơn vị nào)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000061",
+        "TURN_000064"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "unassigned_task",
+      "text": "Rà soát 9 công trình cao 5-7 tầng sát hào (3 công trình có dấu hiệu xây vượt tầng), xử lý vi phạm và trách nhiệm người cấp phép (Chủ tịch chưa giao)",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000093",
+        "TURN_000096"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "unassigned_task",
+      "text": "Các sở, ngành, phường nâng cao trách nhiệm, phối hợp, làm tốt tuyên truyền để nhân dân đồng thuận (khẩu hiệu chung)",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000133"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "point": "Thành cổ xuống cấp nghiêm trọng: 1,1 km tường thành sạt lở, phình, nứt; 214 cây xâm hại; vòm cổng Tây nứt; hào bồi lắng, ô nhiễm; 318 hộ sống trong khu vực bảo vệ I",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "point": "Tổng vốn dự kiến 3.270 tỷ chia ba giai đoạn, giai đoạn 1 (2027-2030) 1.650 tỷ gồm di dời toàn bộ 318 hộ; mục tiêu 1,2 triệu lượt khách năm 2035",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Ánh (Phó Chủ tịch UBND tỉnh phụ trách văn hóa - xã hội)",
+      "point": "Mục tiêu 1,2 triệu khách cao, cần cơ sở; đề án phải xác định rõ thứ tự ưu tiên khi vốn không đủ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Trọng (Chủ tịch UBND phường Thành Cổ)",
+      "point": "318 hộ, chỉ 87 hộ có giấy chứng nhận, khoảng 90 hộ lấn chiếm; 126 hộ ở trực tiếp trên nền tường thành và lòng hào; dân muốn tái định cư gần trong bán kính 2 km",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Hảo (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Khu Đông Hồ 9,6 ha cách thành 1,2 km bố trí được khoảng 260 lô, thiếu khoảng 60 lô nếu di dời toàn bộ 318 hộ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Khiêm (Giám đốc Sở Tài chính)",
+      "point": "Chỉ cân đối được khoảng 1.180 tỷ cho giai đoạn 1; riêng di dời 318 hộ đã tốn khoảng 890 tỷ, chỉ còn 290 tỷ cho tu bổ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+      "point": "Tường thành sạt do rễ cây và nước ngấm lớp lõi đất; gạch vồ thủ công 38.000 đồng/viên, cần khoảng 1,9 triệu viên; gạch công nghiệp mô phỏng giảm khoảng 40% chi phí",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+      "point": "Gạch công nghiệp không tương thích cơ lý với gạch vồ, trái nguyên tắc giữ yếu tố gốc, hồ sơ gần như chắc chắn bị Bộ trả lại",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+      "point": "Kho giữ khoảng 4.700 hiện vật, 60% chưa đăng ký, kho quá tải; hai khu vực nền hành cung và kho lương bắt buộc khai quật trước khi thi công; đề xuất trưng bày tại vọng lâu cổng Bắc",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000057"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+      "point": "Mỗi hố khai quật có thể thêm 800-1.500 hiện vật; dùng tạm nhà kho cổng Đông cải tạo (khoảng 1,5 tỷ), xin thêm 2 biên chế khảo cổ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000068"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+      "point": "Năm 2025 đón 410.000 lượt khách, chưa thu phí; đề xuất phí 50.000 đồng (ước thu 14-16 tỷ/năm) và lễ hội ánh sáng hằng tuần trên mặt thành",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000074"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Đ/c Ánh (Phó Chủ tịch UBND tỉnh phụ trách văn hóa - xã hội)",
+      "point": "Không tổ chức sự kiện trên mặt thành; tối đa hai lần mỗi tháng, chỉ ở quảng trường ngoài cổng Nam",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000076"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Đ/c Khiêm (Giám đốc Sở Tài chính)",
+      "point": "Mức phí do HĐND quyết định; đề xuất 40.000 đồng theo mặt bằng các di tích lân cận, kèm đối tượng miễn giảm",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000078"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+      "point": "Hai năm qua cấp 64 giấy phép trong khu vực bảo vệ II, 9 công trình 5-7 tầng sát hào phá cảnh quan, 3 công trình có dấu hiệu vượt tầng; chưa có quy chế quản lý kiến trúc",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000088"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Đ/c Trọng (Chủ tịch UBND phường Thành Cổ)",
+      "point": "Phường cấp phép theo quy hoạch phân khu cho phép 7 tầng, không có căn cứ từ chối; còn tồn 11 hồ sơ xin xây từ 5 tầng; đề nghị quy chế có chỉ tiêu cụ thể",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000089"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Đ/c Tín (Giám đốc Sở Tư pháp)",
+      "point": "Đề án phải có ý kiến thẩm định của Bộ Văn hóa (30-45 ngày) và hồ sơ gửi Thường trực HĐND trước 20 ngày, không kịp kỳ họp tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000104"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Đ/c Sương (Chánh Văn phòng UBND tỉnh)",
+      "point": "Kỳ họp tháng 12 khai mạc 8/12, hạn gửi hồ sơ 18/11; đề xuất đưa đề án vào kỳ họp chuyên đề giữa tháng 3/2027",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000105"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Đ/c Vịnh (Chủ tịch UBND tỉnh)",
+      "point": "Kết luận thống nhất chủ trương đề án với các điều chỉnh: vốn giai đoạn 1 1.180 tỷ, di dời 126 hộ, thí điểm 120 m, khai quật, phí 40.000 đồng, tạm dừng cấp phép trên 4 tầng, trình kỳ họp chuyên đề tháng 3/2027",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000118"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Vịnh (Chủ tịch UBND tỉnh)",
+    "PCT": "Đ/c Ánh (Phó Chủ tịch UBND tỉnh phụ trách văn hóa - xã hội)",
+    "VH": "Đ/c Thục (Giám đốc Sở Văn hóa, Thể thao và Du lịch)",
+    "TC": "Đ/c Khiêm (Giám đốc Sở Tài chính)",
+    "XD": "Đ/c Khang (Giám đốc Sở Xây dựng)",
+    "NN": "Đ/c Hảo (Giám đốc Sở Nông nghiệp và Môi trường)",
+    "PH": "Đ/c Trọng (Chủ tịch UBND phường Thành Cổ)",
+    "BT": "Đ/c Uyên (Giám đốc Bảo tàng tỉnh)",
+    "TP": "Đ/c Tín (Giám đốc Sở Tư pháp)",
+    "VP": "Đ/c Sương (Chánh Văn phòng UBND tỉnh)"
+  },
+  "tags": [
+    "long",
+    "superseded_decision",
+    "unassigned_task",
+    "hedged_proposal"
+  ]
+}

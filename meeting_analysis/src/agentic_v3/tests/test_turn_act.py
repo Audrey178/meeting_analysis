@@ -11,7 +11,12 @@ from types import SimpleNamespace
 
 from src.agentic_v3.core._shared import check_action_evidence, check_decision_evidence
 from src.agentic_v3.core.schemas import ActionItemCandidate, DecisionCandidate
-from src.agentic_v3.core.turn_act import DecisionsTurnActJudge, TurnActJudgement, render_turn_act_input
+from src.agentic_v3.core.turn_act import (
+    MAX_TURN_CHARS,
+    DecisionsTurnActJudge,
+    TurnActJudgement,
+    render_turn_act_input,
+)
 from src.utils.contracts import SpeakerTurn
 
 
@@ -119,3 +124,24 @@ def test_decisions_judge_parses_answer_and_caches() -> None:
     assert calls[0]["model"] == "m"
     assert calls[0]["input"] == render_turn_act_input(TURNS[1], TURNS[:1])
     assert "LƯỢT CẦN XÉT:\nAnh Sơn: Thế thì cứ làm" in calls[0]["input"]
+
+
+class TextJudge:
+    """Judge giả chấm theo NỘI DUNG đoạn: đoạn có "giao Hùng" là giao việc."""
+
+    def __init__(self) -> None:
+        self.texts: list[str] = []
+
+    def judge(self, turn, context):
+        self.texts.append(turn.text_exact)
+        if "giao Hùng" in turn.text_exact:
+            return TurnActJudgement("giao_viec", {"giao_viec": 0.95, "thao_luan": 0.05})
+        return TurnActJudgement("thao_luan", {"thao_luan": 0.95, "giao_viec": 0.05})
+
+
+def test_long_confirm_turn_is_judged_by_windows() -> None:
+    # Câu giao việc nằm sau MAX_TURN_CHARS: cắt cụt thì judge không thấy nó.
+    long_turn = _turn("T5", "Anh Sơn", "Báo cáo tình hình dự án. " * 150 + "Thống nhất giao Hùng làm TAT.")
+    judge = TextJudge()
+    assert check_action_evidence(_action("T5"), (*TURNS, long_turn), judge=judge).verdict == "clear"
+    assert len(judge.texts) > 1 and all(len(text) <= MAX_TURN_CHARS for text in judge.texts)

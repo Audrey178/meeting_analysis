@@ -26,17 +26,15 @@ from .actors.attendees import AttendeeRoster
 
 ActorType = Literal["person", "organization", "unknown"]
 AssigneeRole = Literal["lead", "support", "joint"]
-# Trạng thái agent tiến độ khai cho một việc trong một chủ đề (xem ``nodes/progress.py``).
+
 UpdateStatus = Literal["done", "in_progress", "blocked", "returned", "deferred", "mentioned"]
 UPDATE_STATUSES: tuple[str, ...] = ("done", "in_progress", "blocked", "returned", "deferred", "mentioned")
-# Quan hệ của một việc giao với danh sách việc cần báo cáo (gán ở ``finalize``).
+
 AssignmentRelation = Literal["new", "follow_up", "reassign", "reschedule"]
-# Phần kết quả tính được riêng trên cùng nền cắt chủ đề + nhãn (``MeetingAnalyzerV3.analyze``):
-# Diễn biến (Content agent), Giao việc (Action), Kết luận (Decision), Tiến độ (agent tiến độ).
+
 AnalysisPart = Literal["development", "assignments", "decisions", "progress"]
 ANALYSIS_PARTS: tuple[AnalysisPart, ...] = ("development", "assignments", "decisions", "progress")
-# Agent trích xuất sinh ra từng phần: tên node trong ``graph/topic.py``, cũng là ``agent`` của
-# ``TopicFailure``/``SkippedAgent`` thuộc phần đó.
+
 AGENT_OF_PART: dict[AnalysisPart, str] = {
     "development": "content_agent",
     "assignments": "action_agent",
@@ -137,14 +135,6 @@ class ActionItemV3(ActionItemCandidate):
     actor_reason: str = ""
     assignees: tuple[ActorAssignee, ...] = ()
     relation: AssignmentRelation | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class SkippedAgent:
-    """Một agent trích xuất bị Planner bỏ qua ở một chủ đề (để audit/đo recall)."""
-
-    segment_id: str
-    agent: str
 
 
 @dataclass(frozen=True, slots=True)
@@ -332,7 +322,6 @@ class MeetingReport:
         decisions: quyết định đã kiểm chứng (Kết luận họp).
         verification_records: bản ghi kiểm chứng (kèm các vòng trao đổi).
         failures: lời gọi trích xuất vẫn lỗi sau mọi lượt thử.
-        skipped_agents: agent bị Planner bỏ qua.
         task_progress: tiến độ từng việc trong danh sách việc cần báo cáo, theo thứ tự
             của file; rỗng nếu phiên họp không có danh sách việc.
     """
@@ -343,7 +332,6 @@ class MeetingReport:
     decisions: tuple[DecisionCandidate, ...]
     verification_records: tuple[VerificationRecord, ...]
     failures: tuple[TopicFailure, ...]
-    skipped_agents: tuple[SkippedAgent, ...]
     task_progress: tuple[TaskProgress, ...] = ()
 
 
@@ -360,7 +348,6 @@ __all__ = [
     "ConsensusRound",
     "MeetingReport",
     "ProgressUpdate",
-    "SkippedAgent",
     "SpeakerRegistry",
     "TaskProgress",
     "UPDATE_STATUSES",

@@ -27,7 +27,6 @@ from ..schemas import (
     AnalysisPart,
     MeetingReport,
     ProgressUpdate,
-    SkippedAgent,
     SpeakerRegistry,
     VerificationRecord,
     VerifyTask,
@@ -55,7 +54,6 @@ class TopicOutput(TypedDict):
     verified_decisions: Annotated[list[DecisionCandidate], operator.add]
     verification_records: Annotated[list[VerificationRecord], operator.add]
     topic_failures: Annotated[list[TopicFailure], operator.add]
-    skipped_agents: Annotated[list[SkippedAgent], operator.add]
     progress_updates: Annotated[list[ProgressUpdate], operator.add]  # đã kiểm (evidence_check)
 
 
@@ -63,13 +61,11 @@ class TopicState(TopicInput, TopicOutput):
     """State nội bộ của subgraph một chủ đề.
 
     ``task`` là gói ``SegmentTask`` kiểu v1 (có title/summary sau khi gán nhãn) để gọi
-    lại nguyên các agent trích xuất của v1. ``run_commit_agents`` do ``plan_topic`` ghi: có chạy
-    Action/Decision agent ở chủ đề này không. ``pending_verify`` ghi đè, chỉ đọc ngay sau
+    lại nguyên các agent trích xuất của v1. ``pending_verify`` ghi đè, chỉ đọc ngay sau
     ``evidence_check``.
     """
 
     task: SegmentTask
-    run_commit_agents: bool
     action_candidates_raw: Annotated[list[ActionItemCandidate], operator.add]
     decision_candidates_raw: Annotated[list[DecisionCandidate], operator.add]
     progress_updates_raw: Annotated[list[ProgressUpdate], operator.add]

@@ -1,0 +1,925 @@
+{
+  "meeting_id": "synth_005",
+  "n_turns": 149,
+  "total_chars": 48050,
+  "boundaries": [
+    17,
+    35,
+    51,
+    68,
+    84,
+    99,
+    115,
+    131
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng tiếp nhận phản ánh hiện trường qua ứng dụng di động",
+      "summary": "Ứng dụng Phú Hòa-S đã có 38.000 người dùng, tiếp nhận 4.100 phản ánh/tháng; 31% phản ánh bị chuyển sai đơn vị; thống nhất dùng phân loại tự động theo nội dung và vị trí có cán bộ điều phối duyệt, quy định thời hạn xử lý theo nhóm lĩnh vực.",
+      "turn_range": [
+        0,
+        17
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000017"
+      ],
+      "chars": 6986,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Tích hợp tổng đài 1022 vào hệ thống xử lý phản ánh",
+      "summary": "Tổng đài 1022 tiếp nhận 2.600 cuộc gọi/tháng nhưng điện thoại viên phải nhập lại thủ công vào hệ thống; thống nhất tích hợp tổng đài IP, tự tạo phiếu, ghi âm gắn vào phản ánh, chuyển giọng nói thành văn bản cho điện thoại viên sửa; đề xuất dùng tổng đài ảo trả lời tự động bị gạt.",
+      "turn_range": [
+        17,
+        35
+      ],
+      "turn_ids": [
+        "TURN_000018",
+        "TURN_000035"
+      ],
+      "chars": 5766,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng giám sát giao thông bằng camera AI",
+      "summary": "120 camera giao thông đã kết nối, nhận diện biển số đạt 94% ban ngày nhưng 71% ban đêm; thống nhất bổ sung đèn hồng ngoại cho 40 camera nút giao trọng điểm, chỉ dùng kết quả AI làm căn cứ phạt nguội sau khi cán bộ CSGT xác nhận.",
+      "turn_range": [
+        35,
+        51
+      ],
+      "turn_ids": [
+        "TURN_000036",
+        "TURN_000051"
+      ],
+      "chars": 5355,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xây dựng chức năng giám sát an ninh trật tự bằng camera",
+      "summary": "85 camera an ninh tại nơi công cộng kết nối IOC; chức năng nhận diện khuôn mặt bị tạm dừng chờ khung pháp lý; thống nhất chỉ dùng phát hiện tụ tập đông người, đánh nhau và bỏ quên vật thể, dữ liệu camera an ninh lưu riêng tại Công an tỉnh.",
+      "turn_range": [
+        51,
+        68
+      ],
+      "turn_ids": [
+        "TURN_000052",
+        "TURN_000068"
+      ],
+      "chars": 5485,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Xây dựng bảng điều khiển chỉ số kinh tế - xã hội cho lãnh đạo tỉnh",
+      "summary": "Bảng điều khiển có 64 chỉ số nhưng 40% chỉ số phải nhập tay, dữ liệu trễ 1-2 tháng; thống nhất giảm còn 32 chỉ số cốt lõi, ưu tiên kết nối tự động với hệ thống thuế, kho bạc, dịch vụ công, mỗi chỉ số có đơn vị chịu trách nhiệm cập nhật.",
+      "turn_range": [
+        68,
+        84
+      ],
+      "turn_ids": [
+        "TURN_000069",
+        "TURN_000084"
+      ],
+      "chars": 5315,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Xây dựng chức năng bản đồ số quy hoạch đô thị",
+      "summary": "Đã số hóa 41 đồ án quy hoạch phân khu và chi tiết lên bản đồ số; 7 đồ án có sai lệch ranh giới giữa bản vẽ và quyết định phê duyệt; thống nhất chỉ công khai các đồ án đã được Sở Xây dựng xác nhận, kèm cảnh báo thông tin chỉ có giá trị tham khảo.",
+      "turn_range": [
+        84,
+        99
+      ],
+      "turn_ids": [
+        "TURN_000085",
+        "TURN_000099"
+      ],
+      "chars": 4526,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Xây dựng chức năng bản đồ hạ tầng kỹ thuật ngầm",
+      "summary": "Đã số hóa 380 km cáp viễn thông và 210 km ống cấp nước, nhưng thiếu dữ liệu cao độ và nhiều tuyến cáp ngầm không có hồ sơ hoàn công; thống nhất yêu cầu các doanh nghiệp cung cấp dữ liệu theo chuẩn trước 31/12, bản đồ hạ tầng ngầm chỉ phân quyền cho cơ quan nhà nước và chủ sở hữu công trình.",
+      "turn_range": [
+        99,
+        115
+      ],
+      "turn_ids": [
+        "TURN_000100",
+        "TURN_000115"
+      ],
+      "chars": 5128,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Rà soát an toàn thông tin hệ thống IOC trước khi nghiệm thu",
+      "summary": "Đánh giá cấp độ 3 phát hiện 3 lỗ hổng cao, 11 trung bình; tài khoản quản trị dùng chung và chưa có xác thực hai yếu tố; thống nhất khắc phục toàn bộ lỗ hổng cao trước 15/12, bật xác thực hai yếu tố, kết nối với SOC của tỉnh; đề xuất thuê dịch vụ kiểm thử xâm nhập quốc tế bị gạt.",
+      "turn_range": [
+        115,
+        131
+      ],
+      "turn_ids": [
+        "TURN_000116",
+        "TURN_000131"
+      ],
+      "chars": 4556,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Thống nhất kế hoạch nghiệm thu giai đoạn 1 và vận hành chính thức IOC",
+      "summary": "Thống nhất vận hành thử 30 ngày từ 15/12, nghiệm thu giai đoạn 1 cuối tháng 1, khai trương IOC trước Tết; chuyển giao vận hành cho Trung tâm Chuyển đổi số tỉnh, đào tạo 12 cán bộ điều phối; đề xuất lùi khai trương sang sau Tết bị gạt.",
+      "turn_range": [
+        131,
+        149
+      ],
+      "turn_ids": [
+        "TURN_000132",
+        "TURN_000149"
+      ],
+      "chars": 4933,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Đưa mô hình gợi ý đơn vị xử lý phản ánh lên môi trường chính thức kèm màn hình duyệt",
+      "deadline": "hai tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Cấu hình 3 nhóm thời hạn xử lý và ràng buộc ảnh sau xử lý",
+      "deadline": "sau khi Sở ban hành quy chế",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Trình UBND ban hành quy chế phân nhóm thời hạn xử lý phản ánh",
+      "deadline": "trong tháng này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm việc với Viễn thông tỉnh chuyển đổi đầu số 1022 sang tổng đài IP",
+      "deadline": "trong tháng 12",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "actor_aliases": [
+        "nhóm em"
+      ],
+      "task": "Làm chuyển giọng nói thành văn bản và gom nhóm phản ánh trùng",
+      "deadline": "cùng lúc với tổng đài",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "actor_aliases": [
+        "bọn em"
+      ],
+      "task": "Bổ sung từ điển khoảng 4.000 địa danh của tỉnh cho mô hình chuyển giọng nói thành văn bản",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Trung tâm giám sát, điều hành đô thị thông minh",
+      "actor_aliases": [
+        "Trung tâm điều hành"
+      ],
+      "task": "Bố trí trực luân phiên ngoài giờ tổng đài 1022 trong mùa mưa bão",
+      "deadline": "trước mắt, mùa mưa bão",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Báo cáo UBND về vấn đề biên chế trực tổng đài 24/7",
+      "deadline": "sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Chọn đèn hồng ngoại bước sóng 940 nm để hạn chế lóa camera hành trình",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lập danh sách 40 camera và dự toán đèn hồng ngoại gửi Sở",
+      "deadline": "tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)",
+      "actor_aliases": [
+        "Công an tỉnh"
+      ],
+      "task": "Cử 3 cán bộ CSGT được phân quyền xác nhận vi phạm, gửi danh sách cho Sở",
+      "deadline": "trước ngày 20",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000146"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Chị Diễm (Kỹ sư an toàn thông tin)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Thiết kế phương án đường truyền riêng và mã hóa cho camera an ninh, gửi Công an tỉnh thẩm định",
+      "deadline": "trước cuối tháng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000067"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Chuyển 9 tài khoản xem camera an ninh của kỹ sư nhà thầu sang cấp quyền tạm thời có Công an phê duyệt",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000061"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Cấu hình lại ngưỡng phát hiện tụ tập theo khung giờ, vị trí, chạy thử và báo cáo",
+      "deadline": "hai tuần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000068"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Hoàn thiện danh mục 32 chỉ số cốt lõi kèm đơn vị chịu trách nhiệm và nguồn dữ liệu",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000083"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "phía nhà thầu"
+      ],
+      "task": "Thêm nhãn số tạm tính/chính thức, thời điểm và nguồn cho từng chỉ số trên bảng điều khiển",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000081"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Tham mưu văn bản UBND đề nghị Cục Thuế chia sẻ dữ liệu",
+      "deadline": "trong tháng này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Anh Lợi (Trưởng nhóm GIS)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Gửi danh sách 7 đồ án sai lệch kèm bản chồng lớp cho Sở Xây dựng",
+      "deadline": "trong tuần này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000098"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Có văn bản đề nghị Sở Xây dựng cử đầu mối xác nhận đồ án quy hoạch",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000099"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Anh Lợi (Trưởng nhóm GIS)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Soạn chuẩn dữ liệu và mẫu biểu cung cấp dữ liệu công trình ngầm",
+      "deadline": "trước ngày 25",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000114"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Anh Lợi (Trưởng nhóm GIS)",
+      "actor_aliases": [
+        "bọn em"
+      ],
+      "task": "Tích hợp bản đồ ngầm với quy trình cấp phép đào đường, tự cấp tài khoản tạm thời và trích lục tuyến cho nhà thầu",
+      "deadline": null,
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000108"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Tham mưu văn bản UBND yêu cầu các doanh nghiệp (kể cả Điện lực) cung cấp dữ liệu ngầm",
+      "deadline": "sau khi có chuẩn dữ liệu",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000115"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Chị Diễm (Kỹ sư an toàn thông tin)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Kiểm tra lại lỗi API, máy chủ thử nghiệm; làm việc với hãng nâng cấp phần mềm camera",
+      "deadline": "kiểm tra hôm nay, nâng cấp trước ngày 10 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000130"
+      ]
+    },
+    {
+      "id": "A24",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Báo cáo bằng văn bản về sự việc lộ kho mã nguồn và rà soát quy định quản lý mã nguồn",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000127"
+      ]
+    },
+    {
+      "id": "A25",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "phía nhà thầu"
+      ],
+      "task": "Tách tài khoản quản trị và bật xác thực hai yếu tố",
+      "deadline": "trong tuần này",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000131"
+      ]
+    },
+    {
+      "id": "A26",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Có văn bản đề nghị các sở cử 8 cán bộ điều phối",
+      "deadline": "trước ngày 10 tháng 12",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000146"
+      ]
+    },
+    {
+      "id": "A27",
+      "actor": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "actor_aliases": [
+        "nhà thầu"
+      ],
+      "task": "Lập kế hoạch đào tạo thực hành chi tiết gửi Sở",
+      "deadline": "tuần sau",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000147"
+      ]
+    },
+    {
+      "id": "A28",
+      "actor": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Phối hợp Công an tỉnh xây dựng, ban hành quy trình phối hợp xử lý sự việc giữa IOC và Công an",
+      "deadline": "trước khi vận hành thử",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000143"
+      ]
+    },
+    {
+      "id": "A29",
+      "actor": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)",
+      "actor_aliases": [
+        "Công an tỉnh"
+      ],
+      "task": "Cử cán bộ trực tại IOC trong thời gian vận hành thử",
+      "deadline": "từ ngày 15 tháng 12",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000148"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Mô hình gợi ý đơn vị xử lý phản ánh có cán bộ duyệt; thời hạn 3 nhóm 24 giờ/5 ngày/15 ngày; bắt buộc ảnh sau xử lý mới đóng; phản ánh an ninh trật tự và tố cáo cá nhân không công khai trên bản đồ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Thay tổng đài cũ bằng tổng đài IP tích hợp IOC, ghi âm có thông báo, lưu tối đa 12 tháng; chuyển giọng nói thành văn bản làm bản nháp; gom phản ánh trùng 24 giờ với bán kính cấu hình theo lĩnh vực (mặc định 200 m); cơ sở tri thức cho điện thoại viên do các sở duyệt",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Lắp đèn hồng ngoại cho 40 camera nút giao trọng điểm; cán bộ CSGT xác nhận vi phạm trước khi phạt nguội; loại trừ xe ưu tiên",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Bỏ nhận diện khuôn mặt khỏi IOC; chỉ phát hiện sự việc; dữ liệu camera an ninh lưu tại Công an tỉnh, IOC chỉ nhận cảnh báo và ảnh đã làm mờ; nhật ký xem, trích xuất lưu tối thiểu 2 năm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000066"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Giảm bảng điều khiển còn 32 chỉ số cốt lõi; kết nối tự động hệ thống thuế và đầu tư công; 8 chỉ số nhập tay có đơn vị chịu trách nhiệm; chi tiết đơn vị quá hạn chỉ hiện khi bấm vào; mỗi chỉ số có nguồn, thời điểm và nhãn tạm tính/chính thức",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000082"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Chỉ công khai đồ án quy hoạch đã được Sở Xây dựng xác nhận; ẩn 7 đồ án sai lệch; cập nhật 12 đồ án điều chỉnh; có cảnh báo giá trị tham khảo; chỉ xem, tra cứu, in phiếu từng thửa, không cho tải dữ liệu vector",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000097"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Yêu cầu doanh nghiệp cung cấp dữ liệu công trình ngầm có cao độ trước 31/12, không cung cấp thì không cấp phép đào đường; bản đồ ngầm không công khai, phân quyền 3 mức (cơ quan quản lý / chủ sở hữu trong 50 m / nhà thầu có giấy phép tạm thời), có nhật ký; cáp chuyên dùng quản lý riêng theo chế độ mật",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Khắc phục 3 lỗ hổng cao trước 15/12, 11 lỗ hổng trung bình trước nghiệm thu; bỏ tài khoản dùng chung, bật xác thực hai yếu tố; kết nối SOC tỉnh",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000129"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Vận hành thử 30 ngày từ 15/12; nghiệm thu giai đoạn 1 cuối tháng 1; khai trương trước Tết với phân hệ sẵn sàng; đào tạo thực hành 12 điều phối viên, 4 kỹ sư",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000145"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Tự động mở lại phản ánh khi người dân đánh giá không hài lòng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Tổng đài ảo trả lời tự động câu hỏi thủ tục bằng AI",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023",
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Kiểm định 90 camera do IOC lắp (Sở xem xét đưa vào dự toán năm sau, chưa hứa)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Mở chức năng truy vết phương tiện theo biển số trên toàn bộ camera (chờ quy chế phối hợp)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000064",
+        "TURN_000065"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Đưa tính năng dự báo thu ngân sách, giải ngân lên bảng điều khiển lãnh đạo",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000079"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "hedged_proposal",
+      "text": "Cấp chứng chỉ quy hoạch tự động trực tuyến từ bản đồ số",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000094"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "hedged_proposal",
+      "text": "Thời hạn bổ sung dữ liệu cho tuyến cáp nhánh cũ (chưa chốt)",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000112"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "rejected_task",
+      "text": "Chức năng nhận diện khuôn mặt trên camera an ninh trong IOC",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "hedged_proposal",
+      "text": "Thuê đơn vị kiểm thử xâm nhập quốc tế",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000120",
+        "TURN_000121"
+      ]
+    },
+    {
+      "id": "N10",
+      "type": "hedged_proposal",
+      "text": "Lùi khai trương IOC sang sau Tết",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000133",
+        "TURN_000134"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "point": "Ứng dụng có 38.000 người dùng, 4.100 phản ánh/tháng, 31% chuyển sai đơn vị lần đầu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "point": "Mô hình phân loại tự động đúng 86% so với 69% hiện nay, đề xuất gợi ý có người duyệt",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Thời hạn theo 3 nhóm; bắt buộc ảnh sau xử lý",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "point": "Phường nhận 58% phản ánh nhưng đúng hạn chỉ 64%; 1/3 phản ánh về phường phải chuyển tiếp doanh nghiệp công ích",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "point": "Chuyển giọng nói thành văn bản lỗi 12%, giọng miền núi 20%, sai nhiều ở địa danh",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "point": "Tổng đài 1022 2.600 cuộc/tháng, nhập lại thủ công 4 phút/phản ánh, nhỡ 18% cuộc gọi giờ cao điểm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "point": "120 camera giao thông; nhận diện biển số 94% ngày, 71% đêm; vượt đèn đỏ đúng 91%",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)",
+      "point": "Kết quả AI phải được CSGT xác nhận mới làm căn cứ phạt",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "point": "181/214 cảnh báo ùn tắc đúng; số liệu lưu lượng giúp chỉnh chu kỳ đèn 12 nút, giảm 25% thời gian xếp hàng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)",
+      "point": "90 camera chưa kiểm định chỉ dùng để phát hiện, không làm căn cứ phạt nguội",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+      "point": "85 camera an ninh phát hiện tụ tập, xô xát, vật bỏ quên; nhận diện khuôn mặt đang tạm dừng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)",
+      "point": "Dữ liệu camera an ninh phải lưu tại Công an tỉnh; đề nghị bỏ nhận diện khuôn mặt khỏi IOC",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+      "point": "Bảng điều khiển 64 chỉ số, 40% nhập tay, trễ 1-2 tháng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Lãnh đạo chỉ cần khoảng 30 chỉ số cốt lõi chính xác, cập nhật",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000071"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Anh Lợi (Trưởng nhóm GIS)",
+      "point": "Số hóa 41 đồ án quy hoạch; 7 đồ án lệch ranh giới tới 15 m; 12 đồ án chưa cập nhật điều chỉnh",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000086"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Anh Lợi (Trưởng nhóm GIS)",
+      "point": "Số hóa 380 km cáp viễn thông, 210 km ống nước, 95 km cống; thiếu cao độ và hồ sơ hoàn công",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000101"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Doanh nghiệp phải cung cấp dữ liệu ngầm trước 31/12, không thì không cấp phép đào đường",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000102"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Chị Diễm (Kỹ sư an toàn thông tin)",
+      "point": "3 lỗ hổng cao, 11 trung bình; tài khoản quản trị dùng chung, chưa có xác thực hai yếu tố",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000117"
+      ]
+    },
+    {
+      "id": "K19",
+      "speaker": "Chị Diễm (Kỹ sư an toàn thông tin)",
+      "point": "Lỗ hổng phần mềm camera điểm 9,8, cần nâng cấp dừng hệ thống 2 tiếng ban đêm",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000123"
+      ]
+    },
+    {
+      "id": "K20",
+      "speaker": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "point": "Rủi ro tiến độ: chuyển đầu số 1022, kết nối Cục Thuế, kết quả kiểm tra lại ATTT",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000138"
+      ]
+    },
+    {
+      "id": "K21",
+      "speaker": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Tiêu chí nghiệm thu: đúng hạn trên 80%, hoạt động liên tục trên 99,5%, không còn lỗ hổng cao, cán bộ tự vận hành",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000143"
+      ]
+    },
+    {
+      "id": "K22",
+      "speaker": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+      "point": "Đề xuất vận hành thử 30 ngày từ 15/12, nghiệm thu cuối tháng 1, khai trương trước Tết",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000132"
+      ]
+    },
+    {
+      "id": "K23",
+      "speaker": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+      "point": "Khai trương trước Tết là cam kết; 8/12 cán bộ điều phối điều động từ các sở, cần đào tạo thực hành",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000135"
+      ]
+    }
+  ],
+  "speakers": {
+    "SO": "Đ/c Hải (Phó Giám đốc Sở Khoa học và Công nghệ)",
+    "PM": "Anh Quý (Giám đốc dự án phía nhà thầu)",
+    "BA": "Chị Phượng (Trưởng nhóm phân tích nghiệp vụ)",
+    "AI": "Anh Kha (Trưởng nhóm AI và thị giác máy tính)",
+    "GIS": "Anh Lợi (Trưởng nhóm GIS)",
+    "SEC": "Chị Diễm (Kỹ sư an toàn thông tin)",
+    "CA": "Đ/c Thiếu tá Bình (Phòng Tham mưu Công an tỉnh)"
+  },
+  "tags": [
+    "long",
+    "similar_adjacent_topics"
+  ]
+}

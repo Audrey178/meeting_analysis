@@ -1,0 +1,376 @@
+{
+  "meeting_id": "synth_014",
+  "n_turns": 58,
+  "total_chars": 17395,
+  "boundaries": [
+    16,
+    33,
+    46
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng nộp hồ sơ tuyển sinh đầu cấp trực tuyến",
+      "summary": "Chức năng nộp hồ sơ tuyển sinh lớp 1 và lớp 6 đã xong luồng chính; Sở yêu cầu bổ sung xác thực cư trú qua cơ sở dữ liệu dân cư thay cho upload sổ hộ khẩu; thống nhất tích hợp VNeID qua trục liên thông của tỉnh, đề xuất cho phụ huynh chọn nhiều nguyện vọng chưa được chấp nhận.",
+      "turn_range": [
+        0,
+        16
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000016"
+      ],
+      "chars": 6000,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng tra cứu và cấp bản sao văn bằng, chứng chỉ trực tuyến",
+      "summary": "Chức năng tra cứu văn bằng đã có dữ liệu số hóa từ năm 2010; dữ liệu trước 2010 còn thiếu và sai lệch; thống nhất thu phí qua cổng thanh toán quốc gia, trả bản sao điện tử có ký số, chỉ số hóa bổ sung theo yêu cầu thay vì số hóa toàn bộ.",
+      "turn_range": [
+        16,
+        33
+      ],
+      "turn_ids": [
+        "TURN_000017",
+        "TURN_000033"
+      ],
+      "chars": 5020,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát hạ tầng và bảo mật trước đợt cao điểm tuyển sinh",
+      "summary": "Rà soát năng lực máy chủ tại trung tâm dữ liệu tỉnh và kết quả đánh giá bảo mật; thống nhất nâng giới hạn kết nối kho lưu trữ, bật tường lửa ứng dụng web, diễn tập chịu tải trước ngày 1/6; đề xuất chuyển lên đám mây thương mại chưa được chấp nhận.",
+      "turn_range": [
+        33,
+        46
+      ],
+      "turn_ids": [
+        "TURN_000034",
+        "TURN_000046"
+      ],
+      "chars": 3866,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Thống nhất kế hoạch tháng tới và mốc mở cổng tuyển sinh",
+      "summary": "Thống nhất mốc nghiệm thu nội bộ 25/5, mở cổng tuyển sinh thử nghiệm tại thành phố từ 1/6 và toàn tỉnh từ 10/6; tập huấn cán bộ trường; đề xuất mở cổng sớm một tuần chưa được chấp nhận.",
+      "turn_range": [
+        46,
+        58
+      ],
+      "turn_ids": [
+        "TURN_000047",
+        "TURN_000058"
+      ],
+      "chars": 2509,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đức (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "anh Đức",
+        "em"
+      ],
+      "task": "Chuẩn bị công văn và hồ sơ kỹ thuật xin cấp quyền khai thác dữ liệu dân cư qua trục LGSP",
+      "deadline": "thứ Tư tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Gọi trưởng phòng Giáo dục Lạc Sơn và Kim Bôi yêu cầu gửi bảng tuyến",
+      "deadline": "trước ngày 15 tháng này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đức (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa lỗi báo trùng hồ sơ trẻ sinh đôi, bỏ kiểm tra theo số điện thoại",
+      "deadline": "trong sprint này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đức (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "anh Đức",
+        "em"
+      ],
+      "task": "Chuyển thanh toán phí sang cổng thanh toán quốc gia",
+      "deadline": "trước ngày 30",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Chị Nga (Trưởng phòng Quản lý chất lượng)",
+      "actor_aliases": [
+        "chị Nga",
+        "phòng Quản lý chất lượng"
+      ],
+      "task": "Làm thủ tục đăng ký chứng thư số tổ chức với Ban Cơ yếu để ký bản sao điện tử",
+      "deadline": "trong tháng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Hằng (Kiểm thử)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lập danh sách 0,8% bản ghi văn bằng sai lệch kèm ảnh scan gửi phòng Quản lý chất lượng",
+      "deadline": "tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Hải (Hạ tầng)",
+      "actor_aliases": [
+        "anh Hải",
+        "em",
+        "Người nói không xác định"
+      ],
+      "task": "Tăng lên 10 máy ảo, nâng giới hạn kết nối kho lưu trữ lên 3.000, đăng ký tường lửa ứng dụng web",
+      "deadline": "trước ngày 20 tháng 5",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Hằng (Kiểm thử)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Chủ trì diễn tập chịu tải kịch bản 12.000 người đồng thời",
+      "deadline": "thứ Bảy 25 tháng 5",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đức (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa 2 lỗ hổng trung bình còn lại và đề nghị Sở TT&TT kiểm tra lại",
+      "deadline": "trong tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Khải (Phân tích nghiệp vụ)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm kịch bản, quay video hướng dẫn nộp hồ sơ và tài liệu hỏi đáp gửi Sở duyệt",
+      "deadline": "trước ngày 25 tháng 5",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Chị Thu (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lên lịch tập huấn và gửi giấy mời qua Sở",
+      "deadline": "trước ngày 15 tháng 5",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Bỏ yêu cầu tải lên sổ hộ khẩu/giấy xác nhận cư trú, thay bằng tra cứu cư trú tự động qua trục LGSP; địa chỉ không khớp tuyến thì cán bộ trường xác nhận tay; VNeID làm sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Tra cứu văn bằng không đăng nhập bắt buộc số hiệu văn bằng và mã chống máy; thanh toán qua cổng thanh toán quốc gia; trả bản sao điện tử ký số là mặc định; dữ liệu trước 2010 số hóa theo yêu cầu, thời hạn 5 ngày làm việc",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Nâng cấp hạ tầng (10 máy ảo, 3.000 kết nối), đăng ký tường lửa ứng dụng web, diễn tập chịu tải trước 1/6, chỉ mở cổng khi có xác nhận bảo mật của Sở TT&TT",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Nghiệm thu nội bộ 25/5; mở cổng thử nghiệm tại thành phố từ 1/6, toàn tỉnh từ 10/6; tập huấn cả cán bộ trường và Phòng Giáo dục huyện",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Cho phụ huynh chọn nhiều nguyện vọng trường (Sở nghiên cứu thêm, có thể thí điểm năm sau)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011",
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Chuyển hệ thống lên đám mây thương mại có tự động co giãn",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000041",
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Mở cổng thử nghiệm sớm từ 25/5",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000049",
+        "TURN_000050"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Khải (Phân tích nghiệp vụ)",
+      "point": "Đã xong luồng nộp hồ sơ lớp 1 và lớp 6; còn 2 huyện chưa gửi bảng tuyến",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "point": "Không được bắt phụ huynh nộp sổ hộ khẩu/giấy xác nhận cư trú, phải khai thác CSDL dân cư",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Hằng (Kiểm thử)",
+      "point": "Kiểm thử tải 5.000 người: 3% lỗi hết thời gian khi tải ảnh; lỗi báo trùng hồ sơ trẻ sinh đôi",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Khải (Phân tích nghiệp vụ)",
+      "point": "Dữ liệu văn bằng số hóa từ 2010; sổ gốc 1990-2009 còn giấy, 0,8% bản ghi sai lệch; số hóa toàn bộ tốn khoảng 2,7 tỷ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "point": "Tra cứu không đăng nhập phải bắt buộc số hiệu văn bằng; bản sao điện tử ký số là mặc định",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Hải (Hạ tầng)",
+      "point": "Cao điểm khoảng 12.000 người đồng thời; cần tăng lên 10 máy ảo, nâng giới hạn kết nối lưu trữ lên 3.000, bật tường lửa ứng dụng web",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035",
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đức (Trưởng nhóm Backend)",
+      "point": "Đánh giá an toàn thông tin có 2 lỗ hổng cao (trong đó lộ hồ sơ giữa các trường, đã sửa) và 7 trung bình",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Thu (Quản lý dự án)",
+      "point": "Đề xuất mốc nghiệm thu 25/5, mở thử nghiệm 1/6 tại thành phố, toàn tỉnh 10/6",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Chị Thu (Quản lý dự án)",
+    "BA": "Anh Khải (Phân tích nghiệp vụ)",
+    "BE": "Đức (Trưởng nhóm Backend)",
+    "QA": "Hằng (Kiểm thử)",
+    "SO": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+    "UNK": "Người nói không xác định"
+  },
+  "tags": [
+    "unknown_speaker",
+    "hedged_proposal"
+  ]
+}

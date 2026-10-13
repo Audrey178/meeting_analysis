@@ -1,0 +1,1005 @@
+[
+  {
+    "meeting_id": "synth_001",
+    "title": "Họp rà soát dự án Hệ thống tiếp nhận và xử lý kiến nghị cử tri - giai đoạn 1",
+    "meeting_type": "software_project",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "pronoun_actor",
+      "dense_actions_closing",
+      "rejected_task",
+      "hedged_proposal"
+    ],
+    "n_items": 70,
+    "n_turns": 52,
+    "n_topics": 5,
+    "total_chars": 12549,
+    "topic_chars": [
+      2673,
+      3169,
+      2474,
+      2253,
+      1980
+    ],
+    "n_assignments": 7,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_002",
+    "title": "Họp Ban Thường vụ Tỉnh ủy cho ý kiến Đề án chuyển đổi số ngành y tế tỉnh Đông Hải",
+    "meeting_type": "gov",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "phase_structure",
+      "hedged_proposal"
+    ],
+    "n_items": 57,
+    "n_turns": 22,
+    "n_topics": 3,
+    "total_chars": 11488,
+    "topic_chars": [
+      4433,
+      4585,
+      2470
+    ],
+    "n_assignments": 3,
+    "n_decisions": 4,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_003",
+    "title": "Họp nội bộ dự án triển khai hệ thống quản lý kho WMS - Công ty logistics",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "asr_noise",
+      "pronoun_actor",
+      "diarized_labels"
+    ],
+    "n_items": 73,
+    "n_turns": 49,
+    "n_topics": 4,
+    "total_chars": 11521,
+    "topic_chars": [
+      4065,
+      2776,
+      2733,
+      1947
+    ],
+    "n_assignments": 11,
+    "n_decisions": 4,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_004",
+    "title": "Giao ban tuần Trung tâm Phục vụ hành chính công tỉnh Bắc Hà",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "tags": [
+      "aside_interruption",
+      "unassigned_task"
+    ],
+    "n_items": 126,
+    "n_turns": 58,
+    "n_topics": 5,
+    "total_chars": 25111,
+    "topic_chars": [
+      6273,
+      5213,
+      4717,
+      4481,
+      4427
+    ],
+    "n_assignments": 13,
+    "n_decisions": 5,
+    "n_negatives": 5
+  },
+  {
+    "meeting_id": "synth_005",
+    "title": "Họp rà soát tiến độ dự án Trung tâm giám sát, điều hành đô thị thông minh (IOC) tỉnh Phú Hòa",
+    "meeting_type": "software_project",
+    "length_bucket": "L",
+    "tags": [
+      "long",
+      "similar_adjacent_topics"
+    ],
+    "n_items": 251,
+    "n_turns": 149,
+    "n_topics": 9,
+    "total_chars": 48050,
+    "topic_chars": [
+      6986,
+      5766,
+      5355,
+      5485,
+      5315,
+      4526,
+      5128,
+      4556,
+      4933
+    ],
+    "n_assignments": 29,
+    "n_decisions": 9,
+    "n_negatives": 10
+  },
+  {
+    "meeting_id": "synth_006",
+    "title": "UBND thành phố Hòa An họp cho ý kiến Đề án cải tạo, xây dựng lại chợ Bến Đò",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "tags": [
+      "phase_structure",
+      "superseded_decision"
+    ],
+    "n_items": 84,
+    "n_turns": 33,
+    "n_topics": 4,
+    "total_chars": 17766,
+    "topic_chars": [
+      4734,
+      4675,
+      5185,
+      3172
+    ],
+    "n_assignments": 6,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_007",
+    "title": "Họp sản phẩm nền tảng luyện thi IELTS - chức năng chấm tự động",
+    "meeting_type": "software_project",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "similar_adjacent_topics"
+    ],
+    "n_items": 37,
+    "n_turns": 26,
+    "n_topics": 2,
+    "total_chars": 7169,
+    "topic_chars": [
+      3856,
+      3313
+    ],
+    "n_assignments": 7,
+    "n_decisions": 2,
+    "n_negatives": 1
+  },
+  {
+    "meeting_id": "synth_008",
+    "title": "Họp khẩn xử lý sự cố áp lực nước thấp khu vực phía Đông - Công ty cấp nước",
+    "meeting_type": "ops",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "single_topic"
+    ],
+    "n_items": 35,
+    "n_turns": 19,
+    "n_topics": 1,
+    "total_chars": 6674,
+    "topic_chars": [
+      6674
+    ],
+    "n_assignments": 7,
+    "n_decisions": 4,
+    "n_negatives": 1
+  },
+  {
+    "meeting_id": "synth_009",
+    "title": "Phiên họp UBND tỉnh Thanh Sơn thường kỳ tháng 11 - chuẩn bị nội dung trình kỳ họp cuối năm HĐND tỉnh",
+    "meeting_type": "gov",
+    "length_bucket": "L",
+    "tags": [
+      "long",
+      "topic_revisit"
+    ],
+    "n_items": 239,
+    "n_turns": 148,
+    "n_topics": 8,
+    "total_chars": 46888,
+    "topic_chars": [
+      6865,
+      5610,
+      6483,
+      5811,
+      5526,
+      5483,
+      5498,
+      5612
+    ],
+    "n_assignments": 23,
+    "n_decisions": 6,
+    "n_negatives": 7
+  },
+  {
+    "meeting_id": "synth_010",
+    "title": "Họp tiến độ dự án Hệ thống quản lý học tập LMS - Trường Đại học Kỹ thuật Miền Trung",
+    "meeting_type": "software_project",
+    "length_bucket": "M",
+    "tags": [
+      "topic_revisit",
+      "rejected_task"
+    ],
+    "n_items": 114,
+    "n_turns": 60,
+    "n_topics": 5,
+    "total_chars": 21455,
+    "topic_chars": [
+      5087,
+      4665,
+      4664,
+      3367,
+      3672
+    ],
+    "n_assignments": 17,
+    "n_decisions": 5,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_011",
+    "title": "Họp nội bộ công ty lữ hành Sao Việt - chuẩn bị mùa tour Tết",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "M",
+    "tags": [
+      "asr_noise",
+      "diarized_labels"
+    ],
+    "n_items": 98,
+    "n_turns": 49,
+    "n_topics": 4,
+    "total_chars": 16541,
+    "topic_chars": [
+      4839,
+      3956,
+      3652,
+      4094
+    ],
+    "n_assignments": 11,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_012",
+    "title": "Giao ban tháng Ban quản lý dự án đầu tư xây dựng huyện Kim Sơn",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "tags": [
+      "dense_actions_closing",
+      "deadline_variety"
+    ],
+    "n_items": 102,
+    "n_turns": 48,
+    "n_topics": 6,
+    "total_chars": 20451,
+    "topic_chars": [
+      4208,
+      3525,
+      3478,
+      3489,
+      3242,
+      2509
+    ],
+    "n_assignments": 14,
+    "n_decisions": 4,
+    "n_negatives": 1
+  },
+  {
+    "meeting_id": "synth_013",
+    "title": "Phiên thông tin tình hình kinh tế - xã hội 9 tháng và giải ngân đầu tư công tỉnh Nam Lĩnh",
+    "meeting_type": "gov",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "no_actions"
+    ],
+    "n_items": 36,
+    "n_turns": 13,
+    "n_topics": 2,
+    "total_chars": 7231,
+    "topic_chars": [
+      3682,
+      3549
+    ],
+    "n_assignments": 0,
+    "n_decisions": 0,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_014",
+    "title": "Họp rà soát tiến độ dự án Cổng dịch vụ công trực tuyến ngành giáo dục tỉnh Hòa Bình Tây",
+    "meeting_type": "software_project",
+    "length_bucket": "M",
+    "tags": [
+      "unknown_speaker",
+      "hedged_proposal"
+    ],
+    "n_items": 92,
+    "n_turns": 58,
+    "n_topics": 4,
+    "total_chars": 17395,
+    "topic_chars": [
+      6000,
+      5020,
+      3866,
+      2509
+    ],
+    "n_assignments": 11,
+    "n_decisions": 4,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_015",
+    "title": "Giao ban tháng 11 UBND huyện Yên Thủy với các phòng, ban, ngành và UBND các xã",
+    "meeting_type": "ops",
+    "length_bucket": "L",
+    "tags": [
+      "long",
+      "many_speakers"
+    ],
+    "n_items": 238,
+    "n_turns": 170,
+    "n_topics": 10,
+    "total_chars": 47655,
+    "topic_chars": [
+      5892,
+      4958,
+      4978,
+      4942,
+      4371,
+      4232,
+      4171,
+      4924,
+      4794,
+      4393
+    ],
+    "n_assignments": 27,
+    "n_decisions": 12,
+    "n_negatives": 9
+  },
+  {
+    "meeting_id": "synth_016",
+    "title": "Họp UBND huyện Tân Lạc cho ý kiến Đề án phát triển du lịch cộng đồng giai đoạn 2026-2030",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "tags": [
+      "aside_interruption",
+      "pronoun_actor",
+      "phase_structure"
+    ],
+    "n_items": 81,
+    "n_turns": 48,
+    "n_topics": 5,
+    "total_chars": 15299,
+    "topic_chars": [
+      2262,
+      3672,
+      2609,
+      3559,
+      3197
+    ],
+    "n_assignments": 6,
+    "n_decisions": 6,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_017",
+    "title": "Họp rà soát sprint dự án Hệ thống thông tin bệnh viện đa khoa tỉnh Quảng Bắc",
+    "meeting_type": "software_project",
+    "length_bucket": "M",
+    "tags": [
+      "many_topics_medium"
+    ],
+    "n_items": 77,
+    "n_turns": 54,
+    "n_topics": 6,
+    "total_chars": 13586,
+    "topic_chars": [
+      2631,
+      2668,
+      2098,
+      1989,
+      2486,
+      1714
+    ],
+    "n_assignments": 14,
+    "n_decisions": 6,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_018",
+    "title": "Họp giao ban đầu vụ Công ty chế biến và xuất khẩu cà phê Krông Ana",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "L",
+    "tags": [
+      "asr_noise",
+      "long",
+      "diarized_labels"
+    ],
+    "n_items": 275,
+    "n_turns": 197,
+    "n_topics": 8,
+    "total_chars": 45382,
+    "topic_chars": [
+      6571,
+      5681,
+      5784,
+      5777,
+      5459,
+      6406,
+      4895,
+      4809
+    ],
+    "n_assignments": 28,
+    "n_decisions": 16,
+    "n_negatives": 10
+  },
+  {
+    "meeting_id": "synth_019",
+    "title": "Họp tuần khối vận hành chuỗi cà phê Mộc Trà",
+    "meeting_type": "ops",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "superseded_decision",
+      "unassigned_task"
+    ],
+    "n_items": 35,
+    "n_turns": 26,
+    "n_topics": 3,
+    "total_chars": 6182,
+    "topic_chars": [
+      2754,
+      1973,
+      1455
+    ],
+    "n_assignments": 4,
+    "n_decisions": 3,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_020",
+    "title": "Họp UBND tỉnh Đông Hải cho ý kiến Đề án phát triển hệ thống cảng cạn và trung tâm logistics giai đoạn 2026-2035",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "tags": [
+      "long_monologue_turns",
+      "phase_structure"
+    ],
+    "n_items": 71,
+    "n_turns": 21,
+    "n_topics": 4,
+    "total_chars": 14116,
+    "topic_chars": [
+      3986,
+      3691,
+      2975,
+      3464
+    ],
+    "n_assignments": 5,
+    "n_decisions": 7,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_021",
+    "title": "Họp rà soát dự án ứng dụng ngân hàng số cho hệ thống Quỹ tín dụng nhân dân liên kết miền Trung",
+    "meeting_type": "software_project",
+    "length_bucket": "L",
+    "tags": [
+      "topic_revisit",
+      "dense_actions_closing",
+      "long"
+    ],
+    "n_items": 244,
+    "n_turns": 171,
+    "n_topics": 8,
+    "total_chars": 44031,
+    "topic_chars": [
+      6334,
+      5906,
+      6604,
+      5198,
+      5874,
+      5078,
+      5538,
+      3499
+    ],
+    "n_assignments": 33,
+    "n_decisions": 15,
+    "n_negatives": 7
+  },
+  {
+    "meeting_id": "synth_022",
+    "title": "Giao ban tuần Công ty Cổ phần Cấp nước Hà Thanh",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "tags": [
+      "pronoun_actor",
+      "rejected_task"
+    ],
+    "n_items": 67,
+    "n_turns": 48,
+    "n_topics": 5,
+    "total_chars": 11427,
+    "topic_chars": [
+      2948,
+      2531,
+      2218,
+      1818,
+      1912
+    ],
+    "n_assignments": 12,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_023",
+    "title": "Họp Thường trực HĐND tỉnh Lâm Viên cho ý kiến dự thảo Nghị quyết chính sách thu hút giáo viên về công tác tại vùng khó khăn",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "tags": [
+      "phase_structure",
+      "hedged_proposal"
+    ],
+    "n_items": 57,
+    "n_turns": 27,
+    "n_topics": 4,
+    "total_chars": 10894,
+    "topic_chars": [
+      2755,
+      2645,
+      3006,
+      2488
+    ],
+    "n_assignments": 4,
+    "n_decisions": 6,
+    "n_negatives": 3
+  },
+  {
+    "meeting_id": "synth_024",
+    "title": "Họp sprint dự án phần mềm quản lý bán hàng đa kênh chuỗi cửa hàng mẹ và bé Bông Sen",
+    "meeting_type": "software_project",
+    "length_bucket": "M",
+    "tags": [
+      "asr_noise",
+      "similar_adjacent_topics"
+    ],
+    "n_items": 64,
+    "n_turns": 49,
+    "n_topics": 5,
+    "total_chars": 11030,
+    "topic_chars": [
+      2661,
+      2206,
+      2081,
+      1982,
+      2100
+    ],
+    "n_assignments": 10,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_025",
+    "title": "Giao ban tháng Phòng Cảnh sát giao thông Công an tỉnh Bình Sơn - phiên thông tin tình hình",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "tags": [
+      "no_actions",
+      "aside_interruption"
+    ],
+    "n_items": 60,
+    "n_turns": 35,
+    "n_topics": 4,
+    "total_chars": 11396,
+    "topic_chars": [
+      3692,
+      2208,
+      2947,
+      2549
+    ],
+    "n_assignments": 0,
+    "n_decisions": 0,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_026",
+    "title": "Họp ban chỉ huy công trường dự án chung cư An Phú Residence - tuần 38",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "M",
+    "tags": [
+      "superseded_decision",
+      "asr_noise",
+      "diarized_labels"
+    ],
+    "n_items": 78,
+    "n_turns": 61,
+    "n_topics": 5,
+    "total_chars": 11921,
+    "topic_chars": [
+      2334,
+      3047,
+      2059,
+      2094,
+      2387
+    ],
+    "n_assignments": 12,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_027",
+    "title": "Hội nghị tổng kết công tác phòng chống thiên tai và tìm kiếm cứu nạn năm 2026 tỉnh Quảng Hà",
+    "meeting_type": "gov",
+    "length_bucket": "L",
+    "tags": [
+      "long",
+      "many_speakers",
+      "unassigned_task"
+    ],
+    "n_items": 212,
+    "n_turns": 133,
+    "n_topics": 9,
+    "total_chars": 43716,
+    "topic_chars": [
+      4690,
+      4772,
+      5061,
+      5085,
+      4394,
+      5125,
+      5384,
+      4726,
+      4479
+    ],
+    "n_assignments": 17,
+    "n_decisions": 5,
+    "n_negatives": 25
+  },
+  {
+    "meeting_id": "synth_028",
+    "title": "Họp sprint nhóm ứng dụng ví điện tử - chuẩn bị phát hành bản 2.4",
+    "meeting_type": "software_project",
+    "length_bucket": "S",
+    "tags": [
+      "short_meeting",
+      "pronoun_actor"
+    ],
+    "n_items": 33,
+    "n_turns": 24,
+    "n_topics": 3,
+    "total_chars": 5287,
+    "topic_chars": [
+      2025,
+      1776,
+      1486
+    ],
+    "n_assignments": 10,
+    "n_decisions": 3,
+    "n_negatives": 0
+  },
+  {
+    "meeting_id": "synth_029",
+    "title": "Giao ban tuần Công ty TNHH MTV Xe buýt Thành phố Cửu Long",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "tags": [
+      "unknown_speaker",
+      "deadline_variety"
+    ],
+    "n_items": 75,
+    "n_turns": 57,
+    "n_topics": 5,
+    "total_chars": 11983,
+    "topic_chars": [
+      2717,
+      2186,
+      2470,
+      2200,
+      2410
+    ],
+    "n_assignments": 13,
+    "n_decisions": 5,
+    "n_negatives": 1
+  },
+  {
+    "meeting_id": "synth_030",
+    "title": "Phiên họp thường kỳ tháng 11 UBND thành phố Hải Châu",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "tags": [
+      "topic_revisit",
+      "superseded_decision"
+    ],
+    "n_items": 69,
+    "n_turns": 44,
+    "n_topics": 6,
+    "total_chars": 12832,
+    "topic_chars": [
+      2218,
+      2330,
+      2085,
+      2000,
+      1522,
+      2677
+    ],
+    "n_assignments": 8,
+    "n_decisions": 5,
+    "n_negatives": 5
+  },
+  {
+    "meeting_id": "synth_031",
+    "title": "Họp UBND tỉnh Long Hà cho ý kiến Đề án bảo tồn, tu bổ và phát huy giá trị Khu di tích Thành cổ Long Hà giai đoạn 2027-2035",
+    "meeting_type": "gov",
+    "length_bucket": "L",
+    "split": "heldout",
+    "tags": [
+      "long",
+      "superseded_decision",
+      "unassigned_task",
+      "hedged_proposal"
+    ],
+    "n_items": 224,
+    "n_turns": 133,
+    "n_topics": 9,
+    "total_chars": 44766,
+    "topic_chars": [
+      5367,
+      5074,
+      5292,
+      4996,
+      4735,
+      4916,
+      5038,
+      4763,
+      4585
+    ],
+    "n_assignments": 18,
+    "n_decisions": 12,
+    "n_negatives": 9
+  },
+  {
+    "meeting_id": "synth_032",
+    "title": "Họp rà soát dự án Hệ thống quản lý bãi đỗ xe thông minh thành phố Vĩnh Phước - chuẩn bị thí điểm",
+    "meeting_type": "software_project",
+    "length_bucket": "L",
+    "split": "heldout",
+    "tags": [
+      "long",
+      "topic_revisit",
+      "pronoun_actor"
+    ],
+    "n_items": 249,
+    "n_turns": 204,
+    "n_topics": 9,
+    "total_chars": 44700,
+    "topic_chars": [
+      5162,
+      5015,
+      4805,
+      5230,
+      4828,
+      4880,
+      5190,
+      4900,
+      4690
+    ],
+    "n_assignments": 25,
+    "n_decisions": 14,
+    "n_negatives": 7
+  },
+  {
+    "meeting_id": "synth_033",
+    "title": "Họp điều hành tháng 10 Công ty cổ phần may xuất khẩu Hòa Thịnh",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "L",
+    "split": "heldout",
+    "tags": [
+      "long",
+      "asr_noise",
+      "diarized_labels",
+      "rejected_task",
+      "hedged_proposal"
+    ],
+    "n_items": 269,
+    "n_turns": 204,
+    "n_topics": 9,
+    "total_chars": 44772,
+    "topic_chars": [
+      5191,
+      5166,
+      5014,
+      4911,
+      4930,
+      4934,
+      4808,
+      5065,
+      4753
+    ],
+    "n_assignments": 20,
+    "n_decisions": 10,
+    "n_negatives": 9
+  },
+  {
+    "meeting_id": "synth_034",
+    "title": "UBND tỉnh Thạch Bình họp cho ý kiến Đề án thu gom, xử lý chất thải rắn sinh hoạt giai đoạn 2026-2030",
+    "meeting_type": "gov",
+    "length_bucket": "M",
+    "split": "heldout",
+    "tags": [
+      "phase_structure",
+      "hedged_proposal"
+    ],
+    "n_items": 80,
+    "n_turns": 45,
+    "n_topics": 5,
+    "total_chars": 15329,
+    "topic_chars": [
+      2960,
+      3285,
+      3159,
+      2421,
+      3504
+    ],
+    "n_assignments": 7,
+    "n_decisions": 6,
+    "n_negatives": 4
+  },
+  {
+    "meeting_id": "synth_035",
+    "title": "Giao ban tuần Nhà máy may Bàu Sen - Công ty Cổ phần May xuất khẩu Phước Thịnh",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "split": "heldout",
+    "tags": [
+      "dense_actions_closing",
+      "deadline_variety",
+      "superseded_decision"
+    ],
+    "n_items": 80,
+    "n_turns": 62,
+    "n_topics": 5,
+    "total_chars": 13471,
+    "topic_chars": [
+      2767,
+      2658,
+      2863,
+      2122,
+      3061
+    ],
+    "n_assignments": 14,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_036",
+    "title": "Họp sprint 9 dự án phần mềm quản lý chuỗi nhà thuốc Thiện Tâm",
+    "meeting_type": "software_project",
+    "length_bucket": "M",
+    "split": "heldout",
+    "tags": [
+      "similar_adjacent_topics",
+      "rejected_task",
+      "hedged_proposal"
+    ],
+    "n_items": 77,
+    "n_turns": 57,
+    "n_topics": 5,
+    "total_chars": 14267,
+    "topic_chars": [
+      3347,
+      3529,
+      2655,
+      2694,
+      2042
+    ],
+    "n_assignments": 12,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_037",
+    "title": "Họp ban tổ chức giải chạy bán marathon Đồi Thông Xanh 2026 - còn 6 tuần",
+    "meeting_type": "stt_diarized",
+    "length_bucket": "M",
+    "split": "heldout",
+    "tags": [
+      "asr_noise",
+      "diarized_labels",
+      "pronoun_actor",
+      "superseded_decision",
+      "hedged_proposal"
+    ],
+    "n_items": 79,
+    "n_turns": 65,
+    "n_topics": 5,
+    "total_chars": 12172,
+    "topic_chars": [
+      2715,
+      2546,
+      2636,
+      2273,
+      2002
+    ],
+    "n_assignments": 11,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_038",
+    "title": "Giao ban tuần Nhà máy điện rác Gò Sim",
+    "meeting_type": "ops",
+    "length_bucket": "M",
+    "split": "heldout",
+    "tags": [
+      "aside_interruption",
+      "unknown_speaker",
+      "hedged_proposal"
+    ],
+    "n_items": 86,
+    "n_turns": 60,
+    "n_topics": 5,
+    "total_chars": 14703,
+    "topic_chars": [
+      3542,
+      3068,
+      2990,
+      2715,
+      2388
+    ],
+    "n_assignments": 10,
+    "n_decisions": 5,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_039",
+    "title": "Ban Văn hóa - Xã hội HĐND tỉnh Phú Lam nghe báo cáo tình hình thực hiện chính sách bảo hiểm xã hội, bảo hiểm y tế 9 tháng năm 2026",
+    "meeting_type": "gov",
+    "length_bucket": "S",
+    "split": "heldout",
+    "tags": [
+      "short_meeting",
+      "no_actions"
+    ],
+    "n_items": 37,
+    "n_turns": 17,
+    "n_topics": 2,
+    "total_chars": 7924,
+    "topic_chars": [
+      3854,
+      4070
+    ],
+    "n_assignments": 0,
+    "n_decisions": 0,
+    "n_negatives": 2
+  },
+  {
+    "meeting_id": "synth_040",
+    "title": "Họp nhanh nhóm phát triển ứng dụng đặt suất ăn ca Bếp Xanh - chuẩn bị bản 1.6",
+    "meeting_type": "software_project",
+    "length_bucket": "S",
+    "split": "heldout",
+    "tags": [
+      "short_meeting",
+      "hedged_proposal",
+      "unassigned_task"
+    ],
+    "n_items": 48,
+    "n_turns": 44,
+    "n_topics": 3,
+    "total_chars": 7198,
+    "topic_chars": [
+      2786,
+      2377,
+      2035
+    ],
+    "n_assignments": 7,
+    "n_decisions": 3,
+    "n_negatives": 4
+  }
+]

@@ -1,0 +1,418 @@
+{
+  "meeting_id": "synth_004",
+  "n_turns": 58,
+  "total_chars": 25111,
+  "boundaries": [
+    11,
+    23,
+    34,
+    46
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Đánh giá kết quả tiếp nhận và giải quyết hồ sơ trong tuần",
+      "summary": "Trung tâm tiếp nhận 4.312 hồ sơ, tỷ lệ đúng hạn 94,6%, trễ hạn tập trung ở lĩnh vực đất đai do chờ Văn phòng đăng ký đất đai; thống nhất gửi văn bản đôn đốc và công khai danh sách hồ sơ trễ hạn theo từng sở.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 6273,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Khắc phục sự cố hệ thống một cửa điện tử và kết nối Cổng dịch vụ công quốc gia",
+      "summary": "Hệ thống một cửa điện tử bị gián đoạn 5 tiếng ngày thứ tư do lỗi chứng thư số khi đồng bộ với Cổng dịch vụ công quốc gia, 320 hồ sơ không đồng bộ được; thống nhất lập quy trình theo dõi hạn chứng thư, đồng bộ bù và đề nghị nhà cung cấp cam kết thời gian khắc phục.",
+      "turn_range": [
+        11,
+        23
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000023"
+      ],
+      "chars": 5213,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Triển khai thanh toán trực tuyến phí, lệ phí thủ tục hành chính",
+      "summary": "Tỷ lệ thanh toán trực tuyến mới đạt 23% do người dân chưa quen và một số thủ tục chưa cấu hình mức phí; thống nhất rà soát cấu hình phí cho 100% thủ tục có thu phí và bố trí nhân viên hướng dẫn tại quầy.",
+      "turn_range": [
+        23,
+        34
+      ],
+      "turn_ids": [
+        "TURN_000024",
+        "TURN_000034"
+      ],
+      "chars": 4717,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xử lý phản ánh, kiến nghị của người dân và đánh giá mức độ hài lòng",
+      "summary": "Tuần qua có 19 phản ánh, chủ yếu về thời gian chờ đợi và thái độ của một cán bộ quầy tư pháp; chỉ số hài lòng đạt 91%; thống nhất làm việc với cơ quan cử cán bộ, điều chỉnh hệ thống xếp hàng tự động và khảo sát bằng máy tính bảng tại quầy.",
+      "turn_range": [
+        34,
+        46
+      ],
+      "turn_ids": [
+        "TURN_000035",
+        "TURN_000046"
+      ],
+      "chars": 4481,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Bố trí nhân sự và lịch trực phục vụ cao điểm cuối năm và dịp Tết",
+      "summary": "Thống nhất làm thêm sáng thứ bảy trong tháng 12 và tháng 1, trực Tết theo lịch luân phiên, mỗi phòng cử cán bộ trực; phòng Hành chính tổng hợp lập lịch và dự toán chế độ làm thêm giờ.",
+      "turn_range": [
+        46,
+        58
+      ],
+      "turn_ids": [
+        "TURN_000047",
+        "TURN_000058"
+      ],
+      "chars": 4427,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Khánh (Trưởng phòng Tiếp nhận và trả kết quả)",
+      "actor_aliases": [
+        "đồng chí Khánh"
+      ],
+      "task": "Dự thảo văn bản đôn đốc Sở Nông nghiệp và Môi trường về hồ sơ đất đai trễ hạn và việc ban hành văn bản xin lỗi",
+      "deadline": "trình ký trong ngày mai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Tùng (Tổ trưởng Tổ giám sát)",
+      "actor_aliases": [
+        "đồng chí Tùng"
+      ],
+      "task": "Tổng hợp danh sách hồ sơ trễ hạn theo sở, ngành, phối hợp phòng CNTT công khai trên trang thông tin điện tử hằng tuần",
+      "deadline": "bắt đầu thứ Hai tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+      "actor_aliases": [
+        "phòng Công nghệ thông tin"
+      ],
+      "task": "Xử lý xong 24 hồ sơ lỗi đồng bộ còn lại",
+      "deadline": "trong hôm nay",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+      "actor_aliases": [
+        "phòng Công nghệ thông tin"
+      ],
+      "task": "Lập danh mục chứng thư số và tài khoản kết nối kèm hạn, người phụ trách, cài cảnh báo trước 30 ngày",
+      "deadline": "trước thứ Sáu tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022",
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+      "actor_aliases": [
+        "phòng Công nghệ thông tin"
+      ],
+      "task": "Chủ trì phối hợp phòng Hành chính tổng hợp ký phụ lục hợp đồng với nhà cung cấp về thời gian phản hồi (≤1 giờ) và khắc phục (≤4 giờ) sự cố nghiêm trọng",
+      "deadline": "trong tháng này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Thu (Phó Giám đốc Trung tâm)",
+      "actor_aliases": [
+        "đồng chí Thu"
+      ],
+      "task": "Gửi văn bản đề nghị các sở cung cấp mức phí cho 117 thủ tục còn thiếu (và đề nghị cử thêm cán bộ khung giờ cao điểm)",
+      "deadline": "các sở gửi trước ngày 5 tháng sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032",
+        "TURN_000033",
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Nga (Trưởng phòng Hành chính tổng hợp)",
+      "actor_aliases": [
+        "đồng chí Nga"
+      ],
+      "task": "Liên hệ Đoàn Thanh niên các sở bố trí hỗ trợ viên hướng dẫn thanh toán tại sảnh",
+      "deadline": "từ tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032",
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Minh (Giám đốc Trung tâm)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Ký văn bản gửi các sở yêu cầu cán bộ quầy không thu tiền mặt với thủ tục đã có thanh toán trực tuyến",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đ/c Khánh (Trưởng phòng Tiếp nhận và trả kết quả)",
+      "actor_aliases": [
+        "đồng chí Khánh"
+      ],
+      "task": "Dự thảo văn bản gửi Sở Tư pháp về cán bộ quầy tư pháp có thái độ không đúng mực",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+      "actor_aliases": [
+        "đồng chí Duy"
+      ],
+      "task": "Điều chỉnh hệ thống xếp hàng tự động mở thêm quầy dự phòng đất đai, tư pháp sáng thứ Hai và chiều thứ Sáu",
+      "deadline": "tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000041",
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Nga (Trưởng phòng Hành chính tổng hợp)",
+      "actor_aliases": [
+        "chị Nga"
+      ],
+      "task": "Cho người sửa vòi nước nhà vệ sinh khu B",
+      "deadline": "trong hôm nay",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000043",
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Đ/c Nga (Trưởng phòng Hành chính tổng hợp)",
+      "actor_aliases": [
+        "đồng chí Nga"
+      ],
+      "task": "Hoàn chỉnh phương án cao điểm, lịch trực Tết, dự toán làm thêm giờ; làm văn bản đề nghị các sở cử cán bộ làm sáng thứ Bảy",
+      "deadline": "trước ngày 30 tháng này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055",
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Đ/c Thu (Phó Giám đốc Trung tâm)",
+      "actor_aliases": [
+        "đồng chí Thu"
+      ],
+      "task": "Chỉ đạo thông báo rộng rãi lịch làm việc sáng thứ Bảy cho người dân",
+      "deadline": "từ 1/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055",
+        "TURN_000057"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Gửi văn bản đôn đốc lần 3 Sở Nông nghiệp và Môi trường; công khai danh sách hồ sơ trễ hạn và tỷ lệ đúng hạn theo sở, ngành hằng tuần trên trang thông tin điện tử",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Lập danh mục và cảnh báo hạn chứng thư số trước 30 ngày; ký phụ lục hợp đồng quy định thời gian phản hồi/khắc phục sự cố với nhà cung cấp",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Cấu hình mức phí cho 100% thủ tục có thu phí trong tháng; bố trí hỗ trợ viên hướng dẫn thanh toán tại sảnh; cán bộ quầy không thu tiền mặt với thủ tục đã có thanh toán trực tuyến",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Gửi văn bản đề nghị Sở Tư pháp chấn chỉnh cán bộ quầy tư pháp; điều chỉnh hệ thống xếp hàng theo khung giờ cao điểm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Tiếp nhận sáng thứ Bảy trong tháng 12 và tháng 1 cho 4 lĩnh vực; trực Tết luân phiên; CNTT trực 24/24 và cài thông báo tự động",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "unassigned_task",
+      "text": "Sửa mái che khu chờ ngoài sân (cần dự toán kinh phí)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Lập nhóm Zalo khẩn cấp báo sự cố trong 15 phút và banner thông báo sự cố trên trang",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Cho quầy đăng ký kinh doanh/quầy dự phòng nhận hồ sơ đất đai giờ cao điểm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Dùng máy tính bảng dự phòng để khảo sát nguyên nhân không hài lòng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Kéo dài giờ tiếp nhận buổi chiều đến 17h30 và không cho cán bộ quầy nghỉ phép 15/12-15/1",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Khánh (Trưởng phòng Tiếp nhận và trả kết quả)",
+      "point": "Tiếp nhận 4.312 hồ sơ, đúng hạn 94,6%, 168/215 hồ sơ trễ thuộc lĩnh vực đất đai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+      "point": "Gián đoạn 5 giờ do chứng thư số kết nối hết hạn, 320 hồ sơ không đồng bộ, đã đồng bộ bù 296",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Thu (Phó Giám đốc Trung tâm)",
+      "point": "Thanh toán trực tuyến mới đạt 23%, 117/318 thủ tục có phí chưa cấu hình mức phí",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Tùng (Tổ trưởng Tổ giám sát)",
+      "point": "19 phản ánh, 11 về thời gian chờ; hài lòng 91%, giảm 2 điểm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Nga (Trưởng phòng Hành chính tổng hợp)",
+      "point": "Phương án làm sáng thứ Bảy tháng 12-1, trực Tết luân phiên; dự toán làm thêm giờ khoảng 205 triệu (ban đầu 180 triệu)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048",
+        "TURN_000054"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Đ/c Minh (Giám đốc Trung tâm)",
+    "PGD": "Đ/c Thu (Phó Giám đốc Trung tâm)",
+    "TN": "Đ/c Khánh (Trưởng phòng Tiếp nhận và trả kết quả)",
+    "CNTT": "Đ/c Duy (Trưởng phòng Công nghệ thông tin)",
+    "HC": "Đ/c Nga (Trưởng phòng Hành chính tổng hợp)",
+    "GS": "Đ/c Tùng (Tổ trưởng Tổ giám sát)"
+  },
+  "tags": [
+    "aside_interruption",
+    "unassigned_task"
+  ]
+}

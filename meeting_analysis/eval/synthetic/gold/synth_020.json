@@ -1,0 +1,283 @@
+{
+  "meeting_id": "synth_020",
+  "n_turns": 21,
+  "total_chars": 14116,
+  "boundaries": [
+    3,
+    7,
+    14
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án phát triển hệ thống cảng cạn và trung tâm logistics tỉnh Đông Hải",
+      "summary": "Sở Xây dựng trình bày đề án: hiện trạng chi phí logistics chiếm 21% giá trị hàng hóa, đề xuất 2 cảng cạn và 3 trung tâm logistics với tổng vốn khoảng 9.400 tỷ đồng, chủ yếu xã hội hóa, phân 2 giai đoạn.",
+      "turn_range": [
+        0,
+        3
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000003"
+      ],
+      "chars": 3986,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Thẩm định nguồn vốn và tính khả thi tài chính của Đề án cảng cạn và logistics",
+      "summary": "Sở Tài chính thẩm định: vốn ngân sách 1.150 tỷ chưa có trong kế hoạch trung hạn, cơ chế hỗ trợ lãi suất chưa có căn cứ pháp lý; đề nghị chỉ giữ 650 tỷ cho hạ tầng kết nối giai đoạn 1, bỏ hỗ trợ lãi suất, chuyển cảng cạn Tây sang dạng dự trữ quỹ đất.",
+      "turn_range": [
+        3,
+        7
+      ],
+      "turn_ids": [
+        "TURN_000004",
+        "TURN_000007"
+      ],
+      "chars": 3691,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Góp ý của các sở về đất đai, môi trường và nguồn hàng nông sản cho trung tâm logistics",
+      "summary": "Sở Nông nghiệp và Môi trường nêu vị trí trung tâm nông sản Sông Cầu nằm trong vùng ngập lụt, đề nghị dời sang xã Hòa Tân; Sở Công Thương đề nghị gắn trung tâm thương mại điện tử với bưu chính và bổ sung chỉ tiêu kho lạnh theo từng giai đoạn; đề xuất thành lập công ty logistics nhà nước của tỉnh bị gạt.",
+      "turn_range": [
+        7,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000008",
+        "TURN_000014"
+      ],
+      "chars": 2975,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Kết luận của Phó Chủ tịch Thường trực về Đề án cảng cạn và logistics",
+      "summary": "Kết luận: thông qua về chủ trương; vốn ngân sách giai đoạn 1 tối đa 650 tỷ; bỏ hỗ trợ lãi suất; cảng cạn Tây giữ trong quy hoạch, chuyển giai đoạn 2; dời trung tâm nông sản sang Hòa Tân; kho lạnh giai đoạn 1 tối thiểu 20.000 tấn; Sở Xây dựng hoàn thiện trước 25/11.",
+      "turn_range": [
+        14,
+        21
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000021"
+      ],
+      "chars": 3464,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Vinh (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Chủ trì tiếp thu ý kiến, hoàn chỉnh dự thảo đề án và tờ trình, gửi Văn phòng",
+      "deadline": "trước ngày 25 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015",
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Lực (Giám đốc Sở Công Thương)",
+      "actor_aliases": [
+        "Sở Công Thương"
+      ],
+      "task": "Xây dựng phần chuyển đổi số trong logistics (sàn giao dịch vận tải), gửi Sở Xây dựng",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015",
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Kiên (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường",
+        "tôi"
+      ],
+      "task": "Phối hợp UBND huyện Sông Cầu rà soát, xác nhận hiện trạng và quy hoạch đất khu Hòa Tân, gửi văn bản cho Sở Xây dựng",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015",
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Hà (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Rà soát, đề xuất danh mục hạ tầng kết nối trong phạm vi 650 tỷ để bổ sung kế hoạch đầu tư công trung hạn",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Thoa (Phó Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Dự thảo thông báo kết luận trình ký",
+      "deadline": "trong tuần này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015",
+        "TURN_000020"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thống nhất chủ trương và nội dung cơ bản của đề án",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Vốn ngân sách giai đoạn 2026-2030 tối đa 650 tỷ cho hạ tầng kết nối thiết yếu; nhánh đường sắt kiến nghị Trung ương hoặc nhà đầu tư làm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Bỏ hỗ trợ lãi suất kho lạnh; đưa tiêu chí dành công suất kho lạnh cho hợp tác xã giá ưu đãi vào hồ sơ lựa chọn nhà đầu tư",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Cảng cạn Tây giữ trong đề án, chuyển giai đoạn 2, kêu gọi khi đạt khoảng 100.000 TEU, không cam kết vốn ngân sách",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Dời trung tâm logistics nông sản từ vùng ngập Sông Cầu sang xã Hòa Tân",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Kho lạnh giai đoạn 1 tối thiểu 20.000 tấn; mục tiêu chi phí logistics theo điểm phần trăm; dải cây xanh cách ly tối thiểu 50 m ở cảng cạn Bắc",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Không lập bộ máy mới: Tổ công tác liên ngành do Phó Chủ tịch Thường trực làm tổ trưởng, Sở Xây dựng thường trực; không thành lập doanh nghiệp logistics nhà nước",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Thành lập công ty logistics nhà nước của tỉnh để đầu tư trung tâm nông sản",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000011",
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "superseded_decision",
+      "text": "Hỗ trợ một phần lãi suất vay đầu tư kho lạnh (có trong dự thảo, bị bỏ)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "superseded_decision",
+      "text": "Vốn ngân sách 1.150 tỷ cho hạ tầng logistics (dự thảo, bị giảm còn 650 tỷ)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Vinh (Giám đốc Sở Xây dựng)",
+      "point": "Chi phí logistics 21% giá trị hàng hóa; đề xuất 2 cảng cạn, 3 trung tâm logistics, tổng vốn khoảng 9.400 tỷ (ngân sách 1.150 tỷ)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Hà (Giám đốc Sở Tài chính)",
+      "point": "Ngân sách chỉ bố trí được khoảng 650 tỷ; hỗ trợ lãi suất chưa có căn cứ pháp lý; cảng cạn Tây chưa hấp dẫn nhà đầu tư",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Kiên (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Trung tâm nông sản Sông Cầu nằm trong vùng ngập, đề nghị dời sang Hòa Tân; cảng cạn Bắc cần dải cách ly",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Lực (Giám đốc Sở Công Thương)",
+      "point": "Gắn trung tâm thương mại điện tử với bưu chính; kho lạnh giai đoạn 1 ít nhất 20.000 tấn; bổ sung sàn giao dịch vận tải",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Quang (Phó Chủ tịch Thường trực UBND tỉnh)",
+    "GT": "Đ/c Vinh (Giám đốc Sở Xây dựng)",
+    "TC": "Đ/c Hà (Giám đốc Sở Tài chính)",
+    "CN": "Đ/c Lực (Giám đốc Sở Công Thương)",
+    "NN": "Đ/c Kiên (Giám đốc Sở Nông nghiệp và Môi trường)",
+    "VP": "Đ/c Thoa (Phó Chánh Văn phòng UBND tỉnh)"
+  },
+  "tags": [
+    "long_monologue_turns",
+    "phase_structure"
+  ]
+}

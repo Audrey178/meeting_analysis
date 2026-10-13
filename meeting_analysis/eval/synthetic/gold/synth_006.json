@@ -1,0 +1,297 @@
+{
+  "meeting_id": "synth_006",
+  "n_turns": 33,
+  "total_chars": 17766,
+  "boundaries": [
+    6,
+    14,
+    22
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày Đề án cải tạo, xây dựng lại chợ Bến Đò",
+      "summary": "Phòng Quản lý đô thị trình bày hiện trạng chợ xuống cấp, không đảm bảo PCCC, hai phương án đầu tư (xã hội hóa 186 tỷ hoặc ngân sách 142 tỷ) và phương án chợ tạm trong 18 tháng thi công.",
+      "turn_range": [
+        0,
+        6
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000006"
+      ],
+      "chars": 4734,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Ý kiến của tiểu thương về phương án xây dựng lại chợ và bố trí chợ tạm",
+      "summary": "Đại diện tiểu thương đồng tình xây lại nhưng lo ngại giá thuê tăng mạnh nếu xã hội hóa, phản đối việc chuyển 110 hộ sang chợ khác và đề nghị ưu tiên hộ lâu năm; Ban quản lý chợ bổ sung số liệu thu phí và kinh nghiệm các chợ xã hội hóa.",
+      "turn_range": [
+        6,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000007",
+        "TURN_000014"
+      ],
+      "chars": 4675,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Góp ý của các phòng, ban về hình thức đầu tư, quy hoạch và phòng cháy chữa cháy cho dự án chợ Bến Đò",
+      "summary": "Chủ tịch tạm chốt chọn xã hội hóa; phòng Tài chính - Kế hoạch cho biết ngân sách có thể bố trí 142 tỷ trong 2 năm qua nguồn đấu giá đất; PCCC yêu cầu lối đi chợ tạm tối thiểu 2,5 mét và trụ nước chữa cháy; các ý kiến về tầng hầm và quản lý vận hành.",
+      "turn_range": [
+        14,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000022"
+      ],
+      "chars": 5185,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Kết luận của Chủ tịch UBND thành phố về Đề án chợ Bến Đò",
+      "summary": "Chủ tịch kết luận đổi sang phương án đầu tư công 142 tỷ, không làm tầng hầm; chợ tạm bố trí đủ cho toàn bộ hộ cố định với điều kiện PCCC; ưu tiên hộ lâu năm chọn vị trí; giao các phòng hoàn thiện hồ sơ trình HĐND.",
+      "turn_range": [
+        22,
+        33
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000033"
+      ],
+      "chars": 3172,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Kiệt (Trưởng phòng Quản lý đô thị)",
+      "actor_aliases": [
+        "phòng Quản lý đô thị"
+      ],
+      "task": "Hoàn thiện đề án theo phương án đầu tư công, lập hồ sơ đề xuất chủ trương đầu tư",
+      "deadline": "trình UBND trước 15/12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c My (Trưởng phòng Tài chính - Kế hoạch)",
+      "actor_aliases": [
+        "phòng Tài chính - Kế hoạch"
+      ],
+      "task": "Tham mưu bố trí vốn, đưa dự án vào danh mục đầu tư công trung hạn, đề xuất đẩy nhanh đấu giá đất khu Bắc Cầu",
+      "deadline": "báo cáo trong tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Hải (Trưởng Ban quản lý chợ Bến Đò)",
+      "actor_aliases": [
+        "Ban quản lý chợ"
+      ],
+      "task": "Phối hợp PCCC lập phương án chợ tạm chi tiết (sơ đồ điểm kinh doanh, lối thoát nạn, trụ nước)",
+      "deadline": "trước 30/11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000029",
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Thắng (Đội trưởng Đội Cảnh sát PCCC khu vực)",
+      "actor_aliases": [
+        "đội Cảnh sát phòng cháy chữa cháy"
+      ],
+      "task": "Phối hợp Ban quản lý chợ lập phương án chợ tạm đảm bảo PCCC",
+      "deadline": "trước 30/11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Hải (Trưởng Ban quản lý chợ Bến Đò)",
+      "actor_aliases": [
+        "Ban quản lý chợ"
+      ],
+      "task": "Phối hợp Ban liên lạc tiểu thương tổ chức hội nghị thông tin và lấy ý kiến tiểu thương về chợ tạm, bố trí lại, mức phí",
+      "deadline": "trong tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000030",
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Bà Liên (Đại diện Ban liên lạc tiểu thương chợ Bến Đò)",
+      "actor_aliases": [
+        "bà Liên",
+        "Ban liên lạc"
+      ],
+      "task": "Vận động bà con, phối hợp thông tin và lấy ý kiến tiểu thương",
+      "deadline": "trong tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000030",
+        "TURN_000031"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thống nhất chủ trương cải tạo, xây dựng lại chợ Bến Đò",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Đầu tư công bằng ngân sách thành phố khoảng 142 tỷ, không làm tầng hầm, vốn trung hạn và đấu giá đất Bắc Cầu, bố trí 2027-2028; không xã hội hóa",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Chợ tạm tại trường tiểu học cũ bố trí đủ 612 hộ cố định (điểm kinh doanh ~3 m2), đảm bảo điều kiện PCCC, miễn phí trong thời gian chợ tạm",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Thiết kế khu bốc dỡ hàng riêng phía sau chợ, khung giờ bốc dỡ 3h-6h sáng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Bố trí lại toàn bộ hộ đang kinh doanh, ưu tiên hộ lâu năm chọn vị trí, vị trí tương đương, bốc thăm công khai; phí dự kiến ~650 nghìn/tháng, lấy ý kiến trước khi ban hành",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Chọn phương án xã hội hóa có khống chế giá thuê",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Dành khu bán cho khoảng 138-150 hộ kinh doanh không cố định tại chợ tạm (chưa quyết)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000011",
+        "TURN_000026"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Kiệt (Trưởng phòng Quản lý đô thị)",
+      "point": "Chợ xây 1994, kết cấu mái nguy hiểm cấp C, không đảm bảo PCCC; 612 hộ cố định",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Kiệt (Trưởng phòng Quản lý đô thị)",
+      "point": "Hai phương án: xã hội hóa 186 tỷ (khai thác 30 năm) hoặc ngân sách 142 tỷ; chợ tạm 500 điểm, thi công 18 tháng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Bà Liên (Đại diện Ban liên lạc tiểu thương chợ Bến Đò)",
+      "point": "Lo giá thuê xã hội hóa gấp 4-5 lần như chợ Tân Thành",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Bà Liên (Đại diện Ban liên lạc tiểu thương chợ Bến Đò)",
+      "point": "Phản đối chuyển 110 hộ sang chợ khác; đề nghị ưu tiên hộ lâu năm, vị trí tương đương, được tham gia",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c My (Trưởng phòng Tài chính - Kế hoạch)",
+      "point": "Ngân sách bố trí được 142 tỷ trong 2027-2028 từ vốn trung hạn và đấu giá đất Bắc Cầu; xã hội hóa cần đồng thuận >50% hộ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Kiệt (Trưởng phòng Quản lý đô thị)",
+      "point": "Đề xuất khu bốc dỡ hàng riêng phía sau chợ, khung giờ 3h-6h, tổ chức lại giao thông do không làm tầng hầm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Thắng (Đội trưởng Đội Cảnh sát PCCC khu vực)",
+      "point": "Tầng hầm để xe rủi ro cháy cao; chợ tạm cần lối đi chính ≥2,5 m, 4 lối ra, trụ nước trong 150 m",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Toàn (Chủ tịch UBND thành phố)",
+    "CT2": "Đ/c Hương (Phó Chủ tịch UBND thành phố)",
+    "QLDT": "Đ/c Kiệt (Trưởng phòng Quản lý đô thị)",
+    "TCKH": "Đ/c My (Trưởng phòng Tài chính - Kế hoạch)",
+    "BQL": "Đ/c Hải (Trưởng Ban quản lý chợ Bến Đò)",
+    "TT": "Bà Liên (Đại diện Ban liên lạc tiểu thương chợ Bến Đò)",
+    "PCCC": "Đ/c Thắng (Đội trưởng Đội Cảnh sát PCCC khu vực)"
+  },
+  "tags": [
+    "phase_structure",
+    "superseded_decision"
+  ]
+}

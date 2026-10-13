@@ -132,7 +132,12 @@ inputs/
 agentic/
 outputs/
 private_test/
-eval/
+# eval/: mã benchmark + bộ test tổng hợp có phiên bản; kết quả chạy (results/) thì không
+meeting_analysis/eval/*
+!meeting_analysis/eval/*.py
+!meeting_analysis/eval/judge_rubric.md
+!meeting_analysis/eval/bench/
+!meeting_analysis/eval/synthetic/
 model/
 model_vn2/
 model_vn3/

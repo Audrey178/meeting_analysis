@@ -1,0 +1,1091 @@
+{
+  "transcript": "Rồi, mình bắt đầu họp sprint 9 nhé. Hôm nay có năm nội dung: liên thông đơn thuốc điện tử, hai cái cảnh báo, ứng dụng tích điểm trên Zalo, và cuối cùng là kế hoạch chạy thí điểm. Chị Uyên với anh Tín bên chuỗi cũng dự, có gì góp ý trực tiếp luôn nhé. Lộc nói phần liên thông đơn thuốc trước. Dạ. Phần liên thông với hệ thống đơn thuốc quốc gia thì em đã kết nối xong trên môi trường thử nghiệm. Luồng hiện tại là dược sĩ quét mã trên đơn thuốc của bệnh viện, hệ thống gọi sang cổng quốc gia lấy chi tiết đơn về, tự điền danh sách thuốc, liều dùng, số lượng vào màn hình bán. Bán xong thì mình phải gửi lại thông tin bán thuốc theo đơn lên cổng. Em chạy thử với khoảng 1.300 đơn mà chị Uyên gửi từ hai nhà thuốc thì có khoảng 3% đơn tra không ra, chủ yếu là đơn của các phòng khám tư nhỏ, họ chưa đăng ký mã cơ sở trên cổng hoặc in mã sai. Còn một vấn đề nữa là cổng quốc gia hay chậm vào giờ cao điểm buổi sáng, có lúc 15 đến 20 giây mới trả kết quả, dược sĩ đứng chờ thì khách sốt ruột. Cái 3% không tra được đó thì ngoài thực tế bên anh vẫn phải bán. Đơn giấy hợp lệ, có chữ ký bác sĩ, có dấu phòng khám thì mình bán bình thường, chỉ là phải lưu đơn lại. Nên phần mềm không được chặn cứng. Đúng rồi, chặn là nhân viên quay lại ghi sổ tay ngay, mấy tháng nay chị mới bỏ được sổ tay đấy. Bên chị chỉ cần là có lưu vết đầy đủ, lúc thanh tra Sở Y tế xuống thì xuất ra được trong vài phút. Dạ, nên em đề xuất khi tra không được thì cho dược sĩ nhập tay mã đơn, chụp ảnh đơn giấy đính kèm, đơn đó đánh dấu trạng thái chờ đối chiếu. Còn phần gửi dữ liệu bán lên cổng thì không gửi từng đơn ngay lúc bán mà gom lại, cứ 30 phút gửi một lần, lỗi thì tự gửi lại, cuối ngày 23 giờ chạy một lượt rà những đơn chưa gửi được. Như vậy quầy bán không phải chờ cổng. Chị hỏi thêm là trường hợp dược sĩ bán thuốc thay thế, ví dụ đơn ghi biệt dược này nhưng nhà thuốc hết, bán thuốc cùng hoạt chất của hãng khác, thì gửi lên cổng thế nào? Lúc chị test thì hệ thống báo lệch đơn và không cho lưu hóa đơn. Cái đó theo quy định thì được thay thế cùng hoạt chất, cùng hàm lượng, cùng dạng bào chế, nhưng dược sĩ phải ghi rõ và người mua phải đồng ý. Phần mềm cần cho chọn thuốc thay thế từ danh sách cùng hoạt chất, bắt ghi lý do, và trên dữ liệu gửi cổng thì ghi cả thuốc trong đơn lẫn thuốc thực bán. Còn nhóm thuốc kê đơn nào bắt buộc phải quét đơn thì anh sẽ rà lại theo danh mục mới của Bộ, vì danh mục vừa sửa đổi. Ok, chốt phần này: không chặn cứng khi tra không được, cho nhập tay mã đơn, chụp ảnh đơn giấy, đánh dấu chờ đối chiếu. Dữ liệu bán gửi lên cổng theo lô 30 phút, có tự gửi lại và rà lúc 23 giờ. Cho phép bán thuốc thay thế cùng hoạt chất, cùng hàm lượng, bắt ghi lý do. Lộc làm phía backend phần nhập tay, gửi theo lô và thuốc thay thế, thứ Năm tuần sau xong nhé. Ngân làm màn hình chụp ảnh đơn với chọn thuốc thay thế. Dạ, màn hình chụp đơn với chọn thuốc thay thế em làm song song với Lộc, thứ Năm tuần sau ghép luôn. Dạ được anh, thứ Năm tuần sau em xong. Danh mục thuốc kê đơn bắt buộc quét đơn thì anh gửi file cho Lộc trước ngày 20. Sang hai cái cảnh báo. Cái thứ nhất là cảnh báo cận hạn sử dụng. Ngân trình bày nhé. Dạ. Cảnh báo cận hạn hiện tại thì hệ thống quét theo từng lô thuốc trong kho của mỗi nhà thuốc, lô nào còn dưới 90 ngày là hiện chấm đỏ trên màn hình tồn kho và gửi thông báo vào ứng dụng cho quản lý nhà thuốc. Nhưng chị Uyên có gửi số liệu là tháng 9 cả chuỗi vẫn phải hủy khoảng 47 triệu tiền thuốc hết hạn, nhiều nhất là siro trẻ em với thuốc nhỏ mắt. Em xem lại thì có mấy lý do. Thứ nhất là 90 ngày thì với thuốc bán chậm đã quá muộn, không kịp xoay. Thứ hai là thông báo gửi mỗi ngày một lần, danh sách dài cả trăm dòng, quản lý đọc không hết nên bỏ qua. Thứ ba là ở quầy bán, nhân viên lấy lô nào cũng được, hay lấy hộp mới nhập ở ngoài cùng, lô cũ nằm trong cùng thì cứ thế hết hạn. Chị đi kiểm tra mấy nhà thuốc thì đúng như vậy. Có nhà thuốc số 7 chị thấy ba hộp thuốc nhỏ mắt hết hạn từ tháng trước vẫn nằm trên kệ, may là khách chưa mua. Cái này mà Sở kiểm tra là phạt nặng, có thể bị đình chỉ. Về nguyên tắc chuyên môn thì phải xuất theo hạn dùng, hết hạn trước thì xuất trước. Phần mềm nên ép chuyện này ở quầy chứ đừng để nhân viên tự nhớ. Dạ phía backend em làm được, khi quét mã vạch sản phẩm thì hệ thống tự gợi ý lô có hạn gần nhất mà còn bán được. Nếu nhân viên chọn lô khác thì bắt nhập lý do. Còn cảnh báo thì em đề xuất chia ba mức, 180 ngày, 90 ngày và 30 ngày. Dưới 30 ngày thì khóa không cho bán nữa với các thuốc dùng dài ngày, vì khách mua về uống cả tháng thì hết hạn giữa chừng. Khóa dưới 30 ngày thì anh đồng ý với thuốc dùng dài ngày như thuốc huyết áp, tiểu đường. Còn thuốc dùng ngắn ngày như kháng sinh 5 đến 7 ngày thì vẫn bán được, đừng khóa hết, không thì lại hủy nhiều hơn. Chị có ý thế này, các em xem được không. Hay là thuốc nào còn dưới 60 ngày thì hệ thống tự giảm giá 20% để đẩy hàng, đỡ phải hủy. Chị thấy mấy chuỗi khác cũng làm. Cái đó chị phải cẩn thận. Thuốc kê đơn thì không được khuyến mại, giảm giá kiểu đó là vướng quy định về khuyến mại thuốc. Thực phẩm chức năng, mỹ phẩm thì có thể được. Chị nên hỏi bên pháp chế trước đã. Ừ thôi, cái giảm giá thì để chị hỏi pháp chế đã, chưa làm vội. Các em cứ làm phần cảnh báo trước. Vậy chốt cảnh báo cận hạn: ba mức 180, 90 và 30 ngày. Mức 180 ngày thì gom thành bản tóm tắt gửi mỗi tuần một lần, mức 90 và 30 ngày thì gửi hằng ngày, sắp theo giá trị tiền giảm dần để quản lý đọc phần quan trọng trước. Ở quầy bán bắt buộc gợi ý lô có hạn gần nhất, chọn lô khác phải ghi lý do. Thuốc dùng dài ngày còn dưới 30 ngày thì khóa bán. Danh sách nhóm thuốc dùng dài ngày thì anh Tín bổ sung luôn vào file danh mục gửi Lộc. Lộc làm phần gợi ý lô và khóa bán, Ngân làm lại màn hình cảnh báo và bản tóm tắt, chị Phượng test bằng dữ liệu lô thật. Chị xin dữ liệu lô thật của hai nhà thuốc từ chị Uyên, dựng bộ test xong trước thứ Tư tuần sau. Dạ em làm màn hình ba mức với bản tóm tắt, cuối sprint này xong. Phần gợi ý lô với khóa bán thì em làm sau phần liên thông, chắc sang đầu sprint 10 anh ạ. Ừ, danh sách thuốc dùng dài ngày anh gộp chung một file với danh mục kê đơn, vẫn trước ngày 20. Rồi, sang cái cảnh báo thứ hai. Lộc nói nhé. Dạ. Cảnh báo tồn kho dưới định mức thì hiện tại mỗi mã thuốc ở mỗi nhà thuốc có một con số định mức tối thiểu, đang để mặc định 20 hộp cho tất cả, quản lý nhà thuốc muốn thì tự sửa. Tồn xuống dưới định mức thì hệ thống bắn cảnh báo. Vấn đề là con số 20 cố định nên thuốc bán chạy như hạ sốt, siro ho thì báo quá muộn, hai ngày là hết sạch; còn thuốc bán chậm thì báo liên tục mà không cần nhập, quản lý bị nhiễu, tuần trước có nhà thuốc nhận hơn 300 cảnh báo trong một ngày. Thống kê tháng 9 thì có 212 lượt khách hỏi mua mà hết hàng, chủ yếu là thuốc hạ sốt và siro ho do đầu mùa cúm. Hết hàng thì chị tiếc nhất, khách sang nhà thuốc bên cạnh là mất luôn khách đó. Chị muốn hệ thống không chỉ báo mà còn đề xuất luôn cần nhập bao nhiêu, quản lý chỉ việc duyệt rồi gửi về kho tổng. Dạ, em đề xuất định mức tính động: lấy lượng bán trung bình mỗi ngày trong 28 ngày gần nhất, nhân với số ngày từ lúc đặt đến lúc kho tổng giao hàng, cộng thêm số ngày dự phòng. Kho tổng giao cho nhà thuốc hiện là 2 ngày, dự phòng em để 5 ngày. Tồn xuống dưới con số đó thì tạo đề xuất nhập với số lượng đủ bán 14 ngày. Có một điểm liên quan đến cái cảnh báo cận hạn lúc nãy: lô nào đã bị khóa bán vì còn dưới 30 ngày thì không được tính vào tồn khả dụng, không thì hệ thống tưởng còn hàng mà thực ra không bán được. Chị thêm là mùa dịch thì bán trung bình 28 ngày sẽ đuổi không kịp. Năm ngoái đầu mùa cúm, lượng bán thuốc hạ sốt tăng gấp ba chỉ trong một tuần. Thế thì cho chị một hệ số mùa vụ, bên chị chỉnh tay theo từng nhóm thuốc, ví dụ từ tháng 10 đến tháng 12 thì nhóm hạ sốt nhân 1,5. Phía giao diện thì em nghĩ không nên gửi cảnh báo từng mã nữa, mà gom thành một phiếu đề xuất nhập mỗi sáng, quản lý mở ra sửa số lượng rồi bấm duyệt một lần. Ok, chốt cảnh báo tồn kho: bỏ định mức cố định 20 hộp, chuyển sang định mức động theo bán trung bình 28 ngày nhân thời gian giao 2 ngày cộng 5 ngày dự phòng, có hệ số mùa vụ theo nhóm thuốc do bên vận hành cấu hình. Tồn khả dụng không tính lô đã khóa bán. Không gửi cảnh báo từng mã nữa, mỗi sáng 7 giờ tạo một phiếu đề xuất nhập đủ bán 14 ngày cho quản lý nhà thuốc duyệt. Công thức định mức động với tạo phiếu đề xuất em làm luôn, xong trước ngày 30 tháng 10. Bảng hệ số mùa vụ cho từng nhóm thuốc thì chị gửi Lộc thứ Hai tuần sau. Tiếp theo là ứng dụng tích điểm cho khách. Ngân nói. Dạ, phần này theo yêu cầu ban đầu là làm trên Zalo Mini App, khách quét mã QR ở quầy là vào được, không phải cài gì. Chức năng gồm tích điểm theo hóa đơn, xem lịch sử mua thuốc, và nhắc lịch uống thuốc. Em đã làm xong phần đăng nhập bằng số điện thoại Zalo, xem điểm và lịch sử mua. Còn tích điểm thì đang chờ API của Lộc. Vướng nhất là nhắc lịch uống thuốc, vì phải gửi qua tin nhắn Zalo OA, tính phí khoảng 200 đồng mỗi tin. Một khách uống thuốc ngày ba lần trong mười ngày là ba mươi tin, mà chuỗi mình hiện có khoảng 18.000 khách thành viên. Thêm nữa lịch uống thuốc là dữ liệu sức khỏe, phải có khách đồng ý thì mới được lưu. Tích điểm thì chị cần nhất, vì chương trình thành viên cũ làm trên thẻ giấy đang loạn lắm. Quy tắc bên chị là 10.000 đồng được 1 điểm, 100 điểm đổi được phiếu giảm 50.000 đồng. Anh lưu ý là không được tích điểm cho thuốc kê đơn, vì tích điểm đổi quà cũng là một hình thức khuyến mại. Chỉ tích trên thuốc không kê đơn, thực phẩm chức năng, dụng cụ y tế và mỹ phẩm thôi. Em có ý là nhân tiện làm mini app thì em tích hợp luôn một chatbot AI, khách nhập triệu chứng thì chatbot gợi ý thuốc không kê đơn phù hợp rồi cho đặt giữ hàng ở nhà thuốc gần nhất. Em dùng API mô hình ngôn ngữ có sẵn, chắc khoảng ba tuần là em làm xong. Cái này anh không đồng ý. Tư vấn chọn thuốc theo triệu chứng là việc của dược sĩ. Máy gợi ý sai một cái, khách đang có thai hay dị ứng uống vào thì chuỗi chịu trách nhiệm. Bên anh không ký duyệt chuyên môn cho cái đó được. Anh cũng gạt cái chatbot nhé Lộc, không làm. Sprint này còn liên thông với hai cái cảnh báo chưa xong. Khách cần hỏi thì mini app có nút gọi hoặc nhắn trực tiếp cho dược sĩ của nhà thuốc là đủ. Còn nhắc lịch uống thuốc thì có làm trong đợt này không anh? Chị cần biết để viết kịch bản test. Nhắc uống thuốc thì để đợt sau đi, chị cần tích điểm chạy được trước Tết. Chốt: đợt này mini app chỉ có tích điểm, xem lịch sử mua và nút liên hệ dược sĩ. Tích điểm 10.000 đồng một điểm, chỉ tính trên hàng không kê đơn. Nhắc lịch uống thuốc chuyển sang giai đoạn 2. Ngân hoàn thiện mini app, Lộc làm API tích điểm có loại trừ thuốc kê đơn. Dạ, API tích điểm em làm, có cờ loại trừ theo nhóm thuốc, anh Tín đánh dấu sẵn nhóm kê đơn trong danh mục là được. Mini app em hoàn thiện, ngày 27 em đưa bản thử cho chị Phượng. Cuối cùng là kế hoạch thí điểm. Chị Phượng báo tình hình kiểm thử trước nhé. Chị chạy kiểm thử chấp nhận với nhóm dược sĩ ở hai nhà thuốc trong tuần vừa rồi, tổng cộng ghi nhận 41 lỗi, đã đóng 18, còn 23 lỗi mở. Trong đó có 4 lỗi nghiêm trọng: in hóa đơn trên máy in nhiệt khổ 58 mi li mét bị cắt mất cột thành tiền; trả hàng không cộng lại tồn kho đúng lô; tính sai tiền thối khi khách trả bằng hai hình thức, nửa tiền mặt nửa chuyển khoản; và mất dữ liệu đơn khi mất mạng giữa chừng. Lỗi mất mạng là nặng nhất, vì nhà thuốc ở ngoại thành mạng hay chập chờn. Lỗi mất mạng thì em đang làm chế độ lưu tạm trên máy bán hàng, có mạng lại thì tự đồng bộ. Lỗi trả hàng sai lô là do phần của em, hai ngày là em sửa xong. Bên chị đề xuất thí điểm 6 nhà thuốc, gồm 4 nhà thuốc trong nội thành và 2 nhà thuốc ngoại thành để thử luôn chuyện mạng yếu. Nhân viên ca sáng với ca chiều đều phải được đào tạo, nên buổi đào tạo phải làm vào thứ Bảy, các nhà thuốc xếp người trực thay. Anh đề nghị thời gian đầu chạy song song với phần mềm cũ, vì báo cáo Sở Y tế tháng 11 vẫn phải xuất từ phần mềm cũ cho chắc. Chạy song song thì nhân viên nhập hai lần, vất vả, nhưng chỉ hai tuần thôi. Chốt kế hoạch: thí điểm ở 6 nhà thuốc, 4 nội thành và 2 ngoại thành, bắt đầu thứ Hai ngày 2 tháng 11, chạy song song với phần mềm cũ 2 tuần. Bốn lỗi nghiêm trọng phải đóng hết trước ngày 28 tháng 10, không đóng được thì lùi ngày thí điểm. Đào tạo nhân viên vào thứ Bảy ngày 31 tháng 10. Danh sách 6 nhà thuốc với danh sách nhân viên đi đào tạo thì chị chốt, gửi anh Đạt thứ Sáu tuần này. Tài liệu hướng dẫn phần nghiệp vụ dược thì anh soạn, có cả video ngắn cho từng thao tác bán theo đơn, xong trước buổi đào tạo. Ok, cảm ơn cả nhà, tuần này nhiều việc, cố lên nhé.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi, mình bắt đầu họp sprint 9 nhé. Hôm nay có năm nội dung: liên thông đơn thuốc điện tử, hai cái cảnh báo, ứng dụng tích điểm trên Zalo, và cuối cùng là kế hoạch chạy thí điểm. Chị Uyên với anh Tín bên chuỗi cũng dự, có gì góp ý trực tiếp luôn nhé.",
+      "segment_html": "Rồi, mình bắt đầu họp sprint 9 nhé. Hôm nay có năm nội dung: liên thông đơn thuốc điện tử, hai cái cảnh báo, ứng dụng tích điểm trên Zalo, và cuối cùng là kế hoạch chạy thí điểm. Chị Uyên với anh Tín bên chuỗi cũng dự, có gì góp ý trực tiếp luôn nhé.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 24.598,
+      "point_id": "bb8bd604-c11b-5e9a-8a7e-b07f0a68e5a1",
+      "ref_id": [
+        "e05f2acd-343d-5807-a2fe-6220147dc319"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Lộc nói phần liên thông đơn thuốc trước.",
+      "segment_html": "Lộc nói phần liên thông đơn thuốc trước.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 24.848,
+      "end_time": 28.326,
+      "point_id": "bb8bd604-c11b-5e9a-8a7e-b07f0a68e5a1",
+      "ref_id": [
+        "e05f2acd-343d-5807-a2fe-6220147dc319"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Dạ. Phần liên thông với hệ thống đơn thuốc quốc gia thì em đã kết nối xong trên môi trường thử nghiệm. Luồng hiện tại là dược sĩ quét mã trên đơn thuốc của bệnh viện, hệ thống gọi sang cổng quốc gia lấy chi tiết đơn về, tự điền danh sách thuốc,",
+      "segment_html": "Dạ. Phần liên thông với hệ thống đơn thuốc quốc gia thì em đã kết nối xong trên môi trường thử nghiệm. Luồng hiện tại là dược sĩ quét mã trên đơn thuốc của bệnh viện, hệ thống gọi sang cổng quốc gia lấy chi tiết đơn về, tự điền danh sách thuốc,",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 29.326,
+      "end_time": 52.37,
+      "point_id": "de854c90-cb07-514c-b7d7-69dd40de9ffd",
+      "ref_id": [
+        "e53a2098-d149-5de4-bedf-adcd5d72ec84"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "liều dùng, số lượng vào màn hình bán. Bán xong thì mình phải gửi lại thông tin bán thuốc theo đơn lên cổng. Em chạy thử với khoảng 1.300 đơn mà chị Uyên gửi từ hai nhà thuốc thì có khoảng 3% đơn tra không ra, chủ yếu là đơn của các phòng khám tư nhỏ,",
+      "segment_html": "liều dùng, số lượng vào màn hình bán. Bán xong thì mình phải gửi lại thông tin bán thuốc theo đơn lên cổng. Em chạy thử với khoảng 1.300 đơn mà chị Uyên gửi từ hai nhà thuốc thì có khoảng 3% đơn tra không ra, chủ yếu là đơn của các phòng khám tư nhỏ,",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 52.62,
+      "end_time": 76.967,
+      "point_id": "de854c90-cb07-514c-b7d7-69dd40de9ffd",
+      "ref_id": [
+        "e53a2098-d149-5de4-bedf-adcd5d72ec84"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "họ chưa đăng ký mã cơ sở trên cổng hoặc in mã sai. Còn một vấn đề nữa là cổng quốc gia hay chậm vào giờ cao điểm buổi sáng, có lúc 15 đến 20 giây mới trả kết quả, dược sĩ đứng chờ thì khách sốt ruột.",
+      "segment_html": "họ chưa đăng ký mã cơ sở trên cổng hoặc in mã sai. Còn một vấn đề nữa là cổng quốc gia hay chậm vào giờ cao điểm buổi sáng, có lúc 15 đến 20 giây mới trả kết quả, dược sĩ đứng chờ thì khách sốt ruột.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 77.217,
+      "end_time": 98.087,
+      "point_id": "de854c90-cb07-514c-b7d7-69dd40de9ffd",
+      "ref_id": [
+        "e53a2098-d149-5de4-bedf-adcd5d72ec84"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Cái 3% không tra được đó thì ngoài thực tế bên anh vẫn phải bán. Đơn giấy hợp lệ, có chữ ký bác sĩ, có dấu phòng khám thì mình bán bình thường, chỉ là phải lưu đơn lại. Nên phần mềm không được chặn cứng.",
+      "segment_html": "Cái 3% không tra được đó thì ngoài thực tế bên anh vẫn phải bán. Đơn giấy hợp lệ, có chữ ký bác sĩ, có dấu phòng khám thì mình bán bình thường, chỉ là phải lưu đơn lại. Nên phần mềm không được chặn cứng.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 99.087,
+      "end_time": 119.087,
+      "point_id": "6c791f54-6125-50de-a3c2-8d50c48077e9",
+      "ref_id": [
+        "d105cde9-0dc7-5df6-9276-f54922923847"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Đúng rồi, chặn là nhân viên quay lại ghi sổ tay ngay, mấy tháng nay chị mới bỏ được sổ tay đấy. Bên chị chỉ cần là có lưu vết đầy đủ, lúc thanh tra Sở Y tế xuống thì xuất ra được trong vài phút.",
+      "segment_html": "Đúng rồi, chặn là nhân viên quay lại ghi sổ tay ngay, mấy tháng nay chị mới bỏ được sổ tay đấy. Bên chị chỉ cần là có lưu vết đầy đủ, lúc thanh tra Sở Y tế xuống thì xuất ra được trong vài phút.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 120.087,
+      "end_time": 140.087,
+      "point_id": "10054699-45df-5a83-b7d6-57a4c8c94d14",
+      "ref_id": [
+        "a3190e9b-2d64-5cda-87b8-8a1902d4fe86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Dạ, nên em đề xuất khi tra không được thì cho dược sĩ nhập tay mã đơn, chụp ảnh đơn giấy đính kèm, đơn đó đánh dấu trạng thái chờ đối chiếu. Còn phần gửi dữ liệu bán lên cổng thì không gửi từng đơn ngay lúc bán mà gom lại, cứ 30 phút gửi một lần,",
+      "segment_html": "Dạ, nên em đề xuất khi tra không được thì cho dược sĩ nhập tay mã đơn, chụp ảnh đơn giấy đính kèm, đơn đó đánh dấu trạng thái chờ đối chiếu. Còn phần gửi dữ liệu bán lên cổng thì không gửi từng đơn ngay lúc bán mà gom lại, cứ 30 phút gửi một lần,",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 141.087,
+      "end_time": 165.87,
+      "point_id": "b8b9d820-4ad8-5cff-901e-cba08f24f421",
+      "ref_id": [
+        "8898a67b-bb1a-56e3-8d0c-8aaf0f7d8ab4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "lỗi thì tự gửi lại, cuối ngày 23 giờ chạy một lượt rà những đơn chưa gửi được. Như vậy quầy bán không phải chờ cổng.",
+      "segment_html": "lỗi thì tự gửi lại, cuối ngày 23 giờ chạy một lượt rà những đơn chưa gửi được. Như vậy quầy bán không phải chờ cổng.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 166.12,
+      "end_time": 177.424,
+      "point_id": "b8b9d820-4ad8-5cff-901e-cba08f24f421",
+      "ref_id": [
+        "8898a67b-bb1a-56e3-8d0c-8aaf0f7d8ab4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Chị hỏi thêm là trường hợp dược sĩ bán thuốc thay thế, ví dụ đơn ghi biệt dược này nhưng nhà thuốc hết, bán thuốc cùng hoạt chất của hãng khác, thì gửi lên cổng thế nào? Lúc chị test thì hệ thống báo lệch đơn và không cho lưu hóa đơn.",
+      "segment_html": "Chị hỏi thêm là trường hợp dược sĩ bán thuốc thay thế, ví dụ đơn ghi biệt dược này nhưng nhà thuốc hết, bán thuốc cùng hoạt chất của hãng khác, thì gửi lên cổng thế nào? Lúc chị test thì hệ thống báo lệch đơn và không cho lưu hóa đơn.",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 178.424,
+      "end_time": 201.033,
+      "point_id": "c15bd956-9b77-561c-8d44-3cd3d731537d",
+      "ref_id": [
+        "aa1b2a6a-1cf7-5152-a23d-fd0945a08a91"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Cái đó theo quy định thì được thay thế cùng hoạt chất, cùng hàm lượng, cùng dạng bào chế, nhưng dược sĩ phải ghi rõ và người mua phải đồng ý. Phần mềm cần cho chọn thuốc thay thế từ danh sách cùng hoạt chất, bắt ghi lý do,",
+      "segment_html": "Cái đó theo quy định thì được thay thế cùng hoạt chất, cùng hàm lượng, cùng dạng bào chế, nhưng dược sĩ phải ghi rõ và người mua phải đồng ý. Phần mềm cần cho chọn thuốc thay thế từ danh sách cùng hoạt chất, bắt ghi lý do,",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 202.033,
+      "end_time": 223.337,
+      "point_id": "1e093269-5fb7-5eb1-b682-0169be5c668f",
+      "ref_id": [
+        "0386f4b7-d4db-5033-ac79-55d8aa71b95d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "và trên dữ liệu gửi cổng thì ghi cả thuốc trong đơn lẫn thuốc thực bán. Còn nhóm thuốc kê đơn nào bắt buộc phải quét đơn thì anh sẽ rà lại theo danh mục mới của Bộ, vì danh mục vừa sửa đổi.",
+      "segment_html": "và trên dữ liệu gửi cổng thì ghi cả thuốc trong đơn lẫn thuốc thực bán. Còn nhóm thuốc kê đơn nào bắt buộc phải quét đơn thì anh sẽ rà lại theo danh mục mới của Bộ, vì danh mục vừa sửa đổi.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 223.587,
+      "end_time": 242.717,
+      "point_id": "1e093269-5fb7-5eb1-b682-0169be5c668f",
+      "ref_id": [
+        "0386f4b7-d4db-5033-ac79-55d8aa71b95d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Ok, chốt phần này: không chặn cứng khi tra không được, cho nhập tay mã đơn, chụp ảnh đơn giấy, đánh dấu chờ đối chiếu. Dữ liệu bán gửi lên cổng theo lô 30 phút, có tự gửi lại và rà lúc 23 giờ. Cho phép bán thuốc thay thế cùng hoạt chất,",
+      "segment_html": "Ok, chốt phần này: không chặn cứng khi tra không được, cho nhập tay mã đơn, chụp ảnh đơn giấy, đánh dấu chờ đối chiếu. Dữ liệu bán gửi lên cổng theo lô 30 phút, có tự gửi lại và rà lúc 23 giờ. Cho phép bán thuốc thay thế cùng hoạt chất,",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 243.717,
+      "end_time": 266.761,
+      "point_id": "5240e973-742b-549f-bfcb-bdaadba567b1",
+      "ref_id": [
+        "21be119a-7a93-5914-9309-66c2d4e8f2d0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "cùng hàm lượng, bắt ghi lý do. Lộc làm phía backend phần nhập tay, gửi theo lô và thuốc thay thế, thứ Năm tuần sau xong nhé. Ngân làm màn hình chụp ảnh đơn với chọn thuốc thay thế.",
+      "segment_html": "cùng hàm lượng, bắt ghi lý do. Lộc làm phía backend phần nhập tay, gửi theo lô và thuốc thay thế, thứ Năm tuần sau xong nhé. Ngân làm màn hình chụp ảnh đơn với chọn thuốc thay thế.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 267.011,
+      "end_time": 283.967,
+      "point_id": "5240e973-742b-549f-bfcb-bdaadba567b1",
+      "ref_id": [
+        "21be119a-7a93-5914-9309-66c2d4e8f2d0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Dạ, màn hình chụp đơn với chọn thuốc thay thế em làm song song với Lộc, thứ Năm tuần sau ghép luôn.",
+      "segment_html": "Dạ, màn hình chụp đơn với chọn thuốc thay thế em làm song song với Lộc, thứ Năm tuần sau ghép luôn.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 284.967,
+      "end_time": 294.533,
+      "point_id": "3d2a59f8-c86b-509f-b259-5b887152ce9c",
+      "ref_id": [
+        "fff45bed-9095-50a1-80cf-d4874750c003"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Dạ được anh, thứ Năm tuần sau em xong.",
+      "segment_html": "Dạ được anh, thứ Năm tuần sau em xong.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 295.533,
+      "end_time": 299.446,
+      "point_id": "8f2f6315-3b47-505f-8789-0484ce987931",
+      "ref_id": [
+        "536b0e77-ccbd-5411-bc2e-43aaebd1123f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "Danh mục thuốc kê đơn bắt buộc quét đơn thì anh gửi file cho Lộc trước ngày 20.",
+      "segment_html": "Danh mục thuốc kê đơn bắt buộc quét đơn thì anh gửi file cho Lộc trước ngày 20.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 300.446,
+      "end_time": 308.272,
+      "point_id": "16366396-bb36-5d8e-8308-3b3aa39537eb",
+      "ref_id": [
+        "8ad6148e-0541-510e-aaa7-c934cb7238f0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Sang hai cái cảnh báo. Cái thứ nhất là cảnh báo cận hạn sử dụng. Ngân trình bày nhé.",
+      "segment_html": "Sang hai cái cảnh báo. Cái thứ nhất là cảnh báo cận hạn sử dụng. Ngân trình bày nhé.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 309.272,
+      "end_time": 317.533,
+      "point_id": "207314d0-9f69-54d3-8260-ee6a64d537de",
+      "ref_id": [
+        "c156f889-6977-50ac-8435-aa308eec23dd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Dạ. Cảnh báo cận hạn hiện tại thì hệ thống quét theo từng lô thuốc trong kho của mỗi nhà thuốc, lô nào còn dưới 90 ngày là hiện chấm đỏ trên màn hình tồn kho và gửi thông báo vào ứng dụng cho quản lý nhà thuốc.",
+      "segment_html": "Dạ. Cảnh báo cận hạn hiện tại thì hệ thống quét theo từng lô thuốc trong kho của mỗi nhà thuốc, lô nào còn dưới 90 ngày là hiện chấm đỏ trên màn hình tồn kho và gửi thông báo vào ứng dụng cho quản lý nhà thuốc.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 318.533,
+      "end_time": 339.402,
+      "point_id": "3d42b9c5-26c4-56d4-8b92-9516e30cab59",
+      "ref_id": [
+        "1f09f2f0-cbbc-5d6c-9c4a-ba367ff146cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "Nhưng chị Uyên có gửi số liệu là tháng 9 cả chuỗi vẫn phải hủy khoảng 47 triệu tiền thuốc hết hạn, nhiều nhất là siro trẻ em với thuốc nhỏ mắt. Em xem lại thì có mấy lý do. Thứ nhất là 90 ngày thì với thuốc bán chậm đã quá muộn, không kịp xoay.",
+      "segment_html": "Nhưng chị Uyên có gửi số liệu là tháng 9 cả chuỗi vẫn phải hủy khoảng 47 triệu tiền thuốc hết hạn, nhiều nhất là siro trẻ em với thuốc nhỏ mắt. Em xem lại thì có mấy lý do. Thứ nhất là 90 ngày thì với thuốc bán chậm đã quá muộn, không kịp xoay.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 339.652,
+      "end_time": 364.0,
+      "point_id": "3d42b9c5-26c4-56d4-8b92-9516e30cab59",
+      "ref_id": [
+        "1f09f2f0-cbbc-5d6c-9c4a-ba367ff146cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Thứ hai là thông báo gửi mỗi ngày một lần, danh sách dài cả trăm dòng, quản lý đọc không hết nên bỏ qua. Thứ ba là ở quầy bán, nhân viên lấy lô nào cũng được, hay lấy hộp mới nhập ở ngoài cùng, lô cũ nằm trong cùng thì cứ thế hết hạn.",
+      "segment_html": "Thứ hai là thông báo gửi mỗi ngày một lần, danh sách dài cả trăm dòng, quản lý đọc không hết nên bỏ qua. Thứ ba là ở quầy bán, nhân viên lấy lô nào cũng được, hay lấy hộp mới nhập ở ngoài cùng, lô cũ nằm trong cùng thì cứ thế hết hạn.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 364.25,
+      "end_time": 388.163,
+      "point_id": "3d42b9c5-26c4-56d4-8b92-9516e30cab59",
+      "ref_id": [
+        "1f09f2f0-cbbc-5d6c-9c4a-ba367ff146cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Chị đi kiểm tra mấy nhà thuốc thì đúng như vậy. Có nhà thuốc số 7 chị thấy ba hộp thuốc nhỏ mắt hết hạn từ tháng trước vẫn nằm trên kệ, may là khách chưa mua. Cái này mà Sở kiểm tra là phạt nặng, có thể bị đình chỉ.",
+      "segment_html": "Chị đi kiểm tra mấy nhà thuốc thì đúng như vậy. Có nhà thuốc số 7 chị thấy ba hộp thuốc nhỏ mắt hết hạn từ tháng trước vẫn nằm trên kệ, may là khách chưa mua. Cái này mà Sở kiểm tra là phạt nặng, có thể bị đình chỉ.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 389.163,
+      "end_time": 411.337,
+      "point_id": "ff32d7c5-114f-5ff3-96d8-fe75d1e4a00a",
+      "ref_id": [
+        "440def7d-8f5f-5308-8257-85d9e17d3936"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Về nguyên tắc chuyên môn thì phải xuất theo hạn dùng, hết hạn trước thì xuất trước. Phần mềm nên ép chuyện này ở quầy chứ đừng để nhân viên tự nhớ.",
+      "segment_html": "Về nguyên tắc chuyên môn thì phải xuất theo hạn dùng, hết hạn trước thì xuất trước. Phần mềm nên ép chuyện này ở quầy chứ đừng để nhân viên tự nhớ.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 412.337,
+      "end_time": 426.25,
+      "point_id": "686c6cf2-3c55-5287-89e2-2cf06666e914",
+      "ref_id": [
+        "3a4212e8-3475-5121-a9bb-1eecb140d62f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Dạ phía backend em làm được, khi quét mã vạch sản phẩm thì hệ thống tự gợi ý lô có hạn gần nhất mà còn bán được. Nếu nhân viên chọn lô khác thì bắt nhập lý do. Còn cảnh báo thì em đề xuất chia ba mức, 180 ngày, 90 ngày và 30 ngày.",
+      "segment_html": "Dạ phía backend em làm được, khi quét mã vạch sản phẩm thì hệ thống tự gợi ý lô có hạn gần nhất mà còn bán được. Nếu nhân viên chọn lô khác thì bắt nhập lý do. Còn cảnh báo thì em đề xuất chia ba mức, 180 ngày, 90 ngày và 30 ngày.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 427.25,
+      "end_time": 451.163,
+      "point_id": "aabeb2ec-23ec-5465-aab5-54c31bf99ea8",
+      "ref_id": [
+        "bf6d3500-829d-5401-9b5d-ebdf6e4cebad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Dưới 30 ngày thì khóa không cho bán nữa với các thuốc dùng dài ngày, vì khách mua về uống cả tháng thì hết hạn giữa chừng.",
+      "segment_html": "Dưới 30 ngày thì khóa không cho bán nữa với các thuốc dùng dài ngày, vì khách mua về uống cả tháng thì hết hạn giữa chừng.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 451.413,
+      "end_time": 463.152,
+      "point_id": "aabeb2ec-23ec-5465-aab5-54c31bf99ea8",
+      "ref_id": [
+        "bf6d3500-829d-5401-9b5d-ebdf6e4cebad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Khóa dưới 30 ngày thì anh đồng ý với thuốc dùng dài ngày như thuốc huyết áp, tiểu đường. Còn thuốc dùng ngắn ngày như kháng sinh 5 đến 7 ngày thì vẫn bán được, đừng khóa hết, không thì lại hủy nhiều hơn.",
+      "segment_html": "Khóa dưới 30 ngày thì anh đồng ý với thuốc dùng dài ngày như thuốc huyết áp, tiểu đường. Còn thuốc dùng ngắn ngày như kháng sinh 5 đến 7 ngày thì vẫn bán được, đừng khóa hết, không thì lại hủy nhiều hơn.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 464.152,
+      "end_time": 483.283,
+      "point_id": "bddec7dd-2ce5-5034-a323-ec354db7906b",
+      "ref_id": [
+        "afb498c8-b8ca-50a9-8b4c-13a9292336cb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Chị có ý thế này, các em xem được không. Hay là thuốc nào còn dưới 60 ngày thì hệ thống tự giảm giá 20% để đẩy hàng, đỡ phải hủy. Chị thấy mấy chuỗi khác cũng làm.",
+      "segment_html": "Chị có ý thế này, các em xem được không. Hay là thuốc nào còn dưới 60 ngày thì hệ thống tự giảm giá 20% để đẩy hàng, đỡ phải hủy. Chị thấy mấy chuỗi khác cũng làm.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 484.283,
+      "end_time": 500.804,
+      "point_id": "ef9460c6-a5e3-59a8-8dfd-13aa9386cdc1",
+      "ref_id": [
+        "c67b7a9b-c87f-5666-96fd-d0e319928266"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Cái đó chị phải cẩn thận. Thuốc kê đơn thì không được khuyến mại, giảm giá kiểu đó là vướng quy định về khuyến mại thuốc. Thực phẩm chức năng, mỹ phẩm thì có thể được. Chị nên hỏi bên pháp chế trước đã.",
+      "segment_html": "Cái đó chị phải cẩn thận. Thuốc kê đơn thì không được khuyến mại, giảm giá kiểu đó là vướng quy định về khuyến mại thuốc. Thực phẩm chức năng, mỹ phẩm thì có thể được. Chị nên hỏi bên pháp chế trước đã.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 501.804,
+      "end_time": 520.935,
+      "point_id": "b338b784-7a43-5b42-80bb-ea393fc5343b",
+      "ref_id": [
+        "2f3daa59-f401-5012-b7b2-5e47285a6b0b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Ừ thôi, cái giảm giá thì để chị hỏi pháp chế đã, chưa làm vội. Các em cứ làm phần cảnh báo trước.",
+      "segment_html": "Ừ thôi, cái giảm giá thì để chị hỏi pháp chế đã, chưa làm vội. Các em cứ làm phần cảnh báo trước.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 521.935,
+      "end_time": 531.935,
+      "point_id": "4f29f686-a278-5171-ae74-c479b282ddaf",
+      "ref_id": [
+        "03f5daba-3046-5a8e-964f-f3b2fc6ddfe8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Vậy chốt cảnh báo cận hạn: ba mức 180, 90 và 30 ngày. Mức 180 ngày thì gom thành bản tóm tắt gửi mỗi tuần một lần, mức 90 và 30 ngày thì gửi hằng ngày, sắp theo giá trị tiền giảm dần để quản lý đọc phần quan trọng trước.",
+      "segment_html": "Vậy chốt cảnh báo cận hạn: ba mức 180, 90 và 30 ngày. Mức 180 ngày thì gom thành bản tóm tắt gửi mỗi tuần một lần, mức 90 và 30 ngày thì gửi hằng ngày, sắp theo giá trị tiền giảm dần để quản lý đọc phần quan trọng trước.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 532.935,
+      "end_time": 555.109,
+      "point_id": "b2622e02-1b9d-5756-a5b9-edcc1dd1a56c",
+      "ref_id": [
+        "804f058f-2f82-5fc7-a9bb-24a8a462847c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Ở quầy bán bắt buộc gợi ý lô có hạn gần nhất, chọn lô khác phải ghi lý do. Thuốc dùng dài ngày còn dưới 30 ngày thì khóa bán. Danh sách nhóm thuốc dùng dài ngày thì anh Tín bổ sung luôn vào file danh mục gửi Lộc. Lộc làm phần gợi ý lô và khóa bán,",
+      "segment_html": "Ở quầy bán bắt buộc gợi ý lô có hạn gần nhất, chọn lô khác phải ghi lý do. Thuốc dùng dài ngày còn dưới 30 ngày thì khóa bán. Danh sách nhóm thuốc dùng dài ngày thì anh Tín bổ sung luôn vào file danh mục gửi Lộc. Lộc làm phần gợi ý lô và khóa bán,",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 555.359,
+      "end_time": 580.576,
+      "point_id": "b2622e02-1b9d-5756-a5b9-edcc1dd1a56c",
+      "ref_id": [
+        "804f058f-2f82-5fc7-a9bb-24a8a462847c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Ngân làm lại màn hình cảnh báo và bản tóm tắt, chị Phượng test bằng dữ liệu lô thật.",
+      "segment_html": "Ngân làm lại màn hình cảnh báo và bản tóm tắt, chị Phượng test bằng dữ liệu lô thật.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 580.826,
+      "end_time": 589.087,
+      "point_id": "b2622e02-1b9d-5756-a5b9-edcc1dd1a56c",
+      "ref_id": [
+        "804f058f-2f82-5fc7-a9bb-24a8a462847c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Chị xin dữ liệu lô thật của hai nhà thuốc từ chị Uyên, dựng bộ test xong trước thứ Tư tuần sau.",
+      "segment_html": "Chị xin dữ liệu lô thật của hai nhà thuốc từ chị Uyên, dựng bộ test xong trước thứ Tư tuần sau.",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 590.087,
+      "end_time": 599.652,
+      "point_id": "465542c4-3c38-57dc-b2fa-c689477aa489",
+      "ref_id": [
+        "0be68c9f-7d35-5cd1-8b27-f36b5882179b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Dạ em làm màn hình ba mức với bản tóm tắt, cuối sprint này xong.",
+      "segment_html": "Dạ em làm màn hình ba mức với bản tóm tắt, cuối sprint này xong.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 600.652,
+      "end_time": 607.174,
+      "point_id": "272bbe09-9fe6-5a21-abc0-4b491aa37282",
+      "ref_id": [
+        "cc700fda-5434-5fc6-a8a7-9b67c3debbea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Phần gợi ý lô với khóa bán thì em làm sau phần liên thông, chắc sang đầu sprint 10 anh ạ.",
+      "segment_html": "Phần gợi ý lô với khóa bán thì em làm sau phần liên thông, chắc sang đầu sprint 10 anh ạ.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 608.174,
+      "end_time": 617.304,
+      "point_id": "0f799c8e-caca-5fd9-9ddc-4122c405289b",
+      "ref_id": [
+        "b3a9d612-953c-55bb-9991-d1687713b0dc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Ừ, danh sách thuốc dùng dài ngày anh gộp chung một file với danh mục kê đơn, vẫn trước ngày 20.",
+      "segment_html": "Ừ, danh sách thuốc dùng dài ngày anh gộp chung một file với danh mục kê đơn, vẫn trước ngày 20.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 618.304,
+      "end_time": 627.435,
+      "point_id": "bef44d0e-6870-56cc-b173-eddd719e664d",
+      "ref_id": [
+        "4c4f015c-10c2-5821-baf9-87fb61ed6036"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Rồi, sang cái cảnh báo thứ hai. Lộc nói nhé.",
+      "segment_html": "Rồi, sang cái cảnh báo thứ hai. Lộc nói nhé.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 628.435,
+      "end_time": 632.783,
+      "point_id": "ac83e119-b48d-5d1f-84ef-675485dc1c7a",
+      "ref_id": [
+        "de89821d-3444-5dc3-bae3-c406f3695064"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Dạ. Cảnh báo tồn kho dưới định mức thì hiện tại mỗi mã thuốc ở mỗi nhà thuốc có một con số định mức tối thiểu, đang để mặc định 20 hộp cho tất cả, quản lý nhà thuốc muốn thì tự sửa. Tồn xuống dưới định mức thì hệ thống bắn cảnh báo.",
+      "segment_html": "Dạ. Cảnh báo tồn kho dưới định mức thì hiện tại mỗi mã thuốc ở mỗi nhà thuốc có một con số định mức tối thiểu, đang để mặc định 20 hộp cho tất cả, quản lý nhà thuốc muốn thì tự sửa. Tồn xuống dưới định mức thì hệ thống bắn cảnh báo.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 633.783,
+      "end_time": 657.261,
+      "point_id": "a515704a-57f5-5aca-bfa6-80172f7f2cb7",
+      "ref_id": [
+        "e3710994-e235-5d76-8887-1267bb7d3f2f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Vấn đề là con số 20 cố định nên thuốc bán chạy như hạ sốt, siro ho thì báo quá muộn, hai ngày là hết sạch; còn thuốc bán chậm thì báo liên tục mà không cần nhập, quản lý bị nhiễu, tuần trước có nhà thuốc nhận hơn 300 cảnh báo trong một ngày.",
+      "segment_html": "Vấn đề là con số 20 cố định nên thuốc bán chạy như hạ sốt, siro ho thì báo quá muộn, hai ngày là hết sạch; còn thuốc bán chậm thì báo liên tục mà không cần nhập, quản lý bị nhiễu, tuần trước có nhà thuốc nhận hơn 300 cảnh báo trong một ngày.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 657.511,
+      "end_time": 681.424,
+      "point_id": "a515704a-57f5-5aca-bfa6-80172f7f2cb7",
+      "ref_id": [
+        "e3710994-e235-5d76-8887-1267bb7d3f2f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Thống kê tháng 9 thì có 212 lượt khách hỏi mua mà hết hàng, chủ yếu là thuốc hạ sốt và siro ho do đầu mùa cúm.",
+      "segment_html": "Thống kê tháng 9 thì có 212 lượt khách hỏi mua mà hết hàng, chủ yếu là thuốc hạ sốt và siro ho do đầu mùa cúm.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 681.674,
+      "end_time": 693.413,
+      "point_id": "a515704a-57f5-5aca-bfa6-80172f7f2cb7",
+      "ref_id": [
+        "e3710994-e235-5d76-8887-1267bb7d3f2f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Hết hàng thì chị tiếc nhất, khách sang nhà thuốc bên cạnh là mất luôn khách đó. Chị muốn hệ thống không chỉ báo mà còn đề xuất luôn cần nhập bao nhiêu, quản lý chỉ việc duyệt rồi gửi về kho tổng.",
+      "segment_html": "Hết hàng thì chị tiếc nhất, khách sang nhà thuốc bên cạnh là mất luôn khách đó. Chị muốn hệ thống không chỉ báo mà còn đề xuất luôn cần nhập bao nhiêu, quản lý chỉ việc duyệt rồi gửi về kho tổng.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 694.413,
+      "end_time": 713.109,
+      "point_id": "9500936d-297b-5bc7-b4ed-45e18af5a478",
+      "ref_id": [
+        "59fb44c7-e717-5ac9-93c1-84733c8e6ffb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Dạ, em đề xuất định mức tính động: lấy lượng bán trung bình mỗi ngày trong 28 ngày gần nhất, nhân với số ngày từ lúc đặt đến lúc kho tổng giao hàng, cộng thêm số ngày dự phòng. Kho tổng giao cho nhà thuốc hiện là 2 ngày, dự phòng em để 5 ngày.",
+      "segment_html": "Dạ, em đề xuất định mức tính động: lấy lượng bán trung bình mỗi ngày trong 28 ngày gần nhất, nhân với số ngày từ lúc đặt đến lúc kho tổng giao hàng, cộng thêm số ngày dự phòng. Kho tổng giao cho nhà thuốc hiện là 2 ngày, dự phòng em để 5 ngày.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 714.109,
+      "end_time": 738.022,
+      "point_id": "6b0c2cf3-cfbf-58f2-9361-60da366e6990",
+      "ref_id": [
+        "67fe7ae7-4cfc-5eab-8252-69aa6dd1afc6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Tồn xuống dưới con số đó thì tạo đề xuất nhập với số lượng đủ bán 14 ngày.",
+      "segment_html": "Tồn xuống dưới con số đó thì tạo đề xuất nhập với số lượng đủ bán 14 ngày.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 738.272,
+      "end_time": 746.098,
+      "point_id": "6b0c2cf3-cfbf-58f2-9361-60da366e6990",
+      "ref_id": [
+        "67fe7ae7-4cfc-5eab-8252-69aa6dd1afc6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Có một điểm liên quan đến cái cảnh báo cận hạn lúc nãy: lô nào đã bị khóa bán vì còn dưới 30 ngày thì không được tính vào tồn khả dụng, không thì hệ thống tưởng còn hàng mà thực ra không bán được.",
+      "segment_html": "Có một điểm liên quan đến cái cảnh báo cận hạn lúc nãy: lô nào đã bị khóa bán vì còn dưới 30 ngày thì không được tính vào tồn khả dụng, không thì hệ thống tưởng còn hàng mà thực ra không bán được.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 747.098,
+      "end_time": 766.663,
+      "point_id": "706b3d0a-ecd8-5ff0-b1f8-00b92e9dc901",
+      "ref_id": [
+        "772ca6ed-4939-5e1d-a37f-7addb1cc2e8a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "Chị thêm là mùa dịch thì bán trung bình 28 ngày sẽ đuổi không kịp. Năm ngoái đầu mùa cúm, lượng bán thuốc hạ sốt tăng gấp ba chỉ trong một tuần.",
+      "segment_html": "Chị thêm là mùa dịch thì bán trung bình 28 ngày sẽ đuổi không kịp. Năm ngoái đầu mùa cúm, lượng bán thuốc hạ sốt tăng gấp ba chỉ trong một tuần.",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 767.663,
+      "end_time": 781.576,
+      "point_id": "5c4df586-f1dc-5d13-8192-35565190c766",
+      "ref_id": [
+        "f5c90bf2-b3eb-59e8-8dea-1aaaf2eb0fa2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "Thế thì cho chị một hệ số mùa vụ, bên chị chỉnh tay theo từng nhóm thuốc, ví dụ từ tháng 10 đến tháng 12 thì nhóm hạ sốt nhân 1,5.",
+      "segment_html": "Thế thì cho chị một hệ số mùa vụ, bên chị chỉnh tay theo từng nhóm thuốc, ví dụ từ tháng 10 đến tháng 12 thì nhóm hạ sốt nhân 1,5.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 782.576,
+      "end_time": 796.054,
+      "point_id": "2d2fe03b-203d-5c00-a5c5-73788c38d380",
+      "ref_id": [
+        "30e228fc-fd85-5598-bcc4-3a5740afcf6a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Phía giao diện thì em nghĩ không nên gửi cảnh báo từng mã nữa, mà gom thành một phiếu đề xuất nhập mỗi sáng, quản lý mở ra sửa số lượng rồi bấm duyệt một lần.",
+      "segment_html": "Phía giao diện thì em nghĩ không nên gửi cảnh báo từng mã nữa, mà gom thành một phiếu đề xuất nhập mỗi sáng, quản lý mở ra sửa số lượng rồi bấm duyệt một lần.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 797.054,
+      "end_time": 812.707,
+      "point_id": "e99cc534-283e-5cbb-b5c3-cca654f05e30",
+      "ref_id": [
+        "b281c969-c6d5-54d5-805f-7bbe1ec0fa66"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Ok, chốt cảnh báo tồn kho: bỏ định mức cố định 20 hộp, chuyển sang định mức động theo bán trung bình 28 ngày nhân thời gian giao 2 ngày cộng 5 ngày dự phòng, có hệ số mùa vụ theo nhóm thuốc do bên vận hành cấu hình.",
+      "segment_html": "Ok, chốt cảnh báo tồn kho: bỏ định mức cố định 20 hộp, chuyển sang định mức động theo bán trung bình 28 ngày nhân thời gian giao 2 ngày cộng 5 ngày dự phòng, có hệ số mùa vụ theo nhóm thuốc do bên vận hành cấu hình.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 813.707,
+      "end_time": 835.011,
+      "point_id": "524f340e-98e9-5226-b3a7-4abe20855dcc",
+      "ref_id": [
+        "a9a3c4c7-9b8e-50eb-a900-1e5fb2ddb08f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "Tồn khả dụng không tính lô đã khóa bán. Không gửi cảnh báo từng mã nữa, mỗi sáng 7 giờ tạo một phiếu đề xuất nhập đủ bán 14 ngày cho quản lý nhà thuốc duyệt.",
+      "segment_html": "Tồn khả dụng không tính lô đã khóa bán. Không gửi cảnh báo từng mã nữa, mỗi sáng 7 giờ tạo một phiếu đề xuất nhập đủ bán 14 ngày cho quản lý nhà thuốc duyệt.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 835.261,
+      "end_time": 850.913,
+      "point_id": "524f340e-98e9-5226-b3a7-4abe20855dcc",
+      "ref_id": [
+        "a9a3c4c7-9b8e-50eb-a900-1e5fb2ddb08f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "Công thức định mức động với tạo phiếu đề xuất em làm luôn, xong trước ngày 30 tháng 10.",
+      "segment_html": "Công thức định mức động với tạo phiếu đề xuất em làm luôn, xong trước ngày 30 tháng 10.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 851.913,
+      "end_time": 860.174,
+      "point_id": "906c9a76-7027-55e1-a39e-489956edfe59",
+      "ref_id": [
+        "39b298ea-8ff4-5ecb-8606-f78bb8d98c08"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Bảng hệ số mùa vụ cho từng nhóm thuốc thì chị gửi Lộc thứ Hai tuần sau.",
+      "segment_html": "Bảng hệ số mùa vụ cho từng nhóm thuốc thì chị gửi Lộc thứ Hai tuần sau.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 861.174,
+      "end_time": 868.565,
+      "point_id": "0b7544a7-a45b-5e5a-a703-9ec5ea589668",
+      "ref_id": [
+        "28536324-c5c7-5c0e-9065-29006e591444"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Tiếp theo là ứng dụng tích điểm cho khách. Ngân nói.",
+      "segment_html": "Tiếp theo là ứng dụng tích điểm cho khách. Ngân nói.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 869.565,
+      "end_time": 874.348,
+      "point_id": "2d4cf4c5-226c-5eac-8cda-24aff17fef86",
+      "ref_id": [
+        "35fa8100-0cf8-506c-bdd5-e5dec5449c05"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Dạ, phần này theo yêu cầu ban đầu là làm trên Zalo Mini App, khách quét mã QR ở quầy là vào được, không phải cài gì. Chức năng gồm tích điểm theo hóa đơn, xem lịch sử mua thuốc, và nhắc lịch uống thuốc.",
+      "segment_html": "Dạ, phần này theo yêu cầu ban đầu là làm trên Zalo Mini App, khách quét mã QR ở quầy là vào được, không phải cài gì. Chức năng gồm tích điểm theo hóa đơn, xem lịch sử mua thuốc, và nhắc lịch uống thuốc.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 875.348,
+      "end_time": 894.913,
+      "point_id": "fc6958c4-1940-555c-8cb8-9b6b96796edb",
+      "ref_id": [
+        "101948a0-ee58-5103-b44b-b993ef22af65"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Em đã làm xong phần đăng nhập bằng số điện thoại Zalo, xem điểm và lịch sử mua. Còn tích điểm thì đang chờ API của Lộc. Vướng nhất là nhắc lịch uống thuốc, vì phải gửi qua tin nhắn Zalo OA, tính phí khoảng 200 đồng mỗi tin.",
+      "segment_html": "Em đã làm xong phần đăng nhập bằng số điện thoại Zalo, xem điểm và lịch sử mua. Còn tích điểm thì đang chờ API của Lộc. Vướng nhất là nhắc lịch uống thuốc, vì phải gửi qua tin nhắn Zalo OA, tính phí khoảng 200 đồng mỗi tin.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 895.163,
+      "end_time": 916.467,
+      "point_id": "fc6958c4-1940-555c-8cb8-9b6b96796edb",
+      "ref_id": [
+        "101948a0-ee58-5103-b44b-b993ef22af65"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Một khách uống thuốc ngày ba lần trong mười ngày là ba mươi tin, mà chuỗi mình hiện có khoảng 18.000 khách thành viên. Thêm nữa lịch uống thuốc là dữ liệu sức khỏe, phải có khách đồng ý thì mới được lưu.",
+      "segment_html": "Một khách uống thuốc ngày ba lần trong mười ngày là ba mươi tin, mà chuỗi mình hiện có khoảng 18.000 khách thành viên. Thêm nữa lịch uống thuốc là dữ liệu sức khỏe, phải có khách đồng ý thì mới được lưu.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 916.717,
+      "end_time": 935.413,
+      "point_id": "fc6958c4-1940-555c-8cb8-9b6b96796edb",
+      "ref_id": [
+        "101948a0-ee58-5103-b44b-b993ef22af65"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Tích điểm thì chị cần nhất, vì chương trình thành viên cũ làm trên thẻ giấy đang loạn lắm. Quy tắc bên chị là 10.000 đồng được 1 điểm, 100 điểm đổi được phiếu giảm 50.000 đồng.",
+      "segment_html": "Tích điểm thì chị cần nhất, vì chương trình thành viên cũ làm trên thẻ giấy đang loạn lắm. Quy tắc bên chị là 10.000 đồng được 1 điểm, 100 điểm đổi được phiếu giảm 50.000 đồng.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 936.413,
+      "end_time": 952.5,
+      "point_id": "237fcfcc-c10a-5ec2-ba9f-6a37a112ca99",
+      "ref_id": [
+        "0ae92166-d5be-5619-b9c6-7766afc829e7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "Anh lưu ý là không được tích điểm cho thuốc kê đơn, vì tích điểm đổi quà cũng là một hình thức khuyến mại. Chỉ tích trên thuốc không kê đơn, thực phẩm chức năng, dụng cụ y tế và mỹ phẩm thôi.",
+      "segment_html": "Anh lưu ý là không được tích điểm cho thuốc kê đơn, vì tích điểm đổi quà cũng là một hình thức khuyến mại. Chỉ tích trên thuốc không kê đơn, thực phẩm chức năng, dụng cụ y tế và mỹ phẩm thôi.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 953.5,
+      "end_time": 972.196,
+      "point_id": "fa30cfb1-519d-5c0f-978d-8447959e1fbd",
+      "ref_id": [
+        "a6032ef3-3131-5e39-9e52-cb61df8481d4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "Em có ý là nhân tiện làm mini app thì em tích hợp luôn một chatbot AI, khách nhập triệu chứng thì chatbot gợi ý thuốc không kê đơn phù hợp rồi cho đặt giữ hàng ở nhà thuốc gần nhất. Em dùng API mô hình ngôn ngữ có sẵn, chắc khoảng ba tuần là em làm xong.",
+      "segment_html": "Em có ý là nhân tiện làm mini app thì em tích hợp luôn một chatbot AI, khách nhập triệu chứng thì chatbot gợi ý thuốc không kê đơn phù hợp rồi cho đặt giữ hàng ở nhà thuốc gần nhất. Em dùng API mô hình ngôn ngữ có sẵn, chắc khoảng ba tuần là em làm xong.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 973.196,
+      "end_time": 998.413,
+      "point_id": "05b3878b-7348-53ad-9522-b7ebf4146f65",
+      "ref_id": [
+        "772765ce-bfd3-54cf-9b91-4de6c1fb8ad2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "Cái này anh không đồng ý. Tư vấn chọn thuốc theo triệu chứng là việc của dược sĩ. Máy gợi ý sai một cái, khách đang có thai hay dị ứng uống vào thì chuỗi chịu trách nhiệm. Bên anh không ký duyệt chuyên môn cho cái đó được.",
+      "segment_html": "Cái này anh không đồng ý. Tư vấn chọn thuốc theo triệu chứng là việc của dược sĩ. Máy gợi ý sai một cái, khách đang có thai hay dị ứng uống vào thì chuỗi chịu trách nhiệm. Bên anh không ký duyệt chuyên môn cho cái đó được.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 999.413,
+      "end_time": 1020.717,
+      "point_id": "6026f170-7a75-5020-b7d5-81631febb792",
+      "ref_id": [
+        "524c18e3-4aaa-5b36-be8e-7a0c8d2c383e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "Anh cũng gạt cái chatbot nhé Lộc, không làm. Sprint này còn liên thông với hai cái cảnh báo chưa xong. Khách cần hỏi thì mini app có nút gọi hoặc nhắn trực tiếp cho dược sĩ của nhà thuốc là đủ.",
+      "segment_html": "Anh cũng gạt cái chatbot nhé Lộc, không làm. Sprint này còn liên thông với hai cái cảnh báo chưa xong. Khách cần hỏi thì mini app có nút gọi hoặc nhắn trực tiếp cho dược sĩ của nhà thuốc là đủ.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1021.717,
+      "end_time": 1039.978,
+      "point_id": "5ca242dc-570f-5997-b677-a876ed87065d",
+      "ref_id": [
+        "bebe320d-6bbe-5ee1-aae5-aad8ed19e7ea"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Còn nhắc lịch uống thuốc thì có làm trong đợt này không anh? Chị cần biết để viết kịch bản test.",
+      "segment_html": "Còn nhắc lịch uống thuốc thì có làm trong đợt này không anh? Chị cần biết để viết kịch bản test.",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1040.978,
+      "end_time": 1050.109,
+      "point_id": "33859405-4baf-5fed-a403-a7f8328767e4",
+      "ref_id": [
+        "5ff62bc7-72bc-5bf8-9325-494d6e0d653d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "Nhắc uống thuốc thì để đợt sau đi, chị cần tích điểm chạy được trước Tết.",
+      "segment_html": "Nhắc uống thuốc thì để đợt sau đi, chị cần tích điểm chạy được trước Tết.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 1051.109,
+      "end_time": 1058.065,
+      "point_id": "b9973ec2-97f7-5001-8fc0-bde12981cb98",
+      "ref_id": [
+        "3173b598-c368-5b8d-9344-346f67a7d3ca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Chốt: đợt này mini app chỉ có tích điểm, xem lịch sử mua và nút liên hệ dược sĩ. Tích điểm 10.000 đồng một điểm, chỉ tính trên hàng không kê đơn. Nhắc lịch uống thuốc chuyển sang giai đoạn 2. Ngân hoàn thiện mini app,",
+      "segment_html": "Chốt: đợt này mini app chỉ có tích điểm, xem lịch sử mua và nút liên hệ dược sĩ. Tích điểm 10.000 đồng một điểm, chỉ tính trên hàng không kê đơn. Nhắc lịch uống thuốc chuyển sang giai đoạn 2. Ngân hoàn thiện mini app,",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1059.065,
+      "end_time": 1079.065,
+      "point_id": "650e4d3e-f665-5116-a8e1-93a3d0ccf1da",
+      "ref_id": [
+        "b0b9dde3-389e-5c56-a647-fcfd495ed5db"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "Lộc làm API tích điểm có loại trừ thuốc kê đơn.",
+      "segment_html": "Lộc làm API tích điểm có loại trừ thuốc kê đơn.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1079.315,
+      "end_time": 1084.098,
+      "point_id": "650e4d3e-f665-5116-a8e1-93a3d0ccf1da",
+      "ref_id": [
+        "b0b9dde3-389e-5c56-a647-fcfd495ed5db"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Dạ, API tích điểm em làm, có cờ loại trừ theo nhóm thuốc, anh Tín đánh dấu sẵn nhóm kê đơn trong danh mục là được.",
+      "segment_html": "Dạ, API tích điểm em làm, có cờ loại trừ theo nhóm thuốc, anh Tín đánh dấu sẵn nhóm kê đơn trong danh mục là được.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1085.098,
+      "end_time": 1096.402,
+      "point_id": "4b9257bd-2725-5604-baa8-e9014d5dcb35",
+      "ref_id": [
+        "731b60f5-c322-59a2-b3fb-ad7094459127"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "Mini app em hoàn thiện, ngày 27 em đưa bản thử cho chị Phượng.",
+      "segment_html": "Mini app em hoàn thiện, ngày 27 em đưa bản thử cho chị Phượng.",
+      "speaker_name": "Ngân (Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1097.402,
+      "end_time": 1103.489,
+      "point_id": "86e5c307-a4fd-5bac-8ded-557fa1f19fac",
+      "ref_id": [
+        "305c4831-dffb-57c2-b389-6a8dd1e791d1"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Cuối cùng là kế hoạch thí điểm. Chị Phượng báo tình hình kiểm thử trước nhé.",
+      "segment_html": "Cuối cùng là kế hoạch thí điểm. Chị Phượng báo tình hình kiểm thử trước nhé.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1104.489,
+      "end_time": 1111.446,
+      "point_id": "40b3e826-af6b-5ad7-b267-0d5b8aeb5d78",
+      "ref_id": [
+        "696ff2f6-157d-50e8-9bc7-2f4a4f5ff6dd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "Chị chạy kiểm thử chấp nhận với nhóm dược sĩ ở hai nhà thuốc trong tuần vừa rồi, tổng cộng ghi nhận 41 lỗi, đã đóng 18, còn 23 lỗi mở. Trong đó có 4 lỗi nghiêm trọng: in hóa đơn trên máy in nhiệt khổ 58 mi li mét bị cắt mất cột thành tiền;",
+      "segment_html": "Chị chạy kiểm thử chấp nhận với nhóm dược sĩ ở hai nhà thuốc trong tuần vừa rồi, tổng cộng ghi nhận 41 lỗi, đã đóng 18, còn 23 lỗi mở. Trong đó có 4 lỗi nghiêm trọng: in hóa đơn trên máy in nhiệt khổ 58 mi li mét bị cắt mất cột thành tiền;",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1112.446,
+      "end_time": 1136.793,
+      "point_id": "a99a4fbf-e801-542b-ad0d-cf7c2c349a22",
+      "ref_id": [
+        "5889701b-e770-5170-8693-b31ba5f7e412"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "trả hàng không cộng lại tồn kho đúng lô; tính sai tiền thối khi khách trả bằng hai hình thức, nửa tiền mặt nửa chuyển khoản; và mất dữ liệu đơn khi mất mạng giữa chừng. Lỗi mất mạng là nặng nhất, vì nhà thuốc ở ngoại thành mạng hay chập chờn.",
+      "segment_html": "trả hàng không cộng lại tồn kho đúng lô; tính sai tiền thối khi khách trả bằng hai hình thức, nửa tiền mặt nửa chuyển khoản; và mất dữ liệu đơn khi mất mạng giữa chừng. Lỗi mất mạng là nặng nhất, vì nhà thuốc ở ngoại thành mạng hay chập chờn.",
+      "speaker_name": "Chị Phượng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1137.043,
+      "end_time": 1159.652,
+      "point_id": "a99a4fbf-e801-542b-ad0d-cf7c2c349a22",
+      "ref_id": [
+        "5889701b-e770-5170-8693-b31ba5f7e412"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Lỗi mất mạng thì em đang làm chế độ lưu tạm trên máy bán hàng, có mạng lại thì tự đồng bộ. Lỗi trả hàng sai lô là do phần của em, hai ngày là em sửa xong.",
+      "segment_html": "Lỗi mất mạng thì em đang làm chế độ lưu tạm trên máy bán hàng, có mạng lại thì tự đồng bộ. Lỗi trả hàng sai lô là do phần của em, hai ngày là em sửa xong.",
+      "speaker_name": "Lộc (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1160.652,
+      "end_time": 1177.174,
+      "point_id": "6c4ffa26-6f65-578e-b16f-90efd98dfcf1",
+      "ref_id": [
+        "03795adb-1b0e-514e-a4c7-4476020e2f19"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 70,
+      "segment": "Bên chị đề xuất thí điểm 6 nhà thuốc, gồm 4 nhà thuốc trong nội thành và 2 nhà thuốc ngoại thành để thử luôn chuyện mạng yếu. Nhân viên ca sáng với ca chiều đều phải được đào tạo, nên buổi đào tạo phải làm vào thứ Bảy, các nhà thuốc xếp người trực thay.",
+      "segment_html": "Bên chị đề xuất thí điểm 6 nhà thuốc, gồm 4 nhà thuốc trong nội thành và 2 nhà thuốc ngoại thành để thử luôn chuyện mạng yếu. Nhân viên ca sáng với ca chiều đều phải được đào tạo, nên buổi đào tạo phải làm vào thứ Bảy, các nhà thuốc xếp người trực thay.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 1178.174,
+      "end_time": 1202.522,
+      "point_id": "b040d5d8-0908-53ec-bd5d-2f055bcf5e30",
+      "ref_id": [
+        "6f546ed6-2be9-5bf8-9e73-a174b11a8994"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 71,
+      "segment": "Anh đề nghị thời gian đầu chạy song song với phần mềm cũ, vì báo cáo Sở Y tế tháng 11 vẫn phải xuất từ phần mềm cũ cho chắc. Chạy song song thì nhân viên nhập hai lần, vất vả, nhưng chỉ hai tuần thôi.",
+      "segment_html": "Anh đề nghị thời gian đầu chạy song song với phần mềm cũ, vì báo cáo Sở Y tế tháng 11 vẫn phải xuất từ phần mềm cũ cho chắc. Chạy song song thì nhân viên nhập hai lần, vất vả, nhưng chỉ hai tuần thôi.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 1203.522,
+      "end_time": 1223.522,
+      "point_id": "90a98a44-d23c-5a36-a39f-ff0da723696c",
+      "ref_id": [
+        "e399162e-a413-5816-997f-db4721be8d18"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 72,
+      "segment": "Chốt kế hoạch: thí điểm ở 6 nhà thuốc, 4 nội thành và 2 ngoại thành, bắt đầu thứ Hai ngày 2 tháng 11, chạy song song với phần mềm cũ 2 tuần. Bốn lỗi nghiêm trọng phải đóng hết trước ngày 28 tháng 10, không đóng được thì lùi ngày thí điểm.",
+      "segment_html": "Chốt kế hoạch: thí điểm ở 6 nhà thuốc, 4 nội thành và 2 ngoại thành, bắt đầu thứ Hai ngày 2 tháng 11, chạy song song với phần mềm cũ 2 tuần. Bốn lỗi nghiêm trọng phải đóng hết trước ngày 28 tháng 10, không đóng được thì lùi ngày thí điểm.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1224.522,
+      "end_time": 1247.565,
+      "point_id": "b47fbbe7-9dbe-502c-bba4-6df2d5b49464",
+      "ref_id": [
+        "81123a54-dce2-5335-a15d-2807b7e652d9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 73,
+      "segment": "Đào tạo nhân viên vào thứ Bảy ngày 31 tháng 10.",
+      "segment_html": "Đào tạo nhân viên vào thứ Bảy ngày 31 tháng 10.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1247.815,
+      "end_time": 1252.598,
+      "point_id": "b47fbbe7-9dbe-502c-bba4-6df2d5b49464",
+      "ref_id": [
+        "81123a54-dce2-5335-a15d-2807b7e652d9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 74,
+      "segment": "Danh sách 6 nhà thuốc với danh sách nhân viên đi đào tạo thì chị chốt, gửi anh Đạt thứ Sáu tuần này.",
+      "segment_html": "Danh sách 6 nhà thuốc với danh sách nhân viên đi đào tạo thì chị chốt, gửi anh Đạt thứ Sáu tuần này.",
+      "speaker_name": "Chị Uyên (Giám đốc vận hành chuỗi nhà thuốc Thiện Tâm)",
+      "speaker_org_unit": null,
+      "start_time": 1253.598,
+      "end_time": 1263.598,
+      "point_id": "43445406-2611-54c7-a79d-6e10324f8ce8",
+      "ref_id": [
+        "6f10c11c-e61f-52c5-87a8-e5e9a0695e67"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 75,
+      "segment": "Tài liệu hướng dẫn phần nghiệp vụ dược thì anh soạn, có cả video ngắn cho từng thao tác bán theo đơn, xong trước buổi đào tạo.",
+      "segment_html": "Tài liệu hướng dẫn phần nghiệp vụ dược thì anh soạn, có cả video ngắn cho từng thao tác bán theo đơn, xong trước buổi đào tạo.",
+      "speaker_name": "Anh Tín (Dược sĩ phụ trách chuyên môn)",
+      "speaker_org_unit": null,
+      "start_time": 1264.598,
+      "end_time": 1276.337,
+      "point_id": "65205492-e605-5a27-be1e-851625a0d683",
+      "ref_id": [
+        "7ff72f3e-14df-5d74-9103-9115fc93f3b9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 76,
+      "segment": "Ok, cảm ơn cả nhà, tuần này nhiều việc, cố lên nhé.",
+      "segment_html": "Ok, cảm ơn cả nhà, tuần này nhiều việc, cố lên nhé.",
+      "speaker_name": "Anh Đạt (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1277.337,
+      "end_time": 1282.554,
+      "point_id": "34a90a92-ce83-5992-948f-cb9452ac68c0",
+      "ref_id": [
+        "83bfe78e-cb68-5f80-ac60-99ca4bdcbd70"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi, mình bắt đầu họp sprint 9 nhé. Hôm nay có năm nội dung: liên thông đơn thuốc điện tử, hai cái cảnh báo, ứng dụng tích điểm trên Zalo, và cuối cùng là kế hoạch chạy thí điểm. Chị Uyên với anh Tín bên chuỗi cũng dự, có gì góp ý trực tiếp luôn nhé. Lộc nói phần liên thông đơn thuốc trước. Dạ. Phần liên thông với hệ thống đơn thuốc quốc gia thì em đã kết nối xong trên môi trường thử nghiệm. Luồng hiện tại là dược sĩ quét mã trên đơn thuốc của bệnh viện, hệ thống gọi sang cổng quốc gia lấy chi tiết đơn về, tự điền danh sách thuốc, liều dùng, số lượng vào màn hình bán. Bán xong thì mình phải gửi lại thông tin bán thuốc theo đơn lên cổng. Em chạy thử với khoảng 1.300 đơn mà chị Uyên gửi từ hai nhà thuốc thì có khoảng 3% đơn tra không ra, chủ yếu là đơn của các phòng khám tư nhỏ, họ chưa đăng ký mã cơ sở trên cổng hoặc in mã sai. Còn một vấn đề nữa là cổng quốc gia hay chậm vào giờ cao điểm buổi sáng, có lúc 15 đến 20 giây mới trả kết quả, dược sĩ đứng chờ thì khách sốt ruột. Cái 3% không tra được đó thì ngoài thực tế bên anh vẫn phải bán. Đơn giấy hợp lệ, có chữ ký bác sĩ, có dấu phòng khám thì mình bán bình thường, chỉ là phải lưu đơn lại. Nên phần mềm không được chặn cứng. Đúng rồi, chặn là nhân viên quay lại ghi sổ tay ngay, mấy tháng nay chị mới bỏ được sổ tay đấy. Bên chị chỉ cần là có lưu vết đầy đủ, lúc thanh tra Sở Y tế xuống thì xuất ra được trong vài phút. Dạ, nên em đề xuất khi tra không được thì cho dược sĩ nhập tay mã đơn, chụp ảnh đơn giấy đính kèm, đơn đó đánh dấu trạng thái chờ đối chiếu. Còn phần gửi dữ liệu bán lên cổng thì không gửi từng đơn ngay lúc bán mà gom lại, cứ 30 phút gửi một lần, lỗi thì tự gửi lại, cuối ngày 23 giờ chạy một lượt rà những đơn chưa gửi được. Như vậy quầy bán không phải chờ cổng. Chị hỏi thêm là trường hợp dược sĩ bán thuốc thay thế, ví dụ đơn ghi biệt dược này nhưng nhà thuốc hết, bán thuốc cùng hoạt chất của hãng khác, thì gửi lên cổng thế nào? Lúc chị test thì hệ thống báo lệch đơn và không cho lưu hóa đơn. Cái đó theo quy định thì được thay thế cùng hoạt chất, cùng hàm lượng, cùng dạng bào chế, nhưng dược sĩ phải ghi rõ và người mua phải đồng ý. Phần mềm cần cho chọn thuốc thay thế từ danh sách cùng hoạt chất, bắt ghi lý do, và trên dữ liệu gửi cổng thì ghi cả thuốc trong đơn lẫn thuốc thực bán. Còn nhóm thuốc kê đơn nào bắt buộc phải quét đơn thì anh sẽ rà lại theo danh mục mới của Bộ, vì danh mục vừa sửa đổi. Ok, chốt phần này: không chặn cứng khi tra không được, cho nhập tay mã đơn, chụp ảnh đơn giấy, đánh dấu chờ đối chiếu. Dữ liệu bán gửi lên cổng theo lô 30 phút, có tự gửi lại và rà lúc 23 giờ. Cho phép bán thuốc thay thế cùng hoạt chất, cùng hàm lượng, bắt ghi lý do. Lộc làm phía backend phần nhập tay, gửi theo lô và thuốc thay thế, thứ Năm tuần sau xong nhé. Ngân làm màn hình chụp ảnh đơn với chọn thuốc thay thế. Dạ, màn hình chụp đơn với chọn thuốc thay thế em làm song song với Lộc, thứ Năm tuần sau ghép luôn. Dạ được anh, thứ Năm tuần sau em xong. Danh mục thuốc kê đơn bắt buộc quét đơn thì anh gửi file cho Lộc trước ngày 20. Sang hai cái cảnh báo. Cái thứ nhất là cảnh báo cận hạn sử dụng. Ngân trình bày nhé. Dạ. Cảnh báo cận hạn hiện tại thì hệ thống quét theo từng lô thuốc trong kho của mỗi nhà thuốc, lô nào còn dưới 90 ngày là hiện chấm đỏ trên màn hình tồn kho và gửi thông báo vào ứng dụng cho quản lý nhà thuốc. Nhưng chị Uyên có gửi số liệu là tháng 9 cả chuỗi vẫn phải hủy khoảng 47 triệu tiền thuốc hết hạn, nhiều nhất là siro trẻ em với thuốc nhỏ mắt. Em xem lại thì có mấy lý do. Thứ nhất là 90 ngày thì với thuốc bán chậm đã quá muộn, không kịp xoay. Thứ hai là thông báo gửi mỗi ngày một lần, danh sách dài cả trăm dòng, quản lý đọc không hết nên bỏ qua. Thứ ba là ở quầy bán, nhân viên lấy lô nào cũng được, hay lấy hộp mới nhập ở ngoài cùng, lô cũ nằm trong cùng thì cứ thế hết hạn. Chị đi kiểm tra mấy nhà thuốc thì đúng như vậy. Có nhà thuốc số 7 chị thấy ba hộp thuốc nhỏ mắt hết hạn từ tháng trước vẫn nằm trên kệ, may là khách chưa mua. Cái này mà Sở kiểm tra là phạt nặng, có thể bị đình chỉ. Về nguyên tắc chuyên môn thì phải xuất theo hạn dùng, hết hạn trước thì xuất trước. Phần mềm nên ép chuyện này ở quầy chứ đừng để nhân viên tự nhớ. Dạ phía backend em làm được, khi quét mã vạch sản phẩm thì hệ thống tự gợi ý lô có hạn gần nhất mà còn bán được. Nếu nhân viên chọn lô khác thì bắt nhập lý do. Còn cảnh báo thì em đề xuất chia ba mức, 180 ngày, 90 ngày và 30 ngày. Dưới 30 ngày thì khóa không cho bán nữa với các thuốc dùng dài ngày, vì khách mua về uống cả tháng thì hết hạn giữa chừng. Khóa dưới 30 ngày thì anh đồng ý với thuốc dùng dài ngày như thuốc huyết áp, tiểu đường. Còn thuốc dùng ngắn ngày như kháng sinh 5 đến 7 ngày thì vẫn bán được, đừng khóa hết, không thì lại hủy nhiều hơn. Chị có ý thế này, các em xem được không. Hay là thuốc nào còn dưới 60 ngày thì hệ thống tự giảm giá 20% để đẩy hàng, đỡ phải hủy. Chị thấy mấy chuỗi khác cũng làm. Cái đó chị phải cẩn thận. Thuốc kê đơn thì không được khuyến mại, giảm giá kiểu đó là vướng quy định về khuyến mại thuốc. Thực phẩm chức năng, mỹ phẩm thì có thể được. Chị nên hỏi bên pháp chế trước đã. Ừ thôi, cái giảm giá thì để chị hỏi pháp chế đã, chưa làm vội. Các em cứ làm phần cảnh báo trước. Vậy chốt cảnh báo cận hạn: ba mức 180, 90 và 30 ngày. Mức 180 ngày thì gom thành bản tóm tắt gửi mỗi tuần một lần, mức 90 và 30 ngày thì gửi hằng ngày, sắp theo giá trị tiền giảm dần để quản lý đọc phần quan trọng trước. Ở quầy bán bắt buộc gợi ý lô có hạn gần nhất, chọn lô khác phải ghi lý do. Thuốc dùng dài ngày còn dưới 30 ngày thì khóa bán. Danh sách nhóm thuốc dùng dài ngày thì anh Tín bổ sung luôn vào file danh mục gửi Lộc. Lộc làm phần gợi ý lô và khóa bán, Ngân làm lại màn hình cảnh báo và bản tóm tắt, chị Phượng test bằng dữ liệu lô thật. Chị xin dữ liệu lô thật của hai nhà thuốc từ chị Uyên, dựng bộ test xong trước thứ Tư tuần sau. Dạ em làm màn hình ba mức với bản tóm tắt, cuối sprint này xong. Phần gợi ý lô với khóa bán thì em làm sau phần liên thông, chắc sang đầu sprint 10 anh ạ. Ừ, danh sách thuốc dùng dài ngày anh gộp chung một file với danh mục kê đơn, vẫn trước ngày 20. Rồi, sang cái cảnh báo thứ hai. Lộc nói nhé. Dạ. Cảnh báo tồn kho dưới định mức thì hiện tại mỗi mã thuốc ở mỗi nhà thuốc có một con số định mức tối thiểu, đang để mặc định 20 hộp cho tất cả, quản lý nhà thuốc muốn thì tự sửa. Tồn xuống dưới định mức thì hệ thống bắn cảnh báo. Vấn đề là con số 20 cố định nên thuốc bán chạy như hạ sốt, siro ho thì báo quá muộn, hai ngày là hết sạch; còn thuốc bán chậm thì báo liên tục mà không cần nhập, quản lý bị nhiễu, tuần trước có nhà thuốc nhận hơn 300 cảnh báo trong một ngày. Thống kê tháng 9 thì có 212 lượt khách hỏi mua mà hết hàng, chủ yếu là thuốc hạ sốt và siro ho do đầu mùa cúm. Hết hàng thì chị tiếc nhất, khách sang nhà thuốc bên cạnh là mất luôn khách đó. Chị muốn hệ thống không chỉ báo mà còn đề xuất luôn cần nhập bao nhiêu, quản lý chỉ việc duyệt rồi gửi về kho tổng. Dạ, em đề xuất định mức tính động: lấy lượng bán trung bình mỗi ngày trong 28 ngày gần nhất, nhân với số ngày từ lúc đặt đến lúc kho tổng giao hàng, cộng thêm số ngày dự phòng. Kho tổng giao cho nhà thuốc hiện là 2 ngày, dự phòng em để 5 ngày. Tồn xuống dưới con số đó thì tạo đề xuất nhập với số lượng đủ bán 14 ngày. Có một điểm liên quan đến cái cảnh báo cận hạn lúc nãy: lô nào đã bị khóa bán vì còn dưới 30 ngày thì không được tính vào tồn khả dụng, không thì hệ thống tưởng còn hàng mà thực ra không bán được. Chị thêm là mùa dịch thì bán trung bình 28 ngày sẽ đuổi không kịp. Năm ngoái đầu mùa cúm, lượng bán thuốc hạ sốt tăng gấp ba chỉ trong một tuần. Thế thì cho chị một hệ số mùa vụ, bên chị chỉnh tay theo từng nhóm thuốc, ví dụ từ tháng 10 đến tháng 12 thì nhóm hạ sốt nhân 1,5. Phía giao diện thì em nghĩ không nên gửi cảnh báo từng mã nữa, mà gom thành một phiếu đề xuất nhập mỗi sáng, quản lý mở ra sửa số lượng rồi bấm duyệt một lần. Ok, chốt cảnh báo tồn kho: bỏ định mức cố định 20 hộp, chuyển sang định mức động theo bán trung bình 28 ngày nhân thời gian giao 2 ngày cộng 5 ngày dự phòng, có hệ số mùa vụ theo nhóm thuốc do bên vận hành cấu hình. Tồn khả dụng không tính lô đã khóa bán. Không gửi cảnh báo từng mã nữa, mỗi sáng 7 giờ tạo một phiếu đề xuất nhập đủ bán 14 ngày cho quản lý nhà thuốc duyệt. Công thức định mức động với tạo phiếu đề xuất em làm luôn, xong trước ngày 30 tháng 10. Bảng hệ số mùa vụ cho từng nhóm thuốc thì chị gửi Lộc thứ Hai tuần sau. Tiếp theo là ứng dụng tích điểm cho khách. Ngân nói. Dạ, phần này theo yêu cầu ban đầu là làm trên Zalo Mini App, khách quét mã QR ở quầy là vào được, không phải cài gì. Chức năng gồm tích điểm theo hóa đơn, xem lịch sử mua thuốc, và nhắc lịch uống thuốc. Em đã làm xong phần đăng nhập bằng số điện thoại Zalo, xem điểm và lịch sử mua. Còn tích điểm thì đang chờ API của Lộc. Vướng nhất là nhắc lịch uống thuốc, vì phải gửi qua tin nhắn Zalo OA, tính phí khoảng 200 đồng mỗi tin. Một khách uống thuốc ngày ba lần trong mười ngày là ba mươi tin, mà chuỗi mình hiện có khoảng 18.000 khách thành viên. Thêm nữa lịch uống thuốc là dữ liệu sức khỏe, phải có khách đồng ý thì mới được lưu. Tích điểm thì chị cần nhất, vì chương trình thành viên cũ làm trên thẻ giấy đang loạn lắm. Quy tắc bên chị là 10.000 đồng được 1 điểm, 100 điểm đổi được phiếu giảm 50.000 đồng. Anh lưu ý là không được tích điểm cho thuốc kê đơn, vì tích điểm đổi quà cũng là một hình thức khuyến mại. Chỉ tích trên thuốc không kê đơn, thực phẩm chức năng, dụng cụ y tế và mỹ phẩm thôi. Em có ý là nhân tiện làm mini app thì em tích hợp luôn một chatbot AI, khách nhập triệu chứng thì chatbot gợi ý thuốc không kê đơn phù hợp rồi cho đặt giữ hàng ở nhà thuốc gần nhất. Em dùng API mô hình ngôn ngữ có sẵn, chắc khoảng ba tuần là em làm xong. Cái này anh không đồng ý. Tư vấn chọn thuốc theo triệu chứng là việc của dược sĩ. Máy gợi ý sai một cái, khách đang có thai hay dị ứng uống vào thì chuỗi chịu trách nhiệm. Bên anh không ký duyệt chuyên môn cho cái đó được. Anh cũng gạt cái chatbot nhé Lộc, không làm. Sprint này còn liên thông với hai cái cảnh báo chưa xong. Khách cần hỏi thì mini app có nút gọi hoặc nhắn trực tiếp cho dược sĩ của nhà thuốc là đủ. Còn nhắc lịch uống thuốc thì có làm trong đợt này không anh? Chị cần biết để viết kịch bản test. Nhắc uống thuốc thì để đợt sau đi, chị cần tích điểm chạy được trước Tết. Chốt: đợt này mini app chỉ có tích điểm, xem lịch sử mua và nút liên hệ dược sĩ. Tích điểm 10.000 đồng một điểm, chỉ tính trên hàng không kê đơn. Nhắc lịch uống thuốc chuyển sang giai đoạn 2. Ngân hoàn thiện mini app, Lộc làm API tích điểm có loại trừ thuốc kê đơn. Dạ, API tích điểm em làm, có cờ loại trừ theo nhóm thuốc, anh Tín đánh dấu sẵn nhóm kê đơn trong danh mục là được. Mini app em hoàn thiện, ngày 27 em đưa bản thử cho chị Phượng. Cuối cùng là kế hoạch thí điểm. Chị Phượng báo tình hình kiểm thử trước nhé. Chị chạy kiểm thử chấp nhận với nhóm dược sĩ ở hai nhà thuốc trong tuần vừa rồi, tổng cộng ghi nhận 41 lỗi, đã đóng 18, còn 23 lỗi mở. Trong đó có 4 lỗi nghiêm trọng: in hóa đơn trên máy in nhiệt khổ 58 mi li mét bị cắt mất cột thành tiền; trả hàng không cộng lại tồn kho đúng lô; tính sai tiền thối khi khách trả bằng hai hình thức, nửa tiền mặt nửa chuyển khoản; và mất dữ liệu đơn khi mất mạng giữa chừng. Lỗi mất mạng là nặng nhất, vì nhà thuốc ở ngoại thành mạng hay chập chờn. Lỗi mất mạng thì em đang làm chế độ lưu tạm trên máy bán hàng, có mạng lại thì tự đồng bộ. Lỗi trả hàng sai lô là do phần của em, hai ngày là em sửa xong. Bên chị đề xuất thí điểm 6 nhà thuốc, gồm 4 nhà thuốc trong nội thành và 2 nhà thuốc ngoại thành để thử luôn chuyện mạng yếu. Nhân viên ca sáng với ca chiều đều phải được đào tạo, nên buổi đào tạo phải làm vào thứ Bảy, các nhà thuốc xếp người trực thay. Anh đề nghị thời gian đầu chạy song song với phần mềm cũ, vì báo cáo Sở Y tế tháng 11 vẫn phải xuất từ phần mềm cũ cho chắc. Chạy song song thì nhân viên nhập hai lần, vất vả, nhưng chỉ hai tuần thôi. Chốt kế hoạch: thí điểm ở 6 nhà thuốc, 4 nội thành và 2 ngoại thành, bắt đầu thứ Hai ngày 2 tháng 11, chạy song song với phần mềm cũ 2 tuần. Bốn lỗi nghiêm trọng phải đóng hết trước ngày 28 tháng 10, không đóng được thì lùi ngày thí điểm. Đào tạo nhân viên vào thứ Bảy ngày 31 tháng 10. Danh sách 6 nhà thuốc với danh sách nhân viên đi đào tạo thì chị chốt, gửi anh Đạt thứ Sáu tuần này. Tài liệu hướng dẫn phần nghiệp vụ dược thì anh soạn, có cả video ngắn cho từng thao tác bán theo đơn, xong trước buổi đào tạo. Ok, cảm ơn cả nhà, tuần này nhiều việc, cố lên nhé.",
+  "metadata": {
+    "meeting_id": "synth_036",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

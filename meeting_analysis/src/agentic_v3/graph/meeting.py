@@ -147,7 +147,6 @@ def finalize(state: MeetingStateV3) -> dict:
         decisions=tuple(merge_duplicate_decisions(decisions)),
         verification_records=tuple(by_topic(records)),
         failures=tuple(by_topic(state.get("topic_failures", []))),
-        skipped_agents=tuple(by_topic(state.get("skipped_agents", []))),
         task_progress=task_progress,
     )
     return {"report": report}

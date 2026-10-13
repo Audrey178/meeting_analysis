@@ -1,0 +1,265 @@
+{
+  "meeting_id": "synth_028",
+  "n_turns": 24,
+  "total_chars": 5287,
+  "boundaries": [
+    8,
+    15
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Sửa lỗi đăng nhập bằng sinh trắc học trên Android",
+      "summary": "Lỗi đăng nhập vân tay thất bại trên một số máy Samsung Android 14 sau khi người dùng đổi vân tay, chiếm khoảng 4% phiên đăng nhập; thống nhất khi khóa sinh trắc học bị vô hiệu thì tự chuyển về đăng nhập mã PIN và yêu cầu đăng ký lại.",
+      "turn_range": [
+        0,
+        8
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000008"
+      ],
+      "chars": 2025,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Tích hợp thanh toán bằng mã VietQR",
+      "summary": "Tích hợp quét và tạo mã VietQR cơ bản đã xong nhưng đối soát với ngân hàng đối tác còn lệch khi giao dịch bị timeout; thống nhất đưa VietQR vào bản 2.4 dưới dạng bật theo cờ cho 10% người dùng, xử lý timeout bằng truy vấn trạng thái giao dịch.",
+      "turn_range": [
+        8,
+        15
+      ],
+      "turn_ids": [
+        "TURN_000009",
+        "TURN_000015"
+      ],
+      "chars": 1776,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát checklist và lịch phát hành bản 2.4 lên kho ứng dụng",
+      "summary": "Thống nhất đóng băng code ngày thứ Sáu, nộp lên App Store và Google Play thứ Hai tuần sau, phát hành dần 20% trong 3 ngày đầu; phân công viết ghi chú phát hành và kịch bản kiểm thử hồi quy.",
+      "turn_range": [
+        15,
+        24
+      ],
+      "turn_ids": [
+        "TURN_000016",
+        "TURN_000024"
+      ],
+      "chars": 1486,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Quân (Lập trình Android)",
+      "actor_aliases": [
+        "Quân",
+        "em"
+      ],
+      "task": "Sửa lỗi đăng nhập vân tay Android: bắt ngoại lệ khóa bị vô hiệu, chuyển về mã PIN, mời bật lại",
+      "deadline": "thứ Tư",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006",
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Yến (Kiểm thử)",
+      "actor_aliases": [
+        "chị Yến",
+        "chị"
+      ],
+      "task": "Kiểm thử lại lỗi vân tay trên 3 máy Samsung và máy Xiaomi",
+      "deadline": "thứ Năm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006",
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Anh Sang (Tích hợp thanh toán)",
+      "actor_aliases": [
+        "anh Sang"
+      ],
+      "task": "Làm xử lý timeout VietQR bằng truy vấn trạng thái giao dịch và chặn chuyển trùng",
+      "deadline": "thứ Năm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014",
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Quân (Lập trình Android)",
+      "actor_aliases": [
+        "hai bạn"
+      ],
+      "task": "Làm màn hình trạng thái đang xử lý giao dịch trên Android",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Thảo (Lập trình iOS)",
+      "actor_aliases": [
+        "hai bạn"
+      ],
+      "task": "Làm màn hình trạng thái đang xử lý giao dịch trên iOS",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Sang (Tích hợp thanh toán)",
+      "actor_aliases": [
+        "anh Sang"
+      ],
+      "task": "Viết kịch bản kiểm thử VietQR cho chị Yến",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000019",
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Quân (Lập trình Android)",
+      "actor_aliases": [
+        "bạn nào sửa lỗi đăng nhập lúc nãy",
+        "em"
+      ],
+      "task": "Viết ghi chú phát hành phần sửa lỗi vân tay gửi Thảo",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Kiên (Trưởng nhóm Mobile)",
+      "actor_aliases": [
+        "anh"
+      ],
+      "task": "Viết ghi chú phát hành phần VietQR",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Thảo (Lập trình iOS)",
+      "actor_aliases": [
+        "Thảo"
+      ],
+      "task": "Tổng hợp ghi chú phát hành và nộp bản 2.4 lên cả hai kho",
+      "deadline": "thứ Hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021",
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Yến (Kiểm thử)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Chạy kiểm thử hồi quy bản 2.4",
+      "deadline": "thứ Bảy và Chủ nhật",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000019"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Xử lý lỗi vân tay Android giống iOS: khóa bị vô hiệu thì chuyển về mã PIN và mời bật lại; bắt buộc có trong 2.4",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "VietQR có trong 2.4 nhưng bật theo cờ cho 10% người dùng, theo dõi 1 tuần; timeout xử lý bằng truy vấn trạng thái",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Đóng băng code thứ Sáu, hồi quy cuối tuần, nộp hai kho thứ Hai; Google Play phát hành dần 20% ba ngày đầu, App Store phát hành theo giai đoạn",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    }
+  ],
+  "negatives": [],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Quân (Lập trình Android)",
+      "point": "Lỗi vân tay trên Samsung Android 14 (~4% phiên) do khóa bị vô hiệu khi đổi vân tay mà code không bắt ngoại lệ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Sang (Tích hợp thanh toán)",
+      "point": "Khoảng 0,3% giao dịch timeout nhưng ngân hàng vẫn xử lý thành công, gây chuyển tiền hai lần",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Yến (Kiểm thử)",
+      "point": "Cần 2 ngày hồi quy và kịch bản kiểm thử VietQR; App Store duyệt 1-2 ngày",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    }
+  ],
+  "speakers": {
+    "TL": "Anh Kiên (Trưởng nhóm Mobile)",
+    "AD": "Quân (Lập trình Android)",
+    "IOS": "Thảo (Lập trình iOS)",
+    "QA": "Chị Yến (Kiểm thử)",
+    "PAY": "Anh Sang (Tích hợp thanh toán)"
+  },
+  "tags": [
+    "short_meeting",
+    "pronoun_actor"
+  ]
+}

@@ -140,7 +140,6 @@ class MeetingAnalyzerV3:
             "verified_decisions": [],
             "verification_records": [],
             "topic_failures": [],
-            "skipped_agents": [],
             "progress_updates": [],
             "report": None,
         }

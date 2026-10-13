@@ -1,0 +1,739 @@
+{
+  "meeting_id": "synth_009",
+  "n_turns": 148,
+  "total_chars": 46888,
+  "boundaries": [
+    14,
+    31,
+    51,
+    71,
+    91,
+    109,
+    126
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Trình bày báo cáo tình hình kinh tế - xã hội năm 2026 và kế hoạch năm 2027",
+      "summary": "Sở Tài chính trình bày: GRDP 2026 ước tăng 7,1%, đạt 15/18 chỉ tiêu; dự thảo kế hoạch 2027 đặt mục tiêu tăng trưởng 8,5%, thu ngân sách 21.500 tỷ, giải ngân đầu tư công trên 95%.",
+      "turn_range": [
+        0,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000014"
+      ],
+      "chars": 6865,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Thảo luận chỉ tiêu tăng trưởng GRDP năm 2027",
+      "summary": "Chi cục Thống kê cảnh báo mục tiêu 8,5% khó đạt vì hai nhà máy lớn chậm vận hành; các ý kiến đề nghị giảm còn 8% hoặc giữ 8,5%; Chủ tịch tạm gác chỉ tiêu tăng trưởng, giao Sở Tài chính và Chi cục Thống kê tính lại kịch bản.",
+      "turn_range": [
+        14,
+        31
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000031"
+      ],
+      "chars": 5610,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Cho ý kiến dự toán thu chi ngân sách địa phương năm 2027",
+      "summary": "Sở Tài chính trình dự toán thu nội địa 18.900 tỷ, chi ngân sách địa phương 24.300 tỷ; vướng nguồn tiền sử dụng đất chỉ đạt 52% năm nay; thống nhất giảm dự toán thu tiền sử dụng đất xuống 3.200 tỷ, chi thường xuyên tiết kiệm 10%.",
+      "turn_range": [
+        31,
+        51
+      ],
+      "turn_ids": [
+        "TURN_000032",
+        "TURN_000051"
+      ],
+      "chars": 6483,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Cho ý kiến phương án phân bổ vốn đầu tư công năm 2027",
+      "summary": "Tổng vốn đầu tư công 2027 là 9.100 tỷ, sau điều chỉnh còn 8.300 tỷ; thống nhất ưu tiên dự án chuyển tiếp và đối ứng ODA, cắt 12 dự án khởi công mới chưa đủ thủ tục, không bố trí vốn cho dự án giải ngân dưới 30%.",
+      "turn_range": [
+        51,
+        71
+      ],
+      "turn_ids": [
+        "TURN_000052",
+        "TURN_000071"
+      ],
+      "chars": 5811,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Thảo luận chỉ tiêu tăng trưởng GRDP năm 2027",
+      "summary": "Quay lại chỉ tiêu tăng trưởng: Ban Quản lý khu kinh tế xác nhận nhà máy thép giai đoạn 2 đã được phê duyệt đánh giá tác động môi trường, vận hành từ tháng 6; Chủ tịch chốt mục tiêu tăng trưởng 8,2%, thu ngân sách tính theo kịch bản 8%.",
+      "turn_range": [
+        71,
+        91
+      ],
+      "turn_ids": [
+        "TURN_000072",
+        "TURN_000091"
+      ],
+      "chars": 5526,
+      "same_topic_as": 1
+    },
+    {
+      "index": 5,
+      "title": "Cho ý kiến chương trình phát triển nhà ở xã hội giai đoạn 2026-2030",
+      "summary": "Sở Xây dựng trình chương trình 12.000 căn nhà ở xã hội; vướng quỹ đất 20% trong dự án thương mại và giá bán; thống nhất bố trí 6 khu đất độc lập, rút gọn thủ tục chọn chủ đầu tư; đề xuất tỉnh tự đầu tư nhà ở xã hội bằng ngân sách bị gạt.",
+      "turn_range": [
+        91,
+        109
+      ],
+      "turn_ids": [
+        "TURN_000092",
+        "TURN_000109"
+      ],
+      "chars": 5483,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Triển khai phòng chống dịch tả lợn châu Phi trên địa bàn tỉnh",
+      "summary": "Dịch tả lợn châu Phi xuất hiện ở 23 xã, tiêu hủy 4.800 con; thống nhất lập chốt kiểm dịch tạm thời tại 4 cửa ngõ, hỗ trợ tiêu hủy theo mức quy định, thí điểm tiêm vắc xin tại 2 huyện.",
+      "turn_range": [
+        109,
+        126
+      ],
+      "turn_ids": [
+        "TURN_000110",
+        "TURN_000126"
+      ],
+      "chars": 5498,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Kết luận chung của Chủ tịch UBND tỉnh về các nội dung trình kỳ họp HĐND",
+      "summary": "Chủ tịch kết luận chung: thống nhất các nội dung trình HĐND với các điều chỉnh đã chốt; giao Văn phòng tổng hợp tờ trình trước 25/11; giao các sở chuẩn bị giải trình chất vấn.",
+      "turn_range": [
+        126,
+        148
+      ],
+      "turn_ids": [
+        "TURN_000127",
+        "TURN_000148"
+      ],
+      "chars": 5612,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "đồng chí Hằng",
+        "tôi"
+      ],
+      "task": "Liên hệ ngay Ban Quản lý khu kinh tế lấy số liệu tiến độ hai nhà máy",
+      "deadline": "ngay trong phiên họp",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000030",
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Viết lại phần hạn chế của báo cáo, nêu rõ nguyên nhân chủ quan và đơn vị chịu trách nhiệm của 3 chỉ tiêu không đạt",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Chỉnh lại toàn bộ biểu dự toán ngân sách 2027, gửi Văn phòng",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường",
+        "Sở"
+      ],
+      "task": "Lập hồ sơ dự án khẩn cấp kè sông Mã trình Chủ tịch",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Hoàn thiện danh mục đầu tư công 2027 gửi Ban Kinh tế - Ngân sách HĐND thẩm tra",
+      "deadline": "trước ngày 25 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000071"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Khương (Trưởng Chi cục Thống kê tỉnh)",
+      "actor_aliases": [
+        "Chi cục"
+      ],
+      "task": "Gửi Sở Tài chính bảng chỉ tiêu tính lại đồng bộ theo mức tăng trưởng 8,2%",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000079"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Thanh (Phó Chủ tịch Thường trực UBND tỉnh)",
+      "actor_aliases": [
+        "đồng chí Thanh"
+      ],
+      "task": "Đưa nội dung làm việc với Bộ Công Thương, EVN về trạm 500 kV Nghi Sơn 2 vào tổ công tác nhà máy thép",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000088"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Thanh (Phó Chủ tịch Thường trực UBND tỉnh)",
+      "actor_aliases": [
+        "đồng chí Thanh",
+        "tôi"
+      ],
+      "task": "Làm việc với Tập đoàn Hưng Phát và Ban Quản lý khu kinh tế, lập tổ công tác theo dõi nhà máy thép",
+      "deadline": "tuần sau",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000089",
+        "TURN_000090"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Cập nhật báo cáo KT-XH và dự toán theo tăng trưởng 8,2% và kịch bản thu 8%",
+      "deadline": "ngày 20 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000091"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Hoàn thiện chương trình nhà ở xã hội trình UBND",
+      "deadline": "trước ngày 30 tháng 11",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000108"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Đưa danh mục chuyển mục đích đất trồng lúa khu nhà ở xã hội Hoằng Hóa vào tờ trình kỳ họp này",
+      "deadline": "kỳ họp này",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000103"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Rà soát quỹ đất 6 khu nhà ở xã hội, cập nhật kế hoạch sử dụng đất 2027",
+      "deadline": null,
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000109"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Trình quyết định lập 4 chốt kiểm dịch tạm thời",
+      "deadline": "ngày mai, chốt hoạt động từ thứ Hai",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000125"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Trình phương án kinh phí hỗ trợ 50% vắc xin",
+      "deadline": "trong tuần này",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000126"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Đưa nội dung rủi ro phụ thuộc vào ít dự án và nguồn thu vào phần đánh giá rủi ro của báo cáo",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000135"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Đề xuất chính sách khuyến khích đầu tư cơ sở giết mổ tập trung trong kế hoạch năm sau",
+      "deadline": "kế hoạch năm sau",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000121"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)",
+      "actor_aliases": [
+        "Văn phòng"
+      ],
+      "task": "Tổng hợp tờ trình, dự thảo nghị quyết gửi Thường trực HĐND",
+      "deadline": "trước ngày 25 tháng 11",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000127",
+        "TURN_000128"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Trả lời 3 kiến nghị cử tri quá hạn về cầu dân sinh Mường Lát",
+      "deadline": "trước kỳ họp",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000138"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Gửi Văn phòng trả lời 3 kiến nghị về cấp giấy chứng nhận đất lâm nghiệp",
+      "deadline": "tuần này",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000139"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "actor_aliases": [
+        "Sở Tài chính"
+      ],
+      "task": "Trả lời tạm thời 2 kiến nghị về chế độ cán bộ không chuyên trách cấp xã",
+      "deadline": "trước kỳ họp",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000140"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở"
+      ],
+      "task": "Tổng hợp số liệu quan trắc 14 trạm khu kinh tế Nghi Sơn phục vụ phiên chất vấn",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000142"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "actor_aliases": [
+        "Sở Xây dựng"
+      ],
+      "task": "Chuẩn bị báo cáo giải trình chất vấn về nhà ở xã hội",
+      "deadline": "trước ngày 1 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000145"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "actor_aliases": [
+        "Sở Nông nghiệp và Môi trường"
+      ],
+      "task": "Chuẩn bị báo cáo giải trình chất vấn về giải phóng mặt bằng",
+      "deadline": "trước ngày 1 tháng 12",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000145"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Dự toán thu tiền sử dụng đất 2027 giảm còn 3.200 tỷ; giảm chi đầu tư từ nguồn đất tương ứng; chi thường xuyên tiết kiệm 10% nhưng không cắt chi an sinh, giáo dục, y tế; khắc phục đê kè sau bão dùng nguồn Trung ương và dự phòng; sửa đường hư hỏng do bão bằng nguồn khắc phục bão, duy tu thường xuyên giữ nguyên",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000050",
+        "TURN_000049"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Vốn đầu tư công 2027 là 8.300 tỷ; ưu tiên nợ đọng, đối ứng ODA, chuyển tiếp; cắt 12 dự án khởi công mới chưa đủ thủ tục; dự án giải ngân dưới 30% không được vốn mới; kè sông Mã tách ra làm theo trình tự khẩn cấp; từ năm sau dự án phải đủ thủ tục trước 30/9 năm trước; tách dòng dự án khắc phục bão",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000070"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Chỉ tiêu tăng trưởng GRDP 2027 là 8,2%; dự toán thu tính theo kịch bản 8%; chỉ tiêu xã hội giữ nguyên, tỷ lệ lao động qua đào tạo có chứng chỉ giữ 30% (không nâng 32%)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000089",
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Bố trí 6 khu đất độc lập (~48 ha) cho nhà ở xã hội; quy trình rút gọn chọn chủ đầu tư; tối thiểu 30% căn để cho thuê ở dự án gần khu công nghiệp",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000107"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Lập 4 chốt kiểm dịch tạm thời; hỗ trợ tiêu hủy theo quy định; thí điểm hỗ trợ 50% vắc xin tại Như Xuân và Thường Lâm; tạm ứng 11 tỷ cho huyện chi trả tiêu hủy trước Tết; công an xử lý vi phạm; chốt hoạt động 24/24 hai chiều; công khai danh sách xã có dịch hằng ngày",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000124"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Thống nhất các nội dung trình kỳ họp HĐND với các điều chỉnh đã chốt; các sở gửi hồ sơ điện tử có ký số",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000127"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Mục tiêu tăng trưởng GRDP 2027 là 8,5% (dự thảo, đã chốt 8,2%)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "superseded_decision",
+      "text": "Dự toán thu tiền sử dụng đất 4.000 tỷ (dự thảo, giảm còn 3.200 tỷ)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Tỉnh dùng ngân sách đầu tư trực tiếp dự án nhà ở xã hội",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000095",
+        "TURN_000096"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Đặt chỉ tiêu tăng trưởng hai mức (cơ sở 8%, phấn đấu 8,5%)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "superseded_decision",
+      "text": "Chỉ tiêu lao động qua đào tạo có chứng chỉ 32% (dự thảo, giữ 30%)",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000084"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "unassigned_task",
+      "text": "Rút gọn báo cáo kinh tế xã hội xuống không quá 25 trang (nêu ra, không giao cụ thể)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "unassigned_task",
+      "text": "Các giám đốc sở nêu cao trách nhiệm chuẩn bị kỳ họp (khẩu hiệu chung)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000148"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "point": "GRDP 2026 ước tăng 7,1%, đạt 15/18 chỉ tiêu; dự thảo 2027 tăng trưởng 8,5%, thu ngân sách 21.500 tỷ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Kiều (Phó Chủ tịch UBND tỉnh phụ trách khối văn xã)",
+      "point": "Hộ nghèo giảm còn 3,0% nhưng 1.700 hộ có nguy cơ tái nghèo sau bão; lao động qua đào tạo có chứng chỉ chỉ 27%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000004"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Hai cơn bão gây thiệt hại khoảng 2.100 tỷ, 18.400 ha lúa; xuất khẩu nông sản vẫn tăng 12%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "point": "Đô thị hóa 32,5% không đạt 34% do hồ sơ nâng loại 2 đô thị chậm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Kiều (Phó Chủ tịch UBND tỉnh phụ trách khối văn xã)",
+      "point": "Du lịch có thể đưa dịch vụ tăng 8% nhờ đường bay mới và Năm Du lịch quốc gia",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "point": "Nhà máy lọc hóa dầu chiếm 38% thu nội địa; nếu dừng bảo dưỡng 45 ngày có thể hụt thêm khoảng 900 tỷ",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Thanh (Phó Chủ tịch Thường trực UBND tỉnh)",
+      "point": "Nhà máy thép còn vướng nguồn điện do trạm 500 kV Nghi Sơn 2 chậm",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000087"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "point": "6 khu đất có thể xây khoảng 9.000 căn, cộng dự án đang làm đạt khoảng 11.400 căn",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000098"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)",
+      "point": "Còn 8/126 kiến nghị cử tri kỳ trước quá hạn trả lời",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000137"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Đ/c Khương (Trưởng Chi cục Thống kê tỉnh)",
+      "point": "Mục tiêu 8,5% phụ thuộc 2 nhà máy lớn đang chậm, nếu cả hai lùi chỉ đạt 7,4-7,6%",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Đ/c Thanh (Phó Chủ tịch Thường trực UBND tỉnh)",
+      "point": "Đề nghị giữ 8,5% để bám mục tiêu nhiệm kỳ 9%",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "point": "Thu tiền sử dụng đất 2026 chỉ đạt 52%; dự toán 2027 giao 4.000 tỷ rủi ro hụt thu",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "point": "14 dự án đủ điều kiện đấu giá (~5.200 tỷ) nhưng chỉ khoảng 40% lô đấu giá thành công",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+      "point": "Vốn đầu tư công còn 8.300 tỷ; đề xuất cắt 12 dự án khởi công mới chưa đủ thủ tục",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)",
+      "point": "Nhà máy thép đã được phê duyệt ĐTM, vận hành tháng 6; nhà máy pin lùi sang tháng 9",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000072"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Đ/c Khương (Trưởng Chi cục Thống kê tỉnh)",
+      "point": "Kịch bản cơ sở tính lại là 8,0-8,2%",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000073"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+      "point": "Chỉ tiêu 12.000 căn nhà ở xã hội, mới xong 1.100; vướng quỹ đất 20% phân tán và giá bán cao",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000093"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+      "point": "Dịch tả lợn châu Phi ở 23 xã, tiêu hủy 4.800 con; đề xuất chốt kiểm dịch và hỗ trợ 50% vắc xin",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000111"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Hoàng (Chủ tịch UBND tỉnh)",
+    "PCT1": "Đ/c Thanh (Phó Chủ tịch Thường trực UBND tỉnh)",
+    "PCT2": "Đ/c Kiều (Phó Chủ tịch UBND tỉnh phụ trách khối văn xã)",
+    "TC": "Đ/c Tuấn (Giám đốc Sở Tài chính)",
+    "NN": "Đ/c Thái (Giám đốc Sở Nông nghiệp và Môi trường)",
+    "XD": "Đ/c Nhung (Giám đốc Sở Xây dựng)",
+    "TK": "Đ/c Khương (Trưởng Chi cục Thống kê tỉnh)",
+    "VP": "Đ/c Hằng (Chánh Văn phòng UBND tỉnh)"
+  },
+  "tags": [
+    "long",
+    "topic_revisit"
+  ]
+}

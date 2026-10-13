@@ -129,13 +129,6 @@ class VerificationRecordOut(BaseModel):
     rounds: list[ConsensusRoundOut] = []
 
 
-class SkippedAgentOut(BaseModel):
-    """Agent trích xuất mà Planner bỏ qua ở một chủ đề (không lượt nào có thể là giao/chốt việc)."""
-
-    segment_id: str
-    agent: str
-
-
 class FailedTopicOut(BaseModel):
     """Lời gọi agent vẫn lỗi sau mọi lần thử: kết quả của agent đó ở chủ đề này bị thiếu."""
 
@@ -145,10 +138,9 @@ class FailedTopicOut(BaseModel):
 
 
 class AuditOut(BaseModel):
-    """Thông tin để đối chiếu: bản ghi Verifier, agent bị bỏ qua, chủ đề lỗi."""
+    """Thông tin để đối chiếu: bản ghi Verifier, chủ đề lỗi."""
 
     verification_records: list[VerificationRecordOut] = []
-    skipped_agents: list[SkippedAgentOut] = []
     failed_topics: list[FailedTopicOut] = []
 
 
@@ -158,7 +150,7 @@ class DocumentExtensionsOut(BaseModel):
     ``input_fingerprint`` là analysis_key (khoá của transcript), ``document_key`` là tên mục cache
     của document: ``GET /v3/meetings/analyses/{input_fingerprint}/{document_key}`` lấy lại document.
     ``artifact_version_id`` tăng sau mỗi lần ghi cache của bản phân tích (bỏ response cũ hơn).
-    ``audit``: bản ghi Verifier, agent bị Planner bỏ qua, chủ đề lỗi (để đối chiếu).
+    ``audit``: bản ghi Verifier, chủ đề lỗi (để đối chiếu).
     """
 
     analysis_schema_version: str | None = None
@@ -1127,7 +1119,6 @@ def _verification_record(record: VerificationRecord) -> dict:
 def _audit(report: MeetingReport) -> dict:
     return {
         "verification_records": [_verification_record(record) for record in report.verification_records],
-        "skipped_agents": [{"segment_id": s.segment_id, "agent": s.agent} for s in report.skipped_agents],
         "failed_topics": [{"segment_id": f.segment_id, "agent": f.agent, "error": f.error} for f in report.failures],
     }
 

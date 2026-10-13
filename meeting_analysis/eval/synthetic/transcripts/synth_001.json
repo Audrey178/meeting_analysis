@@ -1,0 +1,993 @@
+{
+  "transcript": "Rồi, mọi người vào đủ chưa nhỉ, anh Phong bên Văn phòng Đoàn cũng vào rồi đúng không ạ. Hôm nay mình họp rà soát giai đoạn 1 của hệ thống kiến nghị cử tri. Em xin phép nói qua tiến độ chung trước, sau đó mình đi từng chức năng, cuối buổi thì chốt kế hoạch với phân công. Về tổng thể thì đến hôm nay mình đạt khoảng 55% khối lượng của giai đoạn 1, so với kế hoạch thì đang chậm khoảng hai tuần. Nguyên nhân chính là cái bộ dữ liệu kiến nghị mẫu của các kỳ họp trước thì mình nhận muộn, đến tuần trước mới có đủ khoảng 8.400 kiến nghị đã được phân loại, nên phần AI bị lùi lại. Phần backend với cơ sở dữ liệu thì cơ bản xong khung rồi, phần giao diện thì mới được khoảng một nửa. Anh Tuấn cho anh hỏi là cái mốc demo cho Thường trực Đoàn ngày 15 tháng 12 thì có giữ được không? Vì bên anh đã báo cáo lên rồi, cái mốc này là không lùi được đâu, lãnh đạo Đoàn muốn xem trước kỳ họp tiếp xúc cử tri đầu năm. Dạ, cái mốc 15/12 thì bên em vẫn cam kết giữ anh ạ. Nhưng mà để giữ được thì em nghĩ là mình phải chốt lại phạm vi cho gọn. Chị Mai nói qua giúp em cái phạm vi hiện tại nhé. Dạ vâng. Theo hợp đồng và biên bản khảo sát thì giai đoạn 1 gồm ba chức năng chính. Một là tiếp nhận kiến nghị từ nhiều kênh, gồm nhập tay từ biên bản tiếp xúc cử tri, cổng thông tin và hòm thư điện tử, rồi AI tự động phân loại theo lĩnh vực và chuyển cho cơ quan có thẩm quyền. Hai là cổng tra cứu cho cử tri, để người dân tra xem kiến nghị của mình đang ở bước nào. Ba là theo dõi và đánh giá chất lượng câu trả lời của các cơ quan. Ngoài ra thì trong buổi khảo sát lần hai, bên anh Phong có nêu thêm mong muốn có ứng dụng di động cho đại biểu để đại biểu ghi kiến nghị ngay tại buổi tiếp xúc. Cái này hiện chưa có trong hợp đồng. Ừ, cái ứng dụng di động thì là mong muốn của một số đại biểu thôi, nếu không kịp thì anh nghĩ cũng không bắt buộc ở giai đoạn này. Dạ anh Tuấn, em thì em nghĩ cái app di động nếu làm bằng Flutter thì cũng dùng lại được khá nhiều API của web, em ước khoảng ba tuần là có bản cơ bản, hay là mình vẫn làm song song ạ? Thôi, cái này Linh ơi, anh nghĩ là không làm. Ba tuần của em lúc này là rất quý, phần giao diện web còn đang một nửa. Anh chốt là giai đoạn 1 giữ đúng ba chức năng chính như chị Mai vừa nói, ứng dụng di động thì đưa sang giai đoạn 2, bên em sẽ làm phụ lục đề xuất riêng gửi anh Phong. Anh Phong thấy được không ạ? Được, anh đồng ý. Miễn là 15/12 có cái để demo được đầy đủ ba cái chức năng kia. Rồi, mình đi vào từng phần. Phần phân loại tự động trước nhé, Hiếu báo cáo đi em. Dạ vâng. Em đang làm cái mô hình phân loại kiến nghị theo lĩnh vực. Dữ liệu là 8.400 kiến nghị bên anh Phong gửi, em chia 80 10 10 để train, validation với test. Hiện em đang fine-tune PhoBERT base, trên tập test thì F1 macro đạt khoảng 0.81 trên 18 lĩnh vực. Nhưng mà nhìn chi tiết thì có mấy lĩnh vực rất kém. Cụ thể là đất đai với tài nguyên môi trường thì bị nhầm với nhau rất nhiều, F1 chỉ khoảng 0.6, vì một kiến nghị về thu hồi đất làm bãi rác thì nó vừa là đất đai vừa là môi trường. Rồi cái lĩnh vực chính sách xã hội với lao động việc làm cũng nhầm. Còn mấy lĩnh vực như giao thông, y tế, giáo dục thì tốt, trên 0.9. Hiếu ơi, cái 18 lĩnh vực này là theo cái danh mục cũ của Văn phòng Đoàn đúng không? Chị nhớ là trong buổi khảo sát, anh Phong có nói là từ năm nay bên đó đã gộp lại thành 12 lĩnh vực theo cái cơ cấu các ban mới rồi. Đúng rồi, từ kỳ họp này thì bên anh dùng 12 lĩnh vực thôi, đất đai với môi trường là chung một lĩnh vực, chính sách xã hội với lao động cũng gộp rồi. Chị Mai để anh gửi lại cái danh mục mới. Dạ, nếu gộp như vậy thì rất tốt anh ạ, vì chính mấy cặp hay nhầm nhất lại là mấy cặp được gộp. Em ước là gộp xong thì F1 có thể lên khoảng 0.87, 0.88. Em chỉ cần map lại nhãn, train lại mất khoảng hai ngày thôi. Ok, vậy chốt là chuyển sang 12 lĩnh vực theo danh mục mới của Văn phòng Đoàn. Thế còn cái trường hợp mô hình không chắc chắn thì mình xử lý thế nào Hiếu? Dạ, em đề xuất là mình đặt một cái ngưỡng độ tin cậy. Nếu xác suất của nhãn cao nhất dưới ngưỡng thì hệ thống không tự chuyển mà đưa vào hàng chờ cho chuyên viên duyệt tay. Em thử trên tập validation thì ngưỡng 0.7 thì khoảng 82% kiến nghị được tự động chuyển, và trong số tự động đó thì độ chính xác khoảng 96%. Còn 18% còn lại chuyên viên duyệt. Mười tám phần trăm thì bên anh duyệt được, trước giờ bên anh duyệt tay 100% mà. Nhưng mà anh muốn là chuyên viên sửa nhãn thì cái hệ thống phải ghi lại để sau này mô hình học lại được. Dạ cái đó thì có ạ, em sẽ lưu lại nhãn chuyên viên sửa. À anh Tuấn, em cũng có một cái ý là về lâu dài thì mình có thể thử dùng một cái mô hình ngôn ngữ lớn tự host, kiểu Qwen hay Llama bản tiếng Việt, để phân loại luôn cả những kiến nghị có nhiều lĩnh vực, vì PhoBERT thì chỉ cho một nhãn. Nhưng cái này em cũng chưa thử, cần GPU mạnh hơn, nên em chỉ nêu vậy thôi. Cái LLM thì để sau em ạ, giai đoạn này mình không có GPU cho cái đó. Chốt phần này là dùng PhoBERT, 12 lĩnh vực, ngưỡng 0.7, dưới ngưỡng thì vào hàng chờ chuyên viên, và có ghi log nhãn sửa để train lại. Anh Tuấn, về phía backend thì em cần Hiếu chốt cái định dạng API trả về, em đang để là trả về nhãn với độ tin cậy, nếu Hiếu muốn trả về top 3 thì em sửa cái schema luôn. Trả về top 3 đi Nam, để giao diện duyệt của chuyên viên hiện được gợi ý thứ hai thứ ba, chuyên viên chọn cho nhanh. Rồi, sang phần cổng tra cứu cho cử tri. Linh chia sẻ màn hình đi em. Dạ, mọi người nhìn thấy màn hình em chưa ạ. Đây là cái trang tra cứu công khai. Hiện tại cử tri nhập cái mã kiến nghị, mã này in trên cái phiếu tiếp nhận, thì hệ thống hiện ra các bước: đã tiếp nhận, đã phân loại, đã chuyển cơ quan nào, cơ quan đã trả lời chưa, và nội dung trả lời. Em làm giao diện responsive để xem trên điện thoại cũng được. Phần timeline thì em lấy từ cái bảng lịch sử trạng thái bên Nam. Hiện em đang dùng dữ liệu giả, chưa nối API thật. Giao diện thì ổn đấy. Nhưng mà anh nói thật là cái mã kiến nghị thì người dân không ai giữ đâu. Ở các buổi tiếp xúc cử tri thì đại biểu ghi kiến nghị, người dân về có ai được cầm phiếu gì đâu. Người dân chỉ nhớ số điện thoại của mình thôi. Cho nên là phải tra được bằng số điện thoại. Dạ đúng ạ, cái này trong biên bản khảo sát lần hai có ghi nhưng mà bọn em chưa đưa vào đặc tả, lỗi bên em. Nhưng mà anh Phong ơi, nếu tra bằng số điện thoại thì có vấn đề là ai biết số điện thoại của người khác cũng tra được, lộ thông tin người kiến nghị. Cái đó thì mình phải có OTP chị ạ. Nhập số điện thoại, hệ thống gửi mã OTP về số đó, nhập đúng mới xem được. Nhưng mà gửi SMS thì mình phải có dịch vụ SMS brandname, cái này tốn tiền theo tin nhắn. Tỉnh có sẵn SMS brandname dùng chung rồi, cái của Trung tâm phục vụ hành chính công đấy, bên anh có thể xin dùng chung, không mất tiền. Vậy thì tốt quá. Chốt là thêm tra cứu bằng số điện thoại có xác thực OTP, dùng SMS brandname dùng chung của tỉnh. Tra bằng mã kiến nghị vẫn giữ. Còn một cái nữa là trên trang công khai thì nội dung kiến nghị có hiện tên với địa chỉ người kiến nghị không anh Phong? Không, tuyệt đối không hiện. Kể cả khi tra bằng OTP thì cũng chỉ hiện nội dung kiến nghị và nội dung trả lời thôi, không hiện họ tên, địa chỉ, vì có nhiều kiến nghị là tố cáo cán bộ địa phương, lộ ra là phiền. Dạ vâng, em sẽ ẩn hết các trường thông tin cá nhân. Anh Tuấn ơi, phần OTP thì em làm giao diện được, nhưng phần tích hợp SMS thì chắc là Nam phải làm bên backend. Ừ phần tích hợp SMS với sinh OTP thì để anh, nhưng mà anh cần cái tài liệu API của SMS brandname bên tỉnh, chứ hiện anh chưa có. Rồi, phần cuối trước khi chốt là phần đánh giá câu trả lời. Phần này thì hiện đang chậm nhất. Hiếu nói tiếp đi em. Dạ. Cái chức năng này thì mục tiêu là khi cơ quan có thẩm quyền gửi câu trả lời, hệ thống tự đánh giá xem câu trả lời đó có đạt không. Em đang đề xuất chấm theo ba tiêu chí. Một là trả lời có đúng trọng tâm câu hỏi của cử tri không. Hai là có nêu rõ hướng giải quyết và thời hạn cụ thể không, hay chỉ trả lời chung chung kiểu là sẽ xem xét. Ba là có dẫn căn cứ pháp lý không. Về kỹ thuật thì tiêu chí một em dùng mô hình tương đồng ngữ nghĩa giữa kiến nghị và câu trả lời, tiêu chí hai với ba thì dùng luật, bắt các mẫu câu như là thời hạn, ngày tháng, số hiệu văn bản. Nhưng mà hiện em chưa có dữ liệu có nhãn đánh giá nào cả, nên chưa đo được độ chính xác. Anh thì anh muốn nói rõ cái này. Việc đánh giá câu trả lời của một cơ quan nhà nước là việc rất nhạy cảm. Nếu cái máy nói câu trả lời của Sở này là không đạt, rồi cái đó hiện lên báo cáo gửi Thường trực, thì là có chuyện. Cho nên là AI chỉ được gợi ý thôi, còn chuyên viên là người quyết định đạt hay không đạt. Dạ vâng, em hiểu ạ. Vậy thì em đổi cách thể hiện, là AI không chấm đạt hay không đạt nữa, mà chỉ đánh dấu những câu trả lời có dấu hiệu chưa đạt, kèm lý do, ví dụ là không có thời hạn cụ thể, để chuyên viên xem trước. Chị thấy như thế hợp lý hơn. Mà Hiếu ơi, về dữ liệu có nhãn, thì bên anh Phong có cái báo cáo giám sát kết quả giải quyết kiến nghị hằng năm đấy, trong đó chuyên viên đã đánh giá từng câu trả lời là đạt hay chưa đạt rồi. Có thể lấy làm dữ liệu được không anh Phong? Có, báo cáo giám sát ba năm gần đây, mỗi năm khoảng một nghìn rưỡi câu trả lời có đánh giá. Nhưng mà nó ở dạng file Word, phải có người bóc ra. Ok. Vậy chốt hướng cho phần này. Bản đầu tiên cho demo 15/12 thì dùng tương đồng ngữ nghĩa kết hợp luật như Hiếu nói, và chỉ đánh dấu câu trả lời có dấu hiệu chưa đạt kèm lý do, không đưa ra kết luận đạt hay không đạt, chuyên viên là người quyết định. Dữ liệu báo cáo giám sát thì dùng để đo và cải tiến sau demo. Dạ vâng anh. Rồi, giờ mình chốt phân công nhé, mọi người ghi lại giúp anh. Anh đọc lần lượt. Đầu tiên là anh Phong gửi giúp bên em cái danh mục 12 lĩnh vực mới, với tài liệu API của cái SMS brandname dùng chung của tỉnh. Anh Phong gửi giúp em trong tuần này được không ạ? Được, thứ Sáu này anh gửi cả hai. Hiếu thì có danh mục rồi thì map lại nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy, xong trước ngày 25 tháng 11. Dạ vâng. Nam làm phần tích hợp SMS brandname và sinh OTP, và API tra cứu theo số điện thoại. Cái này thì phụ thuộc tài liệu của anh Phong, nên em tính là xong trong vòng một tuần sau khi nhận tài liệu nhé. Dạ ok anh. Linh thì nối cổng tra cứu với API thật, thêm màn hình nhập số điện thoại và OTP, ẩn hết các trường thông tin cá nhân như anh Phong nói. Deadline là ngày 1 tháng 12 để còn kiểm thử. Dạ vâng anh. Còn cái việc bóc dữ liệu từ báo cáo giám sát ra thành dữ liệu có nhãn cho phần đánh giá câu trả lời, thì bạn làm phân loại lúc nãy nhận luôn nhé, vì em ấy hiểu dữ liệu nhất. Không cần gấp, sau demo cũng được, nhưng trước Tết thì phải xong. Dạ, em nhận ạ. Em sẽ viết script bóc tự động từ file Word, chỗ nào lỗi thì em sửa tay. Chị Mai thì cập nhật lại đặc tả cho phần tra cứu theo số điện thoại với cái phần đánh giá câu trả lời theo hướng chỉ gợi ý, và soạn kịch bản demo cho Thường trực, gửi anh Phong duyệt trước ngày 10 tháng 12. Dạ vâng, chị ghi rồi. Còn anh thì anh làm cái phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi anh Phong, trong tháng 12. Vậy thôi, còn ai có vấn đề gì không? Không thì mình kết thúc, cảm ơn anh Phong và cả nhà.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi, mọi người vào đủ chưa nhỉ, anh Phong bên Văn phòng Đoàn cũng vào rồi đúng không ạ. Hôm nay mình họp rà soát giai đoạn 1 của hệ thống kiến nghị cử tri. Em xin phép nói qua tiến độ chung trước, sau đó mình đi từng chức năng,",
+      "segment_html": "Rồi, mọi người vào đủ chưa nhỉ, anh Phong bên Văn phòng Đoàn cũng vào rồi đúng không ạ. Hôm nay mình họp rà soát giai đoạn 1 của hệ thống kiến nghị cử tri. Em xin phép nói qua tiến độ chung trước, sau đó mình đi từng chức năng,",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 22.424,
+      "point_id": "3a9c3bba-4743-51b7-9479-683715c6d757",
+      "ref_id": [
+        "4ebd43f3-a6d2-518d-8ce3-08aea2f23baf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "cuối buổi thì chốt kế hoạch với phân công. Về tổng thể thì đến hôm nay mình đạt khoảng 55% khối lượng của giai đoạn 1, so với kế hoạch thì đang chậm khoảng hai tuần.",
+      "segment_html": "cuối buổi thì chốt kế hoạch với phân công. Về tổng thể thì đến hôm nay mình đạt khoảng 55% khối lượng của giai đoạn 1, so với kế hoạch thì đang chậm khoảng hai tuần.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 22.674,
+      "end_time": 38.326,
+      "point_id": "3a9c3bba-4743-51b7-9479-683715c6d757",
+      "ref_id": [
+        "4ebd43f3-a6d2-518d-8ce3-08aea2f23baf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Nguyên nhân chính là cái bộ dữ liệu kiến nghị mẫu của các kỳ họp trước thì mình nhận muộn, đến tuần trước mới có đủ khoảng 8.400 kiến nghị đã được phân loại, nên phần AI bị lùi lại. Phần backend với cơ sở dữ liệu thì cơ bản xong khung rồi,",
+      "segment_html": "Nguyên nhân chính là cái bộ dữ liệu kiến nghị mẫu của các kỳ họp trước thì mình nhận muộn, đến tuần trước mới có đủ khoảng 8.400 kiến nghị đã được phân loại, nên phần AI bị lùi lại. Phần backend với cơ sở dữ liệu thì cơ bản xong khung rồi,",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 38.576,
+      "end_time": 61.62,
+      "point_id": "3a9c3bba-4743-51b7-9479-683715c6d757",
+      "ref_id": [
+        "4ebd43f3-a6d2-518d-8ce3-08aea2f23baf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "phần giao diện thì mới được khoảng một nửa.",
+      "segment_html": "phần giao diện thì mới được khoảng một nửa.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 61.87,
+      "end_time": 65.783,
+      "point_id": "3a9c3bba-4743-51b7-9479-683715c6d757",
+      "ref_id": [
+        "4ebd43f3-a6d2-518d-8ce3-08aea2f23baf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Anh Tuấn cho anh hỏi là cái mốc demo cho Thường trực Đoàn ngày 15 tháng 12 thì có giữ được không? Vì bên anh đã báo cáo lên rồi, cái mốc này là không lùi được đâu, lãnh đạo Đoàn muốn xem trước kỳ họp tiếp xúc cử tri đầu năm.",
+      "segment_html": "Anh Tuấn cho anh hỏi là cái mốc demo cho Thường trực Đoàn ngày 15 tháng 12 thì có giữ được không? Vì bên anh đã báo cáo lên rồi, cái mốc này là không lùi được đâu, lãnh đạo Đoàn muốn xem trước kỳ họp tiếp xúc cử tri đầu năm.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 66.783,
+      "end_time": 89.391,
+      "point_id": "0d87958d-4143-558f-be0e-74f9e3bcf740",
+      "ref_id": [
+        "ee49990a-305d-553b-9122-042d6653f3dd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Dạ, cái mốc 15/12 thì bên em vẫn cam kết giữ anh ạ. Nhưng mà để giữ được thì em nghĩ là mình phải chốt lại phạm vi cho gọn. Chị Mai nói qua giúp em cái phạm vi hiện tại nhé.",
+      "segment_html": "Dạ, cái mốc 15/12 thì bên em vẫn cam kết giữ anh ạ. Nhưng mà để giữ được thì em nghĩ là mình phải chốt lại phạm vi cho gọn. Chị Mai nói qua giúp em cái phạm vi hiện tại nhé.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 90.391,
+      "end_time": 108.652,
+      "point_id": "e7945d4b-e263-51ed-8201-48a0ea55cb51",
+      "ref_id": [
+        "3dee17a0-df79-5ecf-988f-7bda350f77c4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Dạ vâng. Theo hợp đồng và biên bản khảo sát thì giai đoạn 1 gồm ba chức năng chính. Một là tiếp nhận kiến nghị từ nhiều kênh, gồm nhập tay từ biên bản tiếp xúc cử tri, cổng thông tin và hòm thư điện tử,",
+      "segment_html": "Dạ vâng. Theo hợp đồng và biên bản khảo sát thì giai đoạn 1 gồm ba chức năng chính. Một là tiếp nhận kiến nghị từ nhiều kênh, gồm nhập tay từ biên bản tiếp xúc cử tri, cổng thông tin và hòm thư điện tử,",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 109.652,
+      "end_time": 129.652,
+      "point_id": "c22696d6-323a-5f6b-b1a2-9f398f1fc375",
+      "ref_id": [
+        "7249dd82-1f57-57d1-b5db-f6e2e06c3118"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "rồi AI tự động phân loại theo lĩnh vực và chuyển cho cơ quan có thẩm quyền. Hai là cổng tra cứu cho cử tri, để người dân tra xem kiến nghị của mình đang ở bước nào. Ba là theo dõi và đánh giá chất lượng câu trả lời của các cơ quan.",
+      "segment_html": "rồi AI tự động phân loại theo lĩnh vực và chuyển cho cơ quan có thẩm quyền. Hai là cổng tra cứu cho cử tri, để người dân tra xem kiến nghị của mình đang ở bước nào. Ba là theo dõi và đánh giá chất lượng câu trả lời của các cơ quan.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 129.902,
+      "end_time": 153.38,
+      "point_id": "c22696d6-323a-5f6b-b1a2-9f398f1fc375",
+      "ref_id": [
+        "7249dd82-1f57-57d1-b5db-f6e2e06c3118"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "Ngoài ra thì trong buổi khảo sát lần hai, bên anh Phong có nêu thêm mong muốn có ứng dụng di động cho đại biểu để đại biểu ghi kiến nghị ngay tại buổi tiếp xúc. Cái này hiện chưa có trong hợp đồng.",
+      "segment_html": "Ngoài ra thì trong buổi khảo sát lần hai, bên anh Phong có nêu thêm mong muốn có ứng dụng di động cho đại biểu để đại biểu ghi kiến nghị ngay tại buổi tiếp xúc. Cái này hiện chưa có trong hợp đồng.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 153.63,
+      "end_time": 172.761,
+      "point_id": "c22696d6-323a-5f6b-b1a2-9f398f1fc375",
+      "ref_id": [
+        "7249dd82-1f57-57d1-b5db-f6e2e06c3118"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Ừ, cái ứng dụng di động thì là mong muốn của một số đại biểu thôi, nếu không kịp thì anh nghĩ cũng không bắt buộc ở giai đoạn này.",
+      "segment_html": "Ừ, cái ứng dụng di động thì là mong muốn của một số đại biểu thôi, nếu không kịp thì anh nghĩ cũng không bắt buộc ở giai đoạn này.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 173.761,
+      "end_time": 186.804,
+      "point_id": "604df409-d876-5f1e-8765-818d0c0e7a8b",
+      "ref_id": [
+        "98fcb578-c8a8-57ff-90ec-18522d59acb9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Dạ anh Tuấn, em thì em nghĩ cái app di động nếu làm bằng Flutter thì cũng dùng lại được khá nhiều API của web, em ước khoảng ba tuần là có bản cơ bản, hay là mình vẫn làm song song ạ?",
+      "segment_html": "Dạ anh Tuấn, em thì em nghĩ cái app di động nếu làm bằng Flutter thì cũng dùng lại được khá nhiều API của web, em ước khoảng ba tuần là có bản cơ bản, hay là mình vẫn làm song song ạ?",
+      "speaker_name": "Linh (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 187.804,
+      "end_time": 206.5,
+      "point_id": "5002eb8d-3a1b-5801-a722-80f4bc960563",
+      "ref_id": [
+        "8c4ed143-6373-5b62-a5e3-e14280b83b47"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Thôi, cái này Linh ơi, anh nghĩ là không làm. Ba tuần của em lúc này là rất quý, phần giao diện web còn đang một nửa. Anh chốt là giai đoạn 1 giữ đúng ba chức năng chính như chị Mai vừa nói, ứng dụng di động thì đưa sang giai đoạn 2,",
+      "segment_html": "Thôi, cái này Linh ơi, anh nghĩ là không làm. Ba tuần của em lúc này là rất quý, phần giao diện web còn đang một nửa. Anh chốt là giai đoạn 1 giữ đúng ba chức năng chính như chị Mai vừa nói, ứng dụng di động thì đưa sang giai đoạn 2,",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 207.5,
+      "end_time": 230.978,
+      "point_id": "bba2dbd5-292e-5d6d-b298-5c8a6093a239",
+      "ref_id": [
+        "70662a57-c60f-57ae-9c26-48eadbcd33a8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "bên em sẽ làm phụ lục đề xuất riêng gửi anh Phong. Anh Phong thấy được không ạ?",
+      "segment_html": "bên em sẽ làm phụ lục đề xuất riêng gửi anh Phong. Anh Phong thấy được không ạ?",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 231.228,
+      "end_time": 239.054,
+      "point_id": "bba2dbd5-292e-5d6d-b298-5c8a6093a239",
+      "ref_id": [
+        "70662a57-c60f-57ae-9c26-48eadbcd33a8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Được, anh đồng ý. Miễn là 15/12 có cái để demo được đầy đủ ba cái chức năng kia.",
+      "segment_html": "Được, anh đồng ý. Miễn là 15/12 có cái để demo được đầy đủ ba cái chức năng kia.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 240.054,
+      "end_time": 248.315,
+      "point_id": "6efbd746-a113-5ad2-9084-2e64cf7714e2",
+      "ref_id": [
+        "57506a03-40d1-5d54-856f-33898970aef2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Rồi, mình đi vào từng phần. Phần phân loại tự động trước nhé, Hiếu báo cáo đi em.",
+      "segment_html": "Rồi, mình đi vào từng phần. Phần phân loại tự động trước nhé, Hiếu báo cáo đi em.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 249.315,
+      "end_time": 257.141,
+      "point_id": "ce983cfe-2fad-5fb0-99f1-23f68ba647df",
+      "ref_id": [
+        "a1fb3ba9-2169-58d8-b489-f11810aba75e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Dạ vâng. Em đang làm cái mô hình phân loại kiến nghị theo lĩnh vực. Dữ liệu là 8.400 kiến nghị bên anh Phong gửi, em chia 80 10 10 để train, validation với test. Hiện em đang fine-tune PhoBERT base,",
+      "segment_html": "Dạ vâng. Em đang làm cái mô hình phân loại kiến nghị theo lĩnh vực. Dữ liệu là 8.400 kiến nghị bên anh Phong gửi, em chia 80 10 10 để train, validation với test. Hiện em đang fine-tune PhoBERT base,",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 258.141,
+      "end_time": 275.967,
+      "point_id": "04afd6bd-b791-545d-a964-3386c5f250de",
+      "ref_id": [
+        "37a1170e-74c8-5bdb-b18e-6bcfe9c6c722"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "trên tập test thì F1 macro đạt khoảng 0.81 trên 18 lĩnh vực. Nhưng mà nhìn chi tiết thì có mấy lĩnh vực rất kém. Cụ thể là đất đai với tài nguyên môi trường thì bị nhầm với nhau rất nhiều, F1 chỉ khoảng 0.6,",
+      "segment_html": "trên tập test thì F1 macro đạt khoảng 0.81 trên 18 lĩnh vực. Nhưng mà nhìn chi tiết thì có mấy lĩnh vực rất kém. Cụ thể là đất đai với tài nguyên môi trường thì bị nhầm với nhau rất nhiều, F1 chỉ khoảng 0.6,",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 276.217,
+      "end_time": 296.217,
+      "point_id": "04afd6bd-b791-545d-a964-3386c5f250de",
+      "ref_id": [
+        "37a1170e-74c8-5bdb-b18e-6bcfe9c6c722"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "vì một kiến nghị về thu hồi đất làm bãi rác thì nó vừa là đất đai vừa là môi trường. Rồi cái lĩnh vực chính sách xã hội với lao động việc làm cũng nhầm. Còn mấy lĩnh vực như giao thông, y tế, giáo dục thì tốt, trên 0.9.",
+      "segment_html": "vì một kiến nghị về thu hồi đất làm bãi rác thì nó vừa là đất đai vừa là môi trường. Rồi cái lĩnh vực chính sách xã hội với lao động việc làm cũng nhầm. Còn mấy lĩnh vực như giao thông, y tế, giáo dục thì tốt, trên 0.9.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 296.467,
+      "end_time": 318.641,
+      "point_id": "04afd6bd-b791-545d-a964-3386c5f250de",
+      "ref_id": [
+        "37a1170e-74c8-5bdb-b18e-6bcfe9c6c722"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Hiếu ơi, cái 18 lĩnh vực này là theo cái danh mục cũ của Văn phòng Đoàn đúng không? Chị nhớ là trong buổi khảo sát, anh Phong có nói là từ năm nay bên đó đã gộp lại thành 12 lĩnh vực theo cái cơ cấu các ban mới rồi.",
+      "segment_html": "Hiếu ơi, cái 18 lĩnh vực này là theo cái danh mục cũ của Văn phòng Đoàn đúng không? Chị nhớ là trong buổi khảo sát, anh Phong có nói là từ năm nay bên đó đã gộp lại thành 12 lĩnh vực theo cái cơ cấu các ban mới rồi.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 319.641,
+      "end_time": 341.815,
+      "point_id": "e7100db7-b4b7-5e45-a6ff-bcbf523dad93",
+      "ref_id": [
+        "52d6fef0-4f64-52a1-bb65-511531cfc9e5"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "Đúng rồi, từ kỳ họp này thì bên anh dùng 12 lĩnh vực thôi, đất đai với môi trường là chung một lĩnh vực, chính sách xã hội với lao động cũng gộp rồi. Chị Mai để anh gửi lại cái danh mục mới.",
+      "segment_html": "Đúng rồi, từ kỳ họp này thì bên anh dùng 12 lĩnh vực thôi, đất đai với môi trường là chung một lĩnh vực, chính sách xã hội với lao động cũng gộp rồi. Chị Mai để anh gửi lại cái danh mục mới.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 342.815,
+      "end_time": 361.946,
+      "point_id": "082a28de-2e73-5613-b4ef-d68e703fdd5a",
+      "ref_id": [
+        "4a300151-6bb5-59f0-ac88-dd8ef84a4481"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Dạ, nếu gộp như vậy thì rất tốt anh ạ, vì chính mấy cặp hay nhầm nhất lại là mấy cặp được gộp. Em ước là gộp xong thì F1 có thể lên khoảng 0.87, 0.88. Em chỉ cần map lại nhãn, train lại mất khoảng hai ngày thôi.",
+      "segment_html": "Dạ, nếu gộp như vậy thì rất tốt anh ạ, vì chính mấy cặp hay nhầm nhất lại là mấy cặp được gộp. Em ước là gộp xong thì F1 có thể lên khoảng 0.87, 0.88. Em chỉ cần map lại nhãn, train lại mất khoảng hai ngày thôi.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 362.946,
+      "end_time": 384.25,
+      "point_id": "cabf1f13-f92a-5620-bed1-2e4df1ed2ac2",
+      "ref_id": [
+        "0dc2ca29-e52b-58a8-a620-9ef252694a2d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Ok, vậy chốt là chuyển sang 12 lĩnh vực theo danh mục mới của Văn phòng Đoàn. Thế còn cái trường hợp mô hình không chắc chắn thì mình xử lý thế nào Hiếu?",
+      "segment_html": "Ok, vậy chốt là chuyển sang 12 lĩnh vực theo danh mục mới của Văn phòng Đoàn. Thế còn cái trường hợp mô hình không chắc chắn thì mình xử lý thế nào Hiếu?",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 385.25,
+      "end_time": 400.033,
+      "point_id": "334ba8d5-ea27-573d-8bec-eec229b0270d",
+      "ref_id": [
+        "9e8ca821-7e64-5ced-9990-8376e39fc2fc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Dạ, em đề xuất là mình đặt một cái ngưỡng độ tin cậy. Nếu xác suất của nhãn cao nhất dưới ngưỡng thì hệ thống không tự chuyển mà đưa vào hàng chờ cho chuyên viên duyệt tay.",
+      "segment_html": "Dạ, em đề xuất là mình đặt một cái ngưỡng độ tin cậy. Nếu xác suất của nhãn cao nhất dưới ngưỡng thì hệ thống không tự chuyển mà đưa vào hàng chờ cho chuyên viên duyệt tay.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 401.033,
+      "end_time": 417.554,
+      "point_id": "d52f2fcb-e646-5ca4-9dfd-1aa2b2c6ca00",
+      "ref_id": [
+        "0b11c221-1a47-5fd0-bce7-0bf77dd17c62"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Em thử trên tập validation thì ngưỡng 0.7 thì khoảng 82% kiến nghị được tự động chuyển, và trong số tự động đó thì độ chính xác khoảng 96%. Còn 18% còn lại chuyên viên duyệt.",
+      "segment_html": "Em thử trên tập validation thì ngưỡng 0.7 thì khoảng 82% kiến nghị được tự động chuyển, và trong số tự động đó thì độ chính xác khoảng 96%. Còn 18% còn lại chuyên viên duyệt.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 417.804,
+      "end_time": 433.457,
+      "point_id": "d52f2fcb-e646-5ca4-9dfd-1aa2b2c6ca00",
+      "ref_id": [
+        "0b11c221-1a47-5fd0-bce7-0bf77dd17c62"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Mười tám phần trăm thì bên anh duyệt được, trước giờ bên anh duyệt tay 100% mà. Nhưng mà anh muốn là chuyên viên sửa nhãn thì cái hệ thống phải ghi lại để sau này mô hình học lại được.",
+      "segment_html": "Mười tám phần trăm thì bên anh duyệt được, trước giờ bên anh duyệt tay 100% mà. Nhưng mà anh muốn là chuyên viên sửa nhãn thì cái hệ thống phải ghi lại để sau này mô hình học lại được.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 434.457,
+      "end_time": 452.283,
+      "point_id": "2891e93d-5c95-5a3d-ab00-d2807083be9b",
+      "ref_id": [
+        "456a3dcc-b0df-5431-bec5-f90c75893a03"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Dạ cái đó thì có ạ, em sẽ lưu lại nhãn chuyên viên sửa. À anh Tuấn, em cũng có một cái ý là về lâu dài thì mình có thể thử dùng một cái mô hình ngôn ngữ lớn tự host, kiểu Qwen hay Llama bản tiếng Việt,",
+      "segment_html": "Dạ cái đó thì có ạ, em sẽ lưu lại nhãn chuyên viên sửa. À anh Tuấn, em cũng có một cái ý là về lâu dài thì mình có thể thử dùng một cái mô hình ngôn ngữ lớn tự host, kiểu Qwen hay Llama bản tiếng Việt,",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 453.283,
+      "end_time": 474.587,
+      "point_id": "63854061-187c-5235-b01d-d4e39f1cf57c",
+      "ref_id": [
+        "0b007b0b-86c4-588f-87a1-63f777801a9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "để phân loại luôn cả những kiến nghị có nhiều lĩnh vực, vì PhoBERT thì chỉ cho một nhãn. Nhưng cái này em cũng chưa thử, cần GPU mạnh hơn, nên em chỉ nêu vậy thôi.",
+      "segment_html": "để phân loại luôn cả những kiến nghị có nhiều lĩnh vực, vì PhoBERT thì chỉ cho một nhãn. Nhưng cái này em cũng chưa thử, cần GPU mạnh hơn, nên em chỉ nêu vậy thôi.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 474.837,
+      "end_time": 490.489,
+      "point_id": "63854061-187c-5235-b01d-d4e39f1cf57c",
+      "ref_id": [
+        "0b007b0b-86c4-588f-87a1-63f777801a9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Cái LLM thì để sau em ạ, giai đoạn này mình không có GPU cho cái đó. Chốt phần này là dùng PhoBERT, 12 lĩnh vực, ngưỡng 0.7, dưới ngưỡng thì vào hàng chờ chuyên viên, và có ghi log nhãn sửa để train lại.",
+      "segment_html": "Cái LLM thì để sau em ạ, giai đoạn này mình không có GPU cho cái đó. Chốt phần này là dùng PhoBERT, 12 lĩnh vực, ngưỡng 0.7, dưới ngưỡng thì vào hàng chờ chuyên viên, và có ghi log nhãn sửa để train lại.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 491.489,
+      "end_time": 511.054,
+      "point_id": "2ac1245a-894b-5cf2-8c5a-d6b76b213cb2",
+      "ref_id": [
+        "8e459840-7967-537d-8402-4443e1938887"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Anh Tuấn, về phía backend thì em cần Hiếu chốt cái định dạng API trả về, em đang để là trả về nhãn với độ tin cậy, nếu Hiếu muốn trả về top 3 thì em sửa cái schema luôn.",
+      "segment_html": "Anh Tuấn, về phía backend thì em cần Hiếu chốt cái định dạng API trả về, em đang để là trả về nhãn với độ tin cậy, nếu Hiếu muốn trả về top 3 thì em sửa cái schema luôn.",
+      "speaker_name": "Nam (Lập trình Backend)",
+      "speaker_org_unit": null,
+      "start_time": 512.054,
+      "end_time": 529.446,
+      "point_id": "7892c81e-d3f3-5b54-8a67-943b9519e9e4",
+      "ref_id": [
+        "72bc6627-77b5-5ff9-b708-34c1190522ee"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Trả về top 3 đi Nam, để giao diện duyệt của chuyên viên hiện được gợi ý thứ hai thứ ba, chuyên viên chọn cho nhanh.",
+      "segment_html": "Trả về top 3 đi Nam, để giao diện duyệt của chuyên viên hiện được gợi ý thứ hai thứ ba, chuyên viên chọn cho nhanh.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 530.446,
+      "end_time": 541.75,
+      "point_id": "e51c526d-bf5d-50c6-9cda-e3ff6f1c67c8",
+      "ref_id": [
+        "3f48109a-a090-5b6f-8bcf-3dee26e257aa"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Rồi, sang phần cổng tra cứu cho cử tri. Linh chia sẻ màn hình đi em.",
+      "segment_html": "Rồi, sang phần cổng tra cứu cho cử tri. Linh chia sẻ màn hình đi em.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 542.75,
+      "end_time": 549.707,
+      "point_id": "1e20baf4-cc47-57db-96c3-237e64a54e05",
+      "ref_id": [
+        "1899f294-6c5d-5bbb-a4a3-becaff64d787"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Dạ, mọi người nhìn thấy màn hình em chưa ạ. Đây là cái trang tra cứu công khai. Hiện tại cử tri nhập cái mã kiến nghị, mã này in trên cái phiếu tiếp nhận, thì hệ thống hiện ra các bước: đã tiếp nhận, đã phân loại, đã chuyển cơ quan nào,",
+      "segment_html": "Dạ, mọi người nhìn thấy màn hình em chưa ạ. Đây là cái trang tra cứu công khai. Hiện tại cử tri nhập cái mã kiến nghị, mã này in trên cái phiếu tiếp nhận, thì hệ thống hiện ra các bước: đã tiếp nhận, đã phân loại, đã chuyển cơ quan nào,",
+      "speaker_name": "Linh (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 550.707,
+      "end_time": 573.75,
+      "point_id": "e1a9a008-6815-50f9-9820-d8cab20fe187",
+      "ref_id": [
+        "4da92925-5069-5301-baa5-27bcc5668f04"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "cơ quan đã trả lời chưa, và nội dung trả lời. Em làm giao diện responsive để xem trên điện thoại cũng được. Phần timeline thì em lấy từ cái bảng lịch sử trạng thái bên Nam. Hiện em đang dùng dữ liệu giả, chưa nối API thật.",
+      "segment_html": "cơ quan đã trả lời chưa, và nội dung trả lời. Em làm giao diện responsive để xem trên điện thoại cũng được. Phần timeline thì em lấy từ cái bảng lịch sử trạng thái bên Nam. Hiện em đang dùng dữ liệu giả, chưa nối API thật.",
+      "speaker_name": "Linh (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 574.0,
+      "end_time": 594.87,
+      "point_id": "e1a9a008-6815-50f9-9820-d8cab20fe187",
+      "ref_id": [
+        "4da92925-5069-5301-baa5-27bcc5668f04"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Giao diện thì ổn đấy. Nhưng mà anh nói thật là cái mã kiến nghị thì người dân không ai giữ đâu. Ở các buổi tiếp xúc cử tri thì đại biểu ghi kiến nghị, người dân về có ai được cầm phiếu gì đâu. Người dân chỉ nhớ số điện thoại của mình thôi.",
+      "segment_html": "Giao diện thì ổn đấy. Nhưng mà anh nói thật là cái mã kiến nghị thì người dân không ai giữ đâu. Ở các buổi tiếp xúc cử tri thì đại biểu ghi kiến nghị, người dân về có ai được cầm phiếu gì đâu. Người dân chỉ nhớ số điện thoại của mình thôi.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 595.87,
+      "end_time": 619.783,
+      "point_id": "8f3bedd5-6542-552e-a003-2b284d0c261e",
+      "ref_id": [
+        "3f37c066-1adc-52fd-bdc0-eaf4f65f05ba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Cho nên là phải tra được bằng số điện thoại.",
+      "segment_html": "Cho nên là phải tra được bằng số điện thoại.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 620.033,
+      "end_time": 624.38,
+      "point_id": "8f3bedd5-6542-552e-a003-2b284d0c261e",
+      "ref_id": [
+        "3f37c066-1adc-52fd-bdc0-eaf4f65f05ba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Dạ đúng ạ, cái này trong biên bản khảo sát lần hai có ghi nhưng mà bọn em chưa đưa vào đặc tả, lỗi bên em. Nhưng mà anh Phong ơi, nếu tra bằng số điện thoại thì có vấn đề là ai biết số điện thoại của người khác cũng tra được, lộ thông tin người kiến nghị.",
+      "segment_html": "Dạ đúng ạ, cái này trong biên bản khảo sát lần hai có ghi nhưng mà bọn em chưa đưa vào đặc tả, lỗi bên em. Nhưng mà anh Phong ơi, nếu tra bằng số điện thoại thì có vấn đề là ai biết số điện thoại của người khác cũng tra được, lộ thông tin người kiến nghị.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 625.38,
+      "end_time": 651.033,
+      "point_id": "8b10ebf2-ede7-548e-8b01-b1a39ef91908",
+      "ref_id": [
+        "604bf7ac-1f22-5644-be5e-b1fd19fadbd8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Cái đó thì mình phải có OTP chị ạ. Nhập số điện thoại, hệ thống gửi mã OTP về số đó, nhập đúng mới xem được. Nhưng mà gửi SMS thì mình phải có dịch vụ SMS brandname, cái này tốn tiền theo tin nhắn.",
+      "segment_html": "Cái đó thì mình phải có OTP chị ạ. Nhập số điện thoại, hệ thống gửi mã OTP về số đó, nhập đúng mới xem được. Nhưng mà gửi SMS thì mình phải có dịch vụ SMS brandname, cái này tốn tiền theo tin nhắn.",
+      "speaker_name": "Nam (Lập trình Backend)",
+      "speaker_org_unit": null,
+      "start_time": 652.033,
+      "end_time": 671.598,
+      "point_id": "54c09cba-129d-57e8-8b1a-fc3fd78ef3e2",
+      "ref_id": [
+        "dca074e3-f954-5ca9-848e-9fe70c05c530"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Tỉnh có sẵn SMS brandname dùng chung rồi, cái của Trung tâm phục vụ hành chính công đấy, bên anh có thể xin dùng chung, không mất tiền.",
+      "segment_html": "Tỉnh có sẵn SMS brandname dùng chung rồi, cái của Trung tâm phục vụ hành chính công đấy, bên anh có thể xin dùng chung, không mất tiền.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 672.598,
+      "end_time": 684.772,
+      "point_id": "f641cedb-1a23-504e-9ec0-00d4b15693d9",
+      "ref_id": [
+        "28e7b6cd-c659-59f3-bbf0-4359bab09cbf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Vậy thì tốt quá. Chốt là thêm tra cứu bằng số điện thoại có xác thực OTP, dùng SMS brandname dùng chung của tỉnh. Tra bằng mã kiến nghị vẫn giữ.",
+      "segment_html": "Vậy thì tốt quá. Chốt là thêm tra cứu bằng số điện thoại có xác thực OTP, dùng SMS brandname dùng chung của tỉnh. Tra bằng mã kiến nghị vẫn giữ.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 685.772,
+      "end_time": 699.25,
+      "point_id": "c25daac1-857d-5714-a55e-45dd9ece6ce7",
+      "ref_id": [
+        "0cb356b3-62f2-5e17-b279-170703d98a59"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Còn một cái nữa là trên trang công khai thì nội dung kiến nghị có hiện tên với địa chỉ người kiến nghị không anh Phong?",
+      "segment_html": "Còn một cái nữa là trên trang công khai thì nội dung kiến nghị có hiện tên với địa chỉ người kiến nghị không anh Phong?",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 699.5,
+      "end_time": 710.804,
+      "point_id": "c25daac1-857d-5714-a55e-45dd9ece6ce7",
+      "ref_id": [
+        "0cb356b3-62f2-5e17-b279-170703d98a59"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Không, tuyệt đối không hiện. Kể cả khi tra bằng OTP thì cũng chỉ hiện nội dung kiến nghị và nội dung trả lời thôi, không hiện họ tên, địa chỉ, vì có nhiều kiến nghị là tố cáo cán bộ địa phương, lộ ra là phiền.",
+      "segment_html": "Không, tuyệt đối không hiện. Kể cả khi tra bằng OTP thì cũng chỉ hiện nội dung kiến nghị và nội dung trả lời thôi, không hiện họ tên, địa chỉ, vì có nhiều kiến nghị là tố cáo cán bộ địa phương, lộ ra là phiền.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 711.804,
+      "end_time": 732.239,
+      "point_id": "fb5379dd-566a-5f67-a1ff-7fc90625f629",
+      "ref_id": [
+        "83ac4e76-e8df-5e45-986c-8138c6d4d9e3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Dạ vâng, em sẽ ẩn hết các trường thông tin cá nhân. Anh Tuấn ơi, phần OTP thì em làm giao diện được, nhưng phần tích hợp SMS thì chắc là Nam phải làm bên backend.",
+      "segment_html": "Dạ vâng, em sẽ ẩn hết các trường thông tin cá nhân. Anh Tuấn ơi, phần OTP thì em làm giao diện được, nhưng phần tích hợp SMS thì chắc là Nam phải làm bên backend.",
+      "speaker_name": "Linh (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 733.239,
+      "end_time": 748.891,
+      "point_id": "2490f0bc-0e8a-56e2-9569-5d72d77b9a6a",
+      "ref_id": [
+        "3489170e-44d8-5732-8ea7-88528becbd4c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Ừ phần tích hợp SMS với sinh OTP thì để anh, nhưng mà anh cần cái tài liệu API của SMS brandname bên tỉnh, chứ hiện anh chưa có.",
+      "segment_html": "Ừ phần tích hợp SMS với sinh OTP thì để anh, nhưng mà anh cần cái tài liệu API của SMS brandname bên tỉnh, chứ hiện anh chưa có.",
+      "speaker_name": "Nam (Lập trình Backend)",
+      "speaker_org_unit": null,
+      "start_time": 749.891,
+      "end_time": 762.5,
+      "point_id": "b6031f9f-9d39-5e1a-88b1-017c43d0bf62",
+      "ref_id": [
+        "e6dba84c-6db2-570f-82da-1505e526173e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Rồi, phần cuối trước khi chốt là phần đánh giá câu trả lời. Phần này thì hiện đang chậm nhất. Hiếu nói tiếp đi em.",
+      "segment_html": "Rồi, phần cuối trước khi chốt là phần đánh giá câu trả lời. Phần này thì hiện đang chậm nhất. Hiếu nói tiếp đi em.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 763.5,
+      "end_time": 774.37,
+      "point_id": "8635b172-8f9a-5211-9a4f-f68396d4c2e1",
+      "ref_id": [
+        "e7c16375-79fe-5e9f-96d1-685360a9996c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "Dạ. Cái chức năng này thì mục tiêu là khi cơ quan có thẩm quyền gửi câu trả lời, hệ thống tự đánh giá xem câu trả lời đó có đạt không. Em đang đề xuất chấm theo ba tiêu chí. Một là trả lời có đúng trọng tâm câu hỏi của cử tri không.",
+      "segment_html": "Dạ. Cái chức năng này thì mục tiêu là khi cơ quan có thẩm quyền gửi câu trả lời, hệ thống tự đánh giá xem câu trả lời đó có đạt không. Em đang đề xuất chấm theo ba tiêu chí. Một là trả lời có đúng trọng tâm câu hỏi của cử tri không.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 775.37,
+      "end_time": 799.283,
+      "point_id": "c65f70ff-8e0b-55bb-997a-e067c8262213",
+      "ref_id": [
+        "3e15dbe0-4711-5b81-afb4-cd0ef48cdad4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "Hai là có nêu rõ hướng giải quyết và thời hạn cụ thể không, hay chỉ trả lời chung chung kiểu là sẽ xem xét. Ba là có dẫn căn cứ pháp lý không. Về kỹ thuật thì tiêu chí một em dùng mô hình tương đồng ngữ nghĩa giữa kiến nghị và câu trả lời,",
+      "segment_html": "Hai là có nêu rõ hướng giải quyết và thời hạn cụ thể không, hay chỉ trả lời chung chung kiểu là sẽ xem xét. Ba là có dẫn căn cứ pháp lý không. Về kỹ thuật thì tiêu chí một em dùng mô hình tương đồng ngữ nghĩa giữa kiến nghị và câu trả lời,",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 799.533,
+      "end_time": 823.88,
+      "point_id": "c65f70ff-8e0b-55bb-997a-e067c8262213",
+      "ref_id": [
+        "3e15dbe0-4711-5b81-afb4-cd0ef48cdad4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "tiêu chí hai với ba thì dùng luật, bắt các mẫu câu như là thời hạn, ngày tháng, số hiệu văn bản. Nhưng mà hiện em chưa có dữ liệu có nhãn đánh giá nào cả, nên chưa đo được độ chính xác.",
+      "segment_html": "tiêu chí hai với ba thì dùng luật, bắt các mẫu câu như là thời hạn, ngày tháng, số hiệu văn bản. Nhưng mà hiện em chưa có dữ liệu có nhãn đánh giá nào cả, nên chưa đo được độ chính xác.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 824.13,
+      "end_time": 842.826,
+      "point_id": "c65f70ff-8e0b-55bb-997a-e067c8262213",
+      "ref_id": [
+        "3e15dbe0-4711-5b81-afb4-cd0ef48cdad4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Anh thì anh muốn nói rõ cái này. Việc đánh giá câu trả lời của một cơ quan nhà nước là việc rất nhạy cảm. Nếu cái máy nói câu trả lời của Sở này là không đạt, rồi cái đó hiện lên báo cáo gửi Thường trực, thì là có chuyện.",
+      "segment_html": "Anh thì anh muốn nói rõ cái này. Việc đánh giá câu trả lời của một cơ quan nhà nước là việc rất nhạy cảm. Nếu cái máy nói câu trả lời của Sở này là không đạt, rồi cái đó hiện lên báo cáo gửi Thường trực, thì là có chuyện.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 843.826,
+      "end_time": 866.435,
+      "point_id": "93de0e2e-fcbf-545f-84fe-a45603651f11",
+      "ref_id": [
+        "1e86bfa1-9018-5236-9fcb-8a898db37e5e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "Cho nên là AI chỉ được gợi ý thôi, còn chuyên viên là người quyết định đạt hay không đạt.",
+      "segment_html": "Cho nên là AI chỉ được gợi ý thôi, còn chuyên viên là người quyết định đạt hay không đạt.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 866.685,
+      "end_time": 875.38,
+      "point_id": "93de0e2e-fcbf-545f-84fe-a45603651f11",
+      "ref_id": [
+        "1e86bfa1-9018-5236-9fcb-8a898db37e5e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "Dạ vâng, em hiểu ạ. Vậy thì em đổi cách thể hiện, là AI không chấm đạt hay không đạt nữa, mà chỉ đánh dấu những câu trả lời có dấu hiệu chưa đạt, kèm lý do, ví dụ là không có thời hạn cụ thể, để chuyên viên xem trước.",
+      "segment_html": "Dạ vâng, em hiểu ạ. Vậy thì em đổi cách thể hiện, là AI không chấm đạt hay không đạt nữa, mà chỉ đánh dấu những câu trả lời có dấu hiệu chưa đạt, kèm lý do, ví dụ là không có thời hạn cụ thể, để chuyên viên xem trước.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 876.38,
+      "end_time": 898.554,
+      "point_id": "77b3417e-3ee1-5842-8c93-73217aef637c",
+      "ref_id": [
+        "eb9bfdfc-fb1f-5d67-bf71-5e3df7321edb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Chị thấy như thế hợp lý hơn. Mà Hiếu ơi, về dữ liệu có nhãn, thì bên anh Phong có cái báo cáo giám sát kết quả giải quyết kiến nghị hằng năm đấy, trong đó chuyên viên đã đánh giá từng câu trả lời là đạt hay chưa đạt rồi.",
+      "segment_html": "Chị thấy như thế hợp lý hơn. Mà Hiếu ơi, về dữ liệu có nhãn, thì bên anh Phong có cái báo cáo giám sát kết quả giải quyết kiến nghị hằng năm đấy, trong đó chuyên viên đã đánh giá từng câu trả lời là đạt hay chưa đạt rồi.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 899.554,
+      "end_time": 921.728,
+      "point_id": "511593d7-34d5-5a5f-8b0c-c10b6564a157",
+      "ref_id": [
+        "5b13f3de-5649-57d0-b582-aef175cc2ba7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Có thể lấy làm dữ liệu được không anh Phong?",
+      "segment_html": "Có thể lấy làm dữ liệu được không anh Phong?",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 921.978,
+      "end_time": 926.326,
+      "point_id": "511593d7-34d5-5a5f-8b0c-c10b6564a157",
+      "ref_id": [
+        "5b13f3de-5649-57d0-b582-aef175cc2ba7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Có, báo cáo giám sát ba năm gần đây, mỗi năm khoảng một nghìn rưỡi câu trả lời có đánh giá. Nhưng mà nó ở dạng file Word, phải có người bóc ra.",
+      "segment_html": "Có, báo cáo giám sát ba năm gần đây, mỗi năm khoảng một nghìn rưỡi câu trả lời có đánh giá. Nhưng mà nó ở dạng file Word, phải có người bóc ra.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 927.326,
+      "end_time": 941.674,
+      "point_id": "34634866-f08a-54a7-8e9e-0f2f9a53fca0",
+      "ref_id": [
+        "6593d368-bddc-5726-9078-ca7af2b027a8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "Ok. Vậy chốt hướng cho phần này. Bản đầu tiên cho demo 15/12 thì dùng tương đồng ngữ nghĩa kết hợp luật như Hiếu nói, và chỉ đánh dấu câu trả lời có dấu hiệu chưa đạt kèm lý do, không đưa ra kết luận đạt hay không đạt,",
+      "segment_html": "Ok. Vậy chốt hướng cho phần này. Bản đầu tiên cho demo 15/12 thì dùng tương đồng ngữ nghĩa kết hợp luật như Hiếu nói, và chỉ đánh dấu câu trả lời có dấu hiệu chưa đạt kèm lý do, không đưa ra kết luận đạt hay không đạt,",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 942.674,
+      "end_time": 963.978,
+      "point_id": "7b696f00-8a0b-53c3-9662-6c9e7981242f",
+      "ref_id": [
+        "3a48edc6-acd3-5c72-b270-a57d86d672fc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "chuyên viên là người quyết định. Dữ liệu báo cáo giám sát thì dùng để đo và cải tiến sau demo.",
+      "segment_html": "chuyên viên là người quyết định. Dữ liệu báo cáo giám sát thì dùng để đo và cải tiến sau demo.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 964.228,
+      "end_time": 973.359,
+      "point_id": "7b696f00-8a0b-53c3-9662-6c9e7981242f",
+      "ref_id": [
+        "3a48edc6-acd3-5c72-b270-a57d86d672fc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Dạ vâng anh.",
+      "segment_html": "Dạ vâng anh.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 974.359,
+      "end_time": 975.663,
+      "point_id": "5e64bf97-eda0-5db2-8663-a676c12b7c9f",
+      "ref_id": [
+        "e0f5856a-81b6-5435-b570-dcae632b300b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "Rồi, giờ mình chốt phân công nhé, mọi người ghi lại giúp anh. Anh đọc lần lượt.",
+      "segment_html": "Rồi, giờ mình chốt phân công nhé, mọi người ghi lại giúp anh. Anh đọc lần lượt.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 976.663,
+      "end_time": 984.054,
+      "point_id": "86ceb4dc-2790-555f-881c-0c0b45e16c58",
+      "ref_id": [
+        "8095c748-df28-5f9e-b761-a25ac970920d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "Đầu tiên là anh Phong gửi giúp bên em cái danh mục 12 lĩnh vực mới, với tài liệu API của cái SMS brandname dùng chung của tỉnh. Anh Phong gửi giúp em trong tuần này được không ạ?",
+      "segment_html": "Đầu tiên là anh Phong gửi giúp bên em cái danh mục 12 lĩnh vực mới, với tài liệu API của cái SMS brandname dùng chung của tỉnh. Anh Phong gửi giúp em trong tuần này được không ạ?",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 985.054,
+      "end_time": 1002.011,
+      "point_id": "146ae48b-25b0-50d7-b82f-3f103fa03e7e",
+      "ref_id": [
+        "ef7c48bd-e7ea-52b2-94cf-f05c2051d3eb"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "Được, thứ Sáu này anh gửi cả hai.",
+      "segment_html": "Được, thứ Sáu này anh gửi cả hai.",
+      "speaker_name": "Anh Phong (Văn phòng Đoàn ĐBQH tỉnh)",
+      "speaker_org_unit": null,
+      "start_time": 1003.011,
+      "end_time": 1006.489,
+      "point_id": "05f98f78-0015-50d2-8f37-d4ad75ee6bd0",
+      "ref_id": [
+        "1081e802-df3a-5b9f-aeb8-0770cab69e98"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "Hiếu thì có danh mục rồi thì map lại nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy, xong trước ngày 25 tháng 11.",
+      "segment_html": "Hiếu thì có danh mục rồi thì map lại nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy, xong trước ngày 25 tháng 11.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1007.489,
+      "end_time": 1023.141,
+      "point_id": "ab735b68-8ee9-5e4e-a223-147804e7bb90",
+      "ref_id": [
+        "79f91a54-3723-5472-8d28-a20c77d8c603"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Dạ vâng.",
+      "segment_html": "Dạ vâng.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 1024.141,
+      "end_time": 1025.011,
+      "point_id": "5f9d14dd-4115-54ae-b13f-8dd861b9992d",
+      "ref_id": [
+        "e4361055-03cb-5b02-963f-6c92b0655b9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "Nam làm phần tích hợp SMS brandname và sinh OTP, và API tra cứu theo số điện thoại. Cái này thì phụ thuộc tài liệu của anh Phong, nên em tính là xong trong vòng một tuần sau khi nhận tài liệu nhé.",
+      "segment_html": "Nam làm phần tích hợp SMS brandname và sinh OTP, và API tra cứu theo số điện thoại. Cái này thì phụ thuộc tài liệu của anh Phong, nên em tính là xong trong vòng một tuần sau khi nhận tài liệu nhé.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1026.011,
+      "end_time": 1044.707,
+      "point_id": "1781bbe3-43fe-5687-b1be-278c7ac601f8",
+      "ref_id": [
+        "d52e0715-32d8-5bdd-aa38-6c7b74b2aae9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Dạ ok anh.",
+      "segment_html": "Dạ ok anh.",
+      "speaker_name": "Nam (Lập trình Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1045.707,
+      "end_time": 1047.011,
+      "point_id": "33d8b601-a23a-540a-95c4-d2804d81ba28",
+      "ref_id": [
+        "4c9a41e3-c6d2-5781-ade3-16ae950c2ef1"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "Linh thì nối cổng tra cứu với API thật, thêm màn hình nhập số điện thoại và OTP, ẩn hết các trường thông tin cá nhân như anh Phong nói. Deadline là ngày 1 tháng 12 để còn kiểm thử.",
+      "segment_html": "Linh thì nối cổng tra cứu với API thật, thêm màn hình nhập số điện thoại và OTP, ẩn hết các trường thông tin cá nhân như anh Phong nói. Deadline là ngày 1 tháng 12 để còn kiểm thử.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1048.011,
+      "end_time": 1065.402,
+      "point_id": "fed84bb3-b647-5b57-a51b-512931dc4a79",
+      "ref_id": [
+        "08e3f02d-a424-5cdd-b4eb-d8b093556808"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Dạ vâng anh.",
+      "segment_html": "Dạ vâng anh.",
+      "speaker_name": "Linh (Lập trình Frontend)",
+      "speaker_org_unit": null,
+      "start_time": 1066.402,
+      "end_time": 1067.707,
+      "point_id": "b470f151-9da9-5787-989a-b795f572a7b4",
+      "ref_id": [
+        "297137d6-1714-5114-8a4a-f5b20a46b800"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "Còn cái việc bóc dữ liệu từ báo cáo giám sát ra thành dữ liệu có nhãn cho phần đánh giá câu trả lời, thì bạn làm phân loại lúc nãy nhận luôn nhé, vì em ấy hiểu dữ liệu nhất. Không cần gấp, sau demo cũng được, nhưng trước Tết thì phải xong.",
+      "segment_html": "Còn cái việc bóc dữ liệu từ báo cáo giám sát ra thành dữ liệu có nhãn cho phần đánh giá câu trả lời, thì bạn làm phân loại lúc nãy nhận luôn nhé, vì em ấy hiểu dữ liệu nhất. Không cần gấp, sau demo cũng được, nhưng trước Tết thì phải xong.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1068.707,
+      "end_time": 1092.185,
+      "point_id": "5039cf99-4586-5645-808b-dbe73fdbce60",
+      "ref_id": [
+        "dc9232de-5550-55d6-982d-460faa40a593"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Dạ, em nhận ạ. Em sẽ viết script bóc tự động từ file Word, chỗ nào lỗi thì em sửa tay.",
+      "segment_html": "Dạ, em nhận ạ. Em sẽ viết script bóc tự động từ file Word, chỗ nào lỗi thì em sửa tay.",
+      "speaker_name": "Hiếu (Kỹ sư AI)",
+      "speaker_org_unit": null,
+      "start_time": 1093.185,
+      "end_time": 1102.315,
+      "point_id": "20a0ad34-8177-5f04-943f-b87591ec3c6c",
+      "ref_id": [
+        "7aefd53a-6749-5b80-a657-69b4622d78a8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "Chị Mai thì cập nhật lại đặc tả cho phần tra cứu theo số điện thoại với cái phần đánh giá câu trả lời theo hướng chỉ gợi ý, và soạn kịch bản demo cho Thường trực, gửi anh Phong duyệt trước ngày 10 tháng 12.",
+      "segment_html": "Chị Mai thì cập nhật lại đặc tả cho phần tra cứu theo số điện thoại với cái phần đánh giá câu trả lời theo hướng chỉ gợi ý, và soạn kịch bản demo cho Thường trực, gửi anh Phong duyệt trước ngày 10 tháng 12.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1103.315,
+      "end_time": 1123.315,
+      "point_id": "bd16ab03-7e04-533e-84c5-32537371e75c",
+      "ref_id": [
+        "570ea0b7-77d5-54ff-bfb2-aecadf4b4bd3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "Dạ vâng, chị ghi rồi.",
+      "segment_html": "Dạ vâng, chị ghi rồi.",
+      "speaker_name": "Chị Mai (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 1124.315,
+      "end_time": 1126.489,
+      "point_id": "5c80d206-8dbe-545b-9578-a5372c487e5a",
+      "ref_id": [
+        "023b1570-ab67-5d7e-9faf-6cd5d86af6e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Còn anh thì anh làm cái phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi anh Phong, trong tháng 12. Vậy thôi, còn ai có vấn đề gì không? Không thì mình kết thúc, cảm ơn anh Phong và cả nhà.",
+      "segment_html": "Còn anh thì anh làm cái phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi anh Phong, trong tháng 12. Vậy thôi, còn ai có vấn đề gì không? Không thì mình kết thúc, cảm ơn anh Phong và cả nhà.",
+      "speaker_name": "Anh Tuấn (Giám đốc dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1127.489,
+      "end_time": 1147.054,
+      "point_id": "1367c64b-0980-505b-9dcb-c5c1d7c300fd",
+      "ref_id": [
+        "10deca4a-6a9b-5dad-adc5-2e1350299bde"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi, mọi người vào đủ chưa nhỉ, anh Phong bên Văn phòng Đoàn cũng vào rồi đúng không ạ. Hôm nay mình họp rà soát giai đoạn 1 của hệ thống kiến nghị cử tri. Em xin phép nói qua tiến độ chung trước, sau đó mình đi từng chức năng, cuối buổi thì chốt kế hoạch với phân công. Về tổng thể thì đến hôm nay mình đạt khoảng 55% khối lượng của giai đoạn 1, so với kế hoạch thì đang chậm khoảng hai tuần. Nguyên nhân chính là cái bộ dữ liệu kiến nghị mẫu của các kỳ họp trước thì mình nhận muộn, đến tuần trước mới có đủ khoảng 8.400 kiến nghị đã được phân loại, nên phần AI bị lùi lại. Phần backend với cơ sở dữ liệu thì cơ bản xong khung rồi, phần giao diện thì mới được khoảng một nửa. Anh Tuấn cho anh hỏi là cái mốc demo cho Thường trực Đoàn ngày 15 tháng 12 thì có giữ được không? Vì bên anh đã báo cáo lên rồi, cái mốc này là không lùi được đâu, lãnh đạo Đoàn muốn xem trước kỳ họp tiếp xúc cử tri đầu năm. Dạ, cái mốc 15/12 thì bên em vẫn cam kết giữ anh ạ. Nhưng mà để giữ được thì em nghĩ là mình phải chốt lại phạm vi cho gọn. Chị Mai nói qua giúp em cái phạm vi hiện tại nhé. Dạ vâng. Theo hợp đồng và biên bản khảo sát thì giai đoạn 1 gồm ba chức năng chính. Một là tiếp nhận kiến nghị từ nhiều kênh, gồm nhập tay từ biên bản tiếp xúc cử tri, cổng thông tin và hòm thư điện tử, rồi AI tự động phân loại theo lĩnh vực và chuyển cho cơ quan có thẩm quyền. Hai là cổng tra cứu cho cử tri, để người dân tra xem kiến nghị của mình đang ở bước nào. Ba là theo dõi và đánh giá chất lượng câu trả lời của các cơ quan. Ngoài ra thì trong buổi khảo sát lần hai, bên anh Phong có nêu thêm mong muốn có ứng dụng di động cho đại biểu để đại biểu ghi kiến nghị ngay tại buổi tiếp xúc. Cái này hiện chưa có trong hợp đồng. Ừ, cái ứng dụng di động thì là mong muốn của một số đại biểu thôi, nếu không kịp thì anh nghĩ cũng không bắt buộc ở giai đoạn này. Dạ anh Tuấn, em thì em nghĩ cái app di động nếu làm bằng Flutter thì cũng dùng lại được khá nhiều API của web, em ước khoảng ba tuần là có bản cơ bản, hay là mình vẫn làm song song ạ? Thôi, cái này Linh ơi, anh nghĩ là không làm. Ba tuần của em lúc này là rất quý, phần giao diện web còn đang một nửa. Anh chốt là giai đoạn 1 giữ đúng ba chức năng chính như chị Mai vừa nói, ứng dụng di động thì đưa sang giai đoạn 2, bên em sẽ làm phụ lục đề xuất riêng gửi anh Phong. Anh Phong thấy được không ạ? Được, anh đồng ý. Miễn là 15/12 có cái để demo được đầy đủ ba cái chức năng kia. Rồi, mình đi vào từng phần. Phần phân loại tự động trước nhé, Hiếu báo cáo đi em. Dạ vâng. Em đang làm cái mô hình phân loại kiến nghị theo lĩnh vực. Dữ liệu là 8.400 kiến nghị bên anh Phong gửi, em chia 80 10 10 để train, validation với test. Hiện em đang fine-tune PhoBERT base, trên tập test thì F1 macro đạt khoảng 0.81 trên 18 lĩnh vực. Nhưng mà nhìn chi tiết thì có mấy lĩnh vực rất kém. Cụ thể là đất đai với tài nguyên môi trường thì bị nhầm với nhau rất nhiều, F1 chỉ khoảng 0.6, vì một kiến nghị về thu hồi đất làm bãi rác thì nó vừa là đất đai vừa là môi trường. Rồi cái lĩnh vực chính sách xã hội với lao động việc làm cũng nhầm. Còn mấy lĩnh vực như giao thông, y tế, giáo dục thì tốt, trên 0.9. Hiếu ơi, cái 18 lĩnh vực này là theo cái danh mục cũ của Văn phòng Đoàn đúng không? Chị nhớ là trong buổi khảo sát, anh Phong có nói là từ năm nay bên đó đã gộp lại thành 12 lĩnh vực theo cái cơ cấu các ban mới rồi. Đúng rồi, từ kỳ họp này thì bên anh dùng 12 lĩnh vực thôi, đất đai với môi trường là chung một lĩnh vực, chính sách xã hội với lao động cũng gộp rồi. Chị Mai để anh gửi lại cái danh mục mới. Dạ, nếu gộp như vậy thì rất tốt anh ạ, vì chính mấy cặp hay nhầm nhất lại là mấy cặp được gộp. Em ước là gộp xong thì F1 có thể lên khoảng 0.87, 0.88. Em chỉ cần map lại nhãn, train lại mất khoảng hai ngày thôi. Ok, vậy chốt là chuyển sang 12 lĩnh vực theo danh mục mới của Văn phòng Đoàn. Thế còn cái trường hợp mô hình không chắc chắn thì mình xử lý thế nào Hiếu? Dạ, em đề xuất là mình đặt một cái ngưỡng độ tin cậy. Nếu xác suất của nhãn cao nhất dưới ngưỡng thì hệ thống không tự chuyển mà đưa vào hàng chờ cho chuyên viên duyệt tay. Em thử trên tập validation thì ngưỡng 0.7 thì khoảng 82% kiến nghị được tự động chuyển, và trong số tự động đó thì độ chính xác khoảng 96%. Còn 18% còn lại chuyên viên duyệt. Mười tám phần trăm thì bên anh duyệt được, trước giờ bên anh duyệt tay 100% mà. Nhưng mà anh muốn là chuyên viên sửa nhãn thì cái hệ thống phải ghi lại để sau này mô hình học lại được. Dạ cái đó thì có ạ, em sẽ lưu lại nhãn chuyên viên sửa. À anh Tuấn, em cũng có một cái ý là về lâu dài thì mình có thể thử dùng một cái mô hình ngôn ngữ lớn tự host, kiểu Qwen hay Llama bản tiếng Việt, để phân loại luôn cả những kiến nghị có nhiều lĩnh vực, vì PhoBERT thì chỉ cho một nhãn. Nhưng cái này em cũng chưa thử, cần GPU mạnh hơn, nên em chỉ nêu vậy thôi. Cái LLM thì để sau em ạ, giai đoạn này mình không có GPU cho cái đó. Chốt phần này là dùng PhoBERT, 12 lĩnh vực, ngưỡng 0.7, dưới ngưỡng thì vào hàng chờ chuyên viên, và có ghi log nhãn sửa để train lại. Anh Tuấn, về phía backend thì em cần Hiếu chốt cái định dạng API trả về, em đang để là trả về nhãn với độ tin cậy, nếu Hiếu muốn trả về top 3 thì em sửa cái schema luôn. Trả về top 3 đi Nam, để giao diện duyệt của chuyên viên hiện được gợi ý thứ hai thứ ba, chuyên viên chọn cho nhanh. Rồi, sang phần cổng tra cứu cho cử tri. Linh chia sẻ màn hình đi em. Dạ, mọi người nhìn thấy màn hình em chưa ạ. Đây là cái trang tra cứu công khai. Hiện tại cử tri nhập cái mã kiến nghị, mã này in trên cái phiếu tiếp nhận, thì hệ thống hiện ra các bước: đã tiếp nhận, đã phân loại, đã chuyển cơ quan nào, cơ quan đã trả lời chưa, và nội dung trả lời. Em làm giao diện responsive để xem trên điện thoại cũng được. Phần timeline thì em lấy từ cái bảng lịch sử trạng thái bên Nam. Hiện em đang dùng dữ liệu giả, chưa nối API thật. Giao diện thì ổn đấy. Nhưng mà anh nói thật là cái mã kiến nghị thì người dân không ai giữ đâu. Ở các buổi tiếp xúc cử tri thì đại biểu ghi kiến nghị, người dân về có ai được cầm phiếu gì đâu. Người dân chỉ nhớ số điện thoại của mình thôi. Cho nên là phải tra được bằng số điện thoại. Dạ đúng ạ, cái này trong biên bản khảo sát lần hai có ghi nhưng mà bọn em chưa đưa vào đặc tả, lỗi bên em. Nhưng mà anh Phong ơi, nếu tra bằng số điện thoại thì có vấn đề là ai biết số điện thoại của người khác cũng tra được, lộ thông tin người kiến nghị. Cái đó thì mình phải có OTP chị ạ. Nhập số điện thoại, hệ thống gửi mã OTP về số đó, nhập đúng mới xem được. Nhưng mà gửi SMS thì mình phải có dịch vụ SMS brandname, cái này tốn tiền theo tin nhắn. Tỉnh có sẵn SMS brandname dùng chung rồi, cái của Trung tâm phục vụ hành chính công đấy, bên anh có thể xin dùng chung, không mất tiền. Vậy thì tốt quá. Chốt là thêm tra cứu bằng số điện thoại có xác thực OTP, dùng SMS brandname dùng chung của tỉnh. Tra bằng mã kiến nghị vẫn giữ. Còn một cái nữa là trên trang công khai thì nội dung kiến nghị có hiện tên với địa chỉ người kiến nghị không anh Phong? Không, tuyệt đối không hiện. Kể cả khi tra bằng OTP thì cũng chỉ hiện nội dung kiến nghị và nội dung trả lời thôi, không hiện họ tên, địa chỉ, vì có nhiều kiến nghị là tố cáo cán bộ địa phương, lộ ra là phiền. Dạ vâng, em sẽ ẩn hết các trường thông tin cá nhân. Anh Tuấn ơi, phần OTP thì em làm giao diện được, nhưng phần tích hợp SMS thì chắc là Nam phải làm bên backend. Ừ phần tích hợp SMS với sinh OTP thì để anh, nhưng mà anh cần cái tài liệu API của SMS brandname bên tỉnh, chứ hiện anh chưa có. Rồi, phần cuối trước khi chốt là phần đánh giá câu trả lời. Phần này thì hiện đang chậm nhất. Hiếu nói tiếp đi em. Dạ. Cái chức năng này thì mục tiêu là khi cơ quan có thẩm quyền gửi câu trả lời, hệ thống tự đánh giá xem câu trả lời đó có đạt không. Em đang đề xuất chấm theo ba tiêu chí. Một là trả lời có đúng trọng tâm câu hỏi của cử tri không. Hai là có nêu rõ hướng giải quyết và thời hạn cụ thể không, hay chỉ trả lời chung chung kiểu là sẽ xem xét. Ba là có dẫn căn cứ pháp lý không. Về kỹ thuật thì tiêu chí một em dùng mô hình tương đồng ngữ nghĩa giữa kiến nghị và câu trả lời, tiêu chí hai với ba thì dùng luật, bắt các mẫu câu như là thời hạn, ngày tháng, số hiệu văn bản. Nhưng mà hiện em chưa có dữ liệu có nhãn đánh giá nào cả, nên chưa đo được độ chính xác. Anh thì anh muốn nói rõ cái này. Việc đánh giá câu trả lời của một cơ quan nhà nước là việc rất nhạy cảm. Nếu cái máy nói câu trả lời của Sở này là không đạt, rồi cái đó hiện lên báo cáo gửi Thường trực, thì là có chuyện. Cho nên là AI chỉ được gợi ý thôi, còn chuyên viên là người quyết định đạt hay không đạt. Dạ vâng, em hiểu ạ. Vậy thì em đổi cách thể hiện, là AI không chấm đạt hay không đạt nữa, mà chỉ đánh dấu những câu trả lời có dấu hiệu chưa đạt, kèm lý do, ví dụ là không có thời hạn cụ thể, để chuyên viên xem trước. Chị thấy như thế hợp lý hơn. Mà Hiếu ơi, về dữ liệu có nhãn, thì bên anh Phong có cái báo cáo giám sát kết quả giải quyết kiến nghị hằng năm đấy, trong đó chuyên viên đã đánh giá từng câu trả lời là đạt hay chưa đạt rồi. Có thể lấy làm dữ liệu được không anh Phong? Có, báo cáo giám sát ba năm gần đây, mỗi năm khoảng một nghìn rưỡi câu trả lời có đánh giá. Nhưng mà nó ở dạng file Word, phải có người bóc ra. Ok. Vậy chốt hướng cho phần này. Bản đầu tiên cho demo 15/12 thì dùng tương đồng ngữ nghĩa kết hợp luật như Hiếu nói, và chỉ đánh dấu câu trả lời có dấu hiệu chưa đạt kèm lý do, không đưa ra kết luận đạt hay không đạt, chuyên viên là người quyết định. Dữ liệu báo cáo giám sát thì dùng để đo và cải tiến sau demo. Dạ vâng anh. Rồi, giờ mình chốt phân công nhé, mọi người ghi lại giúp anh. Anh đọc lần lượt. Đầu tiên là anh Phong gửi giúp bên em cái danh mục 12 lĩnh vực mới, với tài liệu API của cái SMS brandname dùng chung của tỉnh. Anh Phong gửi giúp em trong tuần này được không ạ? Được, thứ Sáu này anh gửi cả hai. Hiếu thì có danh mục rồi thì map lại nhãn sang 12 lĩnh vực, train lại mô hình phân loại, sửa API trả về top 3 kèm độ tin cậy, xong trước ngày 25 tháng 11. Dạ vâng. Nam làm phần tích hợp SMS brandname và sinh OTP, và API tra cứu theo số điện thoại. Cái này thì phụ thuộc tài liệu của anh Phong, nên em tính là xong trong vòng một tuần sau khi nhận tài liệu nhé. Dạ ok anh. Linh thì nối cổng tra cứu với API thật, thêm màn hình nhập số điện thoại và OTP, ẩn hết các trường thông tin cá nhân như anh Phong nói. Deadline là ngày 1 tháng 12 để còn kiểm thử. Dạ vâng anh. Còn cái việc bóc dữ liệu từ báo cáo giám sát ra thành dữ liệu có nhãn cho phần đánh giá câu trả lời, thì bạn làm phân loại lúc nãy nhận luôn nhé, vì em ấy hiểu dữ liệu nhất. Không cần gấp, sau demo cũng được, nhưng trước Tết thì phải xong. Dạ, em nhận ạ. Em sẽ viết script bóc tự động từ file Word, chỗ nào lỗi thì em sửa tay. Chị Mai thì cập nhật lại đặc tả cho phần tra cứu theo số điện thoại với cái phần đánh giá câu trả lời theo hướng chỉ gợi ý, và soạn kịch bản demo cho Thường trực, gửi anh Phong duyệt trước ngày 10 tháng 12. Dạ vâng, chị ghi rồi. Còn anh thì anh làm cái phụ lục đề xuất ứng dụng di động cho giai đoạn 2 gửi anh Phong, trong tháng 12. Vậy thôi, còn ai có vấn đề gì không? Không thì mình kết thúc, cảm ơn anh Phong và cả nhà.",
+  "metadata": {
+    "meeting_id": "synth_001",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

@@ -1,0 +1,381 @@
+{
+  "meeting_id": "synth_029",
+  "n_turns": 57,
+  "total_chars": 11983,
+  "boundaries": [
+    12,
+    22,
+    34,
+    46
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát sản lượng và chất lượng chạy xe các tuyến buýt tháng 10",
+      "summary": "Tháng 10 vận chuyển 1,86 triệu lượt khách, tỷ lệ chuyến đúng giờ 88%, tuyến 05 và 11 thấp nhất do ùn tắc cầu Rạch Miễu; thống nhất điều chỉnh biểu đồ giờ cao điểm tuyến 05, đề nghị Sở Xây dựng làn ưu tiên.",
+      "turn_range": [
+        0,
+        12
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000012"
+      ],
+      "chars": 2717,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Rà soát tình trạng kỹ thuật đội xe và tiến độ bảo dưỡng tại xưởng",
+      "summary": "23 xe đã chạy quá 12 năm, tỷ lệ xe hỏng giữa đường 1,9 lượt/10.000 km; xưởng tồn 11 xe chờ phụ tùng điều hòa; thống nhất ưu tiên sửa điều hòa trước mùa nóng, đề xuất thay toàn bộ đội xe cũ bằng xe điện chưa được chấp nhận.",
+      "turn_range": [
+        12,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000013",
+        "TURN_000022"
+      ],
+      "chars": 2186,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xử lý vụ va chạm giao thông trên đường 30 tháng 4 và chấn chỉnh an toàn",
+      "summary": "Xe tuyến 08 va chạm với xe máy, một người bị thương nhẹ; camera cho thấy tài xế chuyển làn không xi nhan; thống nhất đình chỉ tài xế chờ kết luận công an, tập huấn lại toàn bộ tài xế tuyến 08 và rà soát camera ngẫu nhiên hằng tuần.",
+      "turn_range": [
+        22,
+        34
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000034"
+      ],
+      "chars": 2470,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Triển khai thanh toán vé xe buýt điện tử bằng thẻ và mã QR",
+      "summary": "Thanh toán vé điện tử chiếm 24% lượt khách; máy soát vé trên 40 xe lỗi kết nối khi qua vùng sóng yếu; thống nhất chế độ lưu ngoại tuyến và đồng bộ cuối ngày, ra mắt vé tháng điện tử cho học sinh từ 1/12.",
+      "turn_range": [
+        34,
+        46
+      ],
+      "turn_ids": [
+        "TURN_000035",
+        "TURN_000046"
+      ],
+      "chars": 2200,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Bố trí nhân sự tài xế và phụ xe phục vụ dịp Tết Nguyên đán",
+      "summary": "Công ty thiếu 17 tài xế; dịp Tết cần tăng 30 chuyến/ngày tuyến về bến xe; thống nhất tuyển bổ sung trước 15/12, chính sách thưởng Tết làm việc, chốt lịch nghỉ Tết trước 20/12.",
+      "turn_range": [
+        46,
+        57
+      ],
+      "turn_ids": [
+        "TURN_000047",
+        "TURN_000057"
+      ],
+      "chars": 2410,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Ông Phát (Trưởng phòng Điều hành)",
+      "actor_aliases": [
+        "anh Phát",
+        "em"
+      ],
+      "task": "Gửi văn bản đề nghị Sở Xây dựng điều chỉnh biểu đồ tuyến 05 và làn ưu tiên xe buýt đầu cầu Rạch Miễu",
+      "deadline": "trước 5 giờ chiều nay",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Ông Phát (Trưởng phòng Điều hành)",
+      "actor_aliases": [
+        "anh"
+      ],
+      "task": "Nghiên cứu phương án đi vòng qua đường Nguyễn Huệ cho tuyến 11",
+      "deadline": "giao ban tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Anh Thành (Quản đốc xưởng bảo dưỡng)",
+      "actor_aliases": [
+        "anh Thành",
+        "em Thành",
+        "Người nói không xác định"
+      ],
+      "task": "Đặt máy nén điều hòa tương đương và sửa xong 8 xe",
+      "deadline": "trước thứ Tư tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Bà Nhàn (Kế toán trưởng)",
+      "actor_aliases": [
+        "phòng kế toán"
+      ],
+      "task": "Làm thủ tục thanh toán mua phụ tùng điều hòa",
+      "deadline": "trong 48 giờ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Ông Lộc (Phụ trách an toàn giao thông)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Tập huấn kỹ năng vào trạm, chuyển làn cho tài xế tuyến 08",
+      "deadline": "sáng Chủ nhật này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Bà Tuyết (Trưởng phòng Tổ chức - Hành chính)",
+      "actor_aliases": [
+        "phòng tổ chức"
+      ],
+      "task": "Soạn quyết định đình chỉ tạm thời tài xế Trần Văn Bé trình giám đốc",
+      "deadline": "sáng thứ Hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Ông Lộc (Phụ trách an toàn giao thông)",
+      "actor_aliases": [
+        "tôi",
+        "phòng an toàn"
+      ],
+      "task": "Rà soát camera ngẫu nhiên ít nhất 50 chuyến/tuần và báo cáo",
+      "deadline": "thứ Sáu hằng tuần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000031",
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Chị Hà (Kinh doanh vé)",
+      "actor_aliases": [
+        "chị Hà",
+        "em Hà",
+        "Người nói không xác định"
+      ],
+      "task": "Làm việc với nhà cung cấp cập nhật chế độ ngoại tuyến cho 214 máy soát vé",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Bà Nhàn (Kế toán trưởng)",
+      "actor_aliases": [
+        "kế toán"
+      ],
+      "task": "Hoàn tiền cho 63 khách bị trừ tiền hai lần",
+      "deadline": "trong vòng 3 ngày làm việc",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Chị Hà (Kinh doanh vé)",
+      "actor_aliases": [
+        "chị Hà",
+        "Người nói không xác định"
+      ],
+      "task": "Chuẩn bị vé tháng điện tử cho học sinh, phối hợp các trường đăng ký danh sách",
+      "deadline": "ra mắt ngày 1 tháng 12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Bà Tuyết (Trưởng phòng Tổ chức - Hành chính)",
+      "actor_aliases": [
+        "phòng tổ chức"
+      ],
+      "task": "Đăng tin và tuyển bổ sung 15 tài xế",
+      "deadline": "trước ngày 15 tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Bà Tuyết (Trưởng phòng Tổ chức - Hành chính)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Đề xuất mức thưởng làm việc ngày Tết",
+      "deadline": "trước cuối tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000055"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Ông Phát (Trưởng phòng Điều hành)",
+      "actor_aliases": [
+        "phòng điều hành"
+      ],
+      "task": "Lập lịch chạy xe và lịch nghỉ Tết của tài xế",
+      "deadline": "trước ngày 20 tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Điều chỉnh biểu đồ tuyến 05 giờ cao điểm (sau khi Sở chấp thuận) và đề nghị làn ưu tiên xe buýt đầu cầu Rạch Miễu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Mua máy nén điều hòa hàng tương đương có sẵn, sửa xong trong 1 tuần; xe hở hơi phanh dừng chạy ngay; 23 xe cũ bảo dưỡng mỗi 7.000 km",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Đình chỉ lái xe tài xế gây va chạm chờ kết luận công an; tập huấn lại tài xế tuyến 08; rà soát camera ít nhất 50 chuyến/tuần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Bật chế độ ngoại tuyến cho máy soát vé; công ty hoàn tiền trước cho khách bị trừ 2 lần trong 3 ngày làm việc; ra mắt vé tháng điện tử học sinh từ 1/12; bán vé tháng tập thể cho công nhân theo đúng giá quy định",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Tuyển 15 tài xế (ít nhất 8 chính thức) trước 15/12; thưởng làm việc ngày Tết; chốt lịch nghỉ Tết trước 20/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Làm đề án thay 23 xe cũ bằng xe buýt điện",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018",
+        "TURN_000019"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Ông Phát (Trưởng phòng Điều hành)",
+      "point": "Tháng 10 vận chuyển 1,86 triệu lượt, đúng giờ 88% (mục tiêu 92%); tuyến 05 chỉ 74%, tuyến 11 79%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Thành (Quản đốc xưởng bảo dưỡng)",
+      "point": "Xe hỏng giữa đường 1,9 lượt/10.000 km; 11 xe tồn xưởng, 8 xe chờ máy nén điều hòa",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Ông Lộc (Phụ trách an toàn giao thông)",
+      "point": "Xe tuyến 08 chuyển làn không xi nhan va chạm xe máy; 11/30 chuyến rà soát cũng không xi nhan khi vào trạm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Hà (Kinh doanh vé)",
+      "point": "Vé điện tử đạt 24% lượt khách; 40 xe mất sóng gây 63 khiếu nại bị trừ tiền hai lần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Bà Tuyết (Trưởng phòng Tổ chức - Hành chính)",
+      "point": "Thiếu 17 tài xế; dịp Tết cần tăng 30 chuyến/ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Bà Kim (Giám đốc công ty)",
+    "DH": "Ông Phát (Trưởng phòng Điều hành)",
+    "KT": "Bà Nhàn (Kế toán trưởng)",
+    "AT": "Ông Lộc (Phụ trách an toàn giao thông)",
+    "NS": "Bà Tuyết (Trưởng phòng Tổ chức - Hành chính)",
+    "UNK": "Người nói không xác định"
+  },
+  "tags": [
+    "unknown_speaker",
+    "deadline_variety"
+  ]
+}

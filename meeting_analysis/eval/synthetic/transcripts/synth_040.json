@@ -1,0 +1,685 @@
+{
+  "transcript": "Rồi, họp nhanh khoảng hai mươi phút thôi nhé. Có ba việc: lỗi trùng suất khi đổi ca, chức năng đánh giá món ăn, và lịch phát hành bản 1.6. Định nói lỗi trùng suất trước đi. Dạ. Lỗi này bếp ở nhà máy may Hòa Lợi báo lên từ tuần trước. Khi công nhân đổi ca, ví dụ từ ca hai sang ca ba, thì app tạo một suất mới cho ca ba nhưng không hủy suất ca hai, nếu việc đổi ca diễn ra sau giờ chốt suất. Trước giờ chốt thì không sao vì lúc chốt hệ thống có chạy dọn trùng. Em kiểm tra log ba tuần thì trung bình mỗi tuần dư khoảng 140 suất, toàn bộ là ở Hòa Lợi, vì bên đó tổ trưởng hay đổi ca cho công nhân sát giờ. 140 suất một tuần là gần ba triệu tiền nguyên liệu bỏ đi đấy, bên bếp kêu dữ lắm. Khoan, 140 suất đó là tính cả suất công nhân nghỉ phép mà không hủy, hay chỉ riêng đổi ca? Chỉ riêng đổi ca anh ạ. Suất nghỉ phép không hủy thì còn khoảng 60 suất một tuần nữa, nhưng cái đó là do công nhân quên hủy, không phải lỗi hệ thống. Cái nghỉ phép là chuyện khác, hôm nay mình không bàn. Dạ. Em đề xuất là khi đổi ca thì giao dịch đổi ca hủy luôn suất ca cũ trong cùng một transaction, không đợi job dọn trùng. Còn nếu đổi sau giờ chốt suất của ca mới, tức là bếp đã lên số lượng rồi, thì app khóa không cho đổi, hiện thông báo bảo tổ trưởng liên hệ trực tiếp bếp. Chị hỏi chút, giờ chốt suất hiện đang là trước mỗi ca 4 tiếng đúng không? Dạ đúng chị, ca một 6 giờ sáng thì chốt 2 giờ sáng, cứ thế. Chị thì đang nghĩ là, ừm, có lẽ mình nên rút giờ chốt xuống còn trước 2 tiếng thôi, cho công nhân với tổ trưởng linh hoạt hơn, đổi ca sát giờ cũng không bị khóa. Cái đó phải hỏi bên bếp đã chị ạ, 2 tiếng thì bếp có kịp sơ chế không em không chắc. Mình cứ sửa lỗi theo giờ chốt hiện tại trước. Ừ, để chị hỏi thử, chưa đổi vội. Ok, chốt: đổi ca thì hủy suất ca cũ ngay trong cùng transaction; đổi sau giờ chốt suất của ca mới thì khóa, hiện hướng dẫn liên hệ bếp. Giờ chốt vẫn giữ trước ca 4 tiếng. Em sửa xong trước thứ Năm, có kèm script dọn mấy suất trùng còn treo trong tuần này. Thứ Năm có bản thì chị test luôn mấy kịch bản đổi ca trước và sau giờ chốt, cả đổi ca qua đêm. Phía app thì khi bị khóa đổi ca em hiện popup có số điện thoại bếp trực của từng nhà máy. Cái số đó em lấy từ cấu hình hay để cứng ạ? Lấy từ cấu hình đi, bảng nhà máy có sẵn cột số điện thoại bếp rồi, có điều Hòa Lợi chưa nhập. Số bếp trực Hòa Lợi chị có, lát họp xong chị nhập vào luôn. Sang mục hai, đánh giá món ăn. Ly. Dạ. Bản thử đánh giá món ăn em bật ở hai nhà máy được ba tuần, cho công nhân chấm 5 sao từng món sau bữa. Kết quả là chỉ khoảng 6% công nhân đánh giá, mà phần lớn đánh giá đều là 3 sao, nhìn vào chẳng biết món nào ngon món nào dở. Em hỏi nhanh mấy anh chị công nhân thì họ bảo nghỉ giữa ca có 30 phút, ăn xong là đi luôn, không có thời gian chấm từng món. Bên bếp thì vẫn rất cần số liệu này, vì hợp đồng với nhà máy có điều khoản về mức độ hài lòng, quý nào dưới 70% là bị trừ tiền. Hiện giờ họ phải phát phiếu giấy, rất mất công. Em đề xuất đổi sang ba mức thôi: ngon, tạm được, không ngon, dùng biểu tượng mặt cười, chấm cả bữa chứ không chấm từng món, ai muốn thì mới bấm vào chấm chi tiết. App gửi thông báo nhắc 30 phút sau khi kết thúc bữa, lúc đó công nhân đã về chuyền, có thể mở điện thoại lúc nghỉ. Chị thấy nhắc 30 phút thì nhiều nhà máy cấm dùng điện thoại trên chuyền đấy. Có khi nên để cuối ca. Dạ cái đó em cho cấu hình theo từng nhà máy được, mặc định 30 phút, nhà máy nào cấm thì đặt cuối ca. Thế còn báo cáo cho bếp thì sao? Bếp trưởng không mở trang quản trị đâu, họ chỉ đọc email hoặc Zalo thôi. Thì mình gửi email tổng hợp hằng tuần, có tỷ lệ hài lòng theo bữa, theo món, với ba món bị chê nhiều nhất. Zalo thì phải đăng ký tài khoản Zalo OA, thủ tục lâu. Ừ email trước đi, chị thấy bếp trưởng ở Hòa Lợi với nhà máy giày Phước An đều dùng email cả. Anh có ý này, hay là mình thưởng điểm tích lũy cho người đánh giá, đủ điểm thì đổi được món tráng miệng hay hộp sữa, chắc tỷ lệ đánh giá sẽ lên. Cái đó thì phải xin ngân sách bên kinh doanh, mà phải xem có bị đánh giá bừa để lấy điểm không. Để sau, giờ chưa làm. Ok, chốt đánh giá ba mức bằng biểu tượng, chấm theo bữa, chi tiết từng món là tùy chọn; nhắc đánh giá mặc định 30 phút sau bữa, cấu hình được theo nhà máy. Báo cáo tổng hợp gửi bếp trưởng mỗi sáng thứ Hai. Dạ phần app em làm, đưa vào bản 1.6 luôn. Còn báo cáo tuần gửi bếp trưởng thì em làm job tổng hợp, gửi email lúc 7 giờ sáng thứ Hai, xong trong tuần sau. Cuối cùng là lịch phát hành. Anh định là thứ Ba tuần sau đẩy bản 1.6. Chị Sương thấy kịp không? Nếu thứ Năm có bản sửa đổi ca thì chị test hồi quy thứ Sáu với thứ Hai được. Nhưng chị đề nghị không mở cho cả ba nhà máy một lúc, vì lỗi đổi ca chỉ tái hiện rõ ở Hòa Lợi, nên mở cho Hòa Lợi trước, chạy hai ngày ổn rồi mới mở cho hai nhà máy kia. Chị đồng ý, Hòa Lợi cũng là nơi đang kêu nhiều nhất, sửa cho họ trước thì tốt. Em đề nghị phần khóa đổi ca để sau cờ tính năng, có vấn đề gì thì tắt cờ là về hành vi cũ, không phải rút bản. Ừ, ý Định hợp lý, phần khóa đổi ca để sau cờ tính năng. Chốt phát hành bản 1.6 thứ Ba tuần sau, mở cho Hòa Lợi trước, sau hai ngày không có lỗi nghiêm trọng thì mở cho hai nhà máy còn lại. Ly lo phần đẩy bản lên kho ứng dụng nhé. Dạ, em nộp lên hai kho từ thứ Hai để kịp duyệt. À, có một việc nữa anh ơi. Bên nhà máy điện tử Tân Phú đang tích hợp hệ thống chấm công của họ với API đăng ký suất ăn, mà tài liệu API mình gửi họ là bản 1.3, từ đó đến giờ đổi mấy endpoint rồi, họ gọi sai suốt. Cần có người cập nhật lại tài liệu cho bản 1.6. Ừ, cái đó cần làm, nhưng tuần này ai cũng kín việc rồi. Để đấy đã, tuần sau xem ai rảnh thì làm. Chị cũng nhắc lại là nhà máy bao bì Minh Long thanh lý hợp đồng từ tháng trước, mà tài khoản quản trị của họ trên hệ thống vẫn còn hoạt động, ba tài khoản. Cái này về bảo mật thì phải có người rà và khóa đi. Đúng là phải làm, nhưng chị không rõ quyền khóa tài khoản đối tác là bên mình hay bên vận hành nữa. Em nhớ là tuần trước vẫn có người đăng nhập bằng một tài khoản bên Minh Long vào xem báo cáo suất ăn đấy ạ, em thấy trong log. Ừ, cái đó cũng ghi lại, để anh hỏi xem quy trình bên vận hành thế nào rồi tính. Thôi, hôm nay đến đây, cảm ơn mọi người.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Rồi, họp nhanh khoảng hai mươi phút thôi nhé. Có ba việc: lỗi trùng suất khi đổi ca, chức năng đánh giá món ăn, và lịch phát hành bản 1.6. Định nói lỗi trùng suất trước đi.",
+      "segment_html": "Rồi, họp nhanh khoảng hai mươi phút thôi nhé. Có ba việc: lỗi trùng suất khi đổi ca, chức năng đánh giá món ăn, và lịch phát hành bản 1.6. Định nói lỗi trùng suất trước đi.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 16.337,
+      "point_id": "73bd9719-5e18-5f8e-8949-ba16b2fe7a0f",
+      "ref_id": [
+        "c5978618-9aa4-5702-9819-601cbbc6633f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Dạ. Lỗi này bếp ở nhà máy may Hòa Lợi báo lên từ tuần trước. Khi công nhân đổi ca, ví dụ từ ca hai sang ca ba, thì app tạo một suất mới cho ca ba nhưng không hủy suất ca hai, nếu việc đổi ca diễn ra sau giờ chốt suất.",
+      "segment_html": "Dạ. Lỗi này bếp ở nhà máy may Hòa Lợi báo lên từ tuần trước. Khi công nhân đổi ca, ví dụ từ ca hai sang ca ba, thì app tạo một suất mới cho ca ba nhưng không hủy suất ca hai, nếu việc đổi ca diễn ra sau giờ chốt suất.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 17.337,
+      "end_time": 40.38,
+      "point_id": "1c3bf829-b74a-51a6-ad84-17c7f60bfeda",
+      "ref_id": [
+        "89ea4b7e-8301-5c73-b428-2aac2a9a9cff"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Trước giờ chốt thì không sao vì lúc chốt hệ thống có chạy dọn trùng. Em kiểm tra log ba tuần thì trung bình mỗi tuần dư khoảng 140 suất, toàn bộ là ở Hòa Lợi, vì bên đó tổ trưởng hay đổi ca cho công nhân sát giờ.",
+      "segment_html": "Trước giờ chốt thì không sao vì lúc chốt hệ thống có chạy dọn trùng. Em kiểm tra log ba tuần thì trung bình mỗi tuần dư khoảng 140 suất, toàn bộ là ở Hòa Lợi, vì bên đó tổ trưởng hay đổi ca cho công nhân sát giờ.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 40.63,
+      "end_time": 61.935,
+      "point_id": "1c3bf829-b74a-51a6-ad84-17c7f60bfeda",
+      "ref_id": [
+        "89ea4b7e-8301-5c73-b428-2aac2a9a9cff"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "140 suất một tuần là gần ba triệu tiền nguyên liệu bỏ đi đấy, bên bếp kêu dữ lắm.",
+      "segment_html": "140 suất một tuần là gần ba triệu tiền nguyên liệu bỏ đi đấy, bên bếp kêu dữ lắm.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 62.935,
+      "end_time": 71.196,
+      "point_id": "5641c5de-6d02-5470-b680-330004009d9c",
+      "ref_id": [
+        "f40cc9ef-ce08-5e15-b1df-d26270727e85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Khoan, 140 suất đó là tính cả suất công nhân nghỉ phép mà không hủy, hay chỉ riêng đổi ca?",
+      "segment_html": "Khoan, 140 suất đó là tính cả suất công nhân nghỉ phép mà không hủy, hay chỉ riêng đổi ca?",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 72.196,
+      "end_time": 80.891,
+      "point_id": "dc1073f2-1759-5bd2-9397-3d3804f76a6e",
+      "ref_id": [
+        "3d25e742-2688-5586-ab96-9deb61be3866"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Chỉ riêng đổi ca anh ạ. Suất nghỉ phép không hủy thì còn khoảng 60 suất một tuần nữa, nhưng cái đó là do công nhân quên hủy, không phải lỗi hệ thống.",
+      "segment_html": "Chỉ riêng đổi ca anh ạ. Suất nghỉ phép không hủy thì còn khoảng 60 suất một tuần nữa, nhưng cái đó là do công nhân quên hủy, không phải lỗi hệ thống.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 81.891,
+      "end_time": 96.239,
+      "point_id": "11629a7f-8d71-5646-bf8f-2603beea1583",
+      "ref_id": [
+        "f7acba08-d45a-5c3a-9783-1216e15c31cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Cái nghỉ phép là chuyện khác, hôm nay mình không bàn.",
+      "segment_html": "Cái nghỉ phép là chuyện khác, hôm nay mình không bàn.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 97.239,
+      "end_time": 102.022,
+      "point_id": "6aa5ff7e-c819-5cc0-8fac-2afabec9271b",
+      "ref_id": [
+        "22f2a749-e46c-55fa-9900-1ebd520a805d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Dạ. Em đề xuất là khi đổi ca thì giao dịch đổi ca hủy luôn suất ca cũ trong cùng một transaction, không đợi job dọn trùng. Còn nếu đổi sau giờ chốt suất của ca mới, tức là bếp đã lên số lượng rồi, thì app khóa không cho đổi,",
+      "segment_html": "Dạ. Em đề xuất là khi đổi ca thì giao dịch đổi ca hủy luôn suất ca cũ trong cùng một transaction, không đợi job dọn trùng. Còn nếu đổi sau giờ chốt suất của ca mới, tức là bếp đã lên số lượng rồi, thì app khóa không cho đổi,",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 103.022,
+      "end_time": 125.196,
+      "point_id": "7bc5c482-750b-5d18-90cf-ff175bbdcbf2",
+      "ref_id": [
+        "9306228d-5d68-5b2f-a420-99ea01c0d75b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "hiện thông báo bảo tổ trưởng liên hệ trực tiếp bếp.",
+      "segment_html": "hiện thông báo bảo tổ trưởng liên hệ trực tiếp bếp.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 125.446,
+      "end_time": 130.228,
+      "point_id": "7bc5c482-750b-5d18-90cf-ff175bbdcbf2",
+      "ref_id": [
+        "9306228d-5d68-5b2f-a420-99ea01c0d75b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Chị hỏi chút, giờ chốt suất hiện đang là trước mỗi ca 4 tiếng đúng không?",
+      "segment_html": "Chị hỏi chút, giờ chốt suất hiện đang là trước mỗi ca 4 tiếng đúng không?",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 131.228,
+      "end_time": 138.185,
+      "point_id": "a6a8b716-767e-5c13-bed4-fd9703196980",
+      "ref_id": [
+        "0564d9f9-522d-5c95-af7d-628c0532ed3d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Dạ đúng chị, ca một 6 giờ sáng thì chốt 2 giờ sáng, cứ thế.",
+      "segment_html": "Dạ đúng chị, ca một 6 giờ sáng thì chốt 2 giờ sáng, cứ thế.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 139.185,
+      "end_time": 145.707,
+      "point_id": "930ee8e1-cef3-5721-b6ed-f146b0ad0ca4",
+      "ref_id": [
+        "72fec497-b125-5248-9429-ea0047a2fc8e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Chị thì đang nghĩ là, ừm, có lẽ mình nên rút giờ chốt xuống còn trước 2 tiếng thôi, cho công nhân với tổ trưởng linh hoạt hơn, đổi ca sát giờ cũng không bị khóa.",
+      "segment_html": "Chị thì đang nghĩ là, ừm, có lẽ mình nên rút giờ chốt xuống còn trước 2 tiếng thôi, cho công nhân với tổ trưởng linh hoạt hơn, đổi ca sát giờ cũng không bị khóa.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 146.707,
+      "end_time": 162.359,
+      "point_id": "3f2a14f2-87de-51c9-8059-75fa01a2620e",
+      "ref_id": [
+        "e1a4c85d-95ef-592b-a703-b92ebd74a263"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Cái đó phải hỏi bên bếp đã chị ạ, 2 tiếng thì bếp có kịp sơ chế không em không chắc. Mình cứ sửa lỗi theo giờ chốt hiện tại trước.",
+      "segment_html": "Cái đó phải hỏi bên bếp đã chị ạ, 2 tiếng thì bếp có kịp sơ chế không em không chắc. Mình cứ sửa lỗi theo giờ chốt hiện tại trước.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 163.359,
+      "end_time": 176.837,
+      "point_id": "bb41f6cd-9fdf-5957-921d-3c5a49ec09de",
+      "ref_id": [
+        "8bd448e4-393b-5e85-a7c7-53479758dfb8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Ừ, để chị hỏi thử, chưa đổi vội.",
+      "segment_html": "Ừ, để chị hỏi thử, chưa đổi vội.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 177.837,
+      "end_time": 181.315,
+      "point_id": "b0ecbc56-2964-5dcf-9b91-b1a8079d0454",
+      "ref_id": [
+        "2fac715c-69f7-5048-af8e-5608ccb1a0f6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Ok, chốt: đổi ca thì hủy suất ca cũ ngay trong cùng transaction; đổi sau giờ chốt suất của ca mới thì khóa, hiện hướng dẫn liên hệ bếp. Giờ chốt vẫn giữ trước ca 4 tiếng.",
+      "segment_html": "Ok, chốt: đổi ca thì hủy suất ca cũ ngay trong cùng transaction; đổi sau giờ chốt suất của ca mới thì khóa, hiện hướng dẫn liên hệ bếp. Giờ chốt vẫn giữ trước ca 4 tiếng.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 182.315,
+      "end_time": 198.402,
+      "point_id": "abb1eccf-40e5-5d69-82be-ff58ada600d6",
+      "ref_id": [
+        "ad5e01a0-6283-5705-9cfb-2b6bcbb92a62"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "Em sửa xong trước thứ Năm, có kèm script dọn mấy suất trùng còn treo trong tuần này.",
+      "segment_html": "Em sửa xong trước thứ Năm, có kèm script dọn mấy suất trùng còn treo trong tuần này.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 199.402,
+      "end_time": 207.228,
+      "point_id": "a0dc687a-c957-5e0e-b983-6587a9ee31f7",
+      "ref_id": [
+        "178cd8c0-e00f-59bc-8898-fc2fa4869a24"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "Thứ Năm có bản thì chị test luôn mấy kịch bản đổi ca trước và sau giờ chốt, cả đổi ca qua đêm.",
+      "segment_html": "Thứ Năm có bản thì chị test luôn mấy kịch bản đổi ca trước và sau giờ chốt, cả đổi ca qua đêm.",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 208.228,
+      "end_time": 218.228,
+      "point_id": "c640f645-9283-5867-9a29-75e02c4dfeef",
+      "ref_id": [
+        "2e61eaa5-023b-56da-a957-aa7a26304241"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Phía app thì khi bị khóa đổi ca em hiện popup có số điện thoại bếp trực của từng nhà máy. Cái số đó em lấy từ cấu hình hay để cứng ạ?",
+      "segment_html": "Phía app thì khi bị khóa đổi ca em hiện popup có số điện thoại bếp trực của từng nhà máy. Cái số đó em lấy từ cấu hình hay để cứng ạ?",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 219.228,
+      "end_time": 233.576,
+      "point_id": "7914f6ef-7bb8-5bb2-ad25-ce91196ff951",
+      "ref_id": [
+        "3de94407-70e5-5724-a448-fe78678c25b4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Lấy từ cấu hình đi, bảng nhà máy có sẵn cột số điện thoại bếp rồi, có điều Hòa Lợi chưa nhập.",
+      "segment_html": "Lấy từ cấu hình đi, bảng nhà máy có sẵn cột số điện thoại bếp rồi, có điều Hòa Lợi chưa nhập.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 234.576,
+      "end_time": 244.141,
+      "point_id": "f6d1f777-0df6-586d-9938-6adccf2dc623",
+      "ref_id": [
+        "79d5c766-13ba-539a-8b01-8ee52209e852"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "Số bếp trực Hòa Lợi chị có, lát họp xong chị nhập vào luôn.",
+      "segment_html": "Số bếp trực Hòa Lợi chị có, lát họp xong chị nhập vào luôn.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 245.141,
+      "end_time": 251.228,
+      "point_id": "512240ad-a5d4-5bf8-b8c7-83877c6be8f4",
+      "ref_id": [
+        "a62a56e1-f4c8-5d04-a5f7-1811c5842390"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Sang mục hai, đánh giá món ăn. Ly.",
+      "segment_html": "Sang mục hai, đánh giá món ăn. Ly.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 252.228,
+      "end_time": 255.707,
+      "point_id": "ea17a9f9-244d-53ce-adda-2837b590c7b7",
+      "ref_id": [
+        "e1f9386d-4b6f-5675-bec9-241bb6db2f95"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Dạ. Bản thử đánh giá món ăn em bật ở hai nhà máy được ba tuần, cho công nhân chấm 5 sao từng món sau bữa. Kết quả là chỉ khoảng 6% công nhân đánh giá, mà phần lớn đánh giá đều là 3 sao, nhìn vào chẳng biết món nào ngon món nào dở.",
+      "segment_html": "Dạ. Bản thử đánh giá món ăn em bật ở hai nhà máy được ba tuần, cho công nhân chấm 5 sao từng món sau bữa. Kết quả là chỉ khoảng 6% công nhân đánh giá, mà phần lớn đánh giá đều là 3 sao, nhìn vào chẳng biết món nào ngon món nào dở.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 256.707,
+      "end_time": 280.62,
+      "point_id": "3117ae36-87f2-5251-9f7f-e7e0414a9e4a",
+      "ref_id": [
+        "61b1f07e-0bfd-5c87-9cec-ef7ac5dfa585"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Em hỏi nhanh mấy anh chị công nhân thì họ bảo nghỉ giữa ca có 30 phút, ăn xong là đi luôn, không có thời gian chấm từng món.",
+      "segment_html": "Em hỏi nhanh mấy anh chị công nhân thì họ bảo nghỉ giữa ca có 30 phút, ăn xong là đi luôn, không có thời gian chấm từng món.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 280.87,
+      "end_time": 293.478,
+      "point_id": "3117ae36-87f2-5251-9f7f-e7e0414a9e4a",
+      "ref_id": [
+        "61b1f07e-0bfd-5c87-9cec-ef7ac5dfa585"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Bên bếp thì vẫn rất cần số liệu này, vì hợp đồng với nhà máy có điều khoản về mức độ hài lòng, quý nào dưới 70% là bị trừ tiền. Hiện giờ họ phải phát phiếu giấy, rất mất công.",
+      "segment_html": "Bên bếp thì vẫn rất cần số liệu này, vì hợp đồng với nhà máy có điều khoản về mức độ hài lòng, quý nào dưới 70% là bị trừ tiền. Hiện giờ họ phải phát phiếu giấy, rất mất công.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 294.478,
+      "end_time": 312.304,
+      "point_id": "51614f06-679f-5ddc-9415-0c269a1ec62c",
+      "ref_id": [
+        "c7ed48b6-f003-58dd-8902-14c75ae39b89"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Em đề xuất đổi sang ba mức thôi: ngon, tạm được, không ngon, dùng biểu tượng mặt cười, chấm cả bữa chứ không chấm từng món, ai muốn thì mới bấm vào chấm chi tiết. App gửi thông báo nhắc 30 phút sau khi kết thúc bữa, lúc đó công nhân đã về chuyền, có thể mở điện thoại lúc nghỉ.",
+      "segment_html": "Em đề xuất đổi sang ba mức thôi: ngon, tạm được, không ngon, dùng biểu tượng mặt cười, chấm cả bữa chứ không chấm từng món, ai muốn thì mới bấm vào chấm chi tiết. App gửi thông báo nhắc 30 phút sau khi kết thúc bữa, lúc đó công nhân đã về chuyền, có thể mở điện thoại lúc nghỉ.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 313.304,
+      "end_time": 339.826,
+      "point_id": "b8be7749-d27a-5f53-94c9-e74c0231e7a2",
+      "ref_id": [
+        "6258c790-3512-531f-abaa-391c6515c658"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Chị thấy nhắc 30 phút thì nhiều nhà máy cấm dùng điện thoại trên chuyền đấy. Có khi nên để cuối ca.",
+      "segment_html": "Chị thấy nhắc 30 phút thì nhiều nhà máy cấm dùng điện thoại trên chuyền đấy. Có khi nên để cuối ca.",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 340.826,
+      "end_time": 350.391,
+      "point_id": "133691c0-17c7-5a9d-8849-4634f8202581",
+      "ref_id": [
+        "6d60c2f1-d231-51c7-bf1f-682b8954028c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Dạ cái đó em cho cấu hình theo từng nhà máy được, mặc định 30 phút, nhà máy nào cấm thì đặt cuối ca.",
+      "segment_html": "Dạ cái đó em cho cấu hình theo từng nhà máy được, mặc định 30 phút, nhà máy nào cấm thì đặt cuối ca.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 351.391,
+      "end_time": 361.826,
+      "point_id": "27d0bfc7-628b-5320-bc71-d922cdb334b9",
+      "ref_id": [
+        "c91e72d2-e029-5a55-b71b-306dfff3e60b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Thế còn báo cáo cho bếp thì sao? Bếp trưởng không mở trang quản trị đâu, họ chỉ đọc email hoặc Zalo thôi.",
+      "segment_html": "Thế còn báo cáo cho bếp thì sao? Bếp trưởng không mở trang quản trị đâu, họ chỉ đọc email hoặc Zalo thôi.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 362.826,
+      "end_time": 372.826,
+      "point_id": "6c01bcc9-a662-55d2-8a4e-c24c26741db4",
+      "ref_id": [
+        "0c44dca8-fb48-57f9-8a13-0479038aa2c8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Thì mình gửi email tổng hợp hằng tuần, có tỷ lệ hài lòng theo bữa, theo món, với ba món bị chê nhiều nhất. Zalo thì phải đăng ký tài khoản Zalo OA, thủ tục lâu.",
+      "segment_html": "Thì mình gửi email tổng hợp hằng tuần, có tỷ lệ hài lòng theo bữa, theo món, với ba món bị chê nhiều nhất. Zalo thì phải đăng ký tài khoản Zalo OA, thủ tục lâu.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 373.826,
+      "end_time": 389.478,
+      "point_id": "56f160a0-4bd1-51c4-b923-b8bf75281f99",
+      "ref_id": [
+        "f0bae8c7-779a-5793-b80f-8e41b9272e67"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Ừ email trước đi, chị thấy bếp trưởng ở Hòa Lợi với nhà máy giày Phước An đều dùng email cả.",
+      "segment_html": "Ừ email trước đi, chị thấy bếp trưởng ở Hòa Lợi với nhà máy giày Phước An đều dùng email cả.",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 390.478,
+      "end_time": 399.609,
+      "point_id": "4d30414f-fc24-53e9-840e-60a5b628da9d",
+      "ref_id": [
+        "b8c698a2-98e9-5746-9cc0-060f8fb0ae08"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Anh có ý này, hay là mình thưởng điểm tích lũy cho người đánh giá, đủ điểm thì đổi được món tráng miệng hay hộp sữa, chắc tỷ lệ đánh giá sẽ lên.",
+      "segment_html": "Anh có ý này, hay là mình thưởng điểm tích lũy cho người đánh giá, đủ điểm thì đổi được món tráng miệng hay hộp sữa, chắc tỷ lệ đánh giá sẽ lên.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 400.609,
+      "end_time": 414.957,
+      "point_id": "60203687-f4a4-5e5e-9102-32bea0999f89",
+      "ref_id": [
+        "390fd950-24c6-51a1-8664-1d1fcc661056"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Cái đó thì phải xin ngân sách bên kinh doanh, mà phải xem có bị đánh giá bừa để lấy điểm không. Để sau, giờ chưa làm.",
+      "segment_html": "Cái đó thì phải xin ngân sách bên kinh doanh, mà phải xem có bị đánh giá bừa để lấy điểm không. Để sau, giờ chưa làm.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 415.957,
+      "end_time": 427.696,
+      "point_id": "424f84e3-e74e-5b88-88bb-7578a2a0c176",
+      "ref_id": [
+        "b9214f56-a81b-552c-a2a0-98b0f684379c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Ok, chốt đánh giá ba mức bằng biểu tượng, chấm theo bữa, chi tiết từng món là tùy chọn; nhắc đánh giá mặc định 30 phút sau bữa, cấu hình được theo nhà máy. Báo cáo tổng hợp gửi bếp trưởng mỗi sáng thứ Hai.",
+      "segment_html": "Ok, chốt đánh giá ba mức bằng biểu tượng, chấm theo bữa, chi tiết từng món là tùy chọn; nhắc đánh giá mặc định 30 phút sau bữa, cấu hình được theo nhà máy. Báo cáo tổng hợp gửi bếp trưởng mỗi sáng thứ Hai.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 428.696,
+      "end_time": 448.261,
+      "point_id": "f8eab986-8c31-5d2a-9537-30fd2fc8758a",
+      "ref_id": [
+        "8d2dda75-7188-5260-9d04-b44d08f6ab86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Dạ phần app em làm, đưa vào bản 1.6 luôn.",
+      "segment_html": "Dạ phần app em làm, đưa vào bản 1.6 luôn.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 449.261,
+      "end_time": 453.609,
+      "point_id": "1a895acd-bf68-5491-b2f5-03676484edb1",
+      "ref_id": [
+        "8439b57d-880d-56fc-96bb-f5587eb32c7d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Còn báo cáo tuần gửi bếp trưởng thì em làm job tổng hợp, gửi email lúc 7 giờ sáng thứ Hai, xong trong tuần sau.",
+      "segment_html": "Còn báo cáo tuần gửi bếp trưởng thì em làm job tổng hợp, gửi email lúc 7 giờ sáng thứ Hai, xong trong tuần sau.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 454.609,
+      "end_time": 465.478,
+      "point_id": "4c083a51-7702-5dad-b303-6051810e1666",
+      "ref_id": [
+        "4feb9f02-321a-5137-bf1e-dd9219af6447"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Cuối cùng là lịch phát hành. Anh định là thứ Ba tuần sau đẩy bản 1.6. Chị Sương thấy kịp không?",
+      "segment_html": "Cuối cùng là lịch phát hành. Anh định là thứ Ba tuần sau đẩy bản 1.6. Chị Sương thấy kịp không?",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 466.478,
+      "end_time": 475.609,
+      "point_id": "b0e65316-cdb3-5432-8a84-cf488bb34d1d",
+      "ref_id": [
+        "b75848d1-6dc6-5bbc-8773-e14efccce37d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Nếu thứ Năm có bản sửa đổi ca thì chị test hồi quy thứ Sáu với thứ Hai được. Nhưng chị đề nghị không mở cho cả ba nhà máy một lúc, vì lỗi đổi ca chỉ tái hiện rõ ở Hòa Lợi, nên mở cho Hòa Lợi trước, chạy hai ngày ổn rồi mới mở cho hai nhà máy kia.",
+      "segment_html": "Nếu thứ Năm có bản sửa đổi ca thì chị test hồi quy thứ Sáu với thứ Hai được. Nhưng chị đề nghị không mở cho cả ba nhà máy một lúc, vì lỗi đổi ca chỉ tái hiện rõ ở Hòa Lợi, nên mở cho Hòa Lợi trước, chạy hai ngày ổn rồi mới mở cho hai nhà máy kia.",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 476.609,
+      "end_time": 503.13,
+      "point_id": "a8401a34-15e1-54d9-b5c5-e8acc31661c8",
+      "ref_id": [
+        "c411a557-1fe3-53e3-afaa-3f2b6f7e9c40"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Chị đồng ý, Hòa Lợi cũng là nơi đang kêu nhiều nhất, sửa cho họ trước thì tốt.",
+      "segment_html": "Chị đồng ý, Hòa Lợi cũng là nơi đang kêu nhiều nhất, sửa cho họ trước thì tốt.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 504.13,
+      "end_time": 511.957,
+      "point_id": "08a71e7f-9932-5029-afb2-06713c239108",
+      "ref_id": [
+        "310cf1f0-a038-5459-a398-3427ed50e083"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "Em đề nghị phần khóa đổi ca để sau cờ tính năng, có vấn đề gì thì tắt cờ là về hành vi cũ, không phải rút bản.",
+      "segment_html": "Em đề nghị phần khóa đổi ca để sau cờ tính năng, có vấn đề gì thì tắt cờ là về hành vi cũ, không phải rút bản.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 512.957,
+      "end_time": 525.13,
+      "point_id": "601e7464-d5ed-5c98-bd25-bfc98a4c8da9",
+      "ref_id": [
+        "d83ab910-848b-5932-af3e-2aa9ba79e189"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Ừ, ý Định hợp lý, phần khóa đổi ca để sau cờ tính năng. Chốt phát hành bản 1.6 thứ Ba tuần sau, mở cho Hòa Lợi trước, sau hai ngày không có lỗi nghiêm trọng thì mở cho hai nhà máy còn lại. Ly lo phần đẩy bản lên kho ứng dụng nhé.",
+      "segment_html": "Ừ, ý Định hợp lý, phần khóa đổi ca để sau cờ tính năng. Chốt phát hành bản 1.6 thứ Ba tuần sau, mở cho Hòa Lợi trước, sau hai ngày không có lỗi nghiêm trọng thì mở cho hai nhà máy còn lại. Ly lo phần đẩy bản lên kho ứng dụng nhé.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 526.13,
+      "end_time": 549.609,
+      "point_id": "7e2b613f-d394-53ea-a49c-4723d9f5097c",
+      "ref_id": [
+        "64b5e396-0611-5e3f-936f-4a039aeadac0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Dạ, em nộp lên hai kho từ thứ Hai để kịp duyệt.",
+      "segment_html": "Dạ, em nộp lên hai kho từ thứ Hai để kịp duyệt.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 550.609,
+      "end_time": 555.826,
+      "point_id": "79ba1766-e21c-53f4-bfb7-5dd4bccb5577",
+      "ref_id": [
+        "8211a1cb-bdfd-5676-ae1a-25ecd9082bba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "À, có một việc nữa anh ơi. Bên nhà máy điện tử Tân Phú đang tích hợp hệ thống chấm công của họ với API đăng ký suất ăn, mà tài liệu API mình gửi họ là bản 1.3, từ đó đến giờ đổi mấy endpoint rồi, họ gọi sai suốt.",
+      "segment_html": "À, có một việc nữa anh ơi. Bên nhà máy điện tử Tân Phú đang tích hợp hệ thống chấm công của họ với API đăng ký suất ăn, mà tài liệu API mình gửi họ là bản 1.3, từ đó đến giờ đổi mấy endpoint rồi, họ gọi sai suốt.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 556.826,
+      "end_time": 579.0,
+      "point_id": "5dec47c2-5077-5995-a0d8-9ce8af7371ec",
+      "ref_id": [
+        "e2d246df-1735-53fb-9640-a996df666994"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Cần có người cập nhật lại tài liệu cho bản 1.6.",
+      "segment_html": "Cần có người cập nhật lại tài liệu cho bản 1.6.",
+      "speaker_name": "Định (Backend)",
+      "speaker_org_unit": null,
+      "start_time": 579.25,
+      "end_time": 584.033,
+      "point_id": "5dec47c2-5077-5995-a0d8-9ce8af7371ec",
+      "ref_id": [
+        "e2d246df-1735-53fb-9640-a996df666994"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Ừ, cái đó cần làm, nhưng tuần này ai cũng kín việc rồi. Để đấy đã, tuần sau xem ai rảnh thì làm.",
+      "segment_html": "Ừ, cái đó cần làm, nhưng tuần này ai cũng kín việc rồi. Để đấy đã, tuần sau xem ai rảnh thì làm.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 585.033,
+      "end_time": 595.033,
+      "point_id": "1e159274-f125-5c3e-a8c9-e8c41a6f0c28",
+      "ref_id": [
+        "f4ac75d6-7073-539c-b925-a868e0b552bf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "Chị cũng nhắc lại là nhà máy bao bì Minh Long thanh lý hợp đồng từ tháng trước, mà tài khoản quản trị của họ trên hệ thống vẫn còn hoạt động, ba tài khoản. Cái này về bảo mật thì phải có người rà và khóa đi.",
+      "segment_html": "Chị cũng nhắc lại là nhà máy bao bì Minh Long thanh lý hợp đồng từ tháng trước, mà tài khoản quản trị của họ trên hệ thống vẫn còn hoạt động, ba tài khoản. Cái này về bảo mật thì phải có người rà và khóa đi.",
+      "speaker_name": "Chị Sương (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 596.033,
+      "end_time": 616.902,
+      "point_id": "54536794-5e94-5724-8909-039f5249eb6d",
+      "ref_id": [
+        "160de8ba-34c5-5d9e-980b-d77ad3919121"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "Đúng là phải làm, nhưng chị không rõ quyền khóa tài khoản đối tác là bên mình hay bên vận hành nữa.",
+      "segment_html": "Đúng là phải làm, nhưng chị không rõ quyền khóa tài khoản đối tác là bên mình hay bên vận hành nữa.",
+      "speaker_name": "Chị Xuân (Product Owner)",
+      "speaker_org_unit": null,
+      "start_time": 617.902,
+      "end_time": 627.467,
+      "point_id": "7ee4e0e1-8a10-5ef7-b572-9894a68744e9",
+      "ref_id": [
+        "28198618-3dd5-5ea0-ac0a-46ccb1baa5ee"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Em nhớ là tuần trước vẫn có người đăng nhập bằng một tài khoản bên Minh Long vào xem báo cáo suất ăn đấy ạ, em thấy trong log.",
+      "segment_html": "Em nhớ là tuần trước vẫn có người đăng nhập bằng một tài khoản bên Minh Long vào xem báo cáo suất ăn đấy ạ, em thấy trong log.",
+      "speaker_name": "Ly (Lập trình Mobile)",
+      "speaker_org_unit": null,
+      "start_time": 628.467,
+      "end_time": 641.076,
+      "point_id": "ecbd042d-ae9c-5110-b84e-78321c01c306",
+      "ref_id": [
+        "cc6d0ffc-8014-5dc7-9eba-a98e488d904d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Ừ, cái đó cũng ghi lại, để anh hỏi xem quy trình bên vận hành thế nào rồi tính. Thôi, hôm nay đến đây, cảm ơn mọi người.",
+      "segment_html": "Ừ, cái đó cũng ghi lại, để anh hỏi xem quy trình bên vận hành thế nào rồi tính. Thôi, hôm nay đến đây, cảm ơn mọi người.",
+      "speaker_name": "Anh Tường (Trưởng nhóm kỹ thuật)",
+      "speaker_org_unit": null,
+      "start_time": 642.076,
+      "end_time": 654.25,
+      "point_id": "8f61d0bf-b111-55fe-b8c1-2348cc85f6db",
+      "ref_id": [
+        "5f80a832-9a83-5940-a5fc-34bf42351b17"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Rồi, họp nhanh khoảng hai mươi phút thôi nhé. Có ba việc: lỗi trùng suất khi đổi ca, chức năng đánh giá món ăn, và lịch phát hành bản 1.6. Định nói lỗi trùng suất trước đi. Dạ. Lỗi này bếp ở nhà máy may Hòa Lợi báo lên từ tuần trước. Khi công nhân đổi ca, ví dụ từ ca hai sang ca ba, thì app tạo một suất mới cho ca ba nhưng không hủy suất ca hai, nếu việc đổi ca diễn ra sau giờ chốt suất. Trước giờ chốt thì không sao vì lúc chốt hệ thống có chạy dọn trùng. Em kiểm tra log ba tuần thì trung bình mỗi tuần dư khoảng 140 suất, toàn bộ là ở Hòa Lợi, vì bên đó tổ trưởng hay đổi ca cho công nhân sát giờ. 140 suất một tuần là gần ba triệu tiền nguyên liệu bỏ đi đấy, bên bếp kêu dữ lắm. Khoan, 140 suất đó là tính cả suất công nhân nghỉ phép mà không hủy, hay chỉ riêng đổi ca? Chỉ riêng đổi ca anh ạ. Suất nghỉ phép không hủy thì còn khoảng 60 suất một tuần nữa, nhưng cái đó là do công nhân quên hủy, không phải lỗi hệ thống. Cái nghỉ phép là chuyện khác, hôm nay mình không bàn. Dạ. Em đề xuất là khi đổi ca thì giao dịch đổi ca hủy luôn suất ca cũ trong cùng một transaction, không đợi job dọn trùng. Còn nếu đổi sau giờ chốt suất của ca mới, tức là bếp đã lên số lượng rồi, thì app khóa không cho đổi, hiện thông báo bảo tổ trưởng liên hệ trực tiếp bếp. Chị hỏi chút, giờ chốt suất hiện đang là trước mỗi ca 4 tiếng đúng không? Dạ đúng chị, ca một 6 giờ sáng thì chốt 2 giờ sáng, cứ thế. Chị thì đang nghĩ là, ừm, có lẽ mình nên rút giờ chốt xuống còn trước 2 tiếng thôi, cho công nhân với tổ trưởng linh hoạt hơn, đổi ca sát giờ cũng không bị khóa. Cái đó phải hỏi bên bếp đã chị ạ, 2 tiếng thì bếp có kịp sơ chế không em không chắc. Mình cứ sửa lỗi theo giờ chốt hiện tại trước. Ừ, để chị hỏi thử, chưa đổi vội. Ok, chốt: đổi ca thì hủy suất ca cũ ngay trong cùng transaction; đổi sau giờ chốt suất của ca mới thì khóa, hiện hướng dẫn liên hệ bếp. Giờ chốt vẫn giữ trước ca 4 tiếng. Em sửa xong trước thứ Năm, có kèm script dọn mấy suất trùng còn treo trong tuần này. Thứ Năm có bản thì chị test luôn mấy kịch bản đổi ca trước và sau giờ chốt, cả đổi ca qua đêm. Phía app thì khi bị khóa đổi ca em hiện popup có số điện thoại bếp trực của từng nhà máy. Cái số đó em lấy từ cấu hình hay để cứng ạ? Lấy từ cấu hình đi, bảng nhà máy có sẵn cột số điện thoại bếp rồi, có điều Hòa Lợi chưa nhập. Số bếp trực Hòa Lợi chị có, lát họp xong chị nhập vào luôn. Sang mục hai, đánh giá món ăn. Ly. Dạ. Bản thử đánh giá món ăn em bật ở hai nhà máy được ba tuần, cho công nhân chấm 5 sao từng món sau bữa. Kết quả là chỉ khoảng 6% công nhân đánh giá, mà phần lớn đánh giá đều là 3 sao, nhìn vào chẳng biết món nào ngon món nào dở. Em hỏi nhanh mấy anh chị công nhân thì họ bảo nghỉ giữa ca có 30 phút, ăn xong là đi luôn, không có thời gian chấm từng món. Bên bếp thì vẫn rất cần số liệu này, vì hợp đồng với nhà máy có điều khoản về mức độ hài lòng, quý nào dưới 70% là bị trừ tiền. Hiện giờ họ phải phát phiếu giấy, rất mất công. Em đề xuất đổi sang ba mức thôi: ngon, tạm được, không ngon, dùng biểu tượng mặt cười, chấm cả bữa chứ không chấm từng món, ai muốn thì mới bấm vào chấm chi tiết. App gửi thông báo nhắc 30 phút sau khi kết thúc bữa, lúc đó công nhân đã về chuyền, có thể mở điện thoại lúc nghỉ. Chị thấy nhắc 30 phút thì nhiều nhà máy cấm dùng điện thoại trên chuyền đấy. Có khi nên để cuối ca. Dạ cái đó em cho cấu hình theo từng nhà máy được, mặc định 30 phút, nhà máy nào cấm thì đặt cuối ca. Thế còn báo cáo cho bếp thì sao? Bếp trưởng không mở trang quản trị đâu, họ chỉ đọc email hoặc Zalo thôi. Thì mình gửi email tổng hợp hằng tuần, có tỷ lệ hài lòng theo bữa, theo món, với ba món bị chê nhiều nhất. Zalo thì phải đăng ký tài khoản Zalo OA, thủ tục lâu. Ừ email trước đi, chị thấy bếp trưởng ở Hòa Lợi với nhà máy giày Phước An đều dùng email cả. Anh có ý này, hay là mình thưởng điểm tích lũy cho người đánh giá, đủ điểm thì đổi được món tráng miệng hay hộp sữa, chắc tỷ lệ đánh giá sẽ lên. Cái đó thì phải xin ngân sách bên kinh doanh, mà phải xem có bị đánh giá bừa để lấy điểm không. Để sau, giờ chưa làm. Ok, chốt đánh giá ba mức bằng biểu tượng, chấm theo bữa, chi tiết từng món là tùy chọn; nhắc đánh giá mặc định 30 phút sau bữa, cấu hình được theo nhà máy. Báo cáo tổng hợp gửi bếp trưởng mỗi sáng thứ Hai. Dạ phần app em làm, đưa vào bản 1.6 luôn. Còn báo cáo tuần gửi bếp trưởng thì em làm job tổng hợp, gửi email lúc 7 giờ sáng thứ Hai, xong trong tuần sau. Cuối cùng là lịch phát hành. Anh định là thứ Ba tuần sau đẩy bản 1.6. Chị Sương thấy kịp không? Nếu thứ Năm có bản sửa đổi ca thì chị test hồi quy thứ Sáu với thứ Hai được. Nhưng chị đề nghị không mở cho cả ba nhà máy một lúc, vì lỗi đổi ca chỉ tái hiện rõ ở Hòa Lợi, nên mở cho Hòa Lợi trước, chạy hai ngày ổn rồi mới mở cho hai nhà máy kia. Chị đồng ý, Hòa Lợi cũng là nơi đang kêu nhiều nhất, sửa cho họ trước thì tốt. Em đề nghị phần khóa đổi ca để sau cờ tính năng, có vấn đề gì thì tắt cờ là về hành vi cũ, không phải rút bản. Ừ, ý Định hợp lý, phần khóa đổi ca để sau cờ tính năng. Chốt phát hành bản 1.6 thứ Ba tuần sau, mở cho Hòa Lợi trước, sau hai ngày không có lỗi nghiêm trọng thì mở cho hai nhà máy còn lại. Ly lo phần đẩy bản lên kho ứng dụng nhé. Dạ, em nộp lên hai kho từ thứ Hai để kịp duyệt. À, có một việc nữa anh ơi. Bên nhà máy điện tử Tân Phú đang tích hợp hệ thống chấm công của họ với API đăng ký suất ăn, mà tài liệu API mình gửi họ là bản 1.3, từ đó đến giờ đổi mấy endpoint rồi, họ gọi sai suốt. Cần có người cập nhật lại tài liệu cho bản 1.6. Ừ, cái đó cần làm, nhưng tuần này ai cũng kín việc rồi. Để đấy đã, tuần sau xem ai rảnh thì làm. Chị cũng nhắc lại là nhà máy bao bì Minh Long thanh lý hợp đồng từ tháng trước, mà tài khoản quản trị của họ trên hệ thống vẫn còn hoạt động, ba tài khoản. Cái này về bảo mật thì phải có người rà và khóa đi. Đúng là phải làm, nhưng chị không rõ quyền khóa tài khoản đối tác là bên mình hay bên vận hành nữa. Em nhớ là tuần trước vẫn có người đăng nhập bằng một tài khoản bên Minh Long vào xem báo cáo suất ăn đấy ạ, em thấy trong log. Ừ, cái đó cũng ghi lại, để anh hỏi xem quy trình bên vận hành thế nào rồi tính. Thôi, hôm nay đến đây, cảm ơn mọi người.",
+  "metadata": {
+    "meeting_id": "synth_040",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

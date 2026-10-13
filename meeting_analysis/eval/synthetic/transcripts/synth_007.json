@@ -1,0 +1,531 @@
+{
+  "transcript": "Ok mọi người, hôm nay mình họp nhanh về chức năng chấm tự động, có hai phần là Writing và Speaking, mỗi phần khoảng ba mươi phút. Anh Đạt nói phần Writing trước nhé, vì phần này sắp phải phát hành bản beta cho lớp học thử tháng sau. Ok. Phần chấm Writing thì mình đang dùng mô hình ngôn ngữ lớn kết hợp với một mô hình hồi quy nhỏ. Bước một là LLM đọc bài và đưa ra nhận xét theo bốn tiêu chí của IELTS là Task Response, Coherence and Cohesion, Lexical Resource, và Grammatical Range and Accuracy. Bước hai là mô hình hồi quy nhận các đặc trưng như số từ, số lỗi ngữ pháp, độ đa dạng từ vựng, cộng với điểm LLM, để ra band cuối cùng. Mình đánh giá trên 1.200 bài có điểm của giám khảo thật do cô Hạnh cung cấp, thì sai số tuyệt đối trung bình là 0.6 band, và khoảng 71% bài lệch không quá 0.5 band. Nhưng mà có một lỗi hệ thống mình thấy rất rõ, là mô hình chấm cao những bài dài, dùng nhiều từ vựng khó, nhưng mà lạc đề hoặc chỉ trả lời một nửa câu hỏi. Có bài Task 2 hỏi về ưu và nhược điểm, học viên chỉ viết ưu điểm, rất hay, từ vựng rất tốt, mô hình cho 7.5, trong khi giám khảo cho 6.0 vì Task Response chỉ được 5. Đúng rồi, đây là lỗi kinh điển. Với giám khảo IELTS thì Task Response là cái đầu tiên chúng tôi nhìn. Một bài không trả lời đủ các phần của câu hỏi thì Task Response không thể quá 5, dù ngôn ngữ có tốt đến đâu. Và các em học viên Việt Nam thì rất hay học thuộc các cụm từ hoa mỹ, viết dài, nên nếu hệ thống mà thưởng cho cái đó thì mình đang dạy các em đi sai hướng. Tôi lo nhất là cái này. Dạ vâng cô. Nên em đề xuất là thêm một bước kiểm tra bám đề riêng trước khi chấm. Tức là mình cho LLM phân tích đề bài thành các yêu cầu cụ thể, ví dụ đề hỏi ưu điểm, nhược điểm và quan điểm cá nhân thì là ba yêu cầu, rồi kiểm tra bài viết có đáp ứng từng yêu cầu không. Nếu thiếu yêu cầu nào thì áp trần cho Task Response, và band tổng không vượt quá một mức tương ứng. Mình thử nhanh trên 200 bài thì lỗi chấm cao bài lạc đề giảm rõ, sai số trung bình còn khoảng 0.5. Anh Đạt ơi, thêm một bước LLM nữa thì thời gian chấm có tăng nhiều không? Hiện đang khoảng 25 giây một bài, học viên đã kêu là lâu rồi. Tăng thêm khoảng 8 đến 10 giây. Nhưng mà mình có thể chạy song song bước kiểm tra bám đề với bước nhận xét ngôn ngữ, thì tổng thời gian chỉ tăng khoảng 3 giây thôi. Tôi còn một lo ngại nữa là về cách hiển thị. Nếu mình hiển thị một con số band chính xác, ví dụ 6.5, thì học viên sẽ tin tuyệt đối vào con số đó, trong khi sai số là 0.5 band. Có em được máy chấm 7.0 xong đi thi thật được 6.0 là sẽ phàn nàn trung tâm. Tôi đề nghị chỉ hiển thị một khoảng, ví dụ từ 6.0 đến 6.5, và nhấn mạnh phần nhận xét theo từng tiêu chí, vì cái nhận xét đó mới là cái giúp các em tiến bộ. Em đồng ý với cô, về mặt sản phẩm thì cũng an toàn hơn. Nhưng mà bên marketing thì họ muốn có con số cụ thể để quảng cáo là chấm chính xác như giám khảo. Mình phải thống nhất nội bộ. Thôi, em chốt là thế này. Một là thêm bước kiểm tra bám đề chạy song song như anh Đạt nói, áp trần Task Response khi thiếu yêu cầu. Hai là màn hình kết quả chỉ hiển thị khoảng band, không hiển thị một con số, và nhận xét theo bốn tiêu chí là nội dung chính. Còn marketing thì em sẽ làm việc với họ, không quảng cáo là chính xác như giám khảo. Ok, bên anh làm bước kiểm tra bám đề, đánh giá lại trên đủ 1.200 bài, xong trong hai tuần. Em sửa màn hình kết quả sang hiển thị khoảng band, tuần này em làm được. Tôi sẽ gửi thêm cho anh Đạt khoảng 300 bài lạc đề có điểm giám khảo để làm tập kiểm tra riêng cho lỗi này, trong tuần sau. Rồi, sang Speaking. Phần này thì em biết là đang khó hơn. Anh Đạt nói đi. Ừ. Speaking thì pipeline là nhận dạng giọng nói ra văn bản, rồi chấm trên văn bản cho Fluency and Coherence, Lexical Resource, Grammatical Range, còn phát âm thì chấm bằng một mô hình đánh giá phát âm riêng, so với phát âm chuẩn. Mình có 430 bài nói có điểm giám khảo, ít hơn nhiều so với Writing. Sai số trung bình hiện tại là 0.9 band, cao hơn Writing nhiều. Vấn đề lớn nhất là tiêu chí phát âm. Mô hình phát âm của mình được huấn luyện chủ yếu trên giọng bản ngữ, nên nó chấm rất thấp giọng Việt, kể cả những bạn nói rất dễ hiểu, giám khảo cho phát âm 7 mà máy cho 5. Vấn đề thứ hai là nhận dạng giọng nói bị ảnh hưởng nhiều bởi tiếng ồn, học viên thu âm ở nhà, ở quán cà phê, nhận dạng sai thì chấm ngữ pháp, từ vựng cũng sai theo. Về phát âm thì tôi nói rõ là tiêu chí phát âm của IELTS không chấm giọng, không yêu cầu giọng Anh hay giọng Mỹ, mà chấm mức độ dễ hiểu và việc sử dụng các đặc điểm phát âm như trọng âm, ngữ điệu, nối âm. Một người nói giọng Việt rõ ràng, dễ hiểu, dùng ngữ điệu tốt thì hoàn toàn được 7 hoặc 8. Nếu máy phạt giọng Việt thì là sai về bản chất tiêu chí, và sẽ làm các em mất tự tin. Về tiếng ồn thì bên em có thể thêm bước kiểm tra chất lượng âm thanh trước khi nộp, nếu tiếng ồn quá cao thì yêu cầu học viên thu lại. Cái này làm không khó. Cái đó giúp được phần nhận dạng. Nhưng phần phát âm thì cần dữ liệu. Muốn mô hình không phạt giọng Việt thì phải có ít nhất khoảng 2.000 bài nói giọng Việt có điểm phát âm của giám khảo để tinh chỉnh. Mình mới có 430 bài tổng cộng. Trung tâm có thể tổ chức thu âm. Các lớp luyện thi hiện có khoảng 600 học viên, mỗi em làm hai, ba bài thi thử Speaking có giám khảo chấm trong khóa học, mình xin phép các em ghi âm lại là trong khoảng hai tháng có đủ. Em thì em vẫn muốn là beta tháng sau có cả Speaking, vì đối thủ đã có rồi. Hay là mình vẫn phát hành Speaking nhưng tắt điểm phát âm đi? Tắt điểm phát âm thì band tổng Speaking không tính được đúng, vì phát âm là một phần tư điểm. Mà hiển thị ba tiêu chí thì học viên sẽ hỏi. Tôi không ủng hộ phát hành Speaking khi sai số đang là 0.9 band. Với Writing mình đã phải hiển thị khoảng rồi, Speaking mà lệch gần một band thì không có ý nghĩa gì cả. Ok, em nghe mọi người. Em chốt lại là Speaking không phát hành đầy đủ trong beta tháng sau, lùi sang quý sau. Trong beta chỉ mở Part 1 dạng luyện tập, có nhận xét về độ trôi chảy và từ vựng, không hiển thị band và không chấm phát âm. Song song thì thu thập dữ liệu giọng Việt có điểm giám khảo như cô Hạnh nói. Tôi sẽ làm kế hoạch thu âm và xin phép học viên, bắt đầu từ lớp tháng 11. Em làm bước kiểm tra tiếng ồn trước khi nộp và màn hình Part 1 luyện tập, xong trước beta. Bên anh chuẩn bị quy trình tinh chỉnh mô hình phát âm, khi có đủ khoảng 1.000 bài đầu tiên thì chạy thử luôn, không đợi đủ 2.000. Ok cảm ơn mọi người, em sẽ gửi biên bản sau.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Ok mọi người, hôm nay mình họp nhanh về chức năng chấm tự động, có hai phần là Writing và Speaking, mỗi phần khoảng ba mươi phút. Anh Đạt nói phần Writing trước nhé, vì phần này sắp phải phát hành bản beta cho lớp học thử tháng sau.",
+      "segment_html": "Ok mọi người, hôm nay mình họp nhanh về chức năng chấm tự động, có hai phần là Writing và Speaking, mỗi phần khoảng ba mươi phút. Anh Đạt nói phần Writing trước nhé, vì phần này sắp phải phát hành bản beta cho lớp học thử tháng sau.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 21.554,
+      "point_id": "4b72037c-c1f5-50a9-9b24-f200c4791c9e",
+      "ref_id": [
+        "cdd60610-0667-569c-b8b2-f7e2d669b84a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Ok. Phần chấm Writing thì mình đang dùng mô hình ngôn ngữ lớn kết hợp với một mô hình hồi quy nhỏ. Bước một là LLM đọc bài và đưa ra nhận xét theo bốn tiêu chí của IELTS là Task Response, Coherence and Cohesion, Lexical Resource,",
+      "segment_html": "Ok. Phần chấm Writing thì mình đang dùng mô hình ngôn ngữ lớn kết hợp với một mô hình hồi quy nhỏ. Bước một là LLM đọc bài và đưa ra nhận xét theo bốn tiêu chí của IELTS là Task Response, Coherence and Cohesion, Lexical Resource,",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 22.554,
+      "end_time": 42.989,
+      "point_id": "f2632c03-d7c8-5b77-978c-27de9a7abb40",
+      "ref_id": [
+        "cf7c4d0a-6da3-5027-8e12-553a282daedc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "và Grammatical Range and Accuracy. Bước hai là mô hình hồi quy nhận các đặc trưng như số từ, số lỗi ngữ pháp, độ đa dạng từ vựng, cộng với điểm LLM, để ra band cuối cùng. Mình đánh giá trên 1.200 bài có điểm của giám khảo thật do cô Hạnh cung cấp,",
+      "segment_html": "và Grammatical Range and Accuracy. Bước hai là mô hình hồi quy nhận các đặc trưng như số từ, số lỗi ngữ pháp, độ đa dạng từ vựng, cộng với điểm LLM, để ra band cuối cùng. Mình đánh giá trên 1.200 bài có điểm của giám khảo thật do cô Hạnh cung cấp,",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 43.239,
+      "end_time": 66.717,
+      "point_id": "f2632c03-d7c8-5b77-978c-27de9a7abb40",
+      "ref_id": [
+        "cf7c4d0a-6da3-5027-8e12-553a282daedc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "thì sai số tuyệt đối trung bình là 0.6 band, và khoảng 71% bài lệch không quá 0.5 band. Nhưng mà có một lỗi hệ thống mình thấy rất rõ, là mô hình chấm cao những bài dài, dùng nhiều từ vựng khó, nhưng mà lạc đề hoặc chỉ trả lời một nửa câu hỏi.",
+      "segment_html": "thì sai số tuyệt đối trung bình là 0.6 band, và khoảng 71% bài lệch không quá 0.5 band. Nhưng mà có một lỗi hệ thống mình thấy rất rõ, là mô hình chấm cao những bài dài, dùng nhiều từ vựng khó, nhưng mà lạc đề hoặc chỉ trả lời một nửa câu hỏi.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 66.967,
+      "end_time": 90.88,
+      "point_id": "f2632c03-d7c8-5b77-978c-27de9a7abb40",
+      "ref_id": [
+        "cf7c4d0a-6da3-5027-8e12-553a282daedc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Có bài Task 2 hỏi về ưu và nhược điểm, học viên chỉ viết ưu điểm, rất hay, từ vựng rất tốt, mô hình cho 7.5, trong khi giám khảo cho 6.0 vì Task Response chỉ được 5.",
+      "segment_html": "Có bài Task 2 hỏi về ưu và nhược điểm, học viên chỉ viết ưu điểm, rất hay, từ vựng rất tốt, mô hình cho 7.5, trong khi giám khảo cho 6.0 vì Task Response chỉ được 5.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 91.13,
+      "end_time": 107.652,
+      "point_id": "f2632c03-d7c8-5b77-978c-27de9a7abb40",
+      "ref_id": [
+        "cf7c4d0a-6da3-5027-8e12-553a282daedc"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Đúng rồi, đây là lỗi kinh điển. Với giám khảo IELTS thì Task Response là cái đầu tiên chúng tôi nhìn. Một bài không trả lời đủ các phần của câu hỏi thì Task Response không thể quá 5, dù ngôn ngữ có tốt đến đâu.",
+      "segment_html": "Đúng rồi, đây là lỗi kinh điển. Với giám khảo IELTS thì Task Response là cái đầu tiên chúng tôi nhìn. Một bài không trả lời đủ các phần của câu hỏi thì Task Response không thể quá 5, dù ngôn ngữ có tốt đến đâu.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 108.652,
+      "end_time": 128.652,
+      "point_id": "a60fcb05-6c31-5f4f-872a-a8e2947274a3",
+      "ref_id": [
+        "81e4ea58-b8e2-5993-b5d7-47c3670c5b39"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Và các em học viên Việt Nam thì rất hay học thuộc các cụm từ hoa mỹ, viết dài, nên nếu hệ thống mà thưởng cho cái đó thì mình đang dạy các em đi sai hướng. Tôi lo nhất là cái này.",
+      "segment_html": "Và các em học viên Việt Nam thì rất hay học thuộc các cụm từ hoa mỹ, viết dài, nên nếu hệ thống mà thưởng cho cái đó thì mình đang dạy các em đi sai hướng. Tôi lo nhất là cái này.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 128.902,
+      "end_time": 147.598,
+      "point_id": "a60fcb05-6c31-5f4f-872a-a8e2947274a3",
+      "ref_id": [
+        "81e4ea58-b8e2-5993-b5d7-47c3670c5b39"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "Dạ vâng cô. Nên em đề xuất là thêm một bước kiểm tra bám đề riêng trước khi chấm. Tức là mình cho LLM phân tích đề bài thành các yêu cầu cụ thể, ví dụ đề hỏi ưu điểm, nhược điểm và quan điểm cá nhân thì là ba yêu cầu,",
+      "segment_html": "Dạ vâng cô. Nên em đề xuất là thêm một bước kiểm tra bám đề riêng trước khi chấm. Tức là mình cho LLM phân tích đề bài thành các yêu cầu cụ thể, ví dụ đề hỏi ưu điểm, nhược điểm và quan điểm cá nhân thì là ba yêu cầu,",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 148.598,
+      "end_time": 171.207,
+      "point_id": "7d6265d9-01fb-5d83-b9d8-22979bfd7e37",
+      "ref_id": [
+        "1f21940f-d5fb-5dbb-8040-f251de101056"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "rồi kiểm tra bài viết có đáp ứng từng yêu cầu không. Nếu thiếu yêu cầu nào thì áp trần cho Task Response, và band tổng không vượt quá một mức tương ứng. Mình thử nhanh trên 200 bài thì lỗi chấm cao bài lạc đề giảm rõ, sai số trung bình còn khoảng 0.5.",
+      "segment_html": "rồi kiểm tra bài viết có đáp ứng từng yêu cầu không. Nếu thiếu yêu cầu nào thì áp trần cho Task Response, và band tổng không vượt quá một mức tương ứng. Mình thử nhanh trên 200 bài thì lỗi chấm cao bài lạc đề giảm rõ, sai số trung bình còn khoảng 0.5.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 171.457,
+      "end_time": 195.37,
+      "point_id": "7d6265d9-01fb-5d83-b9d8-22979bfd7e37",
+      "ref_id": [
+        "1f21940f-d5fb-5dbb-8040-f251de101056"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "Anh Đạt ơi, thêm một bước LLM nữa thì thời gian chấm có tăng nhiều không? Hiện đang khoảng 25 giây một bài, học viên đã kêu là lâu rồi.",
+      "segment_html": "Anh Đạt ơi, thêm một bước LLM nữa thì thời gian chấm có tăng nhiều không? Hiện đang khoảng 25 giây một bài, học viên đã kêu là lâu rồi.",
+      "speaker_name": "Phúc (Kỹ sư phần mềm)",
+      "speaker_org_unit": null,
+      "start_time": 196.37,
+      "end_time": 209.413,
+      "point_id": "c9c68889-d7a8-5360-ab2e-9e3e4b517367",
+      "ref_id": [
+        "97ef4c6f-f0a0-5da0-a5cd-37413a4fbe88"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Tăng thêm khoảng 8 đến 10 giây. Nhưng mà mình có thể chạy song song bước kiểm tra bám đề với bước nhận xét ngôn ngữ, thì tổng thời gian chỉ tăng khoảng 3 giây thôi.",
+      "segment_html": "Tăng thêm khoảng 8 đến 10 giây. Nhưng mà mình có thể chạy song song bước kiểm tra bám đề với bước nhận xét ngôn ngữ, thì tổng thời gian chỉ tăng khoảng 3 giây thôi.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 210.413,
+      "end_time": 226.065,
+      "point_id": "4ce41e55-d00f-5d26-ba8f-659a12c671d3",
+      "ref_id": [
+        "7d3b4cb8-789a-5c00-a703-d0d8acc2ccdf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Tôi còn một lo ngại nữa là về cách hiển thị. Nếu mình hiển thị một con số band chính xác, ví dụ 6.5, thì học viên sẽ tin tuyệt đối vào con số đó, trong khi sai số là 0.5 band.",
+      "segment_html": "Tôi còn một lo ngại nữa là về cách hiển thị. Nếu mình hiển thị một con số band chính xác, ví dụ 6.5, thì học viên sẽ tin tuyệt đối vào con số đó, trong khi sai số là 0.5 band.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 227.065,
+      "end_time": 245.326,
+      "point_id": "cd3d911b-b657-5a39-9771-4fa6fe3df057",
+      "ref_id": [
+        "c3fbf6a6-bd8b-5f31-ab4b-9b1daebcceba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Có em được máy chấm 7.0 xong đi thi thật được 6.0 là sẽ phàn nàn trung tâm. Tôi đề nghị chỉ hiển thị một khoảng, ví dụ từ 6.0 đến 6.5, và nhấn mạnh phần nhận xét theo từng tiêu chí, vì cái nhận xét đó mới là cái giúp các em tiến bộ.",
+      "segment_html": "Có em được máy chấm 7.0 xong đi thi thật được 6.0 là sẽ phàn nàn trung tâm. Tôi đề nghị chỉ hiển thị một khoảng, ví dụ từ 6.0 đến 6.5, và nhấn mạnh phần nhận xét theo từng tiêu chí, vì cái nhận xét đó mới là cái giúp các em tiến bộ.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 245.576,
+      "end_time": 269.489,
+      "point_id": "cd3d911b-b657-5a39-9771-4fa6fe3df057",
+      "ref_id": [
+        "c3fbf6a6-bd8b-5f31-ab4b-9b1daebcceba"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "Em đồng ý với cô, về mặt sản phẩm thì cũng an toàn hơn. Nhưng mà bên marketing thì họ muốn có con số cụ thể để quảng cáo là chấm chính xác như giám khảo. Mình phải thống nhất nội bộ.",
+      "segment_html": "Em đồng ý với cô, về mặt sản phẩm thì cũng an toàn hơn. Nhưng mà bên marketing thì họ muốn có con số cụ thể để quảng cáo là chấm chính xác như giám khảo. Mình phải thống nhất nội bộ.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 270.489,
+      "end_time": 288.75,
+      "point_id": "9886cb8a-20bc-550d-b2ee-39ea0433da13",
+      "ref_id": [
+        "87c7fd4f-646d-554c-84ef-4c3a023b45fd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Thôi, em chốt là thế này. Một là thêm bước kiểm tra bám đề chạy song song như anh Đạt nói, áp trần Task Response khi thiếu yêu cầu. Hai là màn hình kết quả chỉ hiển thị khoảng band, không hiển thị một con số,",
+      "segment_html": "Thôi, em chốt là thế này. Một là thêm bước kiểm tra bám đề chạy song song như anh Đạt nói, áp trần Task Response khi thiếu yêu cầu. Hai là màn hình kết quả chỉ hiển thị khoảng band, không hiển thị một con số,",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 289.75,
+      "end_time": 309.75,
+      "point_id": "a1996223-85b5-51b2-b419-2208c11ff797",
+      "ref_id": [
+        "1d0ff76e-8f43-5ce2-adaa-5211e1b1bcda"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "và nhận xét theo bốn tiêu chí là nội dung chính. Còn marketing thì em sẽ làm việc với họ, không quảng cáo là chính xác như giám khảo.",
+      "segment_html": "và nhận xét theo bốn tiêu chí là nội dung chính. Còn marketing thì em sẽ làm việc với họ, không quảng cáo là chính xác như giám khảo.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 310.0,
+      "end_time": 322.609,
+      "point_id": "a1996223-85b5-51b2-b419-2208c11ff797",
+      "ref_id": [
+        "1d0ff76e-8f43-5ce2-adaa-5211e1b1bcda"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "Ok, bên anh làm bước kiểm tra bám đề, đánh giá lại trên đủ 1.200 bài, xong trong hai tuần.",
+      "segment_html": "Ok, bên anh làm bước kiểm tra bám đề, đánh giá lại trên đủ 1.200 bài, xong trong hai tuần.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 323.609,
+      "end_time": 332.304,
+      "point_id": "ce1968bc-1876-5c6b-82a7-45fda1608247",
+      "ref_id": [
+        "dea6e106-ba43-5ea0-a569-7a26a6af61fd"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Em sửa màn hình kết quả sang hiển thị khoảng band, tuần này em làm được.",
+      "segment_html": "Em sửa màn hình kết quả sang hiển thị khoảng band, tuần này em làm được.",
+      "speaker_name": "Phúc (Kỹ sư phần mềm)",
+      "speaker_org_unit": null,
+      "start_time": 333.304,
+      "end_time": 340.261,
+      "point_id": "7b3fb5dd-ee23-5ece-aa23-cb8d796dfa99",
+      "ref_id": [
+        "4f918829-734f-5d0b-af79-1217cf954cb8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Tôi sẽ gửi thêm cho anh Đạt khoảng 300 bài lạc đề có điểm giám khảo để làm tập kiểm tra riêng cho lỗi này, trong tuần sau.",
+      "segment_html": "Tôi sẽ gửi thêm cho anh Đạt khoảng 300 bài lạc đề có điểm giám khảo để làm tập kiểm tra riêng cho lỗi này, trong tuần sau.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 341.261,
+      "end_time": 353.435,
+      "point_id": "5638b973-7373-577d-9809-1693e7bc0e7c",
+      "ref_id": [
+        "254c2837-4ae6-5fbc-93f9-279e3e88c358"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "Rồi, sang Speaking. Phần này thì em biết là đang khó hơn. Anh Đạt nói đi.",
+      "segment_html": "Rồi, sang Speaking. Phần này thì em biết là đang khó hơn. Anh Đạt nói đi.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 354.435,
+      "end_time": 361.391,
+      "point_id": "c09052a4-db2f-513c-9b0b-685706daa596",
+      "ref_id": [
+        "d37b783a-7ed3-59e2-a174-2ef8ae9a9725"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Ừ. Speaking thì pipeline là nhận dạng giọng nói ra văn bản, rồi chấm trên văn bản cho Fluency and Coherence, Lexical Resource, Grammatical Range, còn phát âm thì chấm bằng một mô hình đánh giá phát âm riêng, so với phát âm chuẩn.",
+      "segment_html": "Ừ. Speaking thì pipeline là nhận dạng giọng nói ra văn bản, rồi chấm trên văn bản cho Fluency and Coherence, Lexical Resource, Grammatical Range, còn phát âm thì chấm bằng một mô hình đánh giá phát âm riêng, so với phát âm chuẩn.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 362.391,
+      "end_time": 381.522,
+      "point_id": "fc7b9514-6231-54ca-9e8c-ba082e908418",
+      "ref_id": [
+        "64176867-e5af-5fd4-a716-acf1432cb26e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Mình có 430 bài nói có điểm giám khảo, ít hơn nhiều so với Writing. Sai số trung bình hiện tại là 0.9 band, cao hơn Writing nhiều. Vấn đề lớn nhất là tiêu chí phát âm. Mô hình phát âm của mình được huấn luyện chủ yếu trên giọng bản ngữ,",
+      "segment_html": "Mình có 430 bài nói có điểm giám khảo, ít hơn nhiều so với Writing. Sai số trung bình hiện tại là 0.9 band, cao hơn Writing nhiều. Vấn đề lớn nhất là tiêu chí phát âm. Mô hình phát âm của mình được huấn luyện chủ yếu trên giọng bản ngữ,",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 381.772,
+      "end_time": 404.38,
+      "point_id": "fc7b9514-6231-54ca-9e8c-ba082e908418",
+      "ref_id": [
+        "64176867-e5af-5fd4-a716-acf1432cb26e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "nên nó chấm rất thấp giọng Việt, kể cả những bạn nói rất dễ hiểu, giám khảo cho phát âm 7 mà máy cho 5. Vấn đề thứ hai là nhận dạng giọng nói bị ảnh hưởng nhiều bởi tiếng ồn, học viên thu âm ở nhà, ở quán cà phê, nhận dạng sai thì chấm ngữ pháp, từ vựng cũng sai theo.",
+      "segment_html": "nên nó chấm rất thấp giọng Việt, kể cả những bạn nói rất dễ hiểu, giám khảo cho phát âm 7 mà máy cho 5. Vấn đề thứ hai là nhận dạng giọng nói bị ảnh hưởng nhiều bởi tiếng ồn, học viên thu âm ở nhà, ở quán cà phê, nhận dạng sai thì chấm ngữ pháp, từ vựng cũng sai theo.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 404.63,
+      "end_time": 432.022,
+      "point_id": "fc7b9514-6231-54ca-9e8c-ba082e908418",
+      "ref_id": [
+        "64176867-e5af-5fd4-a716-acf1432cb26e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Về phát âm thì tôi nói rõ là tiêu chí phát âm của IELTS không chấm giọng, không yêu cầu giọng Anh hay giọng Mỹ, mà chấm mức độ dễ hiểu và việc sử dụng các đặc điểm phát âm như trọng âm, ngữ điệu, nối âm. Một người nói giọng Việt rõ ràng, dễ hiểu,",
+      "segment_html": "Về phát âm thì tôi nói rõ là tiêu chí phát âm của IELTS không chấm giọng, không yêu cầu giọng Anh hay giọng Mỹ, mà chấm mức độ dễ hiểu và việc sử dụng các đặc điểm phát âm như trọng âm, ngữ điệu, nối âm. Một người nói giọng Việt rõ ràng, dễ hiểu,",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 433.022,
+      "end_time": 457.37,
+      "point_id": "9a9473d9-2a27-5906-9134-547db15f2162",
+      "ref_id": [
+        "d71a418e-6365-5e70-9ccd-2577442692b3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "dùng ngữ điệu tốt thì hoàn toàn được 7 hoặc 8. Nếu máy phạt giọng Việt thì là sai về bản chất tiêu chí, và sẽ làm các em mất tự tin.",
+      "segment_html": "dùng ngữ điệu tốt thì hoàn toàn được 7 hoặc 8. Nếu máy phạt giọng Việt thì là sai về bản chất tiêu chí, và sẽ làm các em mất tự tin.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 457.62,
+      "end_time": 471.533,
+      "point_id": "9a9473d9-2a27-5906-9134-547db15f2162",
+      "ref_id": [
+        "d71a418e-6365-5e70-9ccd-2577442692b3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Về tiếng ồn thì bên em có thể thêm bước kiểm tra chất lượng âm thanh trước khi nộp, nếu tiếng ồn quá cao thì yêu cầu học viên thu lại. Cái này làm không khó.",
+      "segment_html": "Về tiếng ồn thì bên em có thể thêm bước kiểm tra chất lượng âm thanh trước khi nộp, nếu tiếng ồn quá cao thì yêu cầu học viên thu lại. Cái này làm không khó.",
+      "speaker_name": "Phúc (Kỹ sư phần mềm)",
+      "speaker_org_unit": null,
+      "start_time": 472.533,
+      "end_time": 488.185,
+      "point_id": "8f53f5a4-40ca-5006-ae0a-0a9f35eb7a4b",
+      "ref_id": [
+        "dfd359da-ab10-55ec-878e-71d2fb52e265"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Cái đó giúp được phần nhận dạng. Nhưng phần phát âm thì cần dữ liệu. Muốn mô hình không phạt giọng Việt thì phải có ít nhất khoảng 2.000 bài nói giọng Việt có điểm phát âm của giám khảo để tinh chỉnh. Mình mới có 430 bài tổng cộng.",
+      "segment_html": "Cái đó giúp được phần nhận dạng. Nhưng phần phát âm thì cần dữ liệu. Muốn mô hình không phạt giọng Việt thì phải có ít nhất khoảng 2.000 bài nói giọng Việt có điểm phát âm của giám khảo để tinh chỉnh. Mình mới có 430 bài tổng cộng.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 489.185,
+      "end_time": 510.924,
+      "point_id": "46ae63ac-1051-5f78-9966-067385284098",
+      "ref_id": [
+        "ae8be969-f785-5612-88c2-6135483008ad"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Trung tâm có thể tổ chức thu âm. Các lớp luyện thi hiện có khoảng 600 học viên, mỗi em làm hai, ba bài thi thử Speaking có giám khảo chấm trong khóa học, mình xin phép các em ghi âm lại là trong khoảng hai tháng có đủ.",
+      "segment_html": "Trung tâm có thể tổ chức thu âm. Các lớp luyện thi hiện có khoảng 600 học viên, mỗi em làm hai, ba bài thi thử Speaking có giám khảo chấm trong khóa học, mình xin phép các em ghi âm lại là trong khoảng hai tháng có đủ.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 511.924,
+      "end_time": 533.228,
+      "point_id": "0a546bc7-968c-59bb-9dfd-8df5bbeb7f58",
+      "ref_id": [
+        "cb4e1e64-79f5-5786-9f3a-250d719060e8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "Em thì em vẫn muốn là beta tháng sau có cả Speaking, vì đối thủ đã có rồi. Hay là mình vẫn phát hành Speaking nhưng tắt điểm phát âm đi?",
+      "segment_html": "Em thì em vẫn muốn là beta tháng sau có cả Speaking, vì đối thủ đã có rồi. Hay là mình vẫn phát hành Speaking nhưng tắt điểm phát âm đi?",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 534.228,
+      "end_time": 547.707,
+      "point_id": "6e2e7551-9b8f-5bb0-962a-b04d20a446e6",
+      "ref_id": [
+        "a8a84681-b16a-5ac6-bc9f-2f79fa9f78c8"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Tắt điểm phát âm thì band tổng Speaking không tính được đúng, vì phát âm là một phần tư điểm. Mà hiển thị ba tiêu chí thì học viên sẽ hỏi.",
+      "segment_html": "Tắt điểm phát âm thì band tổng Speaking không tính được đúng, vì phát âm là một phần tư điểm. Mà hiển thị ba tiêu chí thì học viên sẽ hỏi.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 548.707,
+      "end_time": 562.185,
+      "point_id": "7e682eeb-70ab-5e6e-84e2-bd0b8ebcf3b8",
+      "ref_id": [
+        "2e6b6707-cd30-52ee-9dd5-6c71d8d0c5b4"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Tôi không ủng hộ phát hành Speaking khi sai số đang là 0.9 band. Với Writing mình đã phải hiển thị khoảng rồi, Speaking mà lệch gần một band thì không có ý nghĩa gì cả.",
+      "segment_html": "Tôi không ủng hộ phát hành Speaking khi sai số đang là 0.9 band. Với Writing mình đã phải hiển thị khoảng rồi, Speaking mà lệch gần một band thì không có ý nghĩa gì cả.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 563.185,
+      "end_time": 578.837,
+      "point_id": "ba67b270-0363-5313-82e7-147ac626168b",
+      "ref_id": [
+        "8197682d-8efe-52d7-88fd-b660c5a01fc9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Ok, em nghe mọi người. Em chốt lại là Speaking không phát hành đầy đủ trong beta tháng sau, lùi sang quý sau. Trong beta chỉ mở Part 1 dạng luyện tập, có nhận xét về độ trôi chảy và từ vựng, không hiển thị band và không chấm phát âm.",
+      "segment_html": "Ok, em nghe mọi người. Em chốt lại là Speaking không phát hành đầy đủ trong beta tháng sau, lùi sang quý sau. Trong beta chỉ mở Part 1 dạng luyện tập, có nhận xét về độ trôi chảy và từ vựng, không hiển thị band và không chấm phát âm.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 579.837,
+      "end_time": 602.011,
+      "point_id": "bb99cf49-2a80-5388-9b90-7ce76a501aea",
+      "ref_id": [
+        "f8967ddb-cde1-5ecc-afb5-127de6a572e6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Song song thì thu thập dữ liệu giọng Việt có điểm giám khảo như cô Hạnh nói.",
+      "segment_html": "Song song thì thu thập dữ liệu giọng Việt có điểm giám khảo như cô Hạnh nói.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 602.261,
+      "end_time": 609.652,
+      "point_id": "bb99cf49-2a80-5388-9b90-7ce76a501aea",
+      "ref_id": [
+        "f8967ddb-cde1-5ecc-afb5-127de6a572e6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "Tôi sẽ làm kế hoạch thu âm và xin phép học viên, bắt đầu từ lớp tháng 11.",
+      "segment_html": "Tôi sẽ làm kế hoạch thu âm và xin phép học viên, bắt đầu từ lớp tháng 11.",
+      "speaker_name": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "speaker_org_unit": null,
+      "start_time": 610.652,
+      "end_time": 618.478,
+      "point_id": "0bb4d375-fcdc-5bf6-a2c7-e7779e254b93",
+      "ref_id": [
+        "ba819bdc-592a-53ec-9c7e-44c6983bd661"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "Em làm bước kiểm tra tiếng ồn trước khi nộp và màn hình Part 1 luyện tập, xong trước beta.",
+      "segment_html": "Em làm bước kiểm tra tiếng ồn trước khi nộp và màn hình Part 1 luyện tập, xong trước beta.",
+      "speaker_name": "Phúc (Kỹ sư phần mềm)",
+      "speaker_org_unit": null,
+      "start_time": 619.478,
+      "end_time": 628.174,
+      "point_id": "f48f2d75-5847-553f-95c0-84610f9a212b",
+      "ref_id": [
+        "0dd247d8-5c5d-562f-882c-617da39772c0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Bên anh chuẩn bị quy trình tinh chỉnh mô hình phát âm, khi có đủ khoảng 1.000 bài đầu tiên thì chạy thử luôn, không đợi đủ 2.000.",
+      "segment_html": "Bên anh chuẩn bị quy trình tinh chỉnh mô hình phát âm, khi có đủ khoảng 1.000 bài đầu tiên thì chạy thử luôn, không đợi đủ 2.000.",
+      "speaker_name": "Anh Đạt (Trưởng nhóm AI)",
+      "speaker_org_unit": null,
+      "start_time": 629.174,
+      "end_time": 641.348,
+      "point_id": "5a7bf8e5-0efe-5ff9-a0ff-f5860c795224",
+      "ref_id": [
+        "372e7735-00e7-599f-8cb2-187d18680e70"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "Ok cảm ơn mọi người, em sẽ gửi biên bản sau.",
+      "segment_html": "Ok cảm ơn mọi người, em sẽ gửi biên bản sau.",
+      "speaker_name": "Chị Ngọc (Quản lý sản phẩm)",
+      "speaker_org_unit": null,
+      "start_time": 642.348,
+      "end_time": 647.13,
+      "point_id": "0c311177-ca63-5e1d-8926-a467c337aa36",
+      "ref_id": [
+        "852bfcdc-6e38-5cd9-81dc-7dd449db70b6"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Ok mọi người, hôm nay mình họp nhanh về chức năng chấm tự động, có hai phần là Writing và Speaking, mỗi phần khoảng ba mươi phút. Anh Đạt nói phần Writing trước nhé, vì phần này sắp phải phát hành bản beta cho lớp học thử tháng sau. Ok. Phần chấm Writing thì mình đang dùng mô hình ngôn ngữ lớn kết hợp với một mô hình hồi quy nhỏ. Bước một là LLM đọc bài và đưa ra nhận xét theo bốn tiêu chí của IELTS là Task Response, Coherence and Cohesion, Lexical Resource, và Grammatical Range and Accuracy. Bước hai là mô hình hồi quy nhận các đặc trưng như số từ, số lỗi ngữ pháp, độ đa dạng từ vựng, cộng với điểm LLM, để ra band cuối cùng. Mình đánh giá trên 1.200 bài có điểm của giám khảo thật do cô Hạnh cung cấp, thì sai số tuyệt đối trung bình là 0.6 band, và khoảng 71% bài lệch không quá 0.5 band. Nhưng mà có một lỗi hệ thống mình thấy rất rõ, là mô hình chấm cao những bài dài, dùng nhiều từ vựng khó, nhưng mà lạc đề hoặc chỉ trả lời một nửa câu hỏi. Có bài Task 2 hỏi về ưu và nhược điểm, học viên chỉ viết ưu điểm, rất hay, từ vựng rất tốt, mô hình cho 7.5, trong khi giám khảo cho 6.0 vì Task Response chỉ được 5. Đúng rồi, đây là lỗi kinh điển. Với giám khảo IELTS thì Task Response là cái đầu tiên chúng tôi nhìn. Một bài không trả lời đủ các phần của câu hỏi thì Task Response không thể quá 5, dù ngôn ngữ có tốt đến đâu. Và các em học viên Việt Nam thì rất hay học thuộc các cụm từ hoa mỹ, viết dài, nên nếu hệ thống mà thưởng cho cái đó thì mình đang dạy các em đi sai hướng. Tôi lo nhất là cái này. Dạ vâng cô. Nên em đề xuất là thêm một bước kiểm tra bám đề riêng trước khi chấm. Tức là mình cho LLM phân tích đề bài thành các yêu cầu cụ thể, ví dụ đề hỏi ưu điểm, nhược điểm và quan điểm cá nhân thì là ba yêu cầu, rồi kiểm tra bài viết có đáp ứng từng yêu cầu không. Nếu thiếu yêu cầu nào thì áp trần cho Task Response, và band tổng không vượt quá một mức tương ứng. Mình thử nhanh trên 200 bài thì lỗi chấm cao bài lạc đề giảm rõ, sai số trung bình còn khoảng 0.5. Anh Đạt ơi, thêm một bước LLM nữa thì thời gian chấm có tăng nhiều không? Hiện đang khoảng 25 giây một bài, học viên đã kêu là lâu rồi. Tăng thêm khoảng 8 đến 10 giây. Nhưng mà mình có thể chạy song song bước kiểm tra bám đề với bước nhận xét ngôn ngữ, thì tổng thời gian chỉ tăng khoảng 3 giây thôi. Tôi còn một lo ngại nữa là về cách hiển thị. Nếu mình hiển thị một con số band chính xác, ví dụ 6.5, thì học viên sẽ tin tuyệt đối vào con số đó, trong khi sai số là 0.5 band. Có em được máy chấm 7.0 xong đi thi thật được 6.0 là sẽ phàn nàn trung tâm. Tôi đề nghị chỉ hiển thị một khoảng, ví dụ từ 6.0 đến 6.5, và nhấn mạnh phần nhận xét theo từng tiêu chí, vì cái nhận xét đó mới là cái giúp các em tiến bộ. Em đồng ý với cô, về mặt sản phẩm thì cũng an toàn hơn. Nhưng mà bên marketing thì họ muốn có con số cụ thể để quảng cáo là chấm chính xác như giám khảo. Mình phải thống nhất nội bộ. Thôi, em chốt là thế này. Một là thêm bước kiểm tra bám đề chạy song song như anh Đạt nói, áp trần Task Response khi thiếu yêu cầu. Hai là màn hình kết quả chỉ hiển thị khoảng band, không hiển thị một con số, và nhận xét theo bốn tiêu chí là nội dung chính. Còn marketing thì em sẽ làm việc với họ, không quảng cáo là chính xác như giám khảo. Ok, bên anh làm bước kiểm tra bám đề, đánh giá lại trên đủ 1.200 bài, xong trong hai tuần. Em sửa màn hình kết quả sang hiển thị khoảng band, tuần này em làm được. Tôi sẽ gửi thêm cho anh Đạt khoảng 300 bài lạc đề có điểm giám khảo để làm tập kiểm tra riêng cho lỗi này, trong tuần sau. Rồi, sang Speaking. Phần này thì em biết là đang khó hơn. Anh Đạt nói đi. Ừ. Speaking thì pipeline là nhận dạng giọng nói ra văn bản, rồi chấm trên văn bản cho Fluency and Coherence, Lexical Resource, Grammatical Range, còn phát âm thì chấm bằng một mô hình đánh giá phát âm riêng, so với phát âm chuẩn. Mình có 430 bài nói có điểm giám khảo, ít hơn nhiều so với Writing. Sai số trung bình hiện tại là 0.9 band, cao hơn Writing nhiều. Vấn đề lớn nhất là tiêu chí phát âm. Mô hình phát âm của mình được huấn luyện chủ yếu trên giọng bản ngữ, nên nó chấm rất thấp giọng Việt, kể cả những bạn nói rất dễ hiểu, giám khảo cho phát âm 7 mà máy cho 5. Vấn đề thứ hai là nhận dạng giọng nói bị ảnh hưởng nhiều bởi tiếng ồn, học viên thu âm ở nhà, ở quán cà phê, nhận dạng sai thì chấm ngữ pháp, từ vựng cũng sai theo. Về phát âm thì tôi nói rõ là tiêu chí phát âm của IELTS không chấm giọng, không yêu cầu giọng Anh hay giọng Mỹ, mà chấm mức độ dễ hiểu và việc sử dụng các đặc điểm phát âm như trọng âm, ngữ điệu, nối âm. Một người nói giọng Việt rõ ràng, dễ hiểu, dùng ngữ điệu tốt thì hoàn toàn được 7 hoặc 8. Nếu máy phạt giọng Việt thì là sai về bản chất tiêu chí, và sẽ làm các em mất tự tin. Về tiếng ồn thì bên em có thể thêm bước kiểm tra chất lượng âm thanh trước khi nộp, nếu tiếng ồn quá cao thì yêu cầu học viên thu lại. Cái này làm không khó. Cái đó giúp được phần nhận dạng. Nhưng phần phát âm thì cần dữ liệu. Muốn mô hình không phạt giọng Việt thì phải có ít nhất khoảng 2.000 bài nói giọng Việt có điểm phát âm của giám khảo để tinh chỉnh. Mình mới có 430 bài tổng cộng. Trung tâm có thể tổ chức thu âm. Các lớp luyện thi hiện có khoảng 600 học viên, mỗi em làm hai, ba bài thi thử Speaking có giám khảo chấm trong khóa học, mình xin phép các em ghi âm lại là trong khoảng hai tháng có đủ. Em thì em vẫn muốn là beta tháng sau có cả Speaking, vì đối thủ đã có rồi. Hay là mình vẫn phát hành Speaking nhưng tắt điểm phát âm đi? Tắt điểm phát âm thì band tổng Speaking không tính được đúng, vì phát âm là một phần tư điểm. Mà hiển thị ba tiêu chí thì học viên sẽ hỏi. Tôi không ủng hộ phát hành Speaking khi sai số đang là 0.9 band. Với Writing mình đã phải hiển thị khoảng rồi, Speaking mà lệch gần một band thì không có ý nghĩa gì cả. Ok, em nghe mọi người. Em chốt lại là Speaking không phát hành đầy đủ trong beta tháng sau, lùi sang quý sau. Trong beta chỉ mở Part 1 dạng luyện tập, có nhận xét về độ trôi chảy và từ vựng, không hiển thị band và không chấm phát âm. Song song thì thu thập dữ liệu giọng Việt có điểm giám khảo như cô Hạnh nói. Tôi sẽ làm kế hoạch thu âm và xin phép học viên, bắt đầu từ lớp tháng 11. Em làm bước kiểm tra tiếng ồn trước khi nộp và màn hình Part 1 luyện tập, xong trước beta. Bên anh chuẩn bị quy trình tinh chỉnh mô hình phát âm, khi có đủ khoảng 1.000 bài đầu tiên thì chạy thử luôn, không đợi đủ 2.000. Ok cảm ơn mọi người, em sẽ gửi biên bản sau.",
+  "metadata": {
+    "meeting_id": "synth_007",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

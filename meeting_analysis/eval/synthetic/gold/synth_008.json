@@ -1,0 +1,204 @@
+{
+  "meeting_id": "synth_008",
+  "n_turns": 19,
+  "total_chars": 6674,
+  "boundaries": [],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xử lý sự cố áp lực nước thấp khu vực phía Đông",
+      "summary": "Từ ba ngày nay áp lực nước cuối nguồn khu phía Đông giảm dưới 0,8 bar vào giờ cao điểm do vỡ ống chuyển tải D600 và một van giảm áp hỏng; thống nhất sửa ống trong đêm, điều tiết tăng áp từ nhà máy số 2, cấp nước bằng xe bồn cho khu vực mất nước và thông báo cho khách hàng.",
+      "turn_range": [
+        0,
+        19
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000019"
+      ],
+      "chars": 6674,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Chị Trâm (Trưởng phòng Kỹ thuật mạng lưới)",
+      "actor_aliases": [
+        "chị Trâm"
+      ],
+      "task": "Chỉ huy hiện trường sửa ống D600 và thay van giảm áp Long Trường, huy động thêm đội Xí nghiệp phía Nam",
+      "deadline": "từ 22h đêm nay, xong trước 6h sáng mai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012",
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Tài (Trưởng phòng Điều độ vận hành)",
+      "actor_aliases": [
+        "anh Tài"
+      ],
+      "task": "Điều tiết tăng áp từ nhà máy số 2 qua tuyến D400, theo dõi và báo cáo mỗi 2 giờ",
+      "deadline": "từ 21h",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Anh Bảo (Giám đốc Xí nghiệp cấp nước phía Đông)",
+      "actor_aliases": [
+        "anh Bảo"
+      ],
+      "task": "Cấp nước bằng xe bồn cho 2 bệnh viện và chung cư cao tầng, huy động đủ 8 xe",
+      "deadline": "trong đêm và sáng mai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Hưng (Phó Tổng giám đốc Công ty cấp nước)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Gọi các xí nghiệp khác hỗ trợ xe bồn",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Chị Lan (Trưởng phòng Chăm sóc khách hàng)",
+      "actor_aliases": [
+        "chị Lan"
+      ],
+      "task": "Ra thông báo chính thức trên website, fanpage, tin nhắn và gửi UBND phường; bổ sung 5 tổng đài viên trong 3 ngày",
+      "deadline": "trước 15h chiều nay",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Trâm (Trưởng phòng Kỹ thuật mạng lưới)",
+      "actor_aliases": [
+        "chị Trâm",
+        "Phòng Kỹ thuật"
+      ],
+      "task": "Lập biên bản hiện trường có xác nhận phường; làm văn bản gửi Ban QLDA thoát nước đề nghị bồi thường",
+      "deadline": "trong đêm sửa chữa",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Hưng (Phó Tổng giám đốc Công ty cấp nước)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Báo cáo Tổng công ty xin ý kiến về giảm tiền nước cho khách hàng",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Sửa ống D600 và thay van giảm áp Long Trường trong đêm nay từ 22h, hoàn thành trước 6h sáng mai, làm song song hai mũi",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Tăng áp từng bước từ nhà máy số 2 qua tuyến D400 từ 21h",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Cấp nước bằng xe bồn, ưu tiên hai bệnh viện và chung cư cao tầng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Ra thông báo chính thức trước 15h và bổ sung tổng đài viên",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Giảm tiền nước kỳ này cho khách hàng bị ảnh hưởng (chưa quyết, chờ ý kiến Tổng công ty)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000016"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Tài (Trưởng phòng Điều độ vận hành)",
+      "point": "Áp lực cuối nguồn xuống 0,4 bar giờ cao điểm, khoảng 12.000 hộ ảnh hưởng, lưu lượng về khu Đông giảm 18%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Chị Trâm (Trưởng phòng Kỹ thuật mạng lưới)",
+      "point": "Vỡ ống ngầm D600 rò khoảng 350 m3/giờ do thi công cống thoát nước, và van giảm áp Long Trường bị kẹt",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Lan (Trưởng phòng Chăm sóc khách hàng)",
+      "point": "1.847 cuộc gọi phản ánh, khách bức xúc vì không được thông báo",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    }
+  ],
+  "speakers": {
+    "GD": "Anh Hưng (Phó Tổng giám đốc Công ty cấp nước)",
+    "VH": "Anh Tài (Trưởng phòng Điều độ vận hành)",
+    "KT": "Chị Trâm (Trưởng phòng Kỹ thuật mạng lưới)",
+    "KH": "Chị Lan (Trưởng phòng Chăm sóc khách hàng)",
+    "XN": "Anh Bảo (Giám đốc Xí nghiệp cấp nước phía Đông)"
+  },
+  "tags": [
+    "short_meeting",
+    "single_topic"
+  ]
+}

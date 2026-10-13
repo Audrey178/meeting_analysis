@@ -1,0 +1,1301 @@
+{
+  "transcript": "Chào cả nhà, chào thầy Bình. Hôm nay mình rà soát bốn hạng mục: tuyển sinh đầu cấp, tra cứu và cấp bản sao văn bằng, hạ tầng và bảo mật trước đợt cao điểm, cuối cùng là thống nhất kế hoạch tháng tới. Em xin mời anh Khải trình bày trước phần tuyển sinh đầu cấp vì cái này thầy Bình quan tâm nhất, tháng sáu là bắt đầu mở cổng rồi. Dạ cảm ơn chị Thu, kính thưa thầy Bình. Về chức năng nộp hồ sơ tuyển sinh đầu cấp thì nhóm đã hoàn thành luồng chính cho hai cấp là lớp 1 và lớp 6. Luồng gồm các bước: phụ huynh đăng nhập bằng tài khoản dịch vụ công, khai thông tin học sinh, chọn trường theo tuyến, đính kèm giấy tờ, ký xác nhận và nộp. Sau khi nộp thì hồ sơ đi về hàng đợi của trường, cán bộ trường duyệt hoặc trả lại yêu cầu bổ sung, phụ huynh nhận thông báo qua tin nhắn và qua ứng dụng. Phần phân tuyến thì đang dùng bảng ánh xạ từ tổ dân phố, thôn xóm sang trường, do các Phòng Giáo dục cấp huyện cung cấp, hiện đã có dữ liệu của chín trên mười một huyện, còn hai huyện Lạc Sơn và Kim Bôi chưa gửi bảng tuyến. Ngoài ra thì có chức năng thống kê số hồ sơ theo trường theo ngày để Sở theo dõi. Về giấy tờ đính kèm thì hiện tại phụ huynh phải chụp và tải lên giấy khai sinh, sổ hộ khẩu hoặc giấy xác nhận cư trú, và với lớp 6 thì thêm học bạ tiểu học. Nhóm em đã làm phần nén ảnh phía trình duyệt để giảm dung lượng, mỗi ảnh còn khoảng 300 KB, vì năm ngoái hệ thống cũ bị nghẽn chủ yếu do phụ huynh tải ảnh chụp điện thoại 5, 6 MB. Phần kiểm tra trùng hồ sơ thì đang kiểm tra theo mã định danh cá nhân của học sinh, một học sinh chỉ được nộp vào một trường trong một đợt. Cảm ơn anh Khải. Tôi có một ý quan trọng. Từ năm nay sổ hộ khẩu giấy không còn giá trị nữa, Bộ Công an đã bỏ sổ hộ khẩu từ năm 2023, nên yêu cầu phụ huynh chụp sổ hộ khẩu là không đúng, mà giấy xác nhận cư trú thì phụ huynh lại phải lên công an phường xin, rất phiền. Năm ngoái hàng nghìn phụ huynh xếp hàng ở công an phường chỉ để xin giấy xác nhận cư trú đi nộp hồ sơ cho con. Chỉ đạo của Ủy ban tỉnh là các thủ tục phải khai thác cơ sở dữ liệu quốc gia về dân cư, không bắt người dân nộp lại giấy tờ mà nhà nước đã có. Vậy hệ thống của mình có lấy được thông tin cư trú tự động không? Dạ thưa thầy, về kỹ thuật thì có hai cách. Cách thứ nhất là tích hợp với ứng dụng VNeID, phụ huynh đồng ý chia sẻ thông tin cư trú từ ứng dụng, hệ thống nhận về địa chỉ thường trú, tạm trú. Cách thứ hai là kết nối qua trục liên thông dữ liệu của tỉnh, tức là LGSP, gọi dịch vụ tra cứu thông tin công dân theo mã định danh. Tỉnh đã có kết nối với cơ sở dữ liệu dân cư qua trục này cho cổng dịch vụ công chung rồi, nên mình chỉ cần xin cấp quyền khai thác. Em bổ sung phần kỹ thuật. Nếu đi qua trục LGSP thì phía em cần Sở Thông tin và Truyền thông cấp tài khoản kết nối và chứng thư số cho hệ thống. Thời gian làm thủ tục thường mất khoảng hai đến ba tuần. Phần code gọi dịch vụ thì không nhiều, khoảng một tuần, vì mình đã có thư viện kết nối LGSP từ dự án cổng dịch vụ công chung. Nhưng có một điểm cần lưu ý: dữ liệu cư trú trả về là địa chỉ dạng văn bản, ví dụ \"thôn Đồng Bến, xã Mông Hóa\", mình phải so khớp với bảng tuyến, mà tên thôn xóm sau sáp nhập đơn vị hành chính thì nhiều chỗ không khớp. Em ước tính khoảng 10 đến 15% địa chỉ sẽ không tự khớp được, phải cho cán bộ trường xác nhận tay. Tỷ lệ đó chấp nhận được, còn hơn bắt cả trăm phần trăm phụ huynh đi xin giấy. Vậy em xin chốt: bỏ yêu cầu tải lên sổ hộ khẩu và giấy xác nhận cư trú, thay bằng tra cứu thông tin cư trú tự động qua trục LGSP của tỉnh theo mã định danh học sinh và phụ huynh; trường hợp địa chỉ không khớp bảng tuyến thì chuyển cán bộ trường xác nhận tay. VNeID mình làm sau, đợt này đi LGSP trước vì đã có sẵn kết nối. Anh Đức chuẩn bị hồ sơ xin cấp quyền khai thác gửi Sở Thông tin và Truyền thông nhé. Dạ, em làm công văn và hồ sơ kỹ thuật, thứ Tư tuần sau gửi chị Thu trình thầy Bình ký để gửi đi. Còn việc hai huyện chưa gửi bảng tuyến thì để tôi. Tôi sẽ gọi trực tiếp hai trưởng phòng Lạc Sơn và Kim Bôi, yêu cầu gửi trước ngày 15 tháng này. Thưa thầy, nhân tiện em có một đề xuất là hay mình cho phụ huynh chọn hai hoặc ba nguyện vọng trường, nếu trường thứ nhất đủ chỉ tiêu thì tự chuyển sang nguyện vọng hai, như kiểu xét tuyển đại học. Như vậy đỡ cho phụ huynh phải đi nộp lại. Ý này hay nhưng mà vướng quy chế. Tuyển sinh lớp 1 và lớp 6 công lập theo quy định là tuyển theo tuyến, đúng tuyến thì trường phải nhận, nguyện vọng ngoài tuyến chỉ xét khi còn chỉ tiêu. Cho chọn nhiều nguyện vọng thì phụ huynh sẽ hiểu là được chọn trường, rồi khiếu nại. Để Sở nghiên cứu thêm, có thể áp dụng thí điểm cho lớp 6 ở thành phố năm sau, năm nay thì chưa. Vâng, em ghi nhận ý đó vào danh sách để xem xét sau. Hằng bên kiểm thử có ý gì về phần tuyển sinh không? Dạ em có hai điểm. Thứ nhất, em đã chạy kiểm thử tải giả lập 5.000 phụ huynh nộp đồng thời thì thời gian phản hồi trung bình là 1,8 giây, nhưng ở bước tải ảnh thì có khoảng 3% yêu cầu bị lỗi hết thời gian chờ. Nhóm backend đã xem và nguyên nhân là kho lưu trữ đối tượng đang cấu hình giới hạn kết nối thấp. Thứ hai, em phát hiện nếu phụ huynh có hai con cùng tuổi, ví dụ sinh đôi, thì hệ thống báo trùng hồ sơ vì đang kiểm tra trùng theo số điện thoại phụ huynh ở một bước phụ. Lỗi này em đã ghi lên hệ thống quản lý lỗi mức độ cao. Lỗi sinh đôi em biết rồi, do bước kiểm tra chống spam theo số điện thoại. Em sửa luôn trong sprint này, bỏ kiểm tra theo số điện thoại, chỉ giữ kiểm tra theo mã định danh học sinh. Tốt. Phần giới hạn kết nối kho lưu trữ thì mình để sang mục hạ tầng nói luôn. Chuyển sang hạng mục thứ hai. Hạng mục thứ hai là tra cứu và cấp bản sao văn bằng chứng chỉ. Anh Khải trình bày tiếp nhé. Dạ. Chức năng này cho phép người dân tra cứu bằng tốt nghiệp trung học phổ thông, trung học cơ sở và chứng chỉ do Sở cấp, rồi đề nghị cấp bản sao. Hiện nay dữ liệu số hóa đã có từ năm 2010 đến nay, khoảng 412.000 văn bằng tốt nghiệp trung học phổ thông và 530.000 văn bằng trung học cơ sở, do dự án số hóa năm 2022 thực hiện. Người dân tra cứu bằng họ tên, ngày sinh, năm tốt nghiệp và số hiệu văn bằng. Doanh nghiệp, cơ quan tuyển dụng cũng có thể tra cứu xác minh văn bằng nếu được người có văn bằng cấp mã chia sẻ. Luồng cấp bản sao thì người dân nộp đề nghị, thanh toán phí, cán bộ phòng Quản lý chất lượng của Sở duyệt, rồi trả kết quả. Vấn đề lớn nhất là dữ liệu trước năm 2010. Sổ gốc cấp bằng từ năm 1990 đến 2009 vẫn là sổ giấy, lưu ở kho của Sở và một phần ở các Phòng Giáo dục huyện. Năm nào cũng có khoảng 3.000 đến 4.000 người đề nghị cấp bản sao văn bằng cũ, chủ yếu để bổ túc hồ sơ xin việc, đi xuất khẩu lao động hoặc làm thủ tục nâng ngạch. Ngoài ra trong dữ liệu đã số hóa thì nhóm kiểm thử thấy có khoảng 0,8% bản ghi sai lệch, như sai dấu tên, sai ngày sinh so với ảnh scan. Em bên frontend xin nói thêm về giao diện tra cứu. Bọn em đang làm tra cứu không cần đăng nhập cho trường hợp xác minh nhanh, chỉ hiện họ tên, năm tốt nghiệp, xếp loại và trạng thái văn bằng là còn hiệu lực hay đã thu hồi, không hiện ngày sinh, không hiện số định danh, để tránh lộ thông tin. Còn muốn xem đầy đủ hay đề nghị cấp bản sao thì phải đăng nhập tài khoản định danh điện tử mức hai. Có thêm chế độ tìm gần đúng, tức là gõ không dấu hoặc sai một chữ vẫn ra, để xử lý mấy trường hợp sai dấu. Phần tìm gần đúng thì tốt, nhưng phải cẩn thận. Tôi đề nghị tra cứu không đăng nhập thì bắt buộc phải nhập đúng số hiệu văn bằng, không cho tìm theo tên không, nếu không người ta dò được danh sách học sinh của cả một trường. Năm ngoái có trang web tư nhân lấy dữ liệu điểm thi đem bán, Bộ đã nhắc nhở rồi. Dạ vâng, bọn em sẽ bắt buộc số hiệu văn bằng với tra cứu không đăng nhập, có thêm mã xác thực chống máy. Còn chuyện dữ liệu cũ thì các anh định xử lý thế nào? Số hóa toàn bộ 20 năm sổ gốc thì kinh phí lớn đấy. Dạ, em có làm dự toán sơ bộ. Số hóa toàn bộ sổ gốc từ 1990 đến 2009, ước khoảng 600.000 trang, đơn giá scan và nhập liệu, kiểm tra hai lần khoảng 4.500 đồng một trang, tổng khoảng 2,7 tỷ, thời gian khoảng 8 tháng. Phương án thứ hai là số hóa theo yêu cầu, tức là ai đề nghị cấp bản sao văn bằng cũ thì cán bộ tìm sổ, scan trang đó, nhập dữ liệu vào hệ thống, dần dần dữ liệu sẽ đầy lên. Mỗi năm khoảng 4.000 bản ghi, chi phí không đáng kể, nhưng người dân phải chờ lâu hơn, khoảng 5 ngày làm việc thay vì 1 ngày. Năm nay không có kinh phí 2,7 tỷ đâu. Đi theo yêu cầu. Nhưng phải công khai thời hạn 5 ngày để người dân biết. Em xin hỏi về thanh toán phí, hiện nay mình đang tích hợp thử với cổng thanh toán của một ngân hàng thương mại, nhưng em thấy quy định mới là dịch vụ công phải thanh toán qua cổng thanh toán quốc gia trên Cổng dịch vụ công quốc gia. Mình có phải đổi không ạ? Đúng rồi, phải đổi. Em đã xem tài liệu tích hợp của cổng thanh toán quốc gia, cái này có chuẩn sẵn, mình đã tích hợp ở dự án khác rồi. Cái khó là đối soát, cổng quốc gia trả kết quả đối soát cuối ngày, nên hồ sơ thanh toán sau 16 giờ thì hôm sau mới xác nhận. Còn hình thức trả kết quả. Hiện nay người dân vẫn phải đến Sở nhận bản sao giấy hoặc nhận qua bưu điện. Theo Nghị định về văn bằng điện tử thì bản sao điện tử có ký số của cơ quan có thẩm quyền có giá trị như bản sao giấy. Tôi muốn hệ thống trả bản sao điện tử ký số là mặc định, ai cần bản giấy thì đăng ký thêm và trả qua bưu chính công ích. Em xin chốt hạng mục này. Một: tra cứu không đăng nhập bắt buộc nhập số hiệu văn bằng và mã chống máy, chỉ hiện thông tin tối thiểu. Hai: thanh toán phí chuyển sang cổng thanh toán quốc gia. Ba: trả bản sao điện tử có ký số của Sở là mặc định, bản giấy gửi qua bưu chính khi có đăng ký. Bốn: dữ liệu trước năm 2010 số hóa theo yêu cầu, thời hạn trả kết quả với văn bằng cũ là 5 ngày làm việc và được công khai trên cổng. Về người làm, anh Đức nhận chuyển cổng thanh toán nhé. Dạ, em chuyển sang cổng thanh toán quốc gia, xong trước ngày 30 để kịp kiểm thử. Phần chữ ký số của Sở để ký bản sao điện tử thì phòng Quản lý chất lượng làm thủ tục đăng ký chứng thư số tổ chức với Ban Cơ yếu, tôi sẽ giao chị Nga trưởng phòng làm việc này trong tháng. Còn 0,8% bản ghi sai lệch thì em lập danh sách đầy đủ kèm ảnh scan để phòng Quản lý chất lượng đối chiếu, tuần sau em gửi. Hạng mục thứ ba là hạ tầng và bảo mật. Hôm nay anh Hải bên hạ tầng có tham gia qua điện thoại. Anh Hải nói được không anh? Alo, mọi người nghe được không. Vâng, em Hải đây. Về hạ tầng thì hiện hệ thống đang chạy trên trung tâm dữ liệu của tỉnh, gồm sáu máy ảo cho ứng dụng, hai máy ảo cơ sở dữ liệu chạy chủ và dự phòng, và một cụm lưu trữ đối tượng ba nút. Băng thông ra internet của trung tâm dữ liệu dùng chung là 2 Gbps cho toàn bộ hệ thống của tỉnh. Theo số liệu năm ngoái thì cao điểm tuyển sinh là ngày đầu mở cổng, khoảng 8 giờ sáng có khoảng 12.000 người truy cập đồng thời, nên em đề nghị trước đợt cao điểm thì tăng lên mười máy ảo ứng dụng, và nâng giới hạn kết nối của kho lưu trữ đối tượng từ 500 lên 3.000, đúng cái lỗi hết thời gian chờ mà chị Hằng nêu lúc nãy. Anh Hải ơi, nếu nâng lên 3.000 kết nối thì em đề nghị chạy lại kiểm thử tải với kịch bản 12.000 người đồng thời, không phải 5.000 như lần trước. Đúng, phải chạy lại. Em cần nhóm kiểm thử phối hợp, chọn ngày cuối tuần để không ảnh hưởng các hệ thống khác của tỉnh trên cùng trung tâm dữ liệu. Về bảo mật thì tháng trước Sở Thông tin và Truyền thông đã đánh giá an toàn thông tin cấp độ 3 cho hệ thống. Kết quả có 2 lỗ hổng mức cao và 7 mức trung bình. Hai lỗ hổng mức cao là lộ thông tin phiên bản máy chủ web trong tiêu đề phản hồi và một điểm cuối API xuất danh sách hồ sơ không kiểm tra quyền theo trường, tức là cán bộ trường A có thể gọi API lấy hồ sơ trường B nếu biết mã trường. Lỗi thứ hai là nghiêm trọng, em đã sửa xong và đang chờ Sở Thông tin và Truyền thông kiểm tra lại. Bảy lỗi trung bình thì đã sửa năm, còn hai lỗi liên quan cấu hình mật khẩu và khóa tài khoản sau nhiều lần đăng nhập sai. Lỗi lộ hồ sơ giữa các trường là rất nghiêm trọng, hồ sơ tuyển sinh có thông tin trẻ em và gia đình. Tôi yêu cầu sửa xong toàn bộ, kể cả hai lỗi trung bình còn lại, và có xác nhận của Sở Thông tin và Truyền thông trước khi mở cổng. Không có xác nhận thì không mở. Em đề xuất thêm là bật tường lửa ứng dụng web của trung tâm dữ liệu cho hệ thống này. Trung tâm dữ liệu tỉnh có sẵn thiết bị tường lửa ứng dụng nhưng các hệ thống phải đăng ký mới được đưa vào. Năm ngoái hệ thống tuyển sinh cũ bị dò quét và tấn công từ chối dịch vụ nhỏ vào đúng ngày mở cổng. Em thì nghĩ là xa hơn thì mình nên tính chuyển hẳn sang đám mây thương mại của một nhà cung cấp trong nước, có tự động co giãn, đỡ phải lo tăng máy ảo bằng tay mỗi mùa tuyển sinh. Chi phí theo giờ, chỉ trả nhiều vào hai tuần cao điểm. Cái này thì không quyết ở đây được. Hệ thống có dữ liệu cá nhân của học sinh, theo chủ trương của tỉnh thì các hệ thống dùng chung phải đặt ở trung tâm dữ liệu tỉnh. Muốn thuê đám mây thì phải có ý kiến của Sở Thông tin và Truyền thông và Ủy ban, mà phải qua thẩm định cấp độ an toàn lại từ đầu. Năm nay cứ ở trung tâm dữ liệu tỉnh đã. Vậy em chốt hạ tầng: Một là tăng lên mười máy ảo ứng dụng và nâng giới hạn kết nối kho lưu trữ lên 3.000 trước ngày 20 tháng 5. Hai là đăng ký đưa hệ thống vào tường lửa ứng dụng web của trung tâm dữ liệu. Ba là diễn tập chịu tải với kịch bản 12.000 người đồng thời trước ngày 1 tháng 6. Bốn là sửa toàn bộ lỗ hổng, có biên bản xác nhận của Sở Thông tin và Truyền thông thì mới mở cổng. Anh Hải nhận phần nâng cấp và đăng ký tường lửa được không anh? Được chị, em nhận phần tăng máy ảo, nâng giới hạn kết nối và làm thủ tục đăng ký tường lửa ứng dụng, xong trước ngày 20 tháng 5. Em chủ trì kịch bản diễn tập chịu tải, phối hợp với anh Hải, chạy vào thứ Bảy 25 tháng 5. Hai lỗi trung bình còn lại em sửa trong tuần này, rồi em gửi đề nghị Sở Thông tin và Truyền thông kiểm tra lại toàn bộ. Hạng mục cuối là kế hoạch tháng tới. Em đề xuất mốc như sau. Ngày 20 tháng 5 hoàn thành nâng cấp hạ tầng, ngày 25 tháng 5 nghiệm thu nội bộ kèm diễn tập chịu tải, ngày 28 tháng 5 có biên bản xác nhận bảo mật. Ngày 1 tháng 6 mở cổng thử nghiệm cho các trường ở thành phố, khoảng 60 trường tiểu học và trung học cơ sở, rồi ngày 10 tháng 6 mở toàn tỉnh, sau khi có số liệu chạy thật một tuần. Phần tập huấn cán bộ trường thì làm trực tuyến, chia ba buổi theo cụm huyện. Lịch này tôi cơ bản đồng ý. Nhưng năm nay tôi muốn tập huấn không chỉ cán bộ trường mà cả cán bộ Phòng Giáo dục huyện, vì phụ huynh vướng thì gọi lên phòng chứ không gọi lên Sở. Năm ngoái đường dây nóng của Sở quá tải. Thưa thầy, em có ý là hay mình mở sớm hơn một tuần, tức là 25 tháng 5 mở thử nghiệm, để có nhiều thời gian sửa lỗi hơn trước khi mở toàn tỉnh. Không được. Ngày 25 tháng 5 các trường còn đang tổng kết năm học, cán bộ trường không có thời gian duyệt hồ sơ. Với lại kế hoạch tuyển sinh của Ủy ban đã ban hành mốc từ ngày 1 tháng 6, mình không tự đổi được. Cứ theo 1 tháng 6. Em đề nghị thêm, trong tuần thử nghiệm ở thành phố, nhóm kiểm thử trực tại Sở hai người để ghi nhận lỗi trực tiếp từ cán bộ. Đồng ý. Còn tài liệu hướng dẫn phụ huynh, video hướng dẫn thì ai làm? Năm ngoái mình làm muộn quá. Phần truyền thông đến phụ huynh thì để Sở phối hợp với Đài Phát thanh - Truyền hình tỉnh và các trường gửi qua nhóm Zalo phụ huynh. Nhưng nội dung video thì nhóm dự án phải làm, vì các anh chị hiểu hệ thống. Dạ, em làm kịch bản và quay video hướng dẫn nộp hồ sơ, tài liệu hỏi đáp, gửi Sở duyệt trước ngày 25 tháng 5. Vậy em chốt kế hoạch: nghiệm thu nội bộ ngày 25 tháng 5; mở cổng thử nghiệm cho các trường ở thành phố từ ngày 1 tháng 6; mở toàn tỉnh từ ngày 10 tháng 6. Tập huấn trực tuyến ba buổi cho cả cán bộ trường và cán bộ Phòng Giáo dục huyện. Nhóm kiểm thử trực tại Sở hai người trong tuần thử nghiệm. Phần tập huấn em sẽ tự lên lịch và gửi giấy mời qua Sở trước ngày 15 tháng 5. Ai có ý gì nữa không ạ? Bên hạ tầng không có gì thêm chị. Cảm ơn mọi người. Năm nay là năm đầu tiên làm tuyển sinh trực tuyến có liên thông dữ liệu dân cư, Ủy ban rất quan tâm, các anh chị cố gắng.",
+  "items": [
+    {
+      "id": 0,
+      "segment": "Chào cả nhà, chào thầy Bình. Hôm nay mình rà soát bốn hạng mục: tuyển sinh đầu cấp, tra cứu và cấp bản sao văn bằng, hạ tầng và bảo mật trước đợt cao điểm, cuối cùng là thống nhất kế hoạch tháng tới.",
+      "segment_html": "Chào cả nhà, chào thầy Bình. Hôm nay mình rà soát bốn hạng mục: tuyển sinh đầu cấp, tra cứu và cấp bản sao văn bằng, hạ tầng và bảo mật trước đợt cao điểm, cuối cùng là thống nhất kế hoạch tháng tới.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 0.25,
+      "end_time": 19.38,
+      "point_id": "71edc1d5-3e95-555f-bdec-6f08d6776735",
+      "ref_id": [
+        "d681de5a-1997-5a85-a554-cb1de7fb249b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 1,
+      "segment": "Em xin mời anh Khải trình bày trước phần tuyển sinh đầu cấp vì cái này thầy Bình quan tâm nhất, tháng sáu là bắt đầu mở cổng rồi.",
+      "segment_html": "Em xin mời anh Khải trình bày trước phần tuyển sinh đầu cấp vì cái này thầy Bình quan tâm nhất, tháng sáu là bắt đầu mở cổng rồi.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 19.63,
+      "end_time": 32.239,
+      "point_id": "71edc1d5-3e95-555f-bdec-6f08d6776735",
+      "ref_id": [
+        "d681de5a-1997-5a85-a554-cb1de7fb249b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 2,
+      "segment": "Dạ cảm ơn chị Thu, kính thưa thầy Bình. Về chức năng nộp hồ sơ tuyển sinh đầu cấp thì nhóm đã hoàn thành luồng chính cho hai cấp là lớp 1 và lớp 6. Luồng gồm các bước: phụ huynh đăng nhập bằng tài khoản dịch vụ công, khai thông tin học sinh,",
+      "segment_html": "Dạ cảm ơn chị Thu, kính thưa thầy Bình. Về chức năng nộp hồ sơ tuyển sinh đầu cấp thì nhóm đã hoàn thành luồng chính cho hai cấp là lớp 1 và lớp 6. Luồng gồm các bước: phụ huynh đăng nhập bằng tài khoản dịch vụ công, khai thông tin học sinh,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 33.239,
+      "end_time": 56.717,
+      "point_id": "ca86f9e9-0fbc-5759-975c-d95d0d70dafc",
+      "ref_id": [
+        "bc6b6e31-4639-5a2e-a37a-17209ae06394"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 3,
+      "segment": "chọn trường theo tuyến, đính kèm giấy tờ, ký xác nhận và nộp. Sau khi nộp thì hồ sơ đi về hàng đợi của trường, cán bộ trường duyệt hoặc trả lại yêu cầu bổ sung, phụ huynh nhận thông báo qua tin nhắn và qua ứng dụng.",
+      "segment_html": "chọn trường theo tuyến, đính kèm giấy tờ, ký xác nhận và nộp. Sau khi nộp thì hồ sơ đi về hàng đợi của trường, cán bộ trường duyệt hoặc trả lại yêu cầu bổ sung, phụ huynh nhận thông báo qua tin nhắn và qua ứng dụng.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 56.967,
+      "end_time": 77.837,
+      "point_id": "ca86f9e9-0fbc-5759-975c-d95d0d70dafc",
+      "ref_id": [
+        "bc6b6e31-4639-5a2e-a37a-17209ae06394"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 4,
+      "segment": "Phần phân tuyến thì đang dùng bảng ánh xạ từ tổ dân phố, thôn xóm sang trường, do các Phòng Giáo dục cấp huyện cung cấp, hiện đã có dữ liệu của chín trên mười một huyện, còn hai huyện Lạc Sơn và Kim Bôi chưa gửi bảng tuyến.",
+      "segment_html": "Phần phân tuyến thì đang dùng bảng ánh xạ từ tổ dân phố, thôn xóm sang trường, do các Phòng Giáo dục cấp huyện cung cấp, hiện đã có dữ liệu của chín trên mười một huyện, còn hai huyện Lạc Sơn và Kim Bôi chưa gửi bảng tuyến.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 78.087,
+      "end_time": 99.391,
+      "point_id": "ca86f9e9-0fbc-5759-975c-d95d0d70dafc",
+      "ref_id": [
+        "bc6b6e31-4639-5a2e-a37a-17209ae06394"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 5,
+      "segment": "Ngoài ra thì có chức năng thống kê số hồ sơ theo trường theo ngày để Sở theo dõi.",
+      "segment_html": "Ngoài ra thì có chức năng thống kê số hồ sơ theo trường theo ngày để Sở theo dõi.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 99.641,
+      "end_time": 107.902,
+      "point_id": "ca86f9e9-0fbc-5759-975c-d95d0d70dafc",
+      "ref_id": [
+        "bc6b6e31-4639-5a2e-a37a-17209ae06394"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 6,
+      "segment": "Về giấy tờ đính kèm thì hiện tại phụ huynh phải chụp và tải lên giấy khai sinh, sổ hộ khẩu hoặc giấy xác nhận cư trú, và với lớp 6 thì thêm học bạ tiểu học. Nhóm em đã làm phần nén ảnh phía trình duyệt để giảm dung lượng, mỗi ảnh còn khoảng 300 KB,",
+      "segment_html": "Về giấy tờ đính kèm thì hiện tại phụ huynh phải chụp và tải lên giấy khai sinh, sổ hộ khẩu hoặc giấy xác nhận cư trú, và với lớp 6 thì thêm học bạ tiểu học. Nhóm em đã làm phần nén ảnh phía trình duyệt để giảm dung lượng, mỗi ảnh còn khoảng 300 KB,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 108.902,
+      "end_time": 133.685,
+      "point_id": "cec985d1-1dc2-5f7c-bc40-3324521a5d1e",
+      "ref_id": [
+        "be90ec87-e78c-5fb6-8f6f-760417997c3a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 7,
+      "segment": "vì năm ngoái hệ thống cũ bị nghẽn chủ yếu do phụ huynh tải ảnh chụp điện thoại 5, 6 MB. Phần kiểm tra trùng hồ sơ thì đang kiểm tra theo mã định danh cá nhân của học sinh, một học sinh chỉ được nộp vào một trường trong một đợt.",
+      "segment_html": "vì năm ngoái hệ thống cũ bị nghẽn chủ yếu do phụ huynh tải ảnh chụp điện thoại 5, 6 MB. Phần kiểm tra trùng hồ sơ thì đang kiểm tra theo mã định danh cá nhân của học sinh, một học sinh chỉ được nộp vào một trường trong một đợt.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 133.935,
+      "end_time": 156.543,
+      "point_id": "cec985d1-1dc2-5f7c-bc40-3324521a5d1e",
+      "ref_id": [
+        "be90ec87-e78c-5fb6-8f6f-760417997c3a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 8,
+      "segment": "Cảm ơn anh Khải. Tôi có một ý quan trọng. Từ năm nay sổ hộ khẩu giấy không còn giá trị nữa, Bộ Công an đã bỏ sổ hộ khẩu từ năm 2023, nên yêu cầu phụ huynh chụp sổ hộ khẩu là không đúng,",
+      "segment_html": "Cảm ơn anh Khải. Tôi có một ý quan trọng. Từ năm nay sổ hộ khẩu giấy không còn giá trị nữa, Bộ Công an đã bỏ sổ hộ khẩu từ năm 2023, nên yêu cầu phụ huynh chụp sổ hộ khẩu là không đúng,",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 157.543,
+      "end_time": 177.109,
+      "point_id": "179e19c8-a5d0-539e-bdcc-284d237f504b",
+      "ref_id": [
+        "9b6e7ee3-7fb7-5308-91aa-c3f51077cd9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 9,
+      "segment": "mà giấy xác nhận cư trú thì phụ huynh lại phải lên công an phường xin, rất phiền. Năm ngoái hàng nghìn phụ huynh xếp hàng ở công an phường chỉ để xin giấy xác nhận cư trú đi nộp hồ sơ cho con.",
+      "segment_html": "mà giấy xác nhận cư trú thì phụ huynh lại phải lên công an phường xin, rất phiền. Năm ngoái hàng nghìn phụ huynh xếp hàng ở công an phường chỉ để xin giấy xác nhận cư trú đi nộp hồ sơ cho con.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 177.359,
+      "end_time": 196.489,
+      "point_id": "179e19c8-a5d0-539e-bdcc-284d237f504b",
+      "ref_id": [
+        "9b6e7ee3-7fb7-5308-91aa-c3f51077cd9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 10,
+      "segment": "Chỉ đạo của Ủy ban tỉnh là các thủ tục phải khai thác cơ sở dữ liệu quốc gia về dân cư, không bắt người dân nộp lại giấy tờ mà nhà nước đã có. Vậy hệ thống của mình có lấy được thông tin cư trú tự động không?",
+      "segment_html": "Chỉ đạo của Ủy ban tỉnh là các thủ tục phải khai thác cơ sở dữ liệu quốc gia về dân cư, không bắt người dân nộp lại giấy tờ mà nhà nước đã có. Vậy hệ thống của mình có lấy được thông tin cư trú tự động không?",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 196.739,
+      "end_time": 218.478,
+      "point_id": "179e19c8-a5d0-539e-bdcc-284d237f504b",
+      "ref_id": [
+        "9b6e7ee3-7fb7-5308-91aa-c3f51077cd9b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 11,
+      "segment": "Dạ thưa thầy, về kỹ thuật thì có hai cách. Cách thứ nhất là tích hợp với ứng dụng VNeID, phụ huynh đồng ý chia sẻ thông tin cư trú từ ứng dụng, hệ thống nhận về địa chỉ thường trú, tạm trú.",
+      "segment_html": "Dạ thưa thầy, về kỹ thuật thì có hai cách. Cách thứ nhất là tích hợp với ứng dụng VNeID, phụ huynh đồng ý chia sẻ thông tin cư trú từ ứng dụng, hệ thống nhận về địa chỉ thường trú, tạm trú.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 219.478,
+      "end_time": 238.174,
+      "point_id": "c2a08f60-65df-5433-8012-f1345fa6e3ed",
+      "ref_id": [
+        "b5f39017-835d-57d5-8074-55db0497a226"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 12,
+      "segment": "Cách thứ hai là kết nối qua trục liên thông dữ liệu của tỉnh, tức là LGSP, gọi dịch vụ tra cứu thông tin công dân theo mã định danh. Tỉnh đã có kết nối với cơ sở dữ liệu dân cư qua trục này cho cổng dịch vụ công chung rồi,",
+      "segment_html": "Cách thứ hai là kết nối qua trục liên thông dữ liệu của tỉnh, tức là LGSP, gọi dịch vụ tra cứu thông tin công dân theo mã định danh. Tỉnh đã có kết nối với cơ sở dữ liệu dân cư qua trục này cho cổng dịch vụ công chung rồi,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 238.424,
+      "end_time": 261.033,
+      "point_id": "c2a08f60-65df-5433-8012-f1345fa6e3ed",
+      "ref_id": [
+        "b5f39017-835d-57d5-8074-55db0497a226"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 13,
+      "segment": "nên mình chỉ cần xin cấp quyền khai thác.",
+      "segment_html": "nên mình chỉ cần xin cấp quyền khai thác.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 261.283,
+      "end_time": 265.196,
+      "point_id": "c2a08f60-65df-5433-8012-f1345fa6e3ed",
+      "ref_id": [
+        "b5f39017-835d-57d5-8074-55db0497a226"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 14,
+      "segment": "Em bổ sung phần kỹ thuật. Nếu đi qua trục LGSP thì phía em cần Sở Thông tin và Truyền thông cấp tài khoản kết nối và chứng thư số cho hệ thống. Thời gian làm thủ tục thường mất khoảng hai đến ba tuần. Phần code gọi dịch vụ thì không nhiều,",
+      "segment_html": "Em bổ sung phần kỹ thuật. Nếu đi qua trục LGSP thì phía em cần Sở Thông tin và Truyền thông cấp tài khoản kết nối và chứng thư số cho hệ thống. Thời gian làm thủ tục thường mất khoảng hai đến ba tuần. Phần code gọi dịch vụ thì không nhiều,",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 266.196,
+      "end_time": 289.239,
+      "point_id": "23675276-e28c-51f5-8b24-5b605636e0ee",
+      "ref_id": [
+        "b9d503e4-346c-5be5-bb80-5aed62ca4055"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 15,
+      "segment": "khoảng một tuần, vì mình đã có thư viện kết nối LGSP từ dự án cổng dịch vụ công chung. Nhưng có một điểm cần lưu ý: dữ liệu cư trú trả về là địa chỉ dạng văn bản, ví dụ \"thôn Đồng Bến, xã Mông Hóa\", mình phải so khớp với bảng tuyến,",
+      "segment_html": "khoảng một tuần, vì mình đã có thư viện kết nối LGSP từ dự án cổng dịch vụ công chung. Nhưng có một điểm cần lưu ý: dữ liệu cư trú trả về là địa chỉ dạng văn bản, ví dụ \"thôn Đồng Bến, xã Mông Hóa\", mình phải so khớp với bảng tuyến,",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 289.489,
+      "end_time": 312.967,
+      "point_id": "23675276-e28c-51f5-8b24-5b605636e0ee",
+      "ref_id": [
+        "b9d503e4-346c-5be5-bb80-5aed62ca4055"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 16,
+      "segment": "mà tên thôn xóm sau sáp nhập đơn vị hành chính thì nhiều chỗ không khớp. Em ước tính khoảng 10 đến 15% địa chỉ sẽ không tự khớp được, phải cho cán bộ trường xác nhận tay.",
+      "segment_html": "mà tên thôn xóm sau sáp nhập đơn vị hành chính thì nhiều chỗ không khớp. Em ước tính khoảng 10 đến 15% địa chỉ sẽ không tự khớp được, phải cho cán bộ trường xác nhận tay.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 313.217,
+      "end_time": 329.739,
+      "point_id": "23675276-e28c-51f5-8b24-5b605636e0ee",
+      "ref_id": [
+        "b9d503e4-346c-5be5-bb80-5aed62ca4055"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 17,
+      "segment": "Tỷ lệ đó chấp nhận được, còn hơn bắt cả trăm phần trăm phụ huynh đi xin giấy.",
+      "segment_html": "Tỷ lệ đó chấp nhận được, còn hơn bắt cả trăm phần trăm phụ huynh đi xin giấy.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 330.739,
+      "end_time": 338.565,
+      "point_id": "0044136b-7d7d-5d30-808f-d277527a8784",
+      "ref_id": [
+        "69b670eb-6336-5a7f-949c-6b8e252bb292"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 18,
+      "segment": "Vậy em xin chốt: bỏ yêu cầu tải lên sổ hộ khẩu và giấy xác nhận cư trú, thay bằng tra cứu thông tin cư trú tự động qua trục LGSP của tỉnh theo mã định danh học sinh và phụ huynh;",
+      "segment_html": "Vậy em xin chốt: bỏ yêu cầu tải lên sổ hộ khẩu và giấy xác nhận cư trú, thay bằng tra cứu thông tin cư trú tự động qua trục LGSP của tỉnh theo mã định danh học sinh và phụ huynh;",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 339.565,
+      "end_time": 357.826,
+      "point_id": "37cc731a-e4aa-5ee8-a494-c6f3879a1447",
+      "ref_id": [
+        "4a4ac0da-7455-5534-a584-6ab52d6544a6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 19,
+      "segment": "trường hợp địa chỉ không khớp bảng tuyến thì chuyển cán bộ trường xác nhận tay. VNeID mình làm sau, đợt này đi LGSP trước vì đã có sẵn kết nối. Anh Đức chuẩn bị hồ sơ xin cấp quyền khai thác gửi Sở Thông tin và Truyền thông nhé.",
+      "segment_html": "trường hợp địa chỉ không khớp bảng tuyến thì chuyển cán bộ trường xác nhận tay. VNeID mình làm sau, đợt này đi LGSP trước vì đã có sẵn kết nối. Anh Đức chuẩn bị hồ sơ xin cấp quyền khai thác gửi Sở Thông tin và Truyền thông nhé.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 358.076,
+      "end_time": 379.815,
+      "point_id": "37cc731a-e4aa-5ee8-a494-c6f3879a1447",
+      "ref_id": [
+        "4a4ac0da-7455-5534-a584-6ab52d6544a6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 20,
+      "segment": "Dạ, em làm công văn và hồ sơ kỹ thuật, thứ Tư tuần sau gửi chị Thu trình thầy Bình ký để gửi đi.",
+      "segment_html": "Dạ, em làm công văn và hồ sơ kỹ thuật, thứ Tư tuần sau gửi chị Thu trình thầy Bình ký để gửi đi.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 380.815,
+      "end_time": 391.25,
+      "point_id": "0416ba3d-99d3-541f-a406-5730892ac9bf",
+      "ref_id": [
+        "5ddcb649-c8a1-5026-808e-ae4eb0c6cd00"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 21,
+      "segment": "Còn việc hai huyện chưa gửi bảng tuyến thì để tôi. Tôi sẽ gọi trực tiếp hai trưởng phòng Lạc Sơn và Kim Bôi, yêu cầu gửi trước ngày 15 tháng này.",
+      "segment_html": "Còn việc hai huyện chưa gửi bảng tuyến thì để tôi. Tôi sẽ gọi trực tiếp hai trưởng phòng Lạc Sơn và Kim Bôi, yêu cầu gửi trước ngày 15 tháng này.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 392.25,
+      "end_time": 406.163,
+      "point_id": "d95fca2a-30cc-5a89-885a-725a639024d9",
+      "ref_id": [
+        "e7a3bd5f-0c04-5736-96c4-08e0e5ab003c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 22,
+      "segment": "Thưa thầy, nhân tiện em có một đề xuất là hay mình cho phụ huynh chọn hai hoặc ba nguyện vọng trường, nếu trường thứ nhất đủ chỉ tiêu thì tự chuyển sang nguyện vọng hai, như kiểu xét tuyển đại học. Như vậy đỡ cho phụ huynh phải đi nộp lại.",
+      "segment_html": "Thưa thầy, nhân tiện em có một đề xuất là hay mình cho phụ huynh chọn hai hoặc ba nguyện vọng trường, nếu trường thứ nhất đủ chỉ tiêu thì tự chuyển sang nguyện vọng hai, như kiểu xét tuyển đại học. Như vậy đỡ cho phụ huynh phải đi nộp lại.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 407.163,
+      "end_time": 429.772,
+      "point_id": "729f0f3f-4824-5980-99ba-ff4280459480",
+      "ref_id": [
+        "8d11026c-6aa4-53d3-a234-f0cc39c4db36"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 23,
+      "segment": "Ý này hay nhưng mà vướng quy chế. Tuyển sinh lớp 1 và lớp 6 công lập theo quy định là tuyển theo tuyến, đúng tuyến thì trường phải nhận, nguyện vọng ngoài tuyến chỉ xét khi còn chỉ tiêu.",
+      "segment_html": "Ý này hay nhưng mà vướng quy chế. Tuyển sinh lớp 1 và lớp 6 công lập theo quy định là tuyển theo tuyến, đúng tuyến thì trường phải nhận, nguyện vọng ngoài tuyến chỉ xét khi còn chỉ tiêu.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 430.772,
+      "end_time": 448.163,
+      "point_id": "4db41be1-58ba-53bd-ac97-d9d2e0d0d71e",
+      "ref_id": [
+        "0186ac8f-d9be-5dee-aed8-f52e2d493829"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 24,
+      "segment": "Cho chọn nhiều nguyện vọng thì phụ huynh sẽ hiểu là được chọn trường, rồi khiếu nại. Để Sở nghiên cứu thêm, có thể áp dụng thí điểm cho lớp 6 ở thành phố năm sau, năm nay thì chưa.",
+      "segment_html": "Cho chọn nhiều nguyện vọng thì phụ huynh sẽ hiểu là được chọn trường, rồi khiếu nại. Để Sở nghiên cứu thêm, có thể áp dụng thí điểm cho lớp 6 ở thành phố năm sau, năm nay thì chưa.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 448.413,
+      "end_time": 465.804,
+      "point_id": "4db41be1-58ba-53bd-ac97-d9d2e0d0d71e",
+      "ref_id": [
+        "0186ac8f-d9be-5dee-aed8-f52e2d493829"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 25,
+      "segment": "Vâng, em ghi nhận ý đó vào danh sách để xem xét sau. Hằng bên kiểm thử có ý gì về phần tuyển sinh không?",
+      "segment_html": "Vâng, em ghi nhận ý đó vào danh sách để xem xét sau. Hằng bên kiểm thử có ý gì về phần tuyển sinh không?",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 466.804,
+      "end_time": 477.674,
+      "point_id": "266e2dfd-ef2b-5899-a748-5d4d401f1be4",
+      "ref_id": [
+        "4202dc5d-c15e-5232-abf7-092b2b4ede1d"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 26,
+      "segment": "Dạ em có hai điểm. Thứ nhất, em đã chạy kiểm thử tải giả lập 5.000 phụ huynh nộp đồng thời thì thời gian phản hồi trung bình là 1,8 giây, nhưng ở bước tải ảnh thì có khoảng 3% yêu cầu bị lỗi hết thời gian chờ.",
+      "segment_html": "Dạ em có hai điểm. Thứ nhất, em đã chạy kiểm thử tải giả lập 5.000 phụ huynh nộp đồng thời thì thời gian phản hồi trung bình là 1,8 giây, nhưng ở bước tải ảnh thì có khoảng 3% yêu cầu bị lỗi hết thời gian chờ.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 478.674,
+      "end_time": 499.543,
+      "point_id": "decb16fd-5941-5018-99c1-08c7b07995ba",
+      "ref_id": [
+        "197d10f4-dd8d-5a9b-84e4-4cebfbb51c19"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 27,
+      "segment": "Nhóm backend đã xem và nguyên nhân là kho lưu trữ đối tượng đang cấu hình giới hạn kết nối thấp. Thứ hai, em phát hiện nếu phụ huynh có hai con cùng tuổi, ví dụ sinh đôi,",
+      "segment_html": "Nhóm backend đã xem và nguyên nhân là kho lưu trữ đối tượng đang cấu hình giới hạn kết nối thấp. Thứ hai, em phát hiện nếu phụ huynh có hai con cùng tuổi, ví dụ sinh đôi,",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 499.793,
+      "end_time": 516.315,
+      "point_id": "decb16fd-5941-5018-99c1-08c7b07995ba",
+      "ref_id": [
+        "197d10f4-dd8d-5a9b-84e4-4cebfbb51c19"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 28,
+      "segment": "thì hệ thống báo trùng hồ sơ vì đang kiểm tra trùng theo số điện thoại phụ huynh ở một bước phụ. Lỗi này em đã ghi lên hệ thống quản lý lỗi mức độ cao.",
+      "segment_html": "thì hệ thống báo trùng hồ sơ vì đang kiểm tra trùng theo số điện thoại phụ huynh ở một bước phụ. Lỗi này em đã ghi lên hệ thống quản lý lỗi mức độ cao.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 516.565,
+      "end_time": 532.217,
+      "point_id": "decb16fd-5941-5018-99c1-08c7b07995ba",
+      "ref_id": [
+        "197d10f4-dd8d-5a9b-84e4-4cebfbb51c19"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 29,
+      "segment": "Lỗi sinh đôi em biết rồi, do bước kiểm tra chống spam theo số điện thoại. Em sửa luôn trong sprint này, bỏ kiểm tra theo số điện thoại, chỉ giữ kiểm tra theo mã định danh học sinh.",
+      "segment_html": "Lỗi sinh đôi em biết rồi, do bước kiểm tra chống spam theo số điện thoại. Em sửa luôn trong sprint này, bỏ kiểm tra theo số điện thoại, chỉ giữ kiểm tra theo mã định danh học sinh.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 533.217,
+      "end_time": 550.174,
+      "point_id": "da5633b4-343c-54df-b3a7-7505b5583d14",
+      "ref_id": [
+        "e366aee4-d5be-5daa-95bf-5bb67de07935"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 30,
+      "segment": "Tốt. Phần giới hạn kết nối kho lưu trữ thì mình để sang mục hạ tầng nói luôn. Chuyển sang hạng mục thứ hai.",
+      "segment_html": "Tốt. Phần giới hạn kết nối kho lưu trữ thì mình để sang mục hạ tầng nói luôn. Chuyển sang hạng mục thứ hai.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 551.174,
+      "end_time": 561.609,
+      "point_id": "4f23c9be-bfeb-59b8-8d0c-6808bef1c7b4",
+      "ref_id": [
+        "96f25ac7-a761-51dd-9c97-fe7f1833baca"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 31,
+      "segment": "Hạng mục thứ hai là tra cứu và cấp bản sao văn bằng chứng chỉ. Anh Khải trình bày tiếp nhé.",
+      "segment_html": "Hạng mục thứ hai là tra cứu và cấp bản sao văn bằng chứng chỉ. Anh Khải trình bày tiếp nhé.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 562.609,
+      "end_time": 571.739,
+      "point_id": "78f17d95-9d60-5fb8-8ddb-b3b1baf951fd",
+      "ref_id": [
+        "04fa312b-eb89-57da-a6d7-e90ed735c573"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 32,
+      "segment": "Dạ. Chức năng này cho phép người dân tra cứu bằng tốt nghiệp trung học phổ thông, trung học cơ sở và chứng chỉ do Sở cấp, rồi đề nghị cấp bản sao. Hiện nay dữ liệu số hóa đã có từ năm 2010 đến nay,",
+      "segment_html": "Dạ. Chức năng này cho phép người dân tra cứu bằng tốt nghiệp trung học phổ thông, trung học cơ sở và chứng chỉ do Sở cấp, rồi đề nghị cấp bản sao. Hiện nay dữ liệu số hóa đã có từ năm 2010 đến nay,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 572.739,
+      "end_time": 592.739,
+      "point_id": "c018d586-95a2-5cf6-b043-f521a73dfb8d",
+      "ref_id": [
+        "d7e3696e-d482-5d89-84cc-103bd6b7675c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 33,
+      "segment": "khoảng 412.000 văn bằng tốt nghiệp trung học phổ thông và 530.000 văn bằng trung học cơ sở, do dự án số hóa năm 2022 thực hiện. Người dân tra cứu bằng họ tên, ngày sinh, năm tốt nghiệp và số hiệu văn bằng. Doanh nghiệp,",
+      "segment_html": "khoảng 412.000 văn bằng tốt nghiệp trung học phổ thông và 530.000 văn bằng trung học cơ sở, do dự án số hóa năm 2022 thực hiện. Người dân tra cứu bằng họ tên, ngày sinh, năm tốt nghiệp và số hiệu văn bằng. Doanh nghiệp,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 592.989,
+      "end_time": 612.989,
+      "point_id": "c018d586-95a2-5cf6-b043-f521a73dfb8d",
+      "ref_id": [
+        "d7e3696e-d482-5d89-84cc-103bd6b7675c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 34,
+      "segment": "cơ quan tuyển dụng cũng có thể tra cứu xác minh văn bằng nếu được người có văn bằng cấp mã chia sẻ. Luồng cấp bản sao thì người dân nộp đề nghị, thanh toán phí, cán bộ phòng Quản lý chất lượng của Sở duyệt, rồi trả kết quả.",
+      "segment_html": "cơ quan tuyển dụng cũng có thể tra cứu xác minh văn bằng nếu được người có văn bằng cấp mã chia sẻ. Luồng cấp bản sao thì người dân nộp đề nghị, thanh toán phí, cán bộ phòng Quản lý chất lượng của Sở duyệt, rồi trả kết quả.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 613.239,
+      "end_time": 634.978,
+      "point_id": "c018d586-95a2-5cf6-b043-f521a73dfb8d",
+      "ref_id": [
+        "d7e3696e-d482-5d89-84cc-103bd6b7675c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 35,
+      "segment": "Vấn đề lớn nhất là dữ liệu trước năm 2010. Sổ gốc cấp bằng từ năm 1990 đến 2009 vẫn là sổ giấy, lưu ở kho của Sở và một phần ở các Phòng Giáo dục huyện. Năm nào cũng có khoảng 3.000 đến 4.000 người đề nghị cấp bản sao văn bằng cũ,",
+      "segment_html": "Vấn đề lớn nhất là dữ liệu trước năm 2010. Sổ gốc cấp bằng từ năm 1990 đến 2009 vẫn là sổ giấy, lưu ở kho của Sở và một phần ở các Phòng Giáo dục huyện. Năm nào cũng có khoảng 3.000 đến 4.000 người đề nghị cấp bản sao văn bằng cũ,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 635.978,
+      "end_time": 659.457,
+      "point_id": "24fef759-110b-5391-9249-455ddef7edfe",
+      "ref_id": [
+        "54ecbd3a-a8a0-5c6e-a081-0ae0d0b48f54"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 36,
+      "segment": "chủ yếu để bổ túc hồ sơ xin việc, đi xuất khẩu lao động hoặc làm thủ tục nâng ngạch. Ngoài ra trong dữ liệu đã số hóa thì nhóm kiểm thử thấy có khoảng 0,8% bản ghi sai lệch, như sai dấu tên, sai ngày sinh so với ảnh scan.",
+      "segment_html": "chủ yếu để bổ túc hồ sơ xin việc, đi xuất khẩu lao động hoặc làm thủ tục nâng ngạch. Ngoài ra trong dữ liệu đã số hóa thì nhóm kiểm thử thấy có khoảng 0,8% bản ghi sai lệch, như sai dấu tên, sai ngày sinh so với ảnh scan.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 659.707,
+      "end_time": 681.88,
+      "point_id": "24fef759-110b-5391-9249-455ddef7edfe",
+      "ref_id": [
+        "54ecbd3a-a8a0-5c6e-a081-0ae0d0b48f54"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 37,
+      "segment": "Em bên frontend xin nói thêm về giao diện tra cứu. Bọn em đang làm tra cứu không cần đăng nhập cho trường hợp xác minh nhanh, chỉ hiện họ tên, năm tốt nghiệp, xếp loại và trạng thái văn bằng là còn hiệu lực hay đã thu hồi, không hiện ngày sinh,",
+      "segment_html": "Em bên frontend xin nói thêm về giao diện tra cứu. Bọn em đang làm tra cứu không cần đăng nhập cho trường hợp xác minh nhanh, chỉ hiện họ tên, năm tốt nghiệp, xếp loại và trạng thái văn bằng là còn hiệu lực hay đã thu hồi, không hiện ngày sinh,",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 682.88,
+      "end_time": 705.924,
+      "point_id": "c68467ef-c9e9-5ec3-8d75-b3825dbf9ec3",
+      "ref_id": [
+        "be97d1bf-2ded-522b-b7c3-cdc180fc5774"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 38,
+      "segment": "không hiện số định danh, để tránh lộ thông tin. Còn muốn xem đầy đủ hay đề nghị cấp bản sao thì phải đăng nhập tài khoản định danh điện tử mức hai. Có thêm chế độ tìm gần đúng, tức là gõ không dấu hoặc sai một chữ vẫn ra, để xử lý mấy trường hợp sai dấu.",
+      "segment_html": "không hiện số định danh, để tránh lộ thông tin. Còn muốn xem đầy đủ hay đề nghị cấp bản sao thì phải đăng nhập tài khoản định danh điện tử mức hai. Có thêm chế độ tìm gần đúng, tức là gõ không dấu hoặc sai một chữ vẫn ra, để xử lý mấy trường hợp sai dấu.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 706.174,
+      "end_time": 731.826,
+      "point_id": "c68467ef-c9e9-5ec3-8d75-b3825dbf9ec3",
+      "ref_id": [
+        "be97d1bf-2ded-522b-b7c3-cdc180fc5774"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 39,
+      "segment": "Phần tìm gần đúng thì tốt, nhưng phải cẩn thận. Tôi đề nghị tra cứu không đăng nhập thì bắt buộc phải nhập đúng số hiệu văn bằng, không cho tìm theo tên không, nếu không người ta dò được danh sách học sinh của cả một trường.",
+      "segment_html": "Phần tìm gần đúng thì tốt, nhưng phải cẩn thận. Tôi đề nghị tra cứu không đăng nhập thì bắt buộc phải nhập đúng số hiệu văn bằng, không cho tìm theo tên không, nếu không người ta dò được danh sách học sinh của cả một trường.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 732.826,
+      "end_time": 753.696,
+      "point_id": "6a354aca-5a8f-5169-8c63-9c23d8103c2d",
+      "ref_id": [
+        "5029c143-eff8-5248-bf5b-75ee6ba36145"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 40,
+      "segment": "Năm ngoái có trang web tư nhân lấy dữ liệu điểm thi đem bán, Bộ đã nhắc nhở rồi.",
+      "segment_html": "Năm ngoái có trang web tư nhân lấy dữ liệu điểm thi đem bán, Bộ đã nhắc nhở rồi.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 753.946,
+      "end_time": 762.207,
+      "point_id": "6a354aca-5a8f-5169-8c63-9c23d8103c2d",
+      "ref_id": [
+        "5029c143-eff8-5248-bf5b-75ee6ba36145"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 41,
+      "segment": "Dạ vâng, bọn em sẽ bắt buộc số hiệu văn bằng với tra cứu không đăng nhập, có thêm mã xác thực chống máy.",
+      "segment_html": "Dạ vâng, bọn em sẽ bắt buộc số hiệu văn bằng với tra cứu không đăng nhập, có thêm mã xác thực chống máy.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 763.207,
+      "end_time": 773.641,
+      "point_id": "c08658ea-859e-54a7-aec0-d6c57e2a4c9d",
+      "ref_id": [
+        "42507947-2f2a-5876-a269-114d77bedb6a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 42,
+      "segment": "Còn chuyện dữ liệu cũ thì các anh định xử lý thế nào? Số hóa toàn bộ 20 năm sổ gốc thì kinh phí lớn đấy.",
+      "segment_html": "Còn chuyện dữ liệu cũ thì các anh định xử lý thế nào? Số hóa toàn bộ 20 năm sổ gốc thì kinh phí lớn đấy.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 774.641,
+      "end_time": 785.946,
+      "point_id": "4cae8a8c-79e0-5307-a401-2ee0a5c7efb2",
+      "ref_id": [
+        "cf27ef26-3ed4-5f12-ba30-17b48eb81844"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 43,
+      "segment": "Dạ, em có làm dự toán sơ bộ. Số hóa toàn bộ sổ gốc từ 1990 đến 2009, ước khoảng 600.000 trang, đơn giá scan và nhập liệu, kiểm tra hai lần khoảng 4.500 đồng một trang, tổng khoảng 2,7 tỷ, thời gian khoảng 8 tháng.",
+      "segment_html": "Dạ, em có làm dự toán sơ bộ. Số hóa toàn bộ sổ gốc từ 1990 đến 2009, ước khoảng 600.000 trang, đơn giá scan và nhập liệu, kiểm tra hai lần khoảng 4.500 đồng một trang, tổng khoảng 2,7 tỷ, thời gian khoảng 8 tháng.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 786.946,
+      "end_time": 806.946,
+      "point_id": "425d022d-9978-5c69-8433-2e7648512dd2",
+      "ref_id": [
+        "fe0ad216-8c62-5d4e-81f8-ff5650820aa9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 44,
+      "segment": "Phương án thứ hai là số hóa theo yêu cầu, tức là ai đề nghị cấp bản sao văn bằng cũ thì cán bộ tìm sổ, scan trang đó, nhập dữ liệu vào hệ thống, dần dần dữ liệu sẽ đầy lên. Mỗi năm khoảng 4.000 bản ghi, chi phí không đáng kể,",
+      "segment_html": "Phương án thứ hai là số hóa theo yêu cầu, tức là ai đề nghị cấp bản sao văn bằng cũ thì cán bộ tìm sổ, scan trang đó, nhập dữ liệu vào hệ thống, dần dần dữ liệu sẽ đầy lên. Mỗi năm khoảng 4.000 bản ghi, chi phí không đáng kể,",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 807.196,
+      "end_time": 830.239,
+      "point_id": "425d022d-9978-5c69-8433-2e7648512dd2",
+      "ref_id": [
+        "fe0ad216-8c62-5d4e-81f8-ff5650820aa9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 45,
+      "segment": "nhưng người dân phải chờ lâu hơn, khoảng 5 ngày làm việc thay vì 1 ngày.",
+      "segment_html": "nhưng người dân phải chờ lâu hơn, khoảng 5 ngày làm việc thay vì 1 ngày.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 830.489,
+      "end_time": 837.446,
+      "point_id": "425d022d-9978-5c69-8433-2e7648512dd2",
+      "ref_id": [
+        "fe0ad216-8c62-5d4e-81f8-ff5650820aa9"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 46,
+      "segment": "Năm nay không có kinh phí 2,7 tỷ đâu. Đi theo yêu cầu. Nhưng phải công khai thời hạn 5 ngày để người dân biết.",
+      "segment_html": "Năm nay không có kinh phí 2,7 tỷ đâu. Đi theo yêu cầu. Nhưng phải công khai thời hạn 5 ngày để người dân biết.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 838.446,
+      "end_time": 849.315,
+      "point_id": "7bae71c3-2346-56fb-94de-4583a8ded56b",
+      "ref_id": [
+        "13693f9e-0fd9-5d56-9009-c4dee99c9a51"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 47,
+      "segment": "Em xin hỏi về thanh toán phí, hiện nay mình đang tích hợp thử với cổng thanh toán của một ngân hàng thương mại, nhưng em thấy quy định mới là dịch vụ công phải thanh toán qua cổng thanh toán quốc gia trên Cổng dịch vụ công quốc gia. Mình có phải đổi không ạ?",
+      "segment_html": "Em xin hỏi về thanh toán phí, hiện nay mình đang tích hợp thử với cổng thanh toán của một ngân hàng thương mại, nhưng em thấy quy định mới là dịch vụ công phải thanh toán qua cổng thanh toán quốc gia trên Cổng dịch vụ công quốc gia. Mình có phải đổi không ạ?",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 850.315,
+      "end_time": 874.663,
+      "point_id": "12ad3c89-3755-5e92-b307-b82e72850991",
+      "ref_id": [
+        "cdee9215-c088-5919-9643-c791abba3a11"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 48,
+      "segment": "Đúng rồi, phải đổi. Em đã xem tài liệu tích hợp của cổng thanh toán quốc gia, cái này có chuẩn sẵn, mình đã tích hợp ở dự án khác rồi. Cái khó là đối soát, cổng quốc gia trả kết quả đối soát cuối ngày,",
+      "segment_html": "Đúng rồi, phải đổi. Em đã xem tài liệu tích hợp của cổng thanh toán quốc gia, cái này có chuẩn sẵn, mình đã tích hợp ở dự án khác rồi. Cái khó là đối soát, cổng quốc gia trả kết quả đối soát cuối ngày,",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 875.663,
+      "end_time": 895.663,
+      "point_id": "e4b75314-c6dc-54a3-87a2-2f8fda516f0b",
+      "ref_id": [
+        "84855aba-285b-5496-9a1b-a587ef407243"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 49,
+      "segment": "nên hồ sơ thanh toán sau 16 giờ thì hôm sau mới xác nhận.",
+      "segment_html": "nên hồ sơ thanh toán sau 16 giờ thì hôm sau mới xác nhận.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 895.913,
+      "end_time": 902.0,
+      "point_id": "e4b75314-c6dc-54a3-87a2-2f8fda516f0b",
+      "ref_id": [
+        "84855aba-285b-5496-9a1b-a587ef407243"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 50,
+      "segment": "Còn hình thức trả kết quả. Hiện nay người dân vẫn phải đến Sở nhận bản sao giấy hoặc nhận qua bưu điện. Theo Nghị định về văn bằng điện tử thì bản sao điện tử có ký số của cơ quan có thẩm quyền có giá trị như bản sao giấy.",
+      "segment_html": "Còn hình thức trả kết quả. Hiện nay người dân vẫn phải đến Sở nhận bản sao giấy hoặc nhận qua bưu điện. Theo Nghị định về văn bằng điện tử thì bản sao điện tử có ký số của cơ quan có thẩm quyền có giá trị như bản sao giấy.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 903.0,
+      "end_time": 925.609,
+      "point_id": "34055249-5aa7-5b10-9d57-b821fc17eea6",
+      "ref_id": [
+        "f76fa891-b661-516f-9151-4339a9d51c1a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 51,
+      "segment": "Tôi muốn hệ thống trả bản sao điện tử ký số là mặc định, ai cần bản giấy thì đăng ký thêm và trả qua bưu chính công ích.",
+      "segment_html": "Tôi muốn hệ thống trả bản sao điện tử ký số là mặc định, ai cần bản giấy thì đăng ký thêm và trả qua bưu chính công ích.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 925.859,
+      "end_time": 938.467,
+      "point_id": "34055249-5aa7-5b10-9d57-b821fc17eea6",
+      "ref_id": [
+        "f76fa891-b661-516f-9151-4339a9d51c1a"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 52,
+      "segment": "Em xin chốt hạng mục này. Một: tra cứu không đăng nhập bắt buộc nhập số hiệu văn bằng và mã chống máy, chỉ hiện thông tin tối thiểu. Hai: thanh toán phí chuyển sang cổng thanh toán quốc gia. Ba: trả bản sao điện tử có ký số của Sở là mặc định,",
+      "segment_html": "Em xin chốt hạng mục này. Một: tra cứu không đăng nhập bắt buộc nhập số hiệu văn bằng và mã chống máy, chỉ hiện thông tin tối thiểu. Hai: thanh toán phí chuyển sang cổng thanh toán quốc gia. Ba: trả bản sao điện tử có ký số của Sở là mặc định,",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 939.467,
+      "end_time": 962.946,
+      "point_id": "4731ad81-1352-5915-a352-1366365eaaaa",
+      "ref_id": [
+        "e8d7413c-762d-5ebd-8daa-fc45b5e51b85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 53,
+      "segment": "bản giấy gửi qua bưu chính khi có đăng ký. Bốn: dữ liệu trước năm 2010 số hóa theo yêu cầu, thời hạn trả kết quả với văn bằng cũ là 5 ngày làm việc và được công khai trên cổng.",
+      "segment_html": "bản giấy gửi qua bưu chính khi có đăng ký. Bốn: dữ liệu trước năm 2010 số hóa theo yêu cầu, thời hạn trả kết quả với văn bằng cũ là 5 ngày làm việc và được công khai trên cổng.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 963.196,
+      "end_time": 981.022,
+      "point_id": "4731ad81-1352-5915-a352-1366365eaaaa",
+      "ref_id": [
+        "e8d7413c-762d-5ebd-8daa-fc45b5e51b85"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 54,
+      "segment": "Về người làm, anh Đức nhận chuyển cổng thanh toán nhé.",
+      "segment_html": "Về người làm, anh Đức nhận chuyển cổng thanh toán nhé.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 982.022,
+      "end_time": 986.804,
+      "point_id": "54494573-b054-5b62-b532-694fc173efae",
+      "ref_id": [
+        "52c941be-bdba-5c60-a6c2-77a5780cd21e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 55,
+      "segment": "Dạ, em chuyển sang cổng thanh toán quốc gia, xong trước ngày 30 để kịp kiểm thử.",
+      "segment_html": "Dạ, em chuyển sang cổng thanh toán quốc gia, xong trước ngày 30 để kịp kiểm thử.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 987.804,
+      "end_time": 995.196,
+      "point_id": "a0d2fa16-2d3d-5eb4-9adb-59c7149e6b3b",
+      "ref_id": [
+        "fdc54f2b-d7b2-5c6e-9a82-fad6ca002235"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 56,
+      "segment": "Phần chữ ký số của Sở để ký bản sao điện tử thì phòng Quản lý chất lượng làm thủ tục đăng ký chứng thư số tổ chức với Ban Cơ yếu, tôi sẽ giao chị Nga trưởng phòng làm việc này trong tháng.",
+      "segment_html": "Phần chữ ký số của Sở để ký bản sao điện tử thì phòng Quản lý chất lượng làm thủ tục đăng ký chứng thư số tổ chức với Ban Cơ yếu, tôi sẽ giao chị Nga trưởng phòng làm việc này trong tháng.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 996.196,
+      "end_time": 1015.326,
+      "point_id": "2c57146d-65ad-528e-ab5f-ada844d80ec9",
+      "ref_id": [
+        "36b444f9-ad39-5c9a-90df-45c722f8868e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 57,
+      "segment": "Còn 0,8% bản ghi sai lệch thì em lập danh sách đầy đủ kèm ảnh scan để phòng Quản lý chất lượng đối chiếu, tuần sau em gửi.",
+      "segment_html": "Còn 0,8% bản ghi sai lệch thì em lập danh sách đầy đủ kèm ảnh scan để phòng Quản lý chất lượng đối chiếu, tuần sau em gửi.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1016.326,
+      "end_time": 1028.5,
+      "point_id": "6f040d3d-20e2-56db-af76-2e1764a3feea",
+      "ref_id": [
+        "c956c895-5d8c-5040-9216-5ccd30304685"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 58,
+      "segment": "Hạng mục thứ ba là hạ tầng và bảo mật. Hôm nay anh Hải bên hạ tầng có tham gia qua điện thoại. Anh Hải nói được không anh?",
+      "segment_html": "Hạng mục thứ ba là hạ tầng và bảo mật. Hôm nay anh Hải bên hạ tầng có tham gia qua điện thoại. Anh Hải nói được không anh?",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1029.5,
+      "end_time": 1042.109,
+      "point_id": "d3f8f10a-0401-5ccf-beac-b177da37a782",
+      "ref_id": [
+        "5c7e2067-26a7-5b54-ab0c-73b787ad29e0"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 59,
+      "segment": "Alo, mọi người nghe được không. Vâng, em Hải đây. Về hạ tầng thì hiện hệ thống đang chạy trên trung tâm dữ liệu của tỉnh, gồm sáu máy ảo cho ứng dụng, hai máy ảo cơ sở dữ liệu chạy chủ và dự phòng, và một cụm lưu trữ đối tượng ba nút.",
+      "segment_html": "Alo, mọi người nghe được không. Vâng, em Hải đây. Về hạ tầng thì hiện hệ thống đang chạy trên trung tâm dữ liệu của tỉnh, gồm sáu máy ảo cho ứng dụng, hai máy ảo cơ sở dữ liệu chạy chủ và dự phòng, và một cụm lưu trữ đối tượng ba nút.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1043.109,
+      "end_time": 1066.587,
+      "point_id": "7743d3b7-11e4-5fa6-890a-e02c4abf87cc",
+      "ref_id": [
+        "bb1005c8-4033-5b05-9a21-461f45102f6f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 60,
+      "segment": "Băng thông ra internet của trung tâm dữ liệu dùng chung là 2 Gbps cho toàn bộ hệ thống của tỉnh. Theo số liệu năm ngoái thì cao điểm tuyển sinh là ngày đầu mở cổng, khoảng 8 giờ sáng có khoảng 12.000 người truy cập đồng thời,",
+      "segment_html": "Băng thông ra internet của trung tâm dữ liệu dùng chung là 2 Gbps cho toàn bộ hệ thống của tỉnh. Theo số liệu năm ngoái thì cao điểm tuyển sinh là ngày đầu mở cổng, khoảng 8 giờ sáng có khoảng 12.000 người truy cập đồng thời,",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1066.837,
+      "end_time": 1087.707,
+      "point_id": "7743d3b7-11e4-5fa6-890a-e02c4abf87cc",
+      "ref_id": [
+        "bb1005c8-4033-5b05-9a21-461f45102f6f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 61,
+      "segment": "nên em đề nghị trước đợt cao điểm thì tăng lên mười máy ảo ứng dụng, và nâng giới hạn kết nối của kho lưu trữ đối tượng từ 500 lên 3.000, đúng cái lỗi hết thời gian chờ mà chị Hằng nêu lúc nãy.",
+      "segment_html": "nên em đề nghị trước đợt cao điểm thì tăng lên mười máy ảo ứng dụng, và nâng giới hạn kết nối của kho lưu trữ đối tượng từ 500 lên 3.000, đúng cái lỗi hết thời gian chờ mà chị Hằng nêu lúc nãy.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1087.957,
+      "end_time": 1107.522,
+      "point_id": "7743d3b7-11e4-5fa6-890a-e02c4abf87cc",
+      "ref_id": [
+        "bb1005c8-4033-5b05-9a21-461f45102f6f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 62,
+      "segment": "Anh Hải ơi, nếu nâng lên 3.000 kết nối thì em đề nghị chạy lại kiểm thử tải với kịch bản 12.000 người đồng thời, không phải 5.000 như lần trước.",
+      "segment_html": "Anh Hải ơi, nếu nâng lên 3.000 kết nối thì em đề nghị chạy lại kiểm thử tải với kịch bản 12.000 người đồng thời, không phải 5.000 như lần trước.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1108.522,
+      "end_time": 1122.0,
+      "point_id": "e2567de9-fde5-55de-b352-24f9de268928",
+      "ref_id": [
+        "bb14be32-6626-5f88-a721-6f6f9d4c2a1e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 63,
+      "segment": "Đúng, phải chạy lại. Em cần nhóm kiểm thử phối hợp, chọn ngày cuối tuần để không ảnh hưởng các hệ thống khác của tỉnh trên cùng trung tâm dữ liệu.",
+      "segment_html": "Đúng, phải chạy lại. Em cần nhóm kiểm thử phối hợp, chọn ngày cuối tuần để không ảnh hưởng các hệ thống khác của tỉnh trên cùng trung tâm dữ liệu.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1123.0,
+      "end_time": 1136.478,
+      "point_id": "33f2d541-74ad-5883-953e-00d9d7875a2a",
+      "ref_id": [
+        "f41f7863-2072-5150-b491-56bca195b20e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 64,
+      "segment": "Về bảo mật thì tháng trước Sở Thông tin và Truyền thông đã đánh giá an toàn thông tin cấp độ 3 cho hệ thống. Kết quả có 2 lỗ hổng mức cao và 7 mức trung bình.",
+      "segment_html": "Về bảo mật thì tháng trước Sở Thông tin và Truyền thông đã đánh giá an toàn thông tin cấp độ 3 cho hệ thống. Kết quả có 2 lỗ hổng mức cao và 7 mức trung bình.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1137.478,
+      "end_time": 1154.0,
+      "point_id": "3f6c2f54-4eb9-584a-82e3-d63445958b3a",
+      "ref_id": [
+        "d4c8123f-6b12-5669-ac21-53be61d759cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 65,
+      "segment": "Hai lỗ hổng mức cao là lộ thông tin phiên bản máy chủ web trong tiêu đề phản hồi và một điểm cuối API xuất danh sách hồ sơ không kiểm tra quyền theo trường, tức là cán bộ trường A có thể gọi API lấy hồ sơ trường B nếu biết mã trường.",
+      "segment_html": "Hai lỗ hổng mức cao là lộ thông tin phiên bản máy chủ web trong tiêu đề phản hồi và một điểm cuối API xuất danh sách hồ sơ không kiểm tra quyền theo trường, tức là cán bộ trường A có thể gọi API lấy hồ sơ trường B nếu biết mã trường.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1154.25,
+      "end_time": 1177.728,
+      "point_id": "3f6c2f54-4eb9-584a-82e3-d63445958b3a",
+      "ref_id": [
+        "d4c8123f-6b12-5669-ac21-53be61d759cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 66,
+      "segment": "Lỗi thứ hai là nghiêm trọng, em đã sửa xong và đang chờ Sở Thông tin và Truyền thông kiểm tra lại. Bảy lỗi trung bình thì đã sửa năm, còn hai lỗi liên quan cấu hình mật khẩu và khóa tài khoản sau nhiều lần đăng nhập sai.",
+      "segment_html": "Lỗi thứ hai là nghiêm trọng, em đã sửa xong và đang chờ Sở Thông tin và Truyền thông kiểm tra lại. Bảy lỗi trung bình thì đã sửa năm, còn hai lỗi liên quan cấu hình mật khẩu và khóa tài khoản sau nhiều lần đăng nhập sai.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1177.978,
+      "end_time": 1199.283,
+      "point_id": "3f6c2f54-4eb9-584a-82e3-d63445958b3a",
+      "ref_id": [
+        "d4c8123f-6b12-5669-ac21-53be61d759cf"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 67,
+      "segment": "Lỗi lộ hồ sơ giữa các trường là rất nghiêm trọng, hồ sơ tuyển sinh có thông tin trẻ em và gia đình. Tôi yêu cầu sửa xong toàn bộ, kể cả hai lỗi trung bình còn lại, và có xác nhận của Sở Thông tin và Truyền thông trước khi mở cổng. Không có xác nhận thì không mở.",
+      "segment_html": "Lỗi lộ hồ sơ giữa các trường là rất nghiêm trọng, hồ sơ tuyển sinh có thông tin trẻ em và gia đình. Tôi yêu cầu sửa xong toàn bộ, kể cả hai lỗi trung bình còn lại, và có xác nhận của Sở Thông tin và Truyền thông trước khi mở cổng. Không có xác nhận thì không mở.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1200.283,
+      "end_time": 1226.37,
+      "point_id": "69f12cab-3c3e-5a99-9c24-68a4e8354d11",
+      "ref_id": [
+        "6e215a84-0106-551a-aad3-19183b2e792f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 68,
+      "segment": "Em đề xuất thêm là bật tường lửa ứng dụng web của trung tâm dữ liệu cho hệ thống này. Trung tâm dữ liệu tỉnh có sẵn thiết bị tường lửa ứng dụng nhưng các hệ thống phải đăng ký mới được đưa vào.",
+      "segment_html": "Em đề xuất thêm là bật tường lửa ứng dụng web của trung tâm dữ liệu cho hệ thống này. Trung tâm dữ liệu tỉnh có sẵn thiết bị tường lửa ứng dụng nhưng các hệ thống phải đăng ký mới được đưa vào.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1227.37,
+      "end_time": 1246.5,
+      "point_id": "42a9e7c5-09ec-5423-8d3a-430151499c88",
+      "ref_id": [
+        "a7170fe6-94c4-51c9-93cc-d953408f7d86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 69,
+      "segment": "Năm ngoái hệ thống tuyển sinh cũ bị dò quét và tấn công từ chối dịch vụ nhỏ vào đúng ngày mở cổng.",
+      "segment_html": "Năm ngoái hệ thống tuyển sinh cũ bị dò quét và tấn công từ chối dịch vụ nhỏ vào đúng ngày mở cổng.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1246.75,
+      "end_time": 1256.75,
+      "point_id": "42a9e7c5-09ec-5423-8d3a-430151499c88",
+      "ref_id": [
+        "a7170fe6-94c4-51c9-93cc-d953408f7d86"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 70,
+      "segment": "Em thì nghĩ là xa hơn thì mình nên tính chuyển hẳn sang đám mây thương mại của một nhà cung cấp trong nước, có tự động co giãn, đỡ phải lo tăng máy ảo bằng tay mỗi mùa tuyển sinh. Chi phí theo giờ, chỉ trả nhiều vào hai tuần cao điểm.",
+      "segment_html": "Em thì nghĩ là xa hơn thì mình nên tính chuyển hẳn sang đám mây thương mại của một nhà cung cấp trong nước, có tự động co giãn, đỡ phải lo tăng máy ảo bằng tay mỗi mùa tuyển sinh. Chi phí theo giờ, chỉ trả nhiều vào hai tuần cao điểm.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1257.75,
+      "end_time": 1280.793,
+      "point_id": "40eaf3ed-695a-5ade-bb18-457b23b837ac",
+      "ref_id": [
+        "e7bacf8b-70b4-57c6-9d80-78dd7521d768"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 71,
+      "segment": "Cái này thì không quyết ở đây được. Hệ thống có dữ liệu cá nhân của học sinh, theo chủ trương của tỉnh thì các hệ thống dùng chung phải đặt ở trung tâm dữ liệu tỉnh. Muốn thuê đám mây thì phải có ý kiến của Sở Thông tin và Truyền thông và Ủy ban,",
+      "segment_html": "Cái này thì không quyết ở đây được. Hệ thống có dữ liệu cá nhân của học sinh, theo chủ trương của tỉnh thì các hệ thống dùng chung phải đặt ở trung tâm dữ liệu tỉnh. Muốn thuê đám mây thì phải có ý kiến của Sở Thông tin và Truyền thông và Ủy ban,",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1281.793,
+      "end_time": 1306.141,
+      "point_id": "60b8414e-23bd-5d28-805a-670e88f6625f",
+      "ref_id": [
+        "88a4b910-f2be-5574-9329-d98050dc8ee2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 72,
+      "segment": "mà phải qua thẩm định cấp độ an toàn lại từ đầu. Năm nay cứ ở trung tâm dữ liệu tỉnh đã.",
+      "segment_html": "mà phải qua thẩm định cấp độ an toàn lại từ đầu. Năm nay cứ ở trung tâm dữ liệu tỉnh đã.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1306.391,
+      "end_time": 1315.957,
+      "point_id": "60b8414e-23bd-5d28-805a-670e88f6625f",
+      "ref_id": [
+        "88a4b910-f2be-5574-9329-d98050dc8ee2"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 73,
+      "segment": "Vậy em chốt hạ tầng: Một là tăng lên mười máy ảo ứng dụng và nâng giới hạn kết nối kho lưu trữ lên 3.000 trước ngày 20 tháng 5. Hai là đăng ký đưa hệ thống vào tường lửa ứng dụng web của trung tâm dữ liệu.",
+      "segment_html": "Vậy em chốt hạ tầng: Một là tăng lên mười máy ảo ứng dụng và nâng giới hạn kết nối kho lưu trữ lên 3.000 trước ngày 20 tháng 5. Hai là đăng ký đưa hệ thống vào tường lửa ứng dụng web của trung tâm dữ liệu.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1316.957,
+      "end_time": 1337.826,
+      "point_id": "d4c9310e-a217-5f04-8497-080e9e83aecc",
+      "ref_id": [
+        "5c490920-0324-5269-80aa-2ab93f11444e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 74,
+      "segment": "Ba là diễn tập chịu tải với kịch bản 12.000 người đồng thời trước ngày 1 tháng 6. Bốn là sửa toàn bộ lỗ hổng, có biên bản xác nhận của Sở Thông tin và Truyền thông thì mới mở cổng. Anh Hải nhận phần nâng cấp và đăng ký tường lửa được không anh?",
+      "segment_html": "Ba là diễn tập chịu tải với kịch bản 12.000 người đồng thời trước ngày 1 tháng 6. Bốn là sửa toàn bộ lỗ hổng, có biên bản xác nhận của Sở Thông tin và Truyền thông thì mới mở cổng. Anh Hải nhận phần nâng cấp và đăng ký tường lửa được không anh?",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1338.076,
+      "end_time": 1361.989,
+      "point_id": "d4c9310e-a217-5f04-8497-080e9e83aecc",
+      "ref_id": [
+        "5c490920-0324-5269-80aa-2ab93f11444e"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 75,
+      "segment": "Được chị, em nhận phần tăng máy ảo, nâng giới hạn kết nối và làm thủ tục đăng ký tường lửa ứng dụng, xong trước ngày 20 tháng 5.",
+      "segment_html": "Được chị, em nhận phần tăng máy ảo, nâng giới hạn kết nối và làm thủ tục đăng ký tường lửa ứng dụng, xong trước ngày 20 tháng 5.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1362.989,
+      "end_time": 1375.598,
+      "point_id": "16cdcaef-5651-5d12-a1d9-7a2327a6eb3e",
+      "ref_id": [
+        "125bcb6f-b155-5883-bbe3-7a6e42d0dbfa"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 76,
+      "segment": "Em chủ trì kịch bản diễn tập chịu tải, phối hợp với anh Hải, chạy vào thứ Bảy 25 tháng 5.",
+      "segment_html": "Em chủ trì kịch bản diễn tập chịu tải, phối hợp với anh Hải, chạy vào thứ Bảy 25 tháng 5.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1376.598,
+      "end_time": 1385.728,
+      "point_id": "2c9d1df0-e629-53a1-97a9-630d2bd591be",
+      "ref_id": [
+        "7ad43350-c478-5a66-b1f3-0540b839ee8b"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 77,
+      "segment": "Hai lỗi trung bình còn lại em sửa trong tuần này, rồi em gửi đề nghị Sở Thông tin và Truyền thông kiểm tra lại toàn bộ.",
+      "segment_html": "Hai lỗi trung bình còn lại em sửa trong tuần này, rồi em gửi đề nghị Sở Thông tin và Truyền thông kiểm tra lại toàn bộ.",
+      "speaker_name": "Đức (Trưởng nhóm Backend)",
+      "speaker_org_unit": null,
+      "start_time": 1386.728,
+      "end_time": 1398.467,
+      "point_id": "f56736b4-7496-5573-bcdf-fc14385bb76d",
+      "ref_id": [
+        "aee459ad-1118-53d6-9039-703177a6ade7"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 78,
+      "segment": "Hạng mục cuối là kế hoạch tháng tới. Em đề xuất mốc như sau. Ngày 20 tháng 5 hoàn thành nâng cấp hạ tầng, ngày 25 tháng 5 nghiệm thu nội bộ kèm diễn tập chịu tải, ngày 28 tháng 5 có biên bản xác nhận bảo mật.",
+      "segment_html": "Hạng mục cuối là kế hoạch tháng tới. Em đề xuất mốc như sau. Ngày 20 tháng 5 hoàn thành nâng cấp hạ tầng, ngày 25 tháng 5 nghiệm thu nội bộ kèm diễn tập chịu tải, ngày 28 tháng 5 có biên bản xác nhận bảo mật.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1399.467,
+      "end_time": 1420.337,
+      "point_id": "b9f3a883-df69-5c78-851c-677628bc19a5",
+      "ref_id": [
+        "155e7dc5-c5e6-5aa0-8076-779bc7bd4036"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 79,
+      "segment": "Ngày 1 tháng 6 mở cổng thử nghiệm cho các trường ở thành phố, khoảng 60 trường tiểu học và trung học cơ sở, rồi ngày 10 tháng 6 mở toàn tỉnh, sau khi có số liệu chạy thật một tuần. Phần tập huấn cán bộ trường thì làm trực tuyến, chia ba buổi theo cụm huyện.",
+      "segment_html": "Ngày 1 tháng 6 mở cổng thử nghiệm cho các trường ở thành phố, khoảng 60 trường tiểu học và trung học cơ sở, rồi ngày 10 tháng 6 mở toàn tỉnh, sau khi có số liệu chạy thật một tuần. Phần tập huấn cán bộ trường thì làm trực tuyến, chia ba buổi theo cụm huyện.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1420.587,
+      "end_time": 1445.37,
+      "point_id": "b9f3a883-df69-5c78-851c-677628bc19a5",
+      "ref_id": [
+        "155e7dc5-c5e6-5aa0-8076-779bc7bd4036"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 80,
+      "segment": "Lịch này tôi cơ bản đồng ý. Nhưng năm nay tôi muốn tập huấn không chỉ cán bộ trường mà cả cán bộ Phòng Giáo dục huyện, vì phụ huynh vướng thì gọi lên phòng chứ không gọi lên Sở. Năm ngoái đường dây nóng của Sở quá tải.",
+      "segment_html": "Lịch này tôi cơ bản đồng ý. Nhưng năm nay tôi muốn tập huấn không chỉ cán bộ trường mà cả cán bộ Phòng Giáo dục huyện, vì phụ huynh vướng thì gọi lên phòng chứ không gọi lên Sở. Năm ngoái đường dây nóng của Sở quá tải.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1446.37,
+      "end_time": 1467.674,
+      "point_id": "1ab83a59-d5f5-5eea-8889-a7f7c8609901",
+      "ref_id": [
+        "6ebe7529-7a0f-5a16-8c6c-fb09296ac471"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 81,
+      "segment": "Thưa thầy, em có ý là hay mình mở sớm hơn một tuần, tức là 25 tháng 5 mở thử nghiệm, để có nhiều thời gian sửa lỗi hơn trước khi mở toàn tỉnh.",
+      "segment_html": "Thưa thầy, em có ý là hay mình mở sớm hơn một tuần, tức là 25 tháng 5 mở thử nghiệm, để có nhiều thời gian sửa lỗi hơn trước khi mở toàn tỉnh.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 1468.674,
+      "end_time": 1483.457,
+      "point_id": "5a5db38c-d684-59a8-a507-19d8d9a79d56",
+      "ref_id": [
+        "c34a6730-8d32-522d-a693-36da6094ddd3"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 82,
+      "segment": "Không được. Ngày 25 tháng 5 các trường còn đang tổng kết năm học, cán bộ trường không có thời gian duyệt hồ sơ. Với lại kế hoạch tuyển sinh của Ủy ban đã ban hành mốc từ ngày 1 tháng 6, mình không tự đổi được. Cứ theo 1 tháng 6.",
+      "segment_html": "Không được. Ngày 25 tháng 5 các trường còn đang tổng kết năm học, cán bộ trường không có thời gian duyệt hồ sơ. Với lại kế hoạch tuyển sinh của Ủy ban đã ban hành mốc từ ngày 1 tháng 6, mình không tự đổi được. Cứ theo 1 tháng 6.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1484.457,
+      "end_time": 1507.065,
+      "point_id": "5e4772ef-33d8-585a-aa19-f469a23b37f0",
+      "ref_id": [
+        "53af3760-b65f-5391-9930-2ac9dc0bca31"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 83,
+      "segment": "Em đề nghị thêm, trong tuần thử nghiệm ở thành phố, nhóm kiểm thử trực tại Sở hai người để ghi nhận lỗi trực tiếp từ cán bộ.",
+      "segment_html": "Em đề nghị thêm, trong tuần thử nghiệm ở thành phố, nhóm kiểm thử trực tại Sở hai người để ghi nhận lỗi trực tiếp từ cán bộ.",
+      "speaker_name": "Hằng (Kiểm thử)",
+      "speaker_org_unit": null,
+      "start_time": 1508.065,
+      "end_time": 1520.239,
+      "point_id": "a3d88be2-106f-5397-9f77-cdee168e7cee",
+      "ref_id": [
+        "08f51679-bf48-559e-b532-f385317de921"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 84,
+      "segment": "Đồng ý. Còn tài liệu hướng dẫn phụ huynh, video hướng dẫn thì ai làm? Năm ngoái mình làm muộn quá.",
+      "segment_html": "Đồng ý. Còn tài liệu hướng dẫn phụ huynh, video hướng dẫn thì ai làm? Năm ngoái mình làm muộn quá.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1521.239,
+      "end_time": 1530.37,
+      "point_id": "9d057b43-ed40-567c-9ca9-1012d4d4dbd2",
+      "ref_id": [
+        "e5de3942-9573-50d7-8680-fb4dd9d9c374"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 85,
+      "segment": "Phần truyền thông đến phụ huynh thì để Sở phối hợp với Đài Phát thanh - Truyền hình tỉnh và các trường gửi qua nhóm Zalo phụ huynh. Nhưng nội dung video thì nhóm dự án phải làm, vì các anh chị hiểu hệ thống.",
+      "segment_html": "Phần truyền thông đến phụ huynh thì để Sở phối hợp với Đài Phát thanh - Truyền hình tỉnh và các trường gửi qua nhóm Zalo phụ huynh. Nhưng nội dung video thì nhóm dự án phải làm, vì các anh chị hiểu hệ thống.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1531.37,
+      "end_time": 1550.935,
+      "point_id": "9813422e-4f17-5d80-b28e-f7d0fada154f",
+      "ref_id": [
+        "eaf704e0-bb6c-53c0-af67-e762d7535274"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 86,
+      "segment": "Dạ, em làm kịch bản và quay video hướng dẫn nộp hồ sơ, tài liệu hỏi đáp, gửi Sở duyệt trước ngày 25 tháng 5.",
+      "segment_html": "Dạ, em làm kịch bản và quay video hướng dẫn nộp hồ sơ, tài liệu hỏi đáp, gửi Sở duyệt trước ngày 25 tháng 5.",
+      "speaker_name": "Anh Khải (Phân tích nghiệp vụ)",
+      "speaker_org_unit": null,
+      "start_time": 1551.935,
+      "end_time": 1562.804,
+      "point_id": "76374a9a-bba9-5556-9fbc-3c6c0339493a",
+      "ref_id": [
+        "9499a8ff-064c-562b-a6b4-0ddba63f722c"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 87,
+      "segment": "Vậy em chốt kế hoạch: nghiệm thu nội bộ ngày 25 tháng 5; mở cổng thử nghiệm cho các trường ở thành phố từ ngày 1 tháng 6; mở toàn tỉnh từ ngày 10 tháng 6. Tập huấn trực tuyến ba buổi cho cả cán bộ trường và cán bộ Phòng Giáo dục huyện.",
+      "segment_html": "Vậy em chốt kế hoạch: nghiệm thu nội bộ ngày 25 tháng 5; mở cổng thử nghiệm cho các trường ở thành phố từ ngày 1 tháng 6; mở toàn tỉnh từ ngày 10 tháng 6. Tập huấn trực tuyến ba buổi cho cả cán bộ trường và cán bộ Phòng Giáo dục huyện.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1563.804,
+      "end_time": 1587.283,
+      "point_id": "774c13a6-1f7a-507d-898c-2a052c17c232",
+      "ref_id": [
+        "2b25049f-8766-5416-ab5d-4bea53af38d6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 88,
+      "segment": "Nhóm kiểm thử trực tại Sở hai người trong tuần thử nghiệm.",
+      "segment_html": "Nhóm kiểm thử trực tại Sở hai người trong tuần thử nghiệm.",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1587.533,
+      "end_time": 1592.75,
+      "point_id": "774c13a6-1f7a-507d-898c-2a052c17c232",
+      "ref_id": [
+        "2b25049f-8766-5416-ab5d-4bea53af38d6"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 89,
+      "segment": "Phần tập huấn em sẽ tự lên lịch và gửi giấy mời qua Sở trước ngày 15 tháng 5. Ai có ý gì nữa không ạ?",
+      "segment_html": "Phần tập huấn em sẽ tự lên lịch và gửi giấy mời qua Sở trước ngày 15 tháng 5. Ai có ý gì nữa không ạ?",
+      "speaker_name": "Chị Thu (Quản lý dự án)",
+      "speaker_org_unit": null,
+      "start_time": 1593.75,
+      "end_time": 1605.054,
+      "point_id": "3e1dbbf3-e43e-5236-b23b-9f02be62649c",
+      "ref_id": [
+        "6b8c7796-3d8a-594e-aa78-d9935882c78f"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 90,
+      "segment": "Bên hạ tầng không có gì thêm chị.",
+      "segment_html": "Bên hạ tầng không có gì thêm chị.",
+      "speaker_name": "Người nói không xác định",
+      "speaker_org_unit": null,
+      "start_time": 1606.054,
+      "end_time": 1609.533,
+      "point_id": "6e2799d6-c2aa-545e-9e44-fc6fa92d60af",
+      "ref_id": [
+        "116f837a-60e0-5253-8a06-eef1077c9911"
+      ],
+      "recording_id": null
+    },
+    {
+      "id": 91,
+      "segment": "Cảm ơn mọi người. Năm nay là năm đầu tiên làm tuyển sinh trực tuyến có liên thông dữ liệu dân cư, Ủy ban rất quan tâm, các anh chị cố gắng.",
+      "segment_html": "Cảm ơn mọi người. Năm nay là năm đầu tiên làm tuyển sinh trực tuyến có liên thông dữ liệu dân cư, Ủy ban rất quan tâm, các anh chị cố gắng.",
+      "speaker_name": "Thầy Bình (Phó Giám đốc Sở Giáo dục)",
+      "speaker_org_unit": null,
+      "start_time": 1610.533,
+      "end_time": 1624.446,
+      "point_id": "688ccddd-296a-5e99-a50b-eb3d13f580fa",
+      "ref_id": [
+        "3ade4a6c-24e9-5df1-83c3-24d5e11628e7"
+      ],
+      "recording_id": null
+    }
+  ],
+  "full_text": "Chào cả nhà, chào thầy Bình. Hôm nay mình rà soát bốn hạng mục: tuyển sinh đầu cấp, tra cứu và cấp bản sao văn bằng, hạ tầng và bảo mật trước đợt cao điểm, cuối cùng là thống nhất kế hoạch tháng tới. Em xin mời anh Khải trình bày trước phần tuyển sinh đầu cấp vì cái này thầy Bình quan tâm nhất, tháng sáu là bắt đầu mở cổng rồi. Dạ cảm ơn chị Thu, kính thưa thầy Bình. Về chức năng nộp hồ sơ tuyển sinh đầu cấp thì nhóm đã hoàn thành luồng chính cho hai cấp là lớp 1 và lớp 6. Luồng gồm các bước: phụ huynh đăng nhập bằng tài khoản dịch vụ công, khai thông tin học sinh, chọn trường theo tuyến, đính kèm giấy tờ, ký xác nhận và nộp. Sau khi nộp thì hồ sơ đi về hàng đợi của trường, cán bộ trường duyệt hoặc trả lại yêu cầu bổ sung, phụ huynh nhận thông báo qua tin nhắn và qua ứng dụng. Phần phân tuyến thì đang dùng bảng ánh xạ từ tổ dân phố, thôn xóm sang trường, do các Phòng Giáo dục cấp huyện cung cấp, hiện đã có dữ liệu của chín trên mười một huyện, còn hai huyện Lạc Sơn và Kim Bôi chưa gửi bảng tuyến. Ngoài ra thì có chức năng thống kê số hồ sơ theo trường theo ngày để Sở theo dõi. Về giấy tờ đính kèm thì hiện tại phụ huynh phải chụp và tải lên giấy khai sinh, sổ hộ khẩu hoặc giấy xác nhận cư trú, và với lớp 6 thì thêm học bạ tiểu học. Nhóm em đã làm phần nén ảnh phía trình duyệt để giảm dung lượng, mỗi ảnh còn khoảng 300 KB, vì năm ngoái hệ thống cũ bị nghẽn chủ yếu do phụ huynh tải ảnh chụp điện thoại 5, 6 MB. Phần kiểm tra trùng hồ sơ thì đang kiểm tra theo mã định danh cá nhân của học sinh, một học sinh chỉ được nộp vào một trường trong một đợt. Cảm ơn anh Khải. Tôi có một ý quan trọng. Từ năm nay sổ hộ khẩu giấy không còn giá trị nữa, Bộ Công an đã bỏ sổ hộ khẩu từ năm 2023, nên yêu cầu phụ huynh chụp sổ hộ khẩu là không đúng, mà giấy xác nhận cư trú thì phụ huynh lại phải lên công an phường xin, rất phiền. Năm ngoái hàng nghìn phụ huynh xếp hàng ở công an phường chỉ để xin giấy xác nhận cư trú đi nộp hồ sơ cho con. Chỉ đạo của Ủy ban tỉnh là các thủ tục phải khai thác cơ sở dữ liệu quốc gia về dân cư, không bắt người dân nộp lại giấy tờ mà nhà nước đã có. Vậy hệ thống của mình có lấy được thông tin cư trú tự động không? Dạ thưa thầy, về kỹ thuật thì có hai cách. Cách thứ nhất là tích hợp với ứng dụng VNeID, phụ huynh đồng ý chia sẻ thông tin cư trú từ ứng dụng, hệ thống nhận về địa chỉ thường trú, tạm trú. Cách thứ hai là kết nối qua trục liên thông dữ liệu của tỉnh, tức là LGSP, gọi dịch vụ tra cứu thông tin công dân theo mã định danh. Tỉnh đã có kết nối với cơ sở dữ liệu dân cư qua trục này cho cổng dịch vụ công chung rồi, nên mình chỉ cần xin cấp quyền khai thác. Em bổ sung phần kỹ thuật. Nếu đi qua trục LGSP thì phía em cần Sở Thông tin và Truyền thông cấp tài khoản kết nối và chứng thư số cho hệ thống. Thời gian làm thủ tục thường mất khoảng hai đến ba tuần. Phần code gọi dịch vụ thì không nhiều, khoảng một tuần, vì mình đã có thư viện kết nối LGSP từ dự án cổng dịch vụ công chung. Nhưng có một điểm cần lưu ý: dữ liệu cư trú trả về là địa chỉ dạng văn bản, ví dụ \"thôn Đồng Bến, xã Mông Hóa\", mình phải so khớp với bảng tuyến, mà tên thôn xóm sau sáp nhập đơn vị hành chính thì nhiều chỗ không khớp. Em ước tính khoảng 10 đến 15% địa chỉ sẽ không tự khớp được, phải cho cán bộ trường xác nhận tay. Tỷ lệ đó chấp nhận được, còn hơn bắt cả trăm phần trăm phụ huynh đi xin giấy. Vậy em xin chốt: bỏ yêu cầu tải lên sổ hộ khẩu và giấy xác nhận cư trú, thay bằng tra cứu thông tin cư trú tự động qua trục LGSP của tỉnh theo mã định danh học sinh và phụ huynh; trường hợp địa chỉ không khớp bảng tuyến thì chuyển cán bộ trường xác nhận tay. VNeID mình làm sau, đợt này đi LGSP trước vì đã có sẵn kết nối. Anh Đức chuẩn bị hồ sơ xin cấp quyền khai thác gửi Sở Thông tin và Truyền thông nhé. Dạ, em làm công văn và hồ sơ kỹ thuật, thứ Tư tuần sau gửi chị Thu trình thầy Bình ký để gửi đi. Còn việc hai huyện chưa gửi bảng tuyến thì để tôi. Tôi sẽ gọi trực tiếp hai trưởng phòng Lạc Sơn và Kim Bôi, yêu cầu gửi trước ngày 15 tháng này. Thưa thầy, nhân tiện em có một đề xuất là hay mình cho phụ huynh chọn hai hoặc ba nguyện vọng trường, nếu trường thứ nhất đủ chỉ tiêu thì tự chuyển sang nguyện vọng hai, như kiểu xét tuyển đại học. Như vậy đỡ cho phụ huynh phải đi nộp lại. Ý này hay nhưng mà vướng quy chế. Tuyển sinh lớp 1 và lớp 6 công lập theo quy định là tuyển theo tuyến, đúng tuyến thì trường phải nhận, nguyện vọng ngoài tuyến chỉ xét khi còn chỉ tiêu. Cho chọn nhiều nguyện vọng thì phụ huynh sẽ hiểu là được chọn trường, rồi khiếu nại. Để Sở nghiên cứu thêm, có thể áp dụng thí điểm cho lớp 6 ở thành phố năm sau, năm nay thì chưa. Vâng, em ghi nhận ý đó vào danh sách để xem xét sau. Hằng bên kiểm thử có ý gì về phần tuyển sinh không? Dạ em có hai điểm. Thứ nhất, em đã chạy kiểm thử tải giả lập 5.000 phụ huynh nộp đồng thời thì thời gian phản hồi trung bình là 1,8 giây, nhưng ở bước tải ảnh thì có khoảng 3% yêu cầu bị lỗi hết thời gian chờ. Nhóm backend đã xem và nguyên nhân là kho lưu trữ đối tượng đang cấu hình giới hạn kết nối thấp. Thứ hai, em phát hiện nếu phụ huynh có hai con cùng tuổi, ví dụ sinh đôi, thì hệ thống báo trùng hồ sơ vì đang kiểm tra trùng theo số điện thoại phụ huynh ở một bước phụ. Lỗi này em đã ghi lên hệ thống quản lý lỗi mức độ cao. Lỗi sinh đôi em biết rồi, do bước kiểm tra chống spam theo số điện thoại. Em sửa luôn trong sprint này, bỏ kiểm tra theo số điện thoại, chỉ giữ kiểm tra theo mã định danh học sinh. Tốt. Phần giới hạn kết nối kho lưu trữ thì mình để sang mục hạ tầng nói luôn. Chuyển sang hạng mục thứ hai. Hạng mục thứ hai là tra cứu và cấp bản sao văn bằng chứng chỉ. Anh Khải trình bày tiếp nhé. Dạ. Chức năng này cho phép người dân tra cứu bằng tốt nghiệp trung học phổ thông, trung học cơ sở và chứng chỉ do Sở cấp, rồi đề nghị cấp bản sao. Hiện nay dữ liệu số hóa đã có từ năm 2010 đến nay, khoảng 412.000 văn bằng tốt nghiệp trung học phổ thông và 530.000 văn bằng trung học cơ sở, do dự án số hóa năm 2022 thực hiện. Người dân tra cứu bằng họ tên, ngày sinh, năm tốt nghiệp và số hiệu văn bằng. Doanh nghiệp, cơ quan tuyển dụng cũng có thể tra cứu xác minh văn bằng nếu được người có văn bằng cấp mã chia sẻ. Luồng cấp bản sao thì người dân nộp đề nghị, thanh toán phí, cán bộ phòng Quản lý chất lượng của Sở duyệt, rồi trả kết quả. Vấn đề lớn nhất là dữ liệu trước năm 2010. Sổ gốc cấp bằng từ năm 1990 đến 2009 vẫn là sổ giấy, lưu ở kho của Sở và một phần ở các Phòng Giáo dục huyện. Năm nào cũng có khoảng 3.000 đến 4.000 người đề nghị cấp bản sao văn bằng cũ, chủ yếu để bổ túc hồ sơ xin việc, đi xuất khẩu lao động hoặc làm thủ tục nâng ngạch. Ngoài ra trong dữ liệu đã số hóa thì nhóm kiểm thử thấy có khoảng 0,8% bản ghi sai lệch, như sai dấu tên, sai ngày sinh so với ảnh scan. Em bên frontend xin nói thêm về giao diện tra cứu. Bọn em đang làm tra cứu không cần đăng nhập cho trường hợp xác minh nhanh, chỉ hiện họ tên, năm tốt nghiệp, xếp loại và trạng thái văn bằng là còn hiệu lực hay đã thu hồi, không hiện ngày sinh, không hiện số định danh, để tránh lộ thông tin. Còn muốn xem đầy đủ hay đề nghị cấp bản sao thì phải đăng nhập tài khoản định danh điện tử mức hai. Có thêm chế độ tìm gần đúng, tức là gõ không dấu hoặc sai một chữ vẫn ra, để xử lý mấy trường hợp sai dấu. Phần tìm gần đúng thì tốt, nhưng phải cẩn thận. Tôi đề nghị tra cứu không đăng nhập thì bắt buộc phải nhập đúng số hiệu văn bằng, không cho tìm theo tên không, nếu không người ta dò được danh sách học sinh của cả một trường. Năm ngoái có trang web tư nhân lấy dữ liệu điểm thi đem bán, Bộ đã nhắc nhở rồi. Dạ vâng, bọn em sẽ bắt buộc số hiệu văn bằng với tra cứu không đăng nhập, có thêm mã xác thực chống máy. Còn chuyện dữ liệu cũ thì các anh định xử lý thế nào? Số hóa toàn bộ 20 năm sổ gốc thì kinh phí lớn đấy. Dạ, em có làm dự toán sơ bộ. Số hóa toàn bộ sổ gốc từ 1990 đến 2009, ước khoảng 600.000 trang, đơn giá scan và nhập liệu, kiểm tra hai lần khoảng 4.500 đồng một trang, tổng khoảng 2,7 tỷ, thời gian khoảng 8 tháng. Phương án thứ hai là số hóa theo yêu cầu, tức là ai đề nghị cấp bản sao văn bằng cũ thì cán bộ tìm sổ, scan trang đó, nhập dữ liệu vào hệ thống, dần dần dữ liệu sẽ đầy lên. Mỗi năm khoảng 4.000 bản ghi, chi phí không đáng kể, nhưng người dân phải chờ lâu hơn, khoảng 5 ngày làm việc thay vì 1 ngày. Năm nay không có kinh phí 2,7 tỷ đâu. Đi theo yêu cầu. Nhưng phải công khai thời hạn 5 ngày để người dân biết. Em xin hỏi về thanh toán phí, hiện nay mình đang tích hợp thử với cổng thanh toán của một ngân hàng thương mại, nhưng em thấy quy định mới là dịch vụ công phải thanh toán qua cổng thanh toán quốc gia trên Cổng dịch vụ công quốc gia. Mình có phải đổi không ạ? Đúng rồi, phải đổi. Em đã xem tài liệu tích hợp của cổng thanh toán quốc gia, cái này có chuẩn sẵn, mình đã tích hợp ở dự án khác rồi. Cái khó là đối soát, cổng quốc gia trả kết quả đối soát cuối ngày, nên hồ sơ thanh toán sau 16 giờ thì hôm sau mới xác nhận. Còn hình thức trả kết quả. Hiện nay người dân vẫn phải đến Sở nhận bản sao giấy hoặc nhận qua bưu điện. Theo Nghị định về văn bằng điện tử thì bản sao điện tử có ký số của cơ quan có thẩm quyền có giá trị như bản sao giấy. Tôi muốn hệ thống trả bản sao điện tử ký số là mặc định, ai cần bản giấy thì đăng ký thêm và trả qua bưu chính công ích. Em xin chốt hạng mục này. Một: tra cứu không đăng nhập bắt buộc nhập số hiệu văn bằng và mã chống máy, chỉ hiện thông tin tối thiểu. Hai: thanh toán phí chuyển sang cổng thanh toán quốc gia. Ba: trả bản sao điện tử có ký số của Sở là mặc định, bản giấy gửi qua bưu chính khi có đăng ký. Bốn: dữ liệu trước năm 2010 số hóa theo yêu cầu, thời hạn trả kết quả với văn bằng cũ là 5 ngày làm việc và được công khai trên cổng. Về người làm, anh Đức nhận chuyển cổng thanh toán nhé. Dạ, em chuyển sang cổng thanh toán quốc gia, xong trước ngày 30 để kịp kiểm thử. Phần chữ ký số của Sở để ký bản sao điện tử thì phòng Quản lý chất lượng làm thủ tục đăng ký chứng thư số tổ chức với Ban Cơ yếu, tôi sẽ giao chị Nga trưởng phòng làm việc này trong tháng. Còn 0,8% bản ghi sai lệch thì em lập danh sách đầy đủ kèm ảnh scan để phòng Quản lý chất lượng đối chiếu, tuần sau em gửi. Hạng mục thứ ba là hạ tầng và bảo mật. Hôm nay anh Hải bên hạ tầng có tham gia qua điện thoại. Anh Hải nói được không anh? Alo, mọi người nghe được không. Vâng, em Hải đây. Về hạ tầng thì hiện hệ thống đang chạy trên trung tâm dữ liệu của tỉnh, gồm sáu máy ảo cho ứng dụng, hai máy ảo cơ sở dữ liệu chạy chủ và dự phòng, và một cụm lưu trữ đối tượng ba nút. Băng thông ra internet của trung tâm dữ liệu dùng chung là 2 Gbps cho toàn bộ hệ thống của tỉnh. Theo số liệu năm ngoái thì cao điểm tuyển sinh là ngày đầu mở cổng, khoảng 8 giờ sáng có khoảng 12.000 người truy cập đồng thời, nên em đề nghị trước đợt cao điểm thì tăng lên mười máy ảo ứng dụng, và nâng giới hạn kết nối của kho lưu trữ đối tượng từ 500 lên 3.000, đúng cái lỗi hết thời gian chờ mà chị Hằng nêu lúc nãy. Anh Hải ơi, nếu nâng lên 3.000 kết nối thì em đề nghị chạy lại kiểm thử tải với kịch bản 12.000 người đồng thời, không phải 5.000 như lần trước. Đúng, phải chạy lại. Em cần nhóm kiểm thử phối hợp, chọn ngày cuối tuần để không ảnh hưởng các hệ thống khác của tỉnh trên cùng trung tâm dữ liệu. Về bảo mật thì tháng trước Sở Thông tin và Truyền thông đã đánh giá an toàn thông tin cấp độ 3 cho hệ thống. Kết quả có 2 lỗ hổng mức cao và 7 mức trung bình. Hai lỗ hổng mức cao là lộ thông tin phiên bản máy chủ web trong tiêu đề phản hồi và một điểm cuối API xuất danh sách hồ sơ không kiểm tra quyền theo trường, tức là cán bộ trường A có thể gọi API lấy hồ sơ trường B nếu biết mã trường. Lỗi thứ hai là nghiêm trọng, em đã sửa xong và đang chờ Sở Thông tin và Truyền thông kiểm tra lại. Bảy lỗi trung bình thì đã sửa năm, còn hai lỗi liên quan cấu hình mật khẩu và khóa tài khoản sau nhiều lần đăng nhập sai. Lỗi lộ hồ sơ giữa các trường là rất nghiêm trọng, hồ sơ tuyển sinh có thông tin trẻ em và gia đình. Tôi yêu cầu sửa xong toàn bộ, kể cả hai lỗi trung bình còn lại, và có xác nhận của Sở Thông tin và Truyền thông trước khi mở cổng. Không có xác nhận thì không mở. Em đề xuất thêm là bật tường lửa ứng dụng web của trung tâm dữ liệu cho hệ thống này. Trung tâm dữ liệu tỉnh có sẵn thiết bị tường lửa ứng dụng nhưng các hệ thống phải đăng ký mới được đưa vào. Năm ngoái hệ thống tuyển sinh cũ bị dò quét và tấn công từ chối dịch vụ nhỏ vào đúng ngày mở cổng. Em thì nghĩ là xa hơn thì mình nên tính chuyển hẳn sang đám mây thương mại của một nhà cung cấp trong nước, có tự động co giãn, đỡ phải lo tăng máy ảo bằng tay mỗi mùa tuyển sinh. Chi phí theo giờ, chỉ trả nhiều vào hai tuần cao điểm. Cái này thì không quyết ở đây được. Hệ thống có dữ liệu cá nhân của học sinh, theo chủ trương của tỉnh thì các hệ thống dùng chung phải đặt ở trung tâm dữ liệu tỉnh. Muốn thuê đám mây thì phải có ý kiến của Sở Thông tin và Truyền thông và Ủy ban, mà phải qua thẩm định cấp độ an toàn lại từ đầu. Năm nay cứ ở trung tâm dữ liệu tỉnh đã. Vậy em chốt hạ tầng: Một là tăng lên mười máy ảo ứng dụng và nâng giới hạn kết nối kho lưu trữ lên 3.000 trước ngày 20 tháng 5. Hai là đăng ký đưa hệ thống vào tường lửa ứng dụng web của trung tâm dữ liệu. Ba là diễn tập chịu tải với kịch bản 12.000 người đồng thời trước ngày 1 tháng 6. Bốn là sửa toàn bộ lỗ hổng, có biên bản xác nhận của Sở Thông tin và Truyền thông thì mới mở cổng. Anh Hải nhận phần nâng cấp và đăng ký tường lửa được không anh? Được chị, em nhận phần tăng máy ảo, nâng giới hạn kết nối và làm thủ tục đăng ký tường lửa ứng dụng, xong trước ngày 20 tháng 5. Em chủ trì kịch bản diễn tập chịu tải, phối hợp với anh Hải, chạy vào thứ Bảy 25 tháng 5. Hai lỗi trung bình còn lại em sửa trong tuần này, rồi em gửi đề nghị Sở Thông tin và Truyền thông kiểm tra lại toàn bộ. Hạng mục cuối là kế hoạch tháng tới. Em đề xuất mốc như sau. Ngày 20 tháng 5 hoàn thành nâng cấp hạ tầng, ngày 25 tháng 5 nghiệm thu nội bộ kèm diễn tập chịu tải, ngày 28 tháng 5 có biên bản xác nhận bảo mật. Ngày 1 tháng 6 mở cổng thử nghiệm cho các trường ở thành phố, khoảng 60 trường tiểu học và trung học cơ sở, rồi ngày 10 tháng 6 mở toàn tỉnh, sau khi có số liệu chạy thật một tuần. Phần tập huấn cán bộ trường thì làm trực tuyến, chia ba buổi theo cụm huyện. Lịch này tôi cơ bản đồng ý. Nhưng năm nay tôi muốn tập huấn không chỉ cán bộ trường mà cả cán bộ Phòng Giáo dục huyện, vì phụ huynh vướng thì gọi lên phòng chứ không gọi lên Sở. Năm ngoái đường dây nóng của Sở quá tải. Thưa thầy, em có ý là hay mình mở sớm hơn một tuần, tức là 25 tháng 5 mở thử nghiệm, để có nhiều thời gian sửa lỗi hơn trước khi mở toàn tỉnh. Không được. Ngày 25 tháng 5 các trường còn đang tổng kết năm học, cán bộ trường không có thời gian duyệt hồ sơ. Với lại kế hoạch tuyển sinh của Ủy ban đã ban hành mốc từ ngày 1 tháng 6, mình không tự đổi được. Cứ theo 1 tháng 6. Em đề nghị thêm, trong tuần thử nghiệm ở thành phố, nhóm kiểm thử trực tại Sở hai người để ghi nhận lỗi trực tiếp từ cán bộ. Đồng ý. Còn tài liệu hướng dẫn phụ huynh, video hướng dẫn thì ai làm? Năm ngoái mình làm muộn quá. Phần truyền thông đến phụ huynh thì để Sở phối hợp với Đài Phát thanh - Truyền hình tỉnh và các trường gửi qua nhóm Zalo phụ huynh. Nhưng nội dung video thì nhóm dự án phải làm, vì các anh chị hiểu hệ thống. Dạ, em làm kịch bản và quay video hướng dẫn nộp hồ sơ, tài liệu hỏi đáp, gửi Sở duyệt trước ngày 25 tháng 5. Vậy em chốt kế hoạch: nghiệm thu nội bộ ngày 25 tháng 5; mở cổng thử nghiệm cho các trường ở thành phố từ ngày 1 tháng 6; mở toàn tỉnh từ ngày 10 tháng 6. Tập huấn trực tuyến ba buổi cho cả cán bộ trường và cán bộ Phòng Giáo dục huyện. Nhóm kiểm thử trực tại Sở hai người trong tuần thử nghiệm. Phần tập huấn em sẽ tự lên lịch và gửi giấy mời qua Sở trước ngày 15 tháng 5. Ai có ý gì nữa không ạ? Bên hạ tầng không có gì thêm chị. Cảm ơn mọi người. Năm nay là năm đầu tiên làm tuyển sinh trực tuyến có liên thông dữ liệu dân cư, Ủy ban rất quan tâm, các anh chị cố gắng.",
+  "metadata": {
+    "meeting_id": "synth_014",
+    "revision_id": "synthetic-v1",
+    "last_edited": "2026-10-01T00:00:00.000Z",
+    "has_edits": false,
+    "source_note": "SYNTHETIC meeting written by Claude Code for pipeline evaluation (eval/synthetic/specs). Timestamps are synthetic (2.3 words/sec). Gold is in eval/synthetic/gold."
+  }
+}

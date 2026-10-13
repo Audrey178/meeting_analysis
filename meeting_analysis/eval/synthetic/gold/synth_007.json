@@ -1,0 +1,194 @@
+{
+  "meeting_id": "synth_007",
+  "n_turns": 26,
+  "total_chars": 7169,
+  "boundaries": [
+    12
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng AI tự động chấm bài viết IELTS Writing",
+      "summary": "Mô hình chấm Writing lệch trung bình 0.6 band so với giám khảo, hay chấm cao bài dài nhiều từ vựng khó nhưng lạc đề; thống nhất bổ sung kiểm tra bám đề, chỉ hiển thị khoảng band và nhận xét theo 4 tiêu chí.",
+      "turn_range": [
+        0,
+        12
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000012"
+      ],
+      "chars": 3856,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng AI tự động chấm bài nói IELTS Speaking",
+      "summary": "Mô hình chấm Speaking dựa trên nhận dạng giọng nói chấm thấp phát âm giọng Việt dù dễ hiểu và bị ảnh hưởng bởi tiếng ồn; thống nhất lùi phát hành Speaking sang quý sau, thu thêm dữ liệu giọng Việt có điểm giám khảo, beta chỉ mở Part 1.",
+      "turn_range": [
+        12,
+        26
+      ],
+      "turn_ids": [
+        "TURN_000013",
+        "TURN_000026"
+      ],
+      "chars": 3313,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Đạt (Trưởng nhóm AI)",
+      "actor_aliases": [
+        "anh Đạt",
+        "bên anh"
+      ],
+      "task": "Làm bước kiểm tra bám đề, đánh giá lại trên 1.200 bài",
+      "deadline": "2 tuần",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Phúc (Kỹ sư phần mềm)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa màn hình kết quả Writing sang hiển thị khoảng band",
+      "deadline": "tuần này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Gửi khoảng 300 bài lạc đề có điểm giám khảo làm tập kiểm tra",
+      "deadline": "tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Chị Ngọc (Quản lý sản phẩm)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm việc với marketing để không quảng cáo chấm chính xác như giám khảo",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Lập kế hoạch thu âm Speaking giọng Việt có điểm giám khảo, xin phép học viên",
+      "deadline": "bắt đầu từ lớp tháng 11",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Phúc (Kỹ sư phần mềm)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm bước kiểm tra tiếng ồn trước khi nộp và màn hình luyện tập Speaking Part 1",
+      "deadline": "trước beta",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Đạt (Trưởng nhóm AI)",
+      "actor_aliases": [
+        "bên anh"
+      ],
+      "task": "Chuẩn bị quy trình tinh chỉnh mô hình phát âm, chạy thử khi có khoảng 1.000 bài",
+      "deadline": null,
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thêm bước kiểm tra bám đề chạy song song, áp trần Task Response khi thiếu yêu cầu; kết quả Writing chỉ hiển thị khoảng band, nhận xét 4 tiêu chí là nội dung chính",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Lùi phát hành Speaking đầy đủ sang quý sau; beta chỉ mở Part 1 luyện tập, không hiển thị band, không chấm phát âm; thu thập dữ liệu giọng Việt",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Phát hành Speaking trong beta tháng sau với điểm phát âm bị tắt",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Đạt (Trưởng nhóm AI)",
+      "point": "Chấm Writing sai số trung bình 0.6 band, chấm cao bài dài nhiều từ vựng khó nhưng lạc đề",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Anh Đạt (Trưởng nhóm AI)",
+      "point": "Chấm Speaking sai số 0.9 band, mô hình phát âm phạt giọng Việt, nhận dạng bị ảnh hưởng tiếng ồn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    }
+  ],
+  "speakers": {
+    "PO": "Chị Ngọc (Quản lý sản phẩm)",
+    "ML": "Anh Đạt (Trưởng nhóm AI)",
+    "GV": "Cô Hạnh (Chuyên gia học thuật IELTS)",
+    "DEV": "Phúc (Kỹ sư phần mềm)"
+  },
+  "tags": [
+    "short_meeting",
+    "similar_adjacent_topics"
+  ]
+}

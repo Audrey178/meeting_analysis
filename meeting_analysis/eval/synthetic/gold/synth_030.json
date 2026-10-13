@@ -1,0 +1,385 @@
+{
+  "meeting_id": "synth_030",
+  "n_turns": 44,
+  "total_chars": 12832,
+  "boundaries": [
+    6,
+    14,
+    22,
+    28,
+    34
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Giải phóng mặt bằng dự án đường Vành đai phía Tây đoạn qua phường An Hải",
+      "summary": "Còn 14 hộ chưa bàn giao mặt bằng, 9 hộ khiếu nại giá bồi thường; ban đầu thống nhất tổ chức cưỡng chế thu hồi đất ngày 15/11 đối với các hộ không chấp hành.",
+      "turn_range": [
+        0,
+        6
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000006"
+      ],
+      "chars": 2218,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Chỉnh trang vỉa hè và quản lý trông giữ xe trên các tuyến phố trung tâm",
+      "summary": "Phòng Quản lý đô thị đề xuất cho thuê có thời hạn một phần vỉa hè để trông giữ xe; ban đầu thống nhất thu phí 5.000 đồng/lượt, sau khi Tư pháp nêu thẩm quyền thuộc HĐND tỉnh thì chuyển sang thí điểm cấp phép sử dụng tạm thời vỉa hè theo giá dịch vụ do tỉnh ban hành.",
+      "turn_range": [
+        6,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000007",
+        "TURN_000014"
+      ],
+      "chars": 2330,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xử lý tình trạng quá tải bãi rác Khánh Sơn",
+      "summary": "Bãi rác Khánh Sơn đã vượt công suất thiết kế 18%, nước rỉ rác tràn ra mương; thống nhất xây thêm hồ chứa nước rỉ tạm, đẩy nhanh nhà máy đốt rác phát điện, tăng phân loại rác tại nguồn ở 5 phường thí điểm; đề xuất mở bãi chôn lấp mới tại xã Hòa Bắc bị gạt.",
+      "turn_range": [
+        14,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000022"
+      ],
+      "chars": 2085,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Giải phóng mặt bằng dự án đường Vành đai phía Tây đoạn qua phường An Hải",
+      "summary": "Quay lại GPMB: phường báo cáo sau buổi làm việc sáng nay có 8 hộ đồng ý nhận tiền nếu được hỗ trợ thêm tiền thuê nhà, 3 hộ tranh chấp thừa kế đã thống nhất; thống nhất lùi cưỡng chế sang 25/11, chỉ áp dụng với các hộ còn lại, bổ sung hỗ trợ thuê nhà 6 tháng.",
+      "turn_range": [
+        22,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000028"
+      ],
+      "chars": 2000,
+      "same_topic_as": 0
+    },
+    {
+      "index": 4,
+      "title": "Triển khai kế hoạch phục vụ Tết Nguyên đán và bảo đảm hàng hóa, trật tự đô thị",
+      "summary": "Thống nhất tổ chức chợ hoa Tết tại 3 địa điểm, bắn pháo hoa tầm thấp tại 2 điểm, bình ổn giá 32 mặt hàng thiết yếu; đề xuất bắn pháo hoa tầm cao chưa được chấp nhận.",
+      "turn_range": [
+        28,
+        34
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000034"
+      ],
+      "chars": 1522,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Cho ý kiến phương án sử dụng trụ sở dôi dư sau sắp xếp đơn vị hành chính phường",
+      "summary": "Sau sáp nhập, thành phố dôi dư 6 trụ sở phường cũ; thống nhất chuyển 2 trụ sở làm trường mầm non, 1 làm nhà văn hóa, 3 trụ sở còn lại đề nghị tỉnh cho đấu giá; đề xuất cho doanh nghiệp thuê ngắn hạn bị gạt.",
+      "turn_range": [
+        34,
+        44
+      ],
+      "turn_ids": [
+        "TURN_000035",
+        "TURN_000044"
+      ],
+      "chars": 2677,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Đ/c Sỹ (Trưởng phòng Quản lý đô thị)",
+      "actor_aliases": [
+        "Phòng Quản lý đô thị",
+        "phòng"
+      ],
+      "task": "Chủ trì hoàn thiện, trình phương án thí điểm cấp phép sử dụng tạm thời vỉa hè trên 3 tuyến",
+      "deadline": "trước ngày 30 tháng 11",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012",
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Đ/c Oanh (Trưởng phòng Tư pháp)",
+      "actor_aliases": [
+        "Phòng Tư pháp"
+      ],
+      "task": "Thẩm định phương án thí điểm vỉa hè",
+      "deadline": "5 ngày kể từ khi nhận",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Đ/c Hiệp (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng Tài nguyên"
+      ],
+      "task": "Cùng Công ty Môi trường đô thị làm hồ chứa nước rỉ rác tạm và thuê thiết bị xử lý di động",
+      "deadline": "trước ngày 10 tháng 12",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Đ/c Liên (Phó Chủ tịch UBND thành phố)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Làm việc với nhà đầu tư nhà máy đốt rác yêu cầu đẩy nhanh tiến độ",
+      "deadline": "tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Đ/c Toản (Giám đốc Ban QLDA đầu tư xây dựng thành phố)",
+      "actor_aliases": [
+        "Ban"
+      ],
+      "task": "Bổ sung phương án hỗ trợ tiền thuê nhà 6 tháng, trình phê duyệt",
+      "deadline": "trong 3 ngày",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Đ/c Tâm (Chủ tịch UBND phường An Hải)",
+      "actor_aliases": [
+        "Phường",
+        "phường An Hải"
+      ],
+      "task": "Điều chỉnh phương án cưỡng chế sang ngày 25/11, chỉ áp dụng với các hộ còn lại",
+      "deadline": "ngày 25 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Đ/c Liên (Phó Chủ tịch UBND thành phố)",
+      "actor_aliases": [
+        "tôi",
+        "Văn phòng"
+      ],
+      "task": "Chỉ đạo Văn phòng hoàn thiện kế hoạch phục vụ Tết, trình ký",
+      "deadline": "trước ngày 25 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Đ/c Hiệp (Trưởng phòng Tài nguyên và Môi trường)",
+      "actor_aliases": [
+        "Phòng Tài nguyên"
+      ],
+      "task": "Hoàn thiện phương án xử lý 6 trụ sở dôi dư, trình UBND báo cáo Sở Tài chính",
+      "deadline": "trước ngày 15 tháng 12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Thí điểm cấp phép sử dụng tạm thời một phần vỉa hè trên 3 tuyến trong 6 tháng, phí theo Nghị quyết tỉnh, giá trông giữ theo khung tỉnh, bắt buộc niêm yết và có vé",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Xây hồ chứa nước rỉ rác tạm 15.000 m³ và thuê thiết bị di động; yêu cầu nhà máy đốt rác đẩy nhanh; phân loại rác tại nguồn ở 5 phường từ tháng 1",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Không cưỡng chế ngày 15/11; bổ sung hỗ trợ thuê nhà 6 tháng; chi trả cho các hộ đã đồng ý trong tuần sau; cưỡng chế 3 hộ còn lại ngày 25/11 nếu không chấp hành; giữ mốc thông tuyến 30/12",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Kế hoạch Tết: chợ hoa 3 điểm, pháo hoa tầm thấp 2 điểm, bình ổn giá 32 mặt hàng; ban hành trước 25/11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Trụ sở Thạch Thang cũ và Hải Châu Hai cũ làm điểm trường mầm non; Phước Ninh cũ làm nhà văn hóa, thư viện, kho lưu trữ; 3 trụ sở mặt tiền báo cáo tỉnh cho đấu giá; không cho thuê",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Cưỡng chế thu hồi đất ngày 15/11 đối với 14 hộ (đã đổi sang 25/11, chỉ 3 hộ còn lại)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "superseded_decision",
+      "text": "Thu phí trông giữ xe trên vỉa hè 5.000 đồng/lượt (bị bỏ do trái thẩm quyền)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Mở bãi chôn lấp rác mới ở xã Hòa Bắc",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000018",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Đề xuất bắn pháo hoa tầm cao dịp Tết",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000031",
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "rejected_task",
+      "text": "Cho doanh nghiệp thuê ngắn hạn trụ sở phường dôi dư",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000037",
+        "TURN_000038"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Toản (Giám đốc Ban QLDA đầu tư xây dựng thành phố)",
+      "point": "Còn 14/186 hộ chưa bàn giao mặt bằng; phải thông tuyến trước 30/12 nếu không mất 120 tỷ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Sỹ (Trưởng phòng Quản lý đô thị)",
+      "point": "340 điểm trông giữ xe tự phát trên vỉa hè; đề xuất dành tối đa 1,5 m vỉa hè rộng để trông giữ có quản lý",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Đ/c Oanh (Trưởng phòng Tư pháp)",
+      "point": "Phí sử dụng hè phố thuộc thẩm quyền HĐND tỉnh, thành phố không được tự quy định mức thu theo lượt",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Đ/c Hiệp (Trưởng phòng Tài nguyên và Môi trường)",
+      "point": "Bãi rác Khánh Sơn vượt công suất 18%, nước rỉ tràn ra khu dân cư; nhà máy đốt rác mới đạt 45%",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Đ/c Tâm (Chủ tịch UBND phường An Hải)",
+      "point": "8/9 hộ khiếu nại giá đã đồng ý nếu được hỗ trợ thuê nhà; 3 hộ thừa kế đã thống nhất; còn 3 hộ",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Đ/c Liên (Phó Chủ tịch UBND thành phố)",
+      "point": "Kế hoạch Tết: chợ hoa 3 điểm, pháo hoa tầm thấp 2 điểm, bình ổn giá 32 mặt hàng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Đ/c Hiệp (Trưởng phòng Tài nguyên và Môi trường)",
+      "point": "6 trụ sở phường cũ dôi dư; đề xuất 2 làm mầm non, 1 làm nhà văn hóa, 3 đấu giá",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Duy (Chủ tịch UBND thành phố)",
+    "PCT": "Đ/c Liên (Phó Chủ tịch UBND thành phố)",
+    "QL": "Đ/c Toản (Giám đốc Ban QLDA đầu tư xây dựng thành phố)",
+    "TN": "Đ/c Hiệp (Trưởng phòng Tài nguyên và Môi trường)",
+    "TP": "Đ/c Oanh (Trưởng phòng Tư pháp)",
+    "QLDT": "Đ/c Sỹ (Trưởng phòng Quản lý đô thị)",
+    "PH": "Đ/c Tâm (Chủ tịch UBND phường An Hải)"
+  },
+  "tags": [
+    "topic_revisit",
+    "superseded_decision"
+  ]
+}

@@ -1,0 +1,372 @@
+{
+  "meeting_id": "synth_024",
+  "n_turns": 49,
+  "total_chars": 11030,
+  "boundaries": [
+    10,
+    20,
+    29,
+    38
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Xây dựng chức năng đồng bộ đơn hàng từ các sàn thương mại điện tử",
+      "summary": "Đồng bộ đơn từ Shopee, Lazada, TikTok Shop đã chạy, trễ trung bình 4 phút; đơn TikTok Shop bị trùng khi sàn gửi lại thông báo; thống nhất chống trùng theo mã đơn sàn và chuyển sang nhận webhook thay vì quét định kỳ 5 phút.",
+      "turn_range": [
+        0,
+        10
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000010"
+      ],
+      "chars": 2661,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng đồng bộ tồn kho lên các sàn thương mại điện tử",
+      "summary": "Tồn kho trên sàn lệch với kho thực khiến bán vượt 37 đơn trong tuần; thống nhất đẩy tồn kho theo sự kiện khi có biến động, giữ lại tồn kho an toàn 5% cho mỗi sàn và đồng bộ toàn bộ lúc 2 giờ sáng.",
+      "turn_range": [
+        10,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000011",
+        "TURN_000020"
+      ],
+      "chars": 2206,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng quản lý chương trình khuyến mãi đa kênh",
+      "summary": "Chức năng tạo khuyến mãi đã hỗ trợ giảm giá, mua X tặng Y, combo; vướng chồng khuyến mãi giữa voucher sàn và khuyến mãi cửa hàng; thống nhất quy tắc không cộng dồn mặc định, cho phép cấu hình ưu tiên; đề xuất tích điểm thành viên dùng chung trên sàn bị gạt.",
+      "turn_range": [
+        20,
+        29
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000029"
+      ],
+      "chars": 2081,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xây dựng chức năng báo cáo doanh thu theo cửa hàng",
+      "summary": "Báo cáo doanh thu theo cửa hàng chạy chậm 40 giây và lệch với kế toán do tính đơn trả hàng khác nhau; thống nhất tách kho dữ liệu báo cáo riêng, doanh thu tính theo ngày giao thành công và trừ hàng trả theo ngày trả.",
+      "turn_range": [
+        29,
+        38
+      ],
+      "turn_ids": [
+        "TURN_000030",
+        "TURN_000038"
+      ],
+      "chars": 1982,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Xây dựng chức năng báo cáo hiệu quả chương trình khuyến mãi",
+      "summary": "Báo cáo hiệu quả khuyến mãi mới có doanh thu trong thời gian chương trình; thống nhất bổ sung so sánh với giai đoạn trước, chi phí khuyến mãi và lợi nhuận gộp theo từng chương trình; đề xuất dùng mô hình học máy dự báo hiệu quả khuyến mãi để sau.",
+      "turn_range": [
+        38,
+        49
+      ],
+      "turn_ids": [
+        "TURN_000039",
+        "TURN_000049"
+      ],
+      "chars": 2100,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Hiếu (Backend)",
+      "actor_aliases": [
+        "hiếu",
+        "em"
+      ],
+      "task": "Chống trùng đơn theo mã đơn sàn và chuyển sang nhận webhook cho Shopee, TikTok Shop",
+      "deadline": "chống trùng trong tuần này, webhook cuối tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Trang (Frontend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Thêm cột nguồn đơn và mã đơn sàn trên danh sách đơn",
+      "deadline": "trong sprint này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Hiếu (Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm đẩy tồn kho theo sự kiện lên các sàn",
+      "deadline": "trước ngày 8",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Khoa (Phân tích dữ liệu)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Lập danh sách mã hàng sắp hết, hay bị bán vượt gửi chị Thảo xem định mức nhập",
+      "deadline": "thứ Năm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Hiếu (Backend)",
+      "actor_aliases": [
+        "em",
+        "anh hiếu"
+      ],
+      "task": "Làm phần tính khuyến mãi trên máy POS theo quy tắc ưu tiên",
+      "deadline": null,
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Trang (Frontend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm màn hình cấu hình ưu tiên và cờ cộng dồn khuyến mãi",
+      "deadline": "cùng sprint",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000029"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Khoa (Phân tích dữ liệu)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm lại công thức doanh thu và đối soát với kế toán số liệu tháng 9, 10",
+      "deadline": "thứ Sáu tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Hiếu (Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Tách kho dữ liệu báo cáo riêng",
+      "deadline": "khoảng giữa tháng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Khoa (Phân tích dữ liệu)",
+      "actor_aliases": [
+        "em",
+        "anh khoa"
+      ],
+      "task": "Làm định nghĩa chỉ số và truy vấn báo cáo hiệu quả khuyến mãi, gửi chị Thảo duyệt",
+      "deadline": null,
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Trang (Frontend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm giao diện bảng xếp hạng chương trình khuyến mãi",
+      "deadline": "sau khi chốt định nghĩa",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Chống trùng đơn theo mã đơn sàn + mã sàn; webhook cho Shopee và TikTok Shop; Lazada quét 2 phút; xong trước 5/11",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Đẩy tồn kho theo sự kiện, đồng bộ toàn bộ lúc 2 giờ sáng, giữ tồn an toàn 5%, có cảnh báo lệch tồn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Mặc định không cộng dồn khuyến mãi (trừ thẻ thành viên); có cấu hình ưu tiên; tổng giảm không thấp hơn giá vốn + 5%",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Doanh thu tính theo ngày giao thành công, hàng trả trừ theo ngày trả (khớp kế toán); tách kho dữ liệu báo cáo cập nhật 15 phút",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Báo cáo hiệu quả khuyến mãi bổ sung doanh thu tăng thêm, chi phí khuyến mãi, lợi nhuận gộp, khách mới kênh cửa hàng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000046"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Tích điểm thành viên dùng chung cho đơn trên sàn",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025",
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Mô hình học máy dự báo hiệu quả khuyến mãi",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000044",
+        "TURN_000045"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Hiếu (Backend)",
+      "point": "Đồng bộ 11.400 đơn/tuần, trễ 4 phút; 2% đơn TikTok Shop bị trùng do so trùng theo mã nội bộ",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Hiếu (Backend)",
+      "point": "Đẩy tồn kho 30 phút/lần gây 37 đơn bán vượt, Shopee đã cảnh báo",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "point": "Bán vượt làm hạ điểm uy tín shop, nghiêm trọng hơn trùng đơn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Trang (Frontend)",
+      "point": "Chồng khuyến mãi khiến có hóa đơn giảm gần 30%, dưới giá vốn",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Khoa (Phân tích dữ liệu)",
+      "point": "Báo cáo doanh thu chạy 40 giây, lệch kế toán 1,2 tỷ do khác cách tính ngày và hàng trả",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "point": "Phải thống nhất theo cách tính của kế toán",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Khoa (Phân tích dữ liệu)",
+      "point": "Báo cáo khuyến mãi cần doanh thu tăng thêm so với 4 tuần trước, chi phí khuyến mãi, lợi nhuận gộp",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+      "point": "Nghi chương trình mua 2 tặng 1 bỉm lỗ; muốn xem số khách mới",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    }
+  ],
+  "speakers": {
+    "PO": "Chị Thảo (Giám đốc vận hành chuỗi Bông Sen)",
+    "PM": "Anh Nghĩa (Quản lý dự án)",
+    "BE": "Hiếu (Backend)",
+    "FE": "Trang (Frontend)",
+    "DA": "Khoa (Phân tích dữ liệu)"
+  },
+  "tags": [
+    "asr_noise",
+    "similar_adjacent_topics"
+  ]
+}

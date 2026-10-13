@@ -1,0 +1,425 @@
+{
+  "meeting_id": "synth_037",
+  "n_turns": 65,
+  "total_chars": 12172,
+  "boundaries": [
+    14,
+    28,
+    42,
+    54
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tình hình đăng ký vận động viên và xử lý lỗi thanh toán khi mua bib",
+      "summary": "Đã có 2.140/3.000 vận động viên đăng ký, cự ly 21 km bán hết 800 suất và có khoảng 200 người chờ; 63 giao dịch bị trừ tiền nhưng không được cấp bib; thống nhất đối soát và xử lý hết trước thứ Sáu, chuyển 150 suất từ cự ly 5 km sang 21 km, đóng đăng ký ngày 25/11.",
+      "turn_range": [
+        0,
+        14
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000014"
+      ],
+      "chars": 2715,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Chốt cung đường, giờ xuất phát và phương án phân luồng giao thông",
+      "summary": "Cung đường có 14 giao lộ cần chặn hoặc phân luồng, 4 giao lộ trên quốc lộ, cầu treo Suối Đá chạy một chiều; ban đầu chốt cự ly 21 km xuất phát 5 giờ, sau khi công an huyện yêu cầu thông quốc lộ trước 8 giờ thì đổi sang 4 giờ 30, cự ly 10 km 4 giờ 45, cự ly 5 km giữ 5 giờ 30; cần khoảng 120 tình nguyện viên.",
+      "turn_range": [
+        14,
+        28
+      ],
+      "turn_ids": [
+        "TURN_000015",
+        "TURN_000028"
+      ],
+      "chars": 2546,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Bố trí trạm nước, y tế và cứu thương dọc cung đường",
+      "summary": "Đã có 7 trạm nước và hợp đồng với bệnh viện huyện gồm 4 bác sĩ, 12 nhân viên y tế, 2 xe cứu thương, nhưng cần ít nhất 3 xe và 4 máy sốc tim AED (đang có 2); thống nhất thuê thêm một xe cứu thương kèm kíp, xin nhà tài trợ bảo hiểm máy AED đến thứ Hai nếu không thì ban tổ chức mua, kíp y tế có mặt từ 3 giờ 45.",
+      "turn_range": [
+        28,
+        42
+      ],
+      "turn_ids": [
+        "TURN_000029",
+        "TURN_000042"
+      ],
+      "chars": 2636,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xử lý thiếu hụt tài trợ và lỗi in áo vận động viên",
+      "summary": "Nhà tài trợ kim cương rút gói 200 triệu, một ngân hàng đồng ý gói 150 triệu đổi lấy logo mặt trước áo và cổng về đích; xưởng in áo in sai màu logo và thiếu dấu; thống nhất nhận tài trợ ngân hàng, bù phần hụt 50 triệu bằng bỏ màn hình LED và giảm tiệc cảm ơn, giữ nguyên giải thưởng, in lại áo do xưởng chịu lỗi.",
+      "turn_range": [
+        42,
+        54
+      ],
+      "turn_ids": [
+        "TURN_000043",
+        "TURN_000054"
+      ],
+      "chars": 2273,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Lên kế hoạch phát race kit và truyền thông trước ngày chạy",
+      "summary": "Race kit phát hai ngày 27-28/11 tại nhà văn hóa trung tâm huyện với 12 bàn, bib in sẵn, nhận bằng mã QR, nhận hộ tối đa 5 bộ có giấy ủy quyền; truyền thông 4 tuần, việc gấp nhất là thông báo giờ xuất phát mới 4 giờ 30 trên mọi kênh.",
+      "turn_range": [
+        54,
+        65
+      ],
+      "turn_ids": [
+        "TURN_000055",
+        "TURN_000065"
+      ],
+      "chars": 2002,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "actor_aliases": [
+        "em",
+        "diệp",
+        "SPEAKER_01"
+      ],
+      "task": "Đối soát 63 giao dịch lỗi: cấp bib cho người chưa có, hoàn tiền người trả hai lần, gửi email xin lỗi",
+      "deadline": "thứ Sáu tuần này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006",
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Quyên (tài trợ và truyền thông)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Viết và đăng bài đính chính về bình luận lừa đảo lên trang của giải",
+      "deadline": "tối nay",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Mở thêm 150 suất 21 km trên hệ thống và gửi email cho danh sách chờ",
+      "deadline": "ngày mai",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013",
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Bảo (cung đường và phân luồng)",
+      "actor_aliases": [
+        "anh",
+        "SPEAKER_02"
+      ],
+      "task": "Soạn công văn gửi công an huyện và sở giao thông xin phân luồng 4-8 giờ kèm sơ đồ 14 giao lộ, trình ký",
+      "deadline": "thứ Năm trình ký, gửi trong tuần",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023",
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "actor_aliases": [
+        "điệp",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Liên hệ đoàn trường cao đẳng du lịch tuyển 120 tình nguyện viên",
+      "deadline": "cuối tháng 10",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000027",
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Thục (y tế và trạm nước)",
+      "actor_aliases": [
+        "chị",
+        "SPEAKER_03"
+      ],
+      "task": "Ký thuê thêm xe cứu thương kèm kíp của bệnh viện tư; làm phụ lục hợp đồng bệnh viện huyện sửa giờ có mặt 3 giờ 45",
+      "deadline": "trong tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000039",
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Quyên (tài trợ và truyền thông)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Hỏi nhà tài trợ bảo hiểm tài trợ máy sốc tim AED",
+      "deadline": "thứ Hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000041",
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Quyên (tài trợ và truyền thông)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Làm việc trực tiếp với xưởng in, yêu cầu giao đủ 3.200 áo in lại",
+      "deadline": "giao trước ngày 20/11 (xuống xưởng ngày mai)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000053",
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Quyên (tài trợ và truyền thông)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Chuẩn bị hồ sơ hợp đồng tài trợ với ngân hàng trình ký",
+      "deadline": "thứ Tư",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Quyên (tài trợ và truyền thông)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Thông báo giờ xuất phát mới 4 giờ 30: đăng bài, sửa web và áp phích, gửi email cho người đã đăng ký",
+      "deadline": "ngay sau họp / trong tuần này",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000060",
+        "TURN_000061"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Lên sơ đồ bàn phát race kit và lịch trực tình nguyện viên tại nhà văn hóa",
+      "deadline": "trước ngày 15/11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000062",
+        "TURN_000063"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Mở thêm 150 suất 21 km lấy từ suất 5 km (tổng vẫn 3.000), ưu tiên danh sách chờ theo thứ tự; đóng đăng ký ngày 25/11",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Giờ xuất phát: 21 km lúc 4 giờ 30, 10 km lúc 4 giờ 45, 5 km giữ 5 giờ 30; xe đưa đón chạy từ 2 giờ 30",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Thuê thêm 1 xe cứu thương kèm kíp (đủ 3 xe); đủ 4 máy AED, hỏi nhà tài trợ đến thứ Hai, không được thì ban tổ chức mua 2 máy; kíp y tế có mặt từ 3 giờ 45; trạm nước đồi thông chở lên tối thứ Bảy, có người trực đêm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Nhận tài trợ ngân hàng 150 triệu (logo mặt trước áo và cổng về đích); bù hụt bằng bỏ màn hình LED, làm gọn tiệc cảm ơn, giữ nguyên giải thưởng; in lại toàn bộ áo, xưởng chịu lỗi",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000051"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Phát race kit 27-28/11 tại nhà văn hóa trung tâm huyện, 8-20 giờ, bib in sẵn, nhận bằng mã QR, nhận hộ tối đa 5 bộ có giấy ủy quyền và ảnh căn cước; thông báo giờ xuất phát mới trên mọi kênh trong tuần",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000060"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Giữ giờ xuất phát như năm ngoái: 21 km lúc 5 giờ, 10 km lúc 5 giờ 15 (đã đổi sang 4 giờ 30 và 4 giờ 45 do yêu cầu thông quốc lộ trước 8 giờ)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Giảm quà, tiền thưởng cho top về đích để bù hụt tài trợ",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000048",
+        "TURN_000049"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "point": "2.140/3.000 vận động viên đã đăng ký; 21 km hết 800 suất, khoảng 200 người chờ; 5 km mới 420/1.000",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "point": "63 giao dịch bị trừ tiền nhưng không được cấp bib do lỗi cổng thanh toán, mới đối soát khoảng 30",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Thục (y tế và trạm nước)",
+      "point": "Cự ly 21 km rủi ro y tế cao hơn nên chỉ đồng ý thêm 150 suất",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Bảo (cung đường và phân luồng)",
+      "point": "14 giao lộ cần chặn/phân luồng, 4 trên quốc lộ; cầu treo Suối Đá rộng 2,5 m phải chạy một chiều",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Bảo (cung đường và phân luồng)",
+      "point": "Công an huyện yêu cầu thông quốc lộ trước 8 giờ nên xuất phát 5 giờ không kịp",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Thục (y tế và trạm nước)",
+      "point": "7 trạm nước; bệnh viện huyện có 4 bác sĩ, 12 nhân viên y tế, 2 xe cứu thương; cần ít nhất 3 xe và 4 máy AED, đang có 2",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Quyên (tài trợ và truyền thông)",
+      "point": "5 nhà tài trợ cam kết 460 triệu; nhà tài trợ kim cương rút gói 200 triệu; ngân hàng đồng ý 150 triệu đổi lấy logo mặt trước áo",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Quyên (tài trợ và truyền thông)",
+      "point": "Áo in thử sai màu logo và thiếu dấu; đổi logo phải làm lại khuôn, xưởng giao chậm nhất 22/11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000044",
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Chị Diệp (phụ trách đăng ký vận động viên)",
+      "point": "Phát race kit 27-28/11 tại nhà văn hóa, 12 bàn, in bib sẵn để tránh xếp hàng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Quyên (tài trợ và truyền thông)",
+      "point": "Lịch truyền thông 4 tuần, mỗi tuần 2 bài; gấp nhất là thông báo giờ xuất phát mới vì áp phích, web còn ghi 5 giờ",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04"
+  },
+  "tags": [
+    "asr_noise",
+    "diarized_labels",
+    "pronoun_actor",
+    "superseded_decision",
+    "hedged_proposal"
+  ]
+}

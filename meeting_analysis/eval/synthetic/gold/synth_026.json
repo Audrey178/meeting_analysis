@@ -1,0 +1,384 @@
+{
+  "meeting_id": "synth_026",
+  "n_turns": 61,
+  "total_chars": 11921,
+  "boundaries": [
+    10,
+    26,
+    38,
+    48
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tiến độ thi công phần thô và kế hoạch đổ bê tông sàn tầng 15",
+      "summary": "Phần thô chậm 9 ngày so với kế hoạch; ban đầu chốt đổ bê tông sàn tầng 15 sáng thứ Bảy, sau khi có dự báo mưa lớn thì đổi sang đổ sáng thứ Hai và bổ sung một tổ cốp pha để bù tiến độ.",
+      "turn_range": [
+        0,
+        10
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000010"
+      ],
+      "chars": 2334,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xử lý sau sự cố vật rơi từ tầng 13 và chấn chỉnh an toàn lao động",
+      "summary": "Tuần trước một thanh thép rơi từ tầng 13 trúng mái tôn lán trại, không có thương vong; thống nhất lắp lưới chống rơi bổ sung, khoanh vùng nguy hiểm dưới chân cẩu tháp, kỷ luật tổ thép và kiểm tra đột xuất hằng ngày.",
+      "turn_range": [
+        10,
+        26
+      ],
+      "turn_ids": [
+        "TURN_000011",
+        "TURN_000026"
+      ],
+      "chars": 3047,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát cung ứng thép và bê tông, xử lý chênh lệch giá thép",
+      "summary": "Thép phi 20 và phi 25 về chậm 6 ngày, giá thép tăng 7% so với hợp đồng; thống nhất đặt thép theo hai nhà cung cấp, đề nghị chủ đầu tư điều chỉnh giá theo điều khoản hợp đồng; đề xuất tạm ứng mua thép dự trữ 300 tấn bị gạt.",
+      "turn_range": [
+        26,
+        38
+      ],
+      "turn_ids": [
+        "TURN_000027",
+        "TURN_000038"
+      ],
+      "chars": 2059,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Hoàn thiện hồ sơ nghiệm thu và thanh toán đợt 6 với chủ đầu tư",
+      "summary": "Hồ sơ thanh toán đợt 6 bị trả lại do thiếu nhật ký thi công và biên bản lấy mẫu thép; thống nhất bổ sung hồ sơ trong tuần, chủ đầu tư cam kết duyệt trong 7 ngày làm việc sau khi đủ hồ sơ.",
+      "turn_range": [
+        38,
+        48
+      ],
+      "turn_ids": [
+        "TURN_000039",
+        "TURN_000048"
+      ],
+      "chars": 2094,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Xử lý phản ánh của cư dân khu lân cận về tiếng ồn và bụi",
+      "summary": "Cư dân khu tập thể bên cạnh phản ánh tiếng ồn ban đêm và bụi; thống nhất không thi công gây ồn sau 22 giờ trừ đổ bê tông đã thông báo, phun nước rửa xe và đường, gặp đại diện tổ dân phố.",
+      "turn_range": [
+        48,
+        61
+      ],
+      "turn_ids": [
+        "TURN_000049",
+        "TURN_000061"
+      ],
+      "chars": 2387,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Hậu (cán bộ vật tư)",
+      "actor_aliases": [
+        "hậu",
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Báo nhà máy dời lịch đổ bê tông sàn tầng 15 sang sáng thứ Hai",
+      "deadline": null,
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007",
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Tuấn (kỹ sư kết cấu)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Liên hệ đội anh Lực bổ sung tổ cốp pha 12 người cho khối B",
+      "deadline": "thứ Tư tuần sau vào",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Ly (an toàn lao động)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Làm báo cáo sự cố gửi giám sát chủ đầu tư và huấn luyện lại tổ thép",
+      "deadline": "sáng thứ Năm",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000023"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Hậu (cán bộ vật tư)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Xuất lưới chống rơi từ kho cho đội lắp; đặt mua 30 bộ dây an toàn mới",
+      "deadline": "lưới chiều nay, dây thứ Tư có hàng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Tuấn (kỹ sư kết cấu)",
+      "actor_aliases": [
+        "tuấn",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Cho tổ anh Hưng căng dây cứu sinh tầng 13, 14",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Cường (chỉ huy trưởng)",
+      "actor_aliases": [
+        "tôi",
+        "SPEAKER_00"
+      ],
+      "task": "Gọi đơn vị kiểm định cẩu tháp khối B",
+      "deadline": "hẹn trước ngày 20",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Hậu (cán bộ vật tư)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Xin giấy phép xe bồn chạy giờ cấm; liên hệ nhà cung cấp thép thứ hai, gửi báo giá",
+      "deadline": "giấy phép hôm nay, báo giá trong tuần",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Tuấn (kỹ sư kết cấu)",
+      "actor_aliases": [
+        "tuấn",
+        "SPEAKER_01"
+      ],
+      "task": "Phối hợp anh Hậu làm hồ sơ đề nghị điều chỉnh giá thép gửi giám sát chủ đầu tư",
+      "deadline": "trước ngày 30",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Anh Hậu (cán bộ vật tư)",
+      "actor_aliases": [
+        "hậu",
+        "SPEAKER_03"
+      ],
+      "task": "Phối hợp anh Tuấn làm hồ sơ đề nghị điều chỉnh giá thép",
+      "deadline": "trước ngày 30",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Tuấn (kỹ sư kết cấu)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Bổ sung nhật ký thi công, biên bản lấy mẫu thép, bản vẽ hoàn công cho hồ sơ thanh toán đợt 6",
+      "deadline": "thứ Hai tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000048"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Cường (chỉ huy trưởng)",
+      "actor_aliases": [
+        "tôi",
+        "SPEAKER_00"
+      ],
+      "task": "Gặp tổ trưởng tổ dân phố số 7 xin lỗi và giải thích",
+      "deadline": "chiều mai",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000058"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Chị Ly (an toàn lao động)",
+      "actor_aliases": [
+        "ly",
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Soạn văn bản giải trình gửi phường và thông báo lịch đổ sàn cho khu tập thể",
+      "deadline": "nộp phường trước thứ Năm",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Đổ bê tông sàn tầng 15 khối A sáng thứ Hai lúc 6 giờ (nếu Chủ nhật tạnh); bổ sung một tổ cốp pha 12 người để khối B làm song song",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Thay lưới rách và lắp bổ sung lưới chống rơi từ tầng 10 trở lên; khoanh vùng dưới cẩu tháp; phạt tổ thép; kiểm tra đột xuất hằng ngày; huấn luyện lại tổ thép",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Đặt thép từ hai nhà cung cấp, đặt trước 2 tuần; làm hồ sơ điều chỉnh giá thép theo hợp đồng; xin giấy phép xe bồn giờ cấm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Bổ sung đủ hồ sơ thanh toán đợt 6, nộp lại chậm nhất thứ Hai tuần sau; gia cố móng cẩu tháp làm hồ sơ phát sinh riêng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Không thi công gây ồn sau 22 giờ trừ buổi đổ bê tông đã thông báo trước 2 ngày; lắp cầu rửa xe, tưới đường 3 lần/ngày, lưới che bụi từ tầng 5; nứt tường nhà dân đối chiếu hồ sơ hiện trạng, vết mới thì mời kiểm định độc lập",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000057"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Đổ bê tông sàn tầng 15 sáng thứ Bảy (đã đổi sang thứ Hai do dự báo mưa lớn)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000003"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Đề nghị chủ đầu tư tạm ứng thêm để mua dự trữ 300 tấn thép",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000033",
+        "TURN_000034"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Anh Tuấn (kỹ sư kết cấu)",
+      "point": "Khối A xong sàn tầng 14, khối B tầng 12; chậm 9 ngày do mưa và thép về chậm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Chị Ly (an toàn lao động)",
+      "point": "Thanh thép rơi từ tầng 13 do để sát mép và lưới rách; 17 lượt không đeo dây an toàn",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000012"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Anh Hậu (cán bộ vật tư)",
+      "point": "Thép phi 20, 25 về chậm 6 ngày; giá thép tăng 7%, chênh khoảng 1,9 tỷ; xe bồn vướng giờ cấm",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Định (giám sát chủ đầu tư)",
+      "point": "Hồ sơ thanh toán đợt 6 (14,2 tỷ) bị trả do thiếu nhật ký, biên bản lấy mẫu thép, bản vẽ hoàn công",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Chị Ly (an toàn lao động)",
+      "point": "Tổ dân phố 7 phản ánh ồn ban đêm và bụi, phường yêu cầu giải trình trong 5 ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000050"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04"
+  },
+  "tags": [
+    "superseded_decision",
+    "asr_noise",
+    "diarized_labels"
+  ]
+}

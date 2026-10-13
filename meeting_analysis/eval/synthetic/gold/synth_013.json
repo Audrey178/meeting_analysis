@@ -1,0 +1,92 @@
+{
+  "meeting_id": "synth_013",
+  "n_turns": 13,
+  "total_chars": 7231,
+  "boundaries": [
+    6
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Thông tin kết quả phát triển kinh tế - xã hội 9 tháng năm 2026",
+      "summary": "Chi cục Thống kê thông tin GRDP 9 tháng tăng 7,4%, công nghiệp chế biến tăng 11,2%, nông nghiệp giảm do bão, thu ngân sách đạt 71% dự toán; đại biểu hỏi về số liệu lao động và du lịch.",
+      "turn_range": [
+        0,
+        6
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000006"
+      ],
+      "chars": 3682,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Thông tin tình hình giải ngân vốn đầu tư công 9 tháng năm 2026",
+      "summary": "Sở Tài chính thông tin giải ngân đầu tư công đạt 48,6% kế hoạch, thấp hơn bình quân cả nước, vướng mặt bằng ở ba dự án giao thông lớn; đại biểu hỏi về các dự án chậm và khả năng điều chuyển vốn.",
+      "turn_range": [
+        6,
+        13
+      ],
+      "turn_ids": [
+        "TURN_000007",
+        "TURN_000013"
+      ],
+      "chars": 3549,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [],
+  "decisions": [],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "unassigned_task",
+      "text": "Các ngành, các địa phương tiếp tục nỗ lực trong quý 4 (khẩu hiệu chung, không phải giao việc cụ thể)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "unassigned_task",
+      "text": "Các chủ đầu tư, địa phương quyết liệt hơn trong giải phóng mặt bằng (khẩu hiệu chung)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Đ/c Loan (Trưởng Chi cục Thống kê tỉnh)",
+      "point": "GRDP 9 tháng tăng 7,4%, công nghiệp chế biến tăng 11,2%, nông nghiệp giảm 1,3% do bão; thu ngân sách đạt 71% dự toán",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Đ/c Sơn (Giám đốc Sở Tài chính)",
+      "point": "Giải ngân đầu tư công 48,6% kế hoạch, vốn Trung ương chỉ 39% do 3 dự án giao thông vướng mặt bằng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000007"
+      ]
+    }
+  ],
+  "speakers": {
+    "CT": "Đ/c Phương (Chủ tịch UBND tỉnh)",
+    "KH": "Đ/c Sơn (Giám đốc Sở Tài chính)",
+    "TK": "Đ/c Loan (Trưởng Chi cục Thống kê tỉnh)",
+    "DB": "Đ/c Hiền (Đại biểu HĐND tỉnh)"
+  },
+  "tags": [
+    "short_meeting",
+    "no_actions"
+  ]
+}

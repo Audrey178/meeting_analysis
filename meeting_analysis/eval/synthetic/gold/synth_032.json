@@ -1,0 +1,973 @@
+{
+  "meeting_id": "synth_032",
+  "n_turns": 204,
+  "total_chars": 44700,
+  "boundaries": [
+    18,
+    43,
+    66,
+    89,
+    112,
+    136,
+    161,
+    184
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát chức năng nhận dạng biển số xe tại làn cổng bãi đỗ",
+      "summary": "Mô hình nhận dạng biển số v2.2 đạt 96,8% ban ngày nhưng chỉ 83,5% ban đêm và 80,2% khi mưa, biển vuông hai dòng 88%; thống nhất dùng ngưỡng confidence 0,85, dưới ngưỡng chuyển nhân viên cổng xác nhận, so khớp mờ tối đa lệch một ký tự; tạm chưa lắp đèn bổ trợ.",
+      "turn_range": [
+        0,
+        18
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000018"
+      ],
+      "chars": 5162,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng đặt trước và giữ chỗ đỗ xe trên ứng dụng di động",
+      "summary": "App đặt chỗ đã có bản beta nội bộ 46 người dùng; lỗi đặt trùng chỗ cuối do race condition và 38% lượt giữ chỗ miễn phí bỏ không đến; thống nhất giữ chỗ tối đa 20 phút, phí 5.000 đồng trừ vào phí gửi xe, giữ lại 5% chỗ không cho đặt trước, chỉ hỗ trợ Android 9 và iOS 15 trở lên.",
+      "turn_range": [
+        18,
+        43
+      ],
+      "turn_ids": [
+        "TURN_000019",
+        "TURN_000043"
+      ],
+      "chars": 5015,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Tích hợp cảm biến IoT giám sát trạng thái ô đỗ xe lòng đường",
+      "summary": "Đã lắp 640 cảm biến từ trường trên 5 tuyến phố, 11% lần báo chiếm chỗ là ảo do xe dừng đón trả khách, 48 cảm biến đoạn Hai Bà Trưng mất gói tin 17%; thống nhất nâng thời gian xác nhận lên 90 giây và lắp thêm 2 gateway LoRa trên cột đèn chiếu sáng.",
+      "turn_range": [
+        43,
+        66
+      ],
+      "turn_ids": [
+        "TURN_000044",
+        "TURN_000066"
+      ],
+      "chars": 4805,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Tích hợp thanh toán không tiền mặt và đối soát phí gửi xe",
+      "summary": "Ba kênh thanh toán VietQR động, ví điện tử trong app và trừ tự động tài khoản ETC; đối soát thử lệch 0,6% do callback trễ gây trừ tiền hai lần; đề xuất máy thu tiền mặt bị gạt; thống nhất chỉ thanh toán không tiền mặt, đối soát tự động hằng ngày, hoàn tiền trong 3 ngày làm việc.",
+      "turn_range": [
+        66,
+        89
+      ],
+      "turn_ids": [
+        "TURN_000067",
+        "TURN_000089"
+      ],
+      "chars": 5230,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Rà soát chức năng nhận dạng biển số xe tại làn cổng bãi đỗ",
+      "summary": "Quay lại nhận dạng biển số: bản v2.3 đạt 89,4% ban đêm, 86% khi mưa, nhưng 9 làn ngoài trời vẫn chỉ 78% do thiếu sáng, thử đèn hồng ngoại đạt 94%; thống nhất lắp đèn hồng ngoại cho 9 làn ngoài trời bằng kinh phí dự phòng và chạy v2.3 song song một tuần trước khi thay.",
+      "turn_range": [
+        89,
+        112
+      ],
+      "turn_ids": [
+        "TURN_000090",
+        "TURN_000112"
+      ],
+      "chars": 4828,
+      "same_topic_as": 0
+    },
+    {
+      "index": 5,
+      "title": "Xây dựng bảng điều khiển vận hành và báo cáo doanh thu cho Trung tâm",
+      "summary": "Dashboard ba màn bản đồ, làn cổng, báo cáo doanh thu đã xong khoảng 70%, thiếu xuất Excel và phân quyền; đề xuất thống kê hãng xe màu xe bị gạt; thống nhất dữ liệu bản đồ gom 30 giây, phân quyền ba cấp, báo cáo theo mẫu biểu kế toán của Trung tâm.",
+      "turn_range": [
+        112,
+        136
+      ],
+      "turn_ids": [
+        "TURN_000113",
+        "TURN_000136"
+      ],
+      "chars": 4880,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Rà soát kết quả kiểm thử tải và kiểm thử bảo mật hệ thống",
+      "summary": "Test tải gấp ba giờ cao điểm đạt với API vào ra p95 420 mili giây nhưng dịch vụ realtime rớt kết nối ở 4.200 kết nối; pentest phát hiện 2 lỗi cao (IDOR lịch sử đỗ xe, refresh token không hết hạn) và 5 lỗi trung bình; thống nhất sửa lỗi cao trước 5/11, bật autoscaling, test tải lần hai ngày 12/11.",
+      "turn_range": [
+        136,
+        161
+      ],
+      "turn_ids": [
+        "TURN_000137",
+        "TURN_000161"
+      ],
+      "chars": 5190,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Chuẩn bị hạ tầng máy chủ và quy trình triển khai hệ thống",
+      "summary": "Hệ thống chạy tại trung tâm dữ liệu thành phố trên cụm Kubernetes, thiếu môi trường staging riêng và quyền VPN cho nhà thầu; đề xuất cảnh báo qua Zalo cho trực ban chưa chốt; thống nhất sao lưu hằng ngày giữ 30 ngày, ảnh biển số lưu 90 ngày, deploy production sau 22 giờ và báo trực ban trước một ngày.",
+      "turn_range": [
+        161,
+        184
+      ],
+      "turn_ids": [
+        "TURN_000162",
+        "TURN_000184"
+      ],
+      "chars": 4900,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Thống nhất kế hoạch thí điểm tại 12 bãi đỗ và phân công công việc",
+      "summary": "Thí điểm từ 1/12 trong hai tháng tại 12 bãi và 5 tuyến phố, tuần đầu trực 24/7 tại 4 bãi đông nhất; chốt tiêu chí mở rộng ra các bãi còn lại; phân công tập huấn hai đợt, nộp app lên kho, truyền thông cho người dân và xếp lịch trực.",
+      "turn_range": [
+        184,
+        204
+      ],
+      "turn_ids": [
+        "TURN_000185",
+        "TURN_000204"
+      ],
+      "chars": 4690,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "bên em"
+      ],
+      "task": "Làm màn hình xác nhận thủ công biển số cho nhân viên cổng khi confidence dưới ngưỡng",
+      "deadline": "ngày 31 tháng 10 (hết sprint này)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm khóa theo bãi trên Redis chống đặt trùng chỗ cuối",
+      "deadline": "thứ Tư tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Châu (Lập trình di động)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Thêm màn hình thanh toán phí giữ chỗ và đồng hồ đếm ngược thời gian giữ chỗ",
+      "deadline": "trong sprint 14",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Châu (Lập trình di động)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm thông báo đẩy nhắc trước 5 phút khi sắp hết giờ giữ chỗ",
+      "deadline": "trong sprint 14",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000036",
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Làm văn bản báo cáo Sở Giao thông vận tải về chức năng giữ chỗ có thu phí",
+      "deadline": "tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "actor_aliases": [
+        "anh"
+      ],
+      "task": "Đẩy cấu hình ngưỡng xác nhận 90 giây cho toàn bộ 640 cảm biến",
+      "deadline": "thứ Tư tuần sau",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000051",
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Làm văn bản gửi Công ty Chiếu sáng công cộng xin lắp 2 gateway trên cột đèn đoạn Hai Bà Trưng",
+      "deadline": "trong tuần này",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Chị Uyên (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Chốt phụ lục hợp đồng và sandbox ổn định với ví điện tử thứ ba",
+      "deadline": "trước ngày 31 tháng 10",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000072"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm job đối soát tự động hằng ngày, truy vấn trạng thái giao dịch trước khi tạo QR mới và sửa tính phí ân hạn 10 phút",
+      "deadline": "trước ngày 10 tháng 11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000086"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "actor_aliases": [
+        "bên anh"
+      ],
+      "task": "Đặt hàng và lắp đèn hồng ngoại cho 9 làn ngoài trời",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000110",
+        "TURN_000111"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Nhật (Kỹ sư thị giác máy tính)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Chạy mô hình v2.3 song song (shadow mode) một tuần trên staging và gửi báo cáo so sánh",
+      "deadline": "từ thứ Hai tuần sau, chạy đủ bảy ngày",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000112"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Chị Uyên (Quản lý dự án)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Gửi anh Thịnh danh sách các trường dữ liệu hệ thống đang có để kế toán đối chiếu mẫu biểu",
+      "deadline": "trước thứ Năm",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000117",
+        "TURN_000118"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "bên em"
+      ],
+      "task": "Hoàn thiện dashboard vận hành gồm phân quyền ba cấp và xuất Excel theo mẫu",
+      "deadline": "trước ngày 15 tháng 11",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000136"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa 2 lỗi bảo mật mức cao: IDOR các endpoint có ID và refresh token không hết hạn",
+      "deadline": "trong tuần này",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000146"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Chạy lại kịch bản pentest hai lỗi cao và rà các endpoint tương tự",
+      "deadline": "trước ngày 5 tháng 11",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000147",
+        "TURN_000148"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Tín (Kỹ sư DevOps)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Cấu hình autoscaling dịch vụ realtime và xử lý lỗi TLS, header, cookie",
+      "deadline": "trước ngày 12 tháng 11",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000161"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Tín (Kỹ sư DevOps)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Dựng môi trường staging thứ hai giống production cho test tải và shadow mode",
+      "deadline": "trước ngày 30 tháng 10",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000165"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "actor_aliases": [
+        "tôi"
+      ],
+      "task": "Cấp thêm 3 máy ảo và 3 tài khoản VPN cho nhà thầu",
+      "deadline": "thứ Hai tới",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000167"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Tín (Kỹ sư DevOps)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Viết hướng dẫn rollback bằng tay vào tài liệu vận hành, gửi chị Bích review",
+      "deadline": null,
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000184"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Chị Uyên (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Soạn tài liệu hướng dẫn và tập huấn nhân viên trông giữ xe hai đợt",
+      "deadline": "ngày 24 và 26 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000194"
+      ]
+    },
+    {
+      "id": "A21",
+      "actor": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "actor_aliases": [
+        "chị Bích",
+        "chị"
+      ],
+      "task": "Demo trên hệ thống thật trong buổi tập huấn, chuẩn bị tài khoản tập huấn riêng",
+      "deadline": "ngày 24 và 26 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000194",
+        "TURN_000195"
+      ]
+    },
+    {
+      "id": "A22",
+      "actor": "Châu (Lập trình di động)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Nộp app lên App Store và Google Play",
+      "deadline": "trước ngày 20 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000196"
+      ]
+    },
+    {
+      "id": "A23",
+      "actor": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "actor_aliases": [
+        "bên tôi"
+      ],
+      "task": "Thông báo thí điểm cho người dân trên báo, đài, cổng thông tin; in và lắp biển hướng dẫn tại 12 bãi",
+      "deadline": "trước ngày 23 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000197"
+      ]
+    },
+    {
+      "id": "A24",
+      "actor": "Anh Thông (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Xếp lịch trực tuần đầu thí điểm cho 4 bãi đông và on-call từ xa",
+      "deadline": "trước ngày 25 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000200"
+      ]
+    },
+    {
+      "id": "A25",
+      "actor": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "actor_aliases": [
+        "bên tôi"
+      ],
+      "task": "Huy động 20 xe của cán bộ Trung tâm chạy tổng duyệt qua các bãi, mỗi xe một kênh thanh toán",
+      "deadline": "đêm 28 tháng 11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000202"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Ngưỡng confidence nhận dạng biển số 0,85; dưới ngưỡng không tự mở barie mà chuyển nhân viên cổng xác nhận; so khớp mờ lệch tối đa một ký tự; nhận dạng chạy trên máy chủ trung tâm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Giữ chỗ tối đa 20 phút, phí giữ chỗ 5.000 đồng trừ vào phí gửi xe, quá hạn tự hủy không hoàn phí; mỗi bãi giữ 5% chỗ không cho đặt trước",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "App chỉ hỗ trợ Android 9 trở lên và iOS 15 trở lên",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Nâng thời gian xác nhận cảm biến lên 90 giây; lắp thêm 2 gateway LoRa trên cột đèn đoạn Hai Bà Trưng bằng thiết bị dự phòng; server giữ bộ lọc dự phòng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000066"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Chỉ thanh toán không tiền mặt (VietQR động, ba ví trong app, trừ tự động tài khoản ETC), không làm máy thu tiền mặt; đối soát tự động hằng ngày, lệch thì treo và cảnh báo kế toán; trừ hai lần hoàn tiền trong 3 ngày làm việc; tính phí theo quyết định giá, ân hạn 10 phút",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Lắp đèn hồng ngoại bổ trợ cho 9 làn ngoài trời, kinh phí trích từ dự phòng dự án",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000110"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Mô hình v2.3 chạy song song shadow một tuần trên staging, đạt thì thay v2.2 trước ngày 20/11; giữ ngưỡng 0,85",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000110"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Dashboard: bản đồ gom cập nhật 30 giây, màn cổng đẩy ngay; phân quyền ba cấp; báo cáo doanh thu theo bãi, kênh, ngày, tháng, xuất Excel theo mẫu kế toán; có tra cứu nhật ký thao tác thủ công; không làm thống kê hãng xe, màu xe",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000135"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Hai lỗi bảo mật cao sửa và kiểm thử lại trước 5/11; 5 lỗi trung bình sửa trước thí điểm; lỗi thấp vào backlog tháng 12; dịch vụ realtime autoscaling tối đa 6 pod; test tải lần hai ngày 12/11",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000160"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Triển khai tại trung tâm dữ liệu thành phố trên Kubernetes; sao lưu full hằng ngày giữ 30 ngày, đẩy sang site dự phòng; ảnh biển số lưu 90 ngày; log hệ thống lưu 6 tháng; deploy production sau 22 giờ, báo trực ban trước một ngày; rolling update có rollback tự động",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000182"
+      ]
+    },
+    {
+      "id": "D11",
+      "text": "Thí điểm từ 1/12 trong hai tháng tại 12 bãi và 5 tuyến phố, tuần đầu trực 24/7 tại 4 bãi đông nhất; tiêu chí mở rộng: nhận dạng ban ngày ≥97%, ban đêm ≥92%, lệch đối soát <0,1%, sẵn sàng ≥99,5%, khiếu nại <1/1.000 lượt, thời gian qua cổng trung bình <5 giây; đánh giá tuần đầu tháng 2",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000192"
+      ]
+    },
+    {
+      "id": "D12",
+      "text": "Trong thí điểm vẫn đẩy bản sửa lỗi theo quy trình sau 22 giờ nhưng không thêm tính năng mới",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000194"
+      ]
+    },
+    {
+      "id": "D13",
+      "text": "Phản ánh lỗi hệ thống qua tổng đài Trung tâm chuyển nhóm hỗ trợ nhà thầu; phản hồi trong 2 giờ với lỗi kẹt barie, 1 ngày làm việc với lỗi khác",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000199",
+        "TURN_000200"
+      ]
+    },
+    {
+      "id": "D14",
+      "text": "Tổng duyệt toàn hệ thống 12 bãi vào đêm 28/11 với 20 xe của cán bộ Trung tâm",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000202"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "superseded_decision",
+      "text": "Tạm chưa lắp đèn chiếu sáng bổ trợ ở các làn ngoài trời, chỉ chỉnh tham số camera (đã đảo lại: lắp đèn hồng ngoại cho 9 làn)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000016"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Chạy nhận dạng biển số trên thiết bị biên Jetson ở từng cổng (để sau thí điểm)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Cho đặt chỗ trước theo khung giờ, đặt cho ngày hôm sau (chưa bàn)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000026"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Đẩy cảnh báo barie lỗi, mất kết nối camera qua Zalo cho trực ban Trung tâm (chờ hỏi trực ban, chưa làm)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000177"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Thêm OTP khi đăng nhập trên thiết bị mới (để sau thí điểm)",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000153"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "rejected_task",
+      "text": "Anh Thông khảo sát phương án tích hợp máy thu tiền mặt tự động tại cổng (bị gạt vì chủ trương không tiền mặt)",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000075",
+        "TURN_000077"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "rejected_task",
+      "text": "Nhật làm demo module nhận diện hãng xe, màu xe cho dashboard (bị gạt)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000120",
+        "TURN_000121"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Nhật (Kỹ sư thị giác máy tính)",
+      "point": "Mô hình v2.2 đọc đúng 96,8% ban ngày, 83,5% ban đêm, 80,2% khi mưa; biển vuông hai dòng 88%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Nhật (Kỹ sư thị giác máy tính)",
+      "point": "Ngưỡng 0,85 đẩy 7% lượt ban ngày và 21% ban đêm cho người xác nhận, sai lọt qua dưới 0,5%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000008"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Sai biển khi xe ra làm barie không mở, gây ùn ở bãi đông giờ cao điểm; 9 làn ngoài trời thiếu sáng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Đã có so khớp mờ; đề xuất dưới ngưỡng confidence thì chuyển nhân viên cổng xác nhận",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000006"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Châu (Lập trình di động)",
+      "point": "App đặt chỗ có beta nội bộ 46 người; người dùng không biết thời gian giữ chỗ còn lại, có trường hợp đến nơi hết chỗ",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Lỗi đặt trùng chỗ cuối do race condition, chuyển sang khóa atomic trên Redis; giữ 5% chỗ cho khách vãng lai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "38% giữ chỗ miễn phí bỏ không đến; quyết định giá đã có phí giữ chỗ tối đa 10.000 đồng",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000024"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "point": "App crash trên Android 8 (khoảng 3% thiết bị beta)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000038"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "point": "Đã lắp 640 cảm biến trên 5 tuyến phố; 11% báo chiếm chỗ là ảo; 48 cảm biến đoạn Hai Bà Trưng mất 17% gói tin",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "point": "Nâng thời gian xác nhận lên 90 giây giảm báo ảo xuống dưới 1%, app chậm khoảng 1,5 phút, pin lâu hơn",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "point": "Cảm biến chuẩn IP68, chịu tải 20 tấn; 6 con hỏng (4 do đào đường, 2 lỗi pin); có theo dõi pin và tín hiệu từng cảm biến",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Lắp gateway trên cột đèn phải có văn bản gửi Công ty Chiếu sáng công cộng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Ba kênh thanh toán VietQR, ví, ETC; đối soát thử 14.300 giao dịch lệch 0,6% do callback trễ gây trừ hai lần",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000068"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "point": "Sandbox ví thứ ba không ổn định, kịch bản đối soát mới chạy được 40%",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000071"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Tính phí theo quyết định giá: 25.000 đồng hai giờ đầu, 10.000 đồng mỗi giờ tiếp theo; biểu giá cấu hình được trên dashboard",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000081"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Gạt máy thu tiền mặt vì chủ trương bãi đỗ không tiền mặt; người không có ví quét QR bằng app ngân hàng",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000077"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Nhật (Kỹ sư thị giác máy tính)",
+      "point": "Bản v2.3 đạt 89,4% ban đêm, 86% khi mưa, biển vuông 93%; riêng 9 làn ngoài trời ban đêm vẫn 78% do ảnh quá tối",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000092"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Anh Triều (Kỹ sư thiết bị IoT)",
+      "point": "Camera 9 làn ngoài trời hồng ngoại chỉ chiếu 10 mét; đèn hồng ngoại rời 6,5 triệu/làn, thử một làn đạt 94%",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000095"
+      ]
+    },
+    {
+      "id": "K19",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Đề nghị chạy v2.3 song song shadow mode một tuần trước khi thay trên production",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000103"
+      ]
+    },
+    {
+      "id": "K20",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Dashboard ba màn bản đồ, cổng, báo cáo doanh thu đã xong 70%, thiếu xuất Excel và phân quyền",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000114"
+      ]
+    },
+    {
+      "id": "K21",
+      "speaker": "Anh Thông (Trưởng nhóm Backend)",
+      "point": "Báo cáo tháng mở mất 9 giây; sẽ làm bảng tổng hợp theo ngày để xuống dưới 1 giây",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000134"
+      ]
+    },
+    {
+      "id": "K22",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Cần phân quyền ba cấp; báo cáo doanh thu phải khớp mẫu biểu kế toán nộp Sở Tài chính",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000115"
+      ]
+    },
+    {
+      "id": "K23",
+      "speaker": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "point": "Test tải gấp ba giờ cao điểm: API vào ra p95 420 mili giây, dịch vụ realtime rớt kết nối ở khoảng 4.200 kết nối",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000138"
+      ]
+    },
+    {
+      "id": "K24",
+      "speaker": "Chị Bích (Trưởng nhóm Kiểm thử)",
+      "point": "Pentest: 2 lỗi cao (IDOR lịch sử đỗ xe, refresh token không hết hạn), 5 trung bình, 9 thấp",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000144"
+      ]
+    },
+    {
+      "id": "K25",
+      "speaker": "Tín (Kỹ sư DevOps)",
+      "point": "Dịch vụ realtime cố định 2 pod, có Redis pub/sub nên bật HPA tối đa 6 pod",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000139"
+      ]
+    },
+    {
+      "id": "K26",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Hệ thống cấp độ 3 phải khắc phục hết lỗi cao trước khi vận hành; muốn sửa cả lỗi trung bình trước thí điểm",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000155"
+      ]
+    },
+    {
+      "id": "K27",
+      "speaker": "Tín (Kỹ sư DevOps)",
+      "point": "Cụm Kubernetes 6 máy ảo tại trung tâm dữ liệu thành phố; chỉ có một staging dùng chung và chưa có VPN",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000163"
+      ]
+    },
+    {
+      "id": "K28",
+      "speaker": "Tín (Kỹ sư DevOps)",
+      "point": "Sao lưu full hằng ngày cộng WAL, giữ 30 ngày; ảnh biển số lưu 90 ngày; rolling update có rollback tự động",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000169"
+      ]
+    },
+    {
+      "id": "K29",
+      "speaker": "Tín (Kỹ sư DevOps)",
+      "point": "Khôi phục ở site dự phòng khoảng 4 tiếng; trong lúc đó cổng chạy chế độ offline, lưu cục bộ rồi đồng bộ",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000172"
+      ]
+    },
+    {
+      "id": "K30",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Cấp tối đa 3 tài khoản VPN cho nhà thầu, có ghi log, thu hồi khi hết dự án",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000164"
+      ]
+    },
+    {
+      "id": "K31",
+      "speaker": "Chị Uyên (Quản lý dự án)",
+      "point": "Thí điểm từ 1/12 hai tháng, 12 bãi, 1.860 chỗ; trực 24/7 tuần đầu tại 4 bãi đông; tập huấn 60 nhân viên",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000185"
+      ]
+    },
+    {
+      "id": "K32",
+      "speaker": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+      "point": "Yêu cầu thông báo người dân trước một tuần, tập huấn hai đợt, tiêu chí đo được để quyết định mở rộng ra 40 bãi",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000186"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Chị Uyên (Quản lý dự án)",
+    "KH": "Anh Thịnh (Phó Giám đốc Trung tâm Quản lý điều hành giao thông)",
+    "BE": "Anh Thông (Trưởng nhóm Backend)",
+    "AI": "Nhật (Kỹ sư thị giác máy tính)",
+    "MB": "Châu (Lập trình di động)",
+    "IOT": "Anh Triều (Kỹ sư thiết bị IoT)",
+    "QA": "Chị Bích (Trưởng nhóm Kiểm thử)",
+    "DO": "Tín (Kỹ sư DevOps)"
+  },
+  "tags": [
+    "long",
+    "topic_revisit",
+    "pronoun_actor"
+  ]
+}

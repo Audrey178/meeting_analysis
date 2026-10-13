@@ -1,0 +1,277 @@
+{
+  "meeting_id": "synth_040",
+  "n_turns": 44,
+  "total_chars": 7198,
+  "boundaries": [
+    18,
+    32
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Sửa lỗi trùng suất ăn khi công nhân đổi ca",
+      "summary": "Khi công nhân đổi ca sau giờ chốt, hệ thống giữ suất ca cũ và tạo thêm suất ca mới, bếp nhà máy may Hòa Lợi nấu dư khoảng 140 suất mỗi tuần; thống nhất tự hủy suất ca cũ khi đổi ca và khóa đổi ca sau giờ chốt suất; đề xuất rút giờ chốt xuống 2 tiếng chưa được chấp nhận.",
+      "turn_range": [
+        0,
+        18
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000018"
+      ],
+      "chars": 2786,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng đánh giá món ăn sau bữa trên ứng dụng",
+      "summary": "Bản thử đánh giá 5 sao chỉ có 6% công nhân dùng; thống nhất đổi sang thang ba mức với biểu tượng, nhắc đánh giá 30 phút sau bữa, báo cáo tuần gửi bếp trưởng; đề xuất thưởng điểm cho người đánh giá chưa được chấp nhận.",
+      "turn_range": [
+        18,
+        32
+      ],
+      "turn_ids": [
+        "TURN_000019",
+        "TURN_000032"
+      ],
+      "chars": 2377,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Rà soát kế hoạch phát hành bản 1.6",
+      "summary": "Thống nhất phát hành bản 1.6 thứ Ba tuần sau, mở trước cho nhà máy may Hòa Lợi rồi mới mở cho hai nhà máy còn lại; việc cập nhật tài liệu API cho nhà máy điện tử Tân Phú và rà soát tài khoản quản trị của nhà máy đã thanh lý hợp đồng chưa có người nhận.",
+      "turn_range": [
+        32,
+        44
+      ],
+      "turn_ids": [
+        "TURN_000033",
+        "TURN_000044"
+      ],
+      "chars": 2035,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Định (Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Sửa lỗi trùng suất khi đổi ca: hủy suất ca cũ trong cùng transaction, khóa đổi sau giờ chốt; kèm script dọn suất trùng còn treo",
+      "deadline": "trước thứ Năm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013",
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Sương (Kiểm thử)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Test các kịch bản đổi ca trước và sau giờ chốt, cả đổi ca qua đêm",
+      "deadline": "thứ Năm",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Chị Xuân (Product Owner)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Nhập số điện thoại bếp trực Hòa Lợi vào cấu hình nhà máy",
+      "deadline": "sau buổi họp",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Ly (Lập trình Mobile)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm chức năng đánh giá món ăn ba mức trên app, đưa vào bản 1.6",
+      "deadline": "bản 1.6",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000030",
+        "TURN_000031"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Định (Backend)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm job tổng hợp đánh giá, gửi email báo cáo cho bếp trưởng 7 giờ sáng thứ Hai",
+      "deadline": "trong tuần sau",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Sương (Kiểm thử)",
+      "actor_aliases": [
+        "chị"
+      ],
+      "task": "Test hồi quy bản 1.6",
+      "deadline": "thứ Sáu và thứ Hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Ly (Lập trình Mobile)",
+      "actor_aliases": [
+        "Ly",
+        "em"
+      ],
+      "task": "Nộp bản 1.6 lên hai kho ứng dụng",
+      "deadline": "từ thứ Hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037",
+        "TURN_000038"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Đổi ca thì hủy suất ca cũ ngay trong cùng transaction; đổi sau giờ chốt suất của ca mới thì khóa và hướng dẫn liên hệ bếp; giờ chốt giữ trước ca 4 tiếng",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Đánh giá món ăn ba mức bằng biểu tượng, chấm theo bữa, chi tiết từng món tùy chọn; nhắc mặc định 30 phút sau bữa, cấu hình theo nhà máy; báo cáo gửi bếp trưởng sáng thứ Hai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Phần khóa đổi ca đặt sau cờ tính năng; phát hành bản 1.6 thứ Ba tuần sau, mở cho nhà máy Hòa Lợi trước, sau hai ngày không lỗi nghiêm trọng mới mở cho hai nhà máy còn lại",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Rút giờ chốt suất xuống trước ca 2 tiếng (chờ hỏi bếp, chưa đổi)",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Thưởng điểm tích lũy cho công nhân đánh giá món ăn (để sau, chưa làm)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000028"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "unassigned_task",
+      "text": "Cập nhật tài liệu API đăng ký suất ăn bản 1.6 cho nhà máy điện tử Tân Phú",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000039",
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "unassigned_task",
+      "text": "Rà soát và khóa 3 tài khoản quản trị của nhà máy bao bì Minh Long đã thanh lý hợp đồng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000041"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Định (Backend)",
+      "point": "Đổi ca sau giờ chốt không hủy suất ca cũ, dư khoảng 140 suất mỗi tuần ở nhà máy Hòa Lợi",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Ly (Lập trình Mobile)",
+      "point": "Bản thử đánh giá 5 sao chỉ 6% công nhân dùng, phần lớn chấm 3 sao; đề xuất ba mức, chấm theo bữa",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Chị Xuân (Product Owner)",
+      "point": "Hợp đồng có điều khoản hài lòng dưới 70% bị trừ tiền; bếp đang phải phát phiếu giấy",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Chị Sương (Kiểm thử)",
+      "point": "Test hồi quy thứ Sáu và thứ Hai; đề nghị mở cho Hòa Lợi trước",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Định (Backend)",
+      "point": "Nhà máy Tân Phú dùng tài liệu API bản 1.3 đã cũ nên gọi sai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000039"
+      ]
+    }
+  ],
+  "speakers": {
+    "TL": "Anh Tường (Trưởng nhóm kỹ thuật)",
+    "PO": "Chị Xuân (Product Owner)",
+    "BE": "Định (Backend)",
+    "MB": "Ly (Lập trình Mobile)",
+    "QA": "Chị Sương (Kiểm thử)"
+  },
+  "tags": [
+    "short_meeting",
+    "hedged_proposal",
+    "unassigned_task"
+  ]
+}

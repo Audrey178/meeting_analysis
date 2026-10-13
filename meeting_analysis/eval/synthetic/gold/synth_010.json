@@ -1,0 +1,456 @@
+{
+  "meeting_id": "synth_010",
+  "n_turns": 60,
+  "total_chars": 21455,
+  "boundaries": [
+    11,
+    22,
+    35,
+    45
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Tích hợp đăng nhập một lần SSO với hệ thống quản lý đào tạo",
+      "summary": "Tích hợp SSO qua Keycloak với hệ thống đào tạo đã chạy nhưng khoảng 1.300 sinh viên khóa cũ không đăng nhập được do mã sinh viên trùng định dạng; thống nhất chuẩn hóa mã theo tiền tố khóa và chạy đồng bộ lại.",
+      "turn_range": [
+        0,
+        11
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000011"
+      ],
+      "chars": 5087,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xây dựng chức năng thi trực tuyến có giám sát",
+      "summary": "Chức năng thi trực tuyến trắc nghiệm đã chạy thử với 3 học phần; đề xuất tích hợp nhận diện khuôn mặt giám sát thi bị gạt do vướng quy định bảo vệ dữ liệu cá nhân và chi phí; thống nhất dùng trình duyệt khóa, xáo trộn câu hỏi và giám sát qua camera trực tiếp của giám thị.",
+      "turn_range": [
+        11,
+        22
+      ],
+      "turn_ids": [
+        "TURN_000012",
+        "TURN_000022"
+      ],
+      "chars": 4665,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Xây dựng chức năng báo cáo tiến độ học tập cho giảng viên và cố vấn học tập",
+      "summary": "Bảng điều khiển báo cáo đã có các chỉ số truy cập, nộp bài, điểm thành phần; thầy Hoàng yêu cầu thêm cảnh báo sớm sinh viên có nguy cơ trượt; thống nhất cảnh báo theo luật (vắng 3 buổi, không nộp 2 bài, điểm giữa kỳ dưới 4) gửi cố vấn học tập hằng tuần.",
+      "turn_range": [
+        22,
+        35
+      ],
+      "turn_ids": [
+        "TURN_000023",
+        "TURN_000035"
+      ],
+      "chars": 4664,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Tích hợp đăng nhập một lần SSO với hệ thống quản lý đào tạo",
+      "summary": "Quay lại SSO: anh Cường báo lịch bảo trì máy chủ LDAP của trường trùng tuần thi, và yêu cầu bật xác thực hai yếu tố cho giảng viên; thống nhất lùi bảo trì LDAP, bật xác thực hai yếu tố cho tài khoản giảng viên và quản trị từ học kỳ hai.",
+      "turn_range": [
+        35,
+        45
+      ],
+      "turn_ids": [
+        "TURN_000036",
+        "TURN_000045"
+      ],
+      "chars": 3367,
+      "same_topic_as": 0
+    },
+    {
+      "index": 4,
+      "title": "Thống nhất kế hoạch triển khai LMS cho học kỳ hai",
+      "summary": "Thống nhất mở LMS cho toàn bộ học phần đại cương và học phần của 3 khoa thí điểm từ học kỳ hai; tập huấn giảng viên trong tháng 1; nghiệm thu giai đoạn 1 vào cuối tháng 2.",
+      "turn_range": [
+        45,
+        60
+      ],
+      "turn_ids": [
+        "TURN_000046",
+        "TURN_000060"
+      ],
+      "chars": 3672,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Vũ (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Vũ"
+      ],
+      "task": "Làm định danh chuẩn hóa có tiền tố hệ và khóa trong Keycloak, chạy đồng bộ lại các khóa 2019-2022",
+      "deadline": "trước 10/12",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Chị Oanh (Kiểm thử)",
+      "actor_aliases": [
+        "chị Oanh"
+      ],
+      "task": "Rà soát log đăng nhập của các mã sinh viên trùng trong thời gian chạy thử",
+      "deadline": "trong tuần này",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009",
+        "TURN_000011"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Hà (Lập trình Frontend)",
+      "actor_aliases": [
+        "Hà"
+      ],
+      "task": "Làm chế độ trình duyệt khóa và xáo trộn thứ tự câu hỏi, đáp án khi thi",
+      "deadline": "trước 20/12",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020",
+        "TURN_000021"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "actor_aliases": [
+        "Phòng Đào tạo",
+        "tôi"
+      ],
+      "task": "Ban hành quy chế thi trực tuyến giữa kỳ có giám sát qua camera và xử lý vi phạm",
+      "deadline": "trước học kỳ hai",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Vũ (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Vũ"
+      ],
+      "task": "Làm luật cảnh báo sớm và gửi thông báo cho cố vấn học tập",
+      "deadline": "trước học kỳ hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032",
+        "TURN_000033"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Hà (Lập trình Frontend)",
+      "actor_aliases": [
+        "Hà"
+      ],
+      "task": "Làm màn hình danh sách cảnh báo cho cố vấn học tập",
+      "deadline": "trước học kỳ hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032",
+        "TURN_000034"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "actor_aliases": [
+        "Phòng Đào tạo"
+      ],
+      "task": "Ra văn bản yêu cầu giảng viên điểm danh trên LMS bắt buộc",
+      "deadline": "từ học kỳ hai",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000035"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "actor_aliases": [
+        "anh Cường",
+        "tôi"
+      ],
+      "task": "Đề nghị Trung tâm dữ liệu lùi bảo trì LDAP sang sau 22/12",
+      "deadline": "trong tuần này",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042",
+        "TURN_000043"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Vũ (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Vũ",
+        "em"
+      ],
+      "task": "Cấu hình xác thực hai yếu tố bắt buộc cho giảng viên và quản trị trên Keycloak",
+      "deadline": "từ học kỳ hai",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042",
+        "TURN_000044"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Hà (Lập trình Frontend)",
+      "actor_aliases": [
+        "Hà"
+      ],
+      "task": "Làm trang hướng dẫn cài ứng dụng OTP",
+      "deadline": null,
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042",
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Chị Oanh (Kiểm thử)",
+      "actor_aliases": [
+        "chị Oanh"
+      ],
+      "task": "Làm kịch bản và chạy kiểm thử hiệu năng 3.000 người dùng đồng thời",
+      "deadline": "trước 5/1",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054",
+        "TURN_000055"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Vũ (Trưởng nhóm Backend)",
+      "actor_aliases": [
+        "Vũ"
+      ],
+      "task": "Gửi thông số máy chủ cho anh Cường",
+      "deadline": "trước 15/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054",
+        "TURN_000056"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Anh Cường (Trung tâm CNTT nhà trường)",
+      "actor_aliases": [
+        "anh Cường"
+      ],
+      "task": "Làm đề xuất cấp phát máy chủ",
+      "deadline": "khi nhận thông số",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054",
+        "TURN_000057"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Hà (Lập trình Frontend)",
+      "actor_aliases": [
+        "Hà"
+      ],
+      "task": "Làm bộ khoảng 10 video hướng dẫn ngắn cho giảng viên",
+      "deadline": "trước 10/1",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054",
+        "TURN_000058"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Anh Trung (Quản lý dự án)",
+      "actor_aliases": [
+        "em"
+      ],
+      "task": "Làm kế hoạch nghiệm thu gửi thầy Hoàng",
+      "deadline": "trong tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "actor_aliases": [
+        "Phòng Đào tạo"
+      ],
+      "task": "Đưa vào yêu cầu giảng viên tải bài giảng lên LMS chậm nhất một tuần trước học kỳ",
+      "deadline": "một tuần trước học kỳ hai",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000053"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "actor_aliases": [
+        "Phòng Đào tạo"
+      ],
+      "task": "Lên lịch tập huấn giảng viên gửi các khoa",
+      "deadline": "trước 20/12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000059"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Dùng định danh chuẩn hóa có tiền tố hệ đào tạo và khóa trong Keycloak, không sửa mã sinh viên gốc",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000009"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Không dùng nhận diện khuôn mặt; dùng trình duyệt khóa, đề riêng xáo trộn câu hỏi/đáp án, phòng thi ảo ≤40 sinh viên có giám thị qua camera",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000020"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Cảnh báo sớm theo luật (vắng ≥3 buổi, không nộp 2 bài liên tiếp, giữa kỳ <4), gửi cố vấn học tập sáng thứ Hai hằng tuần; chưa làm mô hình dự đoán",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000032"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Không lưu bản sao mật khẩu trong Keycloak, lùi bảo trì LDAP; bật xác thực hai yếu tố bắt buộc cho giảng viên và quản trị từ học kỳ hai",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Học kỳ hai mở LMS cho khoảng 500 lớp học phần (đại cương + 3 khoa thí điểm), kiểm thử hiệu năng 3.000 người dùng trước khi mở, tập huấn tháng 1, nghiệm thu giai đoạn 1 cuối tháng 2",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000054"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "rejected_task",
+      "text": "Tích hợp nhận diện khuôn mặt giám sát thi bằng dịch vụ nước ngoài (khoảng 6 tuần)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000015"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "hedged_proposal",
+      "text": "Làm báo cáo bất thường sau mỗi kỳ thi dựa trên dữ liệu hành vi làm bài (để học kỳ sau)",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Thêm máy chủ chuyển mã video riêng",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000052"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Vũ (Trưởng nhóm Backend)",
+      "point": "SSO Keycloak-LDAP chạy ổn với 4.200 sinh viên và 380 giảng viên, nhưng ~1.300 sinh viên khóa cũ lỗi do hơn 200 mã trùng với hệ vừa làm vừa học",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Hà (Lập trình Frontend)",
+      "point": "Thi thử trực tuyến 3 học phần, 2.100 lượt, 900 người đồng thời; điểm Toán cao hơn thi giấy ~1,8 điểm, nghi gian lận",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000013"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "point": "Năm qua hơn 900 sinh viên bị cảnh báo học vụ, gần 300 thôi học; cần cảnh báo sớm cho cố vấn học tập",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000025"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Vũ (Trưởng nhóm Backend)",
+      "point": "Keycloak xác thực trực tiếp với LDAP không có bộ đệm, LDAP dừng thì không ai đăng nhập được",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+      "point": "Học kỳ hai triển khai ~500 lớp học phần, 12.000 sinh viên, 260 giảng viên",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    }
+  ],
+  "speakers": {
+    "PM": "Anh Trung (Quản lý dự án)",
+    "KH": "TS. Hoàng (Phó Trưởng phòng Đào tạo)",
+    "IT": "Anh Cường (Trung tâm CNTT nhà trường)",
+    "BE": "Vũ (Trưởng nhóm Backend)",
+    "FE": "Hà (Lập trình Frontend)",
+    "QA": "Chị Oanh (Kiểm thử)"
+  },
+  "tags": [
+    "topic_revisit",
+    "rejected_task"
+  ]
+}

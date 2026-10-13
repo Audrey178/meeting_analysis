@@ -1,0 +1,811 @@
+{
+  "meeting_id": "synth_033",
+  "n_turns": 204,
+  "total_chars": 44772,
+  "boundaries": [
+    20,
+    43,
+    64,
+    91,
+    114,
+    137,
+    160,
+    184
+  ],
+  "topics": [
+    {
+      "index": 0,
+      "title": "Rà soát tiến độ đơn hàng xuất khẩu quý 4 và kế hoạch chuyền may",
+      "summary": "Quý 4 chạy 14 đơn hàng khoảng 1,26 triệu sản phẩm trên 24 chuyền; đơn áo khoác chần bông 310.000 chiếc của khách Mỹ chậm 9 ngày, đợt 1 (15/11) dự kiến thiếu khoảng 13.000 chiếc; thống nhất tăng ca tối đa 2 giờ/ngày cho 6 chuyền áo khoác đến 30/11 chỉ với người chưa chạm ngưỡng giờ làm thêm, chuyển công đoạn chần bông sang chuyền 9-10, xin khách tách đợt 1; đề xuất thuê xưởng vệ tinh gia công chưa chốt.",
+      "turn_range": [
+        0,
+        20
+      ],
+      "turn_ids": [
+        "TURN_000001",
+        "TURN_000020"
+      ],
+      "chars": 5191,
+      "same_topic_as": null
+    },
+    {
+      "index": 1,
+      "title": "Xử lý lô áo sơ mi kẻ sọc bị trượt kiểm AQL cuối của khách châu Âu",
+      "summary": "Lô 18.400 áo sơ mi kẻ sọc của khách Lindqvist trượt kiểm cuối AQL 2.5 với 23 lỗi lớn trên mẫu 315 (giới hạn 14), do bung đường may nách, lệch sọc và vết dầu máy ở chuyền 7; thống nhất tái kiểm 100% lô rồi mời khách kiểm lại, đặt trạm kiểm giữa chuyền cho các chuyền sơ mi, tổ cắt dùng rập canh sọc và kiểm 100% bán thành phẩm kẻ sọc; đề xuất trừ lương công nhân chuyền 7 bị gạt.",
+      "turn_range": [
+        20,
+        43
+      ],
+      "turn_ids": [
+        "TURN_000021",
+        "TURN_000043"
+      ],
+      "chars": 5166,
+      "same_topic_as": null
+    },
+    {
+      "index": 2,
+      "title": "Chuẩn bị đánh giá tuân thủ xã hội BSCI của khách hàng",
+      "summary": "Đánh giá BSCI bán báo trước trong khoảng 1-15/12, khách yêu cầu nâng từ hạng C lên B; 140 công nhân đã vượt 250 giờ làm thêm lũy kế (giới hạn 300 giờ/năm), lối thoát hiểm kho vải bị chắn, nhà vệ sinh nữ xưởng B thiếu 18 buồng; thống nhất không xếp tăng ca cho người vượt 250 giờ, điều thợ chuyền quần âu và tuyển 40 thời vụ, thông lối thoát hiểm ngay, duyệt 180 triệu làm nhà vệ sinh, chấm công chỉ một hệ thống; thuê tư vấn đánh giá thử chưa chốt.",
+      "turn_range": [
+        43,
+        64
+      ],
+      "turn_ids": [
+        "TURN_000044",
+        "TURN_000064"
+      ],
+      "chars": 5014,
+      "same_topic_as": null
+    },
+    {
+      "index": 3,
+      "title": "Xử lý chậm giao vải, phụ liệu nhập khẩu và yêu cầu xuất xứ vải",
+      "summary": "Còn 46.000 mét vải nylon cho đợt 2-3 đơn áo khoác chưa giao, nhà cung cấp Thiệu Hưng hẹn 8/11; khách Nhật muốn hưởng ưu đãi thuế cần vải dệt tại Việt Nam hoặc Nhật; thống nhất yêu cầu nhà cung cấp giao 2 chuyến, chuyến 1 (23.000 mét) đi đường bộ về kho trước 3/11 do họ chịu chênh lệch cước, đặt thử 3.000 mét vải dệt trong nước cho một mã quần âu; chuyển toàn bộ vải quần âu sang vải nội chưa quyết.",
+      "turn_range": [
+        64,
+        91
+      ],
+      "turn_ids": [
+        "TURN_000065",
+        "TURN_000091"
+      ],
+      "chars": 4911,
+      "same_topic_as": null
+    },
+    {
+      "index": 4,
+      "title": "Đầu tư hệ thống điện mặt trời áp mái nhà xưởng",
+      "summary": "Nhà máy tiêu thụ khoảng 680.000 kWh/tháng, khách châu Âu yêu cầu giảm 30% phát thải đến 2030; mái xưởng B lắp được khoảng 650 kWp (khoảng 7,2 tỷ, hoàn vốn 4,5-5 năm), mái xưởng A cũ cần kiểm định kết cấu; thống nhất tự đầu tư giai đoạn 1 trên mái xưởng B theo hình thức tự sản tự tiêu có chống phát ngược và thiết bị ngắt nhanh, vay theo gói tín dụng xanh, không thuê mái; đề xuất chuyển lò hơi than sang đốt sinh khối để năm sau.",
+      "turn_range": [
+        91,
+        114
+      ],
+      "turn_ids": [
+        "TURN_000092",
+        "TURN_000114"
+      ],
+      "chars": 4930,
+      "same_topic_as": null
+    },
+    {
+      "index": 5,
+      "title": "Thống nhất phương án thưởng Tết, phụ cấp và giảm tỷ lệ nghỉ việc của công nhân",
+      "summary": "Tổng 2.380 lao động, tỷ lệ nghỉ việc bình quân 4,1%/tháng, khoảng 60% là người mới dưới 3 tháng; công ty giày bên cạnh trả tổng thu nhập cao hơn khoảng 400.000 đồng/tháng; thống nhất thưởng Tết bình quân 1,3 tháng lương chi trước 20 tháng Chạp, tăng phụ cấp chuyên cần từ 300.000 lên 500.000 đồng từ tháng 1/2027; đề xuất bắt công nhân cam kết bồi thường chi phí đào tạo bị gạt, hỗ trợ tiền trọ chưa chốt.",
+      "turn_range": [
+        114,
+        137
+      ],
+      "turn_ids": [
+        "TURN_000115",
+        "TURN_000137"
+      ],
+      "chars": 4934,
+      "same_topic_as": null
+    },
+    {
+      "index": 6,
+      "title": "Thu xếp xuất hàng cuối năm, cước tàu và container rỗng",
+      "summary": "Tháng 11-12 có 41 container 40 feet cần xuất; cước đi bờ Tây Mỹ tăng từ 2.100 lên 3.400 USD/container, đơn châu Âu giá CIF nên công ty chịu cước, Cát Lái dự báo thiếu container rỗng tháng 12; thống nhất ký hợp đồng giữ chỗ giá cố định với forwarder cho 12 container tháng 12, hàng châu Âu đi tàu thẳng từ Cái Mép, hàng nằm kho quá 2 tuần phải có gói hút ẩm; đề xuất thuê kho ngoại quan gom hàng bị gạt.",
+      "turn_range": [
+        137,
+        160
+      ],
+      "turn_ids": [
+        "TURN_000138",
+        "TURN_000160"
+      ],
+      "chars": 4808,
+      "same_topic_as": null
+    },
+    {
+      "index": 7,
+      "title": "Đánh giá thí điểm phần mềm quản lý sản xuất tại chuyền may",
+      "summary": "Thí điểm phần mềm quét mã bó hàng trên máy tính bảng tại 4 chuyền từ tháng 9, sản lượng phần mềm lệch khoảng 7% so với đếm tay do wifi xưởng B chập chờn và quét trùng, quét nhầm; nhà cung cấp chào mở rộng 24 chuyền từ tháng 1 với khoảng 1,9 tỷ phí và 800 triệu máy tính bảng; thống nhất kéo dài thí điểm thêm 1 tháng, chỉ ký mở rộng khi sai lệch dưới 2% liên tục 2 tuần, chưa dùng số liệu phần mềm để tính lương; đề xuất nhập dữ liệu kiểm giữa chuyền vào phần mềm để tháng sau bàn.",
+      "turn_range": [
+        160,
+        184
+      ],
+      "turn_ids": [
+        "TURN_000161",
+        "TURN_000184"
+      ],
+      "chars": 5065,
+      "same_topic_as": null
+    },
+    {
+      "index": 8,
+      "title": "Khắc phục tồn tại sau kiểm tra phòng cháy chữa cháy và tổ chức diễn tập",
+      "summary": "Đoàn cảnh sát PCCC kiểm tra ngày 14/10 chỉ ra 14 đầu phun kho vải bị hàng che (còn 20 cm, quy định tối thiểu 50 cm), bơm chữa cháy diesel không khởi động được lần đầu, 2 bình chữa cháy hết hạn, cho 30 ngày khắc phục; năm nay chưa diễn tập, lần trước sơ tán mất 6 phút 40 giây; thống nhất sắp xếp lại kho vải, sửa bơm, thay bình trong tuần, diễn tập toàn công ty sáng thứ Bảy 21/11 có mời cảnh sát PCCC, mục tiêu dưới 5 phút.",
+      "turn_range": [
+        184,
+        204
+      ],
+      "turn_ids": [
+        "TURN_000185",
+        "TURN_000204"
+      ],
+      "chars": 4753,
+      "same_topic_as": null
+    }
+  ],
+  "assignments": [
+    {
+      "id": "A1",
+      "actor": "Chị Loan (giám đốc sản xuất)",
+      "actor_aliases": [
+        "loan",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Lên lại kế hoạch chuyền, tăng ca và phân bổ công đoạn chần bông sang chuyền 9-10",
+      "deadline": "áp dụng từ thứ Hai tuần sau",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000018"
+      ]
+    },
+    {
+      "id": "A2",
+      "actor": "Phước (trưởng phòng xuất nhập khẩu)",
+      "actor_aliases": [
+        "phước",
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Gửi thư đề nghị khách Trailcrest tách đợt 1 thành hai lần giao (khoảng 80.000 chiếc ngày 15/11, phần còn lại trước 22/11)",
+      "deadline": "chiều nay",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000019"
+      ]
+    },
+    {
+      "id": "A3",
+      "actor": "Tâm (trưởng phòng quản lý chất lượng)",
+      "actor_aliases": [
+        "tâm",
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Tái kiểm 100% lô 18.400 áo sơ mi kẻ sọc rồi hẹn khách kiểm lại lần hai",
+      "deadline": "trước thứ Năm tuần này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000036",
+        "TURN_000037"
+      ]
+    },
+    {
+      "id": "A4",
+      "actor": "Anh Đạt (trưởng ban cơ điện)",
+      "actor_aliases": [
+        "đạt",
+        "em",
+        "SPEAKER_06"
+      ],
+      "task": "Thay kim, chỉnh bước mũi 22 máy chuyền 7, sửa 6 máy rò dầu; lập lại sổ thay kim theo ca",
+      "deadline": "trong tuần này",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000040"
+      ]
+    },
+    {
+      "id": "A5",
+      "actor": "Tâm (trưởng phòng quản lý chất lượng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Làm báo cáo phân tích nguyên nhân và hành động khắc phục gửi khách Lindqvist (qua tổng giám đốc duyệt)",
+      "deadline": "trong 3 ngày làm việc",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000042"
+      ]
+    },
+    {
+      "id": "A6",
+      "actor": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "actor_aliases": [
+        "diệp",
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Lọc danh sách người còn được tăng ca (chưa vượt 250 giờ) và danh sách 40 thời vụ cần tuyển, gửi chị Loan",
+      "deadline": "trước thứ Sáu",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017",
+        "TURN_000061"
+      ]
+    },
+    {
+      "id": "A7",
+      "actor": "Anh Đạt (trưởng ban cơ điện)",
+      "actor_aliases": [
+        "đạt",
+        "em",
+        "bên em",
+        "SPEAKER_06"
+      ],
+      "task": "Dọn lối thoát hiểm kho vải, kẻ vạch, thay đèn exit; cải tạo khu vệ sinh nữ xưởng B 18 buồng",
+      "deadline": "lối thoát hiểm trong 2 ngày; nhà vệ sinh trước 30/11",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000060",
+        "TURN_000062"
+      ]
+    },
+    {
+      "id": "A8",
+      "actor": "Phước (trưởng phòng xuất nhập khẩu)",
+      "actor_aliases": [
+        "phước",
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Làm việc với nhà cung cấp vải Thiệu Hưng giao 46.000 mét làm 2 chuyến, chuyến 1 đi đường bộ về trước 3/11, họ chịu chênh lệch cước",
+      "deadline": "ngày mai",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000075",
+        "TURN_000076"
+      ]
+    },
+    {
+      "id": "A9",
+      "actor": "Chị Loan (giám đốc sản xuất)",
+      "actor_aliases": [
+        "loan",
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Đặt thử 3.000 mét vải dệt Nam Định cho một mã quần âu đơn tháng 1",
+      "deadline": "trong tuần sau",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000087",
+        "TURN_000088"
+      ]
+    },
+    {
+      "id": "A10",
+      "actor": "Tâm (trưởng phòng quản lý chất lượng)",
+      "actor_aliases": [
+        "tâm",
+        "em",
+        "SPEAKER_02"
+      ],
+      "task": "Thử co rút sau giặt và độ bền màu vải Nam Định",
+      "deadline": "5 ngày sau khi vải về",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000087",
+        "TURN_000089"
+      ]
+    },
+    {
+      "id": "A11",
+      "actor": "Anh Đạt (trưởng ban cơ điện)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_06"
+      ],
+      "task": "Lấy 3 báo giá EPC trọn gói điện mặt trời mái xưởng B, so sánh và trình tổng giám đốc",
+      "deadline": "trước 30/11",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000108"
+      ]
+    },
+    {
+      "id": "A12",
+      "actor": "Anh Vĩnh (kế toán trưởng)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Làm hồ sơ vay theo gói tín dụng xanh cho dự án điện mặt trời",
+      "deadline": "có thư chấp thuận khoảng giữa tháng 12",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000109"
+      ]
+    },
+    {
+      "id": "A13",
+      "actor": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Soạn quy chế phụ cấp chuyên cần mới trình tổng giám đốc, phổ biến cho công nhân trước Tết",
+      "deadline": "trước 15/12",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000134"
+      ]
+    },
+    {
+      "id": "A14",
+      "actor": "Anh Vĩnh (kế toán trưởng)",
+      "actor_aliases": [
+        "vĩnh",
+        "em",
+        "SPEAKER_04"
+      ],
+      "task": "Cân đối dòng tiền, làm việc ngân hàng lùi kỳ trả nợ nếu cần, đảm bảo khoảng 27,5 tỷ chi thưởng Tết",
+      "deadline": "trước 20 tháng Chạp",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000136"
+      ]
+    },
+    {
+      "id": "A15",
+      "actor": "Phước (trưởng phòng xuất nhập khẩu)",
+      "actor_aliases": [
+        "phước",
+        "em",
+        "SPEAKER_05"
+      ],
+      "task": "Ký hợp đồng giữ chỗ giá cố định 12 container tháng 12 với forwarder, gửi lịch lấy vỏ cho sản xuất và kho (báo trước ít nhất 2 ngày)",
+      "deadline": "trước 5/11",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000157",
+        "TURN_000158"
+      ]
+    },
+    {
+      "id": "A16",
+      "actor": "Anh Đạt (trưởng ban cơ điện)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_06"
+      ],
+      "task": "Lắp thêm 6 bộ phát wifi công nghiệp và đi lại dây mạng xưởng B",
+      "deadline": "trước 10/11",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000181"
+      ]
+    },
+    {
+      "id": "A17",
+      "actor": "Chị Loan (giám đốc sản xuất)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Cho tổ trưởng 4 chuyền thí điểm đối chiếu số liệu phần mềm với đếm tay hằng ngày, tổng hợp gửi tổng giám đốc",
+      "deadline": "sáng thứ Bảy hằng tuần",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000182"
+      ]
+    },
+    {
+      "id": "A18",
+      "actor": "Anh Đạt (trưởng ban cơ điện)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_06"
+      ],
+      "task": "Sửa bơm chữa cháy diesel, thay ác quy và 2 bình chữa cháy hết hạn; gửi báo cáo khắc phục cho đoàn kiểm tra",
+      "deadline": "trong tuần này",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000200",
+        "TURN_000201"
+      ]
+    },
+    {
+      "id": "A19",
+      "actor": "Chị Loan (giám đốc sản xuất)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_01"
+      ],
+      "task": "Dồn hàng, sắp xếp lại kho vải cách đầu phun ít nhất 50 cm",
+      "deadline": "trước thứ Tư tuần sau",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000200",
+        "TURN_000202"
+      ]
+    },
+    {
+      "id": "A20",
+      "actor": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "actor_aliases": [
+        "em",
+        "SPEAKER_03"
+      ],
+      "task": "Lập kế hoạch diễn tập PCCC và thoát nạn, phân công người dẫn đường, gửi công văn mời cảnh sát PCCC",
+      "deadline": "trình trước 14/11",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000203"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "D1",
+      "text": "Tăng ca tối đa 2 giờ/ngày cho 6 chuyền áo khoác đến 30/11, chỉ với người chưa chạm ngưỡng giờ làm thêm; chuyển công đoạn chần bông sang chuyền 9-10; xin khách tách đợt 1: khoảng 80.000 chiếc ngày 15/11, phần còn lại trước 22/11",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000017"
+      ]
+    },
+    {
+      "id": "D2",
+      "text": "Tái kiểm 100% lô 18.400 áo sơ mi rồi mời khách kiểm lại (công ty chịu phí); đặt trạm kiểm giữa chuyền ở công đoạn may nách và tra nẹp cho mọi chuyền sơ mi từ tuần sau; tổ cắt dùng rập canh sọc và kiểm 100% bán thành phẩm kẻ sọc",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000036"
+      ]
+    },
+    {
+      "id": "D3",
+      "text": "Không xếp tăng ca cho người đã vượt 250 giờ làm thêm đến hết năm, bù bằng thợ chuyền quần âu và tuyển 40 thời vụ; thông lối thoát hiểm kho vải ngay; duyệt 180 triệu làm nhà vệ sinh nữ xưởng B xong trước 30/11; chấm công chỉ dùng một hệ thống máy vân tay khớp bảng lương",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000060"
+      ]
+    },
+    {
+      "id": "D4",
+      "text": "Yêu cầu nhà cung cấp Thiệu Hưng giao 46.000 mét vải làm 2 chuyến: chuyến 1 (23.000 mét) đi đường bộ về kho trước 3/11, chênh lệch cước bên bán chịu theo điều 8 hợp đồng; chuyến 2 đi biển",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000075"
+      ]
+    },
+    {
+      "id": "D5",
+      "text": "Đặt thử 3.000 mét vải dệt Nam Định cho một mã quần âu đơn tháng 1, thử co rút và bền màu; đạt thì báo khách làm hồ sơ xuất xứ",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000087"
+      ]
+    },
+    {
+      "id": "D6",
+      "text": "Tự đầu tư điện mặt trời áp mái (không thuê mái/PPA): giai đoạn 1 khoảng 650 kWp trên mái xưởng B, tự sản tự tiêu có chống phát ngược và thiết bị ngắt nhanh, vay theo gói tín dụng xanh; mái xưởng A kiểm định kết cấu rồi tính giai đoạn 2",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000107"
+      ]
+    },
+    {
+      "id": "D7",
+      "text": "Thưởng Tết bình quân 1,3 tháng lương, chi trước 20 tháng Chạp; phụ cấp chuyên cần tăng lên 500.000 đồng/tháng từ tháng 1/2027; tiền trọ để quý 1 xem lại, chưa công bố",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000133"
+      ]
+    },
+    {
+      "id": "D8",
+      "text": "Ký hợp đồng giữ chỗ giá cố định với forwarder cho 12 container tháng 12; hàng châu Âu đi tàu thẳng từ Cái Mép; hàng nằm kho quá 2 tuần phải có gói hút ẩm; báo lịch lấy vỏ cho kho trước ít nhất 2 ngày",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000157"
+      ]
+    },
+    {
+      "id": "D9",
+      "text": "Kéo dài thí điểm phần mềm quản lý sản xuất thêm 1 tháng trên 4 chuyền, chỉ ký mở rộng khi sai lệch dưới 2% liên tục 2 tuần; trong thời gian thí điểm lương vẫn tính theo đếm tay",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000180"
+      ]
+    },
+    {
+      "id": "D10",
+      "text": "Sắp xếp lại kho vải cách đầu phun ít nhất 50 cm, dồn bớt sang khu trống xưởng A; sửa bơm diesel, thay ác quy và 2 bình chữa cháy trong tuần; diễn tập PCCC và thoát nạn toàn công ty sáng thứ Bảy 21/11 có mời cảnh sát PCCC, có người dẫn đường từng chuyền, mục tiêu dưới 5 phút",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000200"
+      ]
+    }
+  ],
+  "negatives": [
+    {
+      "id": "N1",
+      "type": "hedged_proposal",
+      "text": "Thuê hai xưởng vệ tinh ở Đức Hòa gia công khoảng 40.000 áo khoác chần bông",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000012",
+        "TURN_000014"
+      ]
+    },
+    {
+      "id": "N2",
+      "type": "rejected_task",
+      "text": "Chị Diệp lập danh sách công nhân chuyền 7 để lỗi nhiều và trừ lương 50.000 đồng mỗi lỗi",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000029",
+        "TURN_000030"
+      ]
+    },
+    {
+      "id": "N3",
+      "type": "hedged_proposal",
+      "text": "Thuê công ty tư vấn đánh giá thử BSCI trước (khoảng 60 triệu)",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000051",
+        "TURN_000052"
+      ]
+    },
+    {
+      "id": "N4",
+      "type": "hedged_proposal",
+      "text": "Chuyển toàn bộ vải quần âu năm sau sang vải dệt trong nước",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000084",
+        "TURN_000085"
+      ]
+    },
+    {
+      "id": "N5",
+      "type": "hedged_proposal",
+      "text": "Chuyển lò hơi xưởng là ủi từ đốt than sang đốt viên nén mùn cưa",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000111",
+        "TURN_000113"
+      ]
+    },
+    {
+      "id": "N6",
+      "type": "hedged_proposal",
+      "text": "Hỗ trợ tiền trọ 200.000 đồng/tháng cho công nhân ở trọ (để quý 1 xem lại)",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000123",
+        "TURN_000133"
+      ]
+    },
+    {
+      "id": "N7",
+      "type": "rejected_task",
+      "text": "Chị Diệp cho công nhân mới ký cam kết bồi thường chi phí đào tạo 2,5 triệu nếu nghỉ trước 6 tháng, trừ vào lương tháng cuối",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000128",
+        "TURN_000130"
+      ]
+    },
+    {
+      "id": "N8",
+      "type": "rejected_task",
+      "text": "Phước thuê kho ngoại quan gần cảng Cát Lái để gom hàng trước khi đóng container",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000152",
+        "TURN_000154"
+      ]
+    },
+    {
+      "id": "N9",
+      "type": "hedged_proposal",
+      "text": "Nhập dữ liệu lỗi trạm kiểm giữa chuyền vào phần mềm quản lý sản xuất (để tháng sau bàn)",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000174",
+        "TURN_000180"
+      ]
+    }
+  ],
+  "key_points": [
+    {
+      "id": "K1",
+      "speaker": "Chị Loan (giám đốc sản xuất)",
+      "point": "Quý 4 chạy 14 đơn khoảng 1,26 triệu sản phẩm; đơn áo khoác 310.000 chiếc chậm 9 ngày do vải về trễ 12 ngày và 30% công nhân mới, hiệu suất 68% so với kế hoạch 75%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000002"
+      ]
+    },
+    {
+      "id": "K2",
+      "speaker": "Phước (trưởng phòng xuất nhập khẩu)",
+      "point": "Giao chậm quá 7 ngày khách được trừ 5% giá trị lô (khoảng 70.000 USD) hoặc bắt chịu cước máy bay",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000005"
+      ]
+    },
+    {
+      "id": "K3",
+      "speaker": "Anh Vĩnh (kế toán trưởng)",
+      "point": "Tăng ca cho khoảng 420 người đến hết tháng 11 tốn khoảng 1,1 tỷ, rẻ hơn bị trừ 5%",
+      "topic_index": 0,
+      "evidence_turn_ids": [
+        "TURN_000010"
+      ]
+    },
+    {
+      "id": "K4",
+      "speaker": "Tâm (trưởng phòng quản lý chất lượng)",
+      "point": "Lô 18.400 áo trượt AQL 2.5: 23 lỗi lớn trên mẫu 315 (cho phép 14) gồm bung đường may nách, lệch sọc, vết dầu; khách tính phí kiểm lại 450 USD",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000022"
+      ]
+    },
+    {
+      "id": "K5",
+      "speaker": "Anh Đạt (trưởng ban cơ điện)",
+      "point": "Chuyền 7 có 6/22 máy rò dầu, kim không được thay theo chu kỳ do thiếu người",
+      "topic_index": 1,
+      "evidence_turn_ids": [
+        "TURN_000027"
+      ]
+    },
+    {
+      "id": "K6",
+      "speaker": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "point": "Đánh giá BSCI 1-15/12 cần lên hạng B; 140 công nhân vượt 250 giờ làm thêm, lối thoát hiểm kho vải bị chắn, nhà vệ sinh nữ xưởng B thiếu 18 buồng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000045"
+      ]
+    },
+    {
+      "id": "K7",
+      "speaker": "Chị Loan (giám đốc sản xuất)",
+      "point": "140 người vượt giờ làm thêm đều là thợ tay nghề cao, loại ra thì tăng ca khó bù đủ sản lượng",
+      "topic_index": 2,
+      "evidence_turn_ids": [
+        "TURN_000047"
+      ]
+    },
+    {
+      "id": "K8",
+      "speaker": "Phước (trưởng phòng xuất nhập khẩu)",
+      "point": "Còn 46.000 mét vải nylon chưa giao, nhà cung cấp hẹn xuất xưởng 8/11, về kho khoảng 20/11",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000066"
+      ]
+    },
+    {
+      "id": "K9",
+      "speaker": "Phước (trưởng phòng xuất nhập khẩu)",
+      "point": "Khách Nhật cần vải dệt tại Việt Nam hoặc Nhật để hưởng ưu đãi thuế, hứa tăng đơn khoảng 20% nếu chuyển được",
+      "topic_index": 3,
+      "evidence_turn_ids": [
+        "TURN_000079"
+      ]
+    },
+    {
+      "id": "K10",
+      "speaker": "Anh Đạt (trưởng ban cơ điện)",
+      "point": "Tiêu thụ 680.000 kWh/tháng; mái xưởng B lắp được 650 kWp khoảng 7,2 tỷ, sản lượng 78.000 kWh/tháng, hoàn vốn khoảng 4,5 năm; mái xưởng A cũ cần kiểm định",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000093"
+      ]
+    },
+    {
+      "id": "K11",
+      "speaker": "Anh Vĩnh (kế toán trưởng)",
+      "point": "Vay tín dụng xanh lãi khoảng 7,2%/năm; thuê mái PPA chỉ chiết khấu 15% và ràng buộc 20 năm",
+      "topic_index": 4,
+      "evidence_turn_ids": [
+        "TURN_000096"
+      ]
+    },
+    {
+      "id": "K12",
+      "speaker": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "point": "2.380 lao động, nghỉ việc 4,1%/tháng, 60% là người mới dưới 3 tháng; công ty giày bên cạnh trả cao hơn khoảng 400.000 đồng/tháng",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000116"
+      ]
+    },
+    {
+      "id": "K13",
+      "speaker": "Anh Vĩnh (kế toán trưởng)",
+      "point": "Thưởng 1,3 tháng lương khoảng 27,5 tỷ; tăng chuyên cần thêm khoảng 380 triệu/tháng; dòng tiền tháng 1 căng",
+      "topic_index": 5,
+      "evidence_turn_ids": [
+        "TURN_000120"
+      ]
+    },
+    {
+      "id": "K14",
+      "speaker": "Phước (trưởng phòng xuất nhập khẩu)",
+      "point": "41 container cần xuất tháng 11-12; cước bờ Tây Mỹ tăng từ 2.100 lên 3.400 USD; đơn châu Âu giá CIF công ty chịu cước; Cát Lái thiếu vỏ tháng 12",
+      "topic_index": 6,
+      "evidence_turn_ids": [
+        "TURN_000139"
+      ]
+    },
+    {
+      "id": "K15",
+      "speaker": "Chị Loan (giám đốc sản xuất)",
+      "point": "Thí điểm phần mềm ở 4 chuyền giúp chuyền 3 tăng hiệu suất 72% lên 79% nhưng số liệu lệch khoảng 7% so với đếm tay",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000162"
+      ]
+    },
+    {
+      "id": "K16",
+      "speaker": "Anh Đạt (trưởng ban cơ điện)",
+      "point": "Wifi xưởng B chỉ có 8 bộ phát cho 12.000 m², cần thêm 6 bộ khoảng 120 triệu",
+      "topic_index": 7,
+      "evidence_turn_ids": [
+        "TURN_000169"
+      ]
+    },
+    {
+      "id": "K17",
+      "speaker": "Anh Đạt (trưởng ban cơ điện)",
+      "point": "Kiểm tra PCCC 14/10: 14 đầu phun kho vải bị che, bơm diesel không nổ lần đầu, 2 bình hết hạn; 30 ngày khắc phục",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000186"
+      ]
+    },
+    {
+      "id": "K18",
+      "speaker": "Chị Diệp (trưởng phòng nhân sự - tuân thủ)",
+      "point": "Năm nay chưa diễn tập; lần trước sơ tán mất 6 phút 40 giây, mục tiêu dưới 5 phút",
+      "topic_index": 8,
+      "evidence_turn_ids": [
+        "TURN_000193"
+      ]
+    }
+  ],
+  "speakers": {
+    "S0": "SPEAKER_00",
+    "S1": "SPEAKER_01",
+    "S2": "SPEAKER_02",
+    "S3": "SPEAKER_03",
+    "S4": "SPEAKER_04",
+    "S5": "SPEAKER_05",
+    "S6": "SPEAKER_06"
+  },
+  "tags": [
+    "long",
+    "asr_noise",
+    "diarized_labels",
+    "rejected_task",
+    "hedged_proposal"
+  ]
+}

@@ -132,11 +132,6 @@ class DecisionCandidate:
 class ActionItemCandidate:
     """Một phát biểu GIAO VIỆC: ai được giao làm gì.
 
-    ``actor`` là người phụ trách, có thể None nếu không xác định chắc chắn (ví dụ
-    chỉ có đại từ "em"/"anh" mà không quy được về tên thật). ``text`` chỉ là
-    nội dung công việc (bắt đầu bằng động từ), KHÔNG lặp "giao <actor>" hay
-    thời hạn -- hai thứ đó đã có trường riêng.
-
     Các trường thêm (có mặc định để code cũ dựng candidate không phải đổi):
         deadline_raw: thời hạn nguyên văn theo bản ghi, None nếu không nêu.
         deadline_date: ``deadline_raw`` quy về ngày ISO theo ngày họp (``deadline.py``),
