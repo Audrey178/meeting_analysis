@@ -19,7 +19,8 @@ def test_price_free_paid_and_unpriced():
     stats = RoleUsage(calls=2, input_tokens=1_000_000, cached_input_tokens=400_000, output_tokens=100_000)
     assert price_usd("google/gemma-4-26B-A4B-it", stats) == 0.0
     assert price_usd("gpt-4o-mini", stats) == pytest.approx(0.6 * 0.15 + 0.4 * 0.075 + 0.1 * 0.60)
-    assert price_usd("gpt-6-luna", stats) is None
+    assert price_usd("gpt-6-luna", stats) == pytest.approx(0.10)
+    assert price_usd("gpt-unknown", stats) is None
 
 
 def test_estimated_spend_prices_unpriced_calls(tmp_path, monkeypatch):
@@ -50,7 +51,8 @@ def test_recording_client_counts_calls_errors_and_usage():
     summary = ledger.pop_summary()
     (role,) = summary["roles"]
     assert (role["calls"], role["errors"], role["input_tokens"], role["output_tokens"]) == (2, 1, 100, 20)
-    assert summary["unpriced_paid_calls"] == 2
+    assert summary["unpriced_paid_calls"] == 0
+    assert summary["usd_known"] == pytest.approx(100 * 0.10 / 1e6)  # output Decisions miễn phí
     assert ledger.pop_summary()["roles"] == []  # đã xoá sổ
 
 

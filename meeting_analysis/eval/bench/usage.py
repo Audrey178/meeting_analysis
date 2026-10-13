@@ -20,8 +20,10 @@ from typing import Any
 # với dashboard sau lần chạy đầu.
 PRICES_PER_MTOK: dict[str, tuple[float, float, float]] = {
     "gpt-4o-mini": (0.15, 0.075, 0.60),
+    # Decisions API: output miễn phí; chưa rõ giá input đã cache nên tính như input thường.
+    "gpt-6-luna": (0.10, 0.10, 0.0),
 }
-# USD mỗi lời gọi cho model không tính theo token (Decisions). Chưa biết giá thì để trống:
+# USD mỗi lời gọi cho model không tính theo token. Chưa biết giá thì để trống:
 # lời gọi đó được đếm vào ``unpriced_paid_calls`` thay vì tính 0đ.
 PRICES_PER_CALL: dict[str, float] = {}
 # Model tự host, không tốn tiền.
