@@ -128,9 +128,9 @@ Anchor every deadline on the meeting date.
 - "tháng sau"/"sang tháng" = last day of next month; "cuối tháng" = last day of this month; "đầu tháng sau"
   = the 10th and "giữa tháng sau" = the 20th of next month.
 - "cuối quý" = last day of this quarter; "quý I..IV" = 31/3, 30/6, 30/9, 31/12; "cuối năm" = 31/12.
-- A duration ("trong 10 ngày", "2 tháng nữa") = meeting date plus it. "thứ X" = the next weekday X; "thứ X
-  tuần sau" = weekday X of next week. "A hoặc B", "từ A đến B" = the LATER date.
-- No meeting date, an event-tied milestone, or any doubt: deadline_date null (keep a clear deadline_kind).
+- A duration ("trong 10 ngày") = meeting date plus it. "thứ X" = the next weekday X. "A hoặc B", "từ A
+  đến B" = the LATER date.
+- No meeting date, an event-tied milestone, or any doubt: deadline_date null.
 </rule>
 """.strip()
 
@@ -242,13 +242,13 @@ _ACTION_EXAMPLES = """
 <segment><transcript>
 <turn id="TURN_000004" speaker="Hoàng Thu Hà"><s id="40">Sở Y tế xin trình Đề án bệnh viện thông minh.</s></turn>
 <turn id="TURN_000005" speaker="Đỗ Văn Khải"><s id="51">Đề nghị đề án bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện.</s><s id="52">Thứ hai, cần so sánh chi phí với mô hình thuê dịch vụ.</s></turn>
-<turn id="TURN_000006" speaker="Lê Minh Quân"><s id="60">Lưu ý các ý kiến góp ý, như anh Khải nói về chi phí thuê dịch vụ.</s><s id="61">Đề nghị Sở Y tế chủ trì, phối hợp Sở Thông tin và Truyền thông hoàn chỉnh báo cáo, gửi trước ngày 20/12.</s></turn>
+<turn id="TURN_000006" speaker="Lê Minh Quân"><s id="60">Lưu ý các ý kiến góp ý, như anh Khải nói về chi phí thuê dịch vụ.</s><s id="61">Có hai nhóm việc cần bổ sung: thứ nhất, đề án tác động thế nào đến ngân sách các bệnh viện; thứ hai, phương án bảo mật dữ liệu bệnh nhân.</s><s id="62">Đề nghị Sở Y tế chủ trì, phối hợp Sở Thông tin và Truyền thông hoàn chỉnh báo cáo, gửi trước ngày 20/12.</s></turn>
 </transcript></segment>
 </input>
-<output>{"member_requests":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"},{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"So sánh chi phí của đề án với mô hình thuê dịch vụ"}],"action_items":[{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Sở Thông tin và Truyền thông","id":"D2","role":"support","type":"organization"}],"deadline":"trước ngày 20/12","deadline_date":"2026-12-20","deadline_kind":"before","text":"Hoàn chỉnh báo cáo đề án"}],"summary_turn_id":"TURN_000006"}</output>
-<explanation>Two requests in one turn are two items. "Lưu ý các ý kiến góp ý" accepts BOTH, also the one
-not cited by name, for the presenting unit. The chair's own request is a direct_request with lead and
-support.</explanation>
+<output>{"member_requests":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"},{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"So sánh chi phí của đề án với mô hình thuê dịch vụ"}],"action_items":[{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá tác động của đề án đến ngân sách các bệnh viện"},{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án bảo mật dữ liệu bệnh nhân"},{"evidence_segment_ids":["62"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Sở Thông tin và Truyền thông","id":"D2","role":"support","type":"organization"}],"deadline":"trước ngày 20/12","deadline_date":"2026-12-20","deadline_kind":"before","text":"Hoàn chỉnh báo cáo đề án"}],"summary_turn_id":"TURN_000006"}</output>
+<explanation>"Lưu ý các ý kiến góp ý" accepts BOTH member requests, also the one not cited by name. Each
+group of work in the summing-up is its own direct_request for the presenting unit, also when it states
+content to add rather than an action verb.</explanation>
 </example>
 <example id="action-edge-question" type="edge_case">
 <input>
@@ -299,8 +299,8 @@ Return ONE JSON object of this shape (with progress_tasks, "updates" comes first
       "basis": "direct_request",
       "request_turn_id": "TURN_000006: the turn raising the task content",
       "confirm_turn_id": "TURN_000006: direct_request or member_request_accepted -> summary_turn_id if any, else the assigning/accepting turn; assignee_acknowledged -> the taking-on turn; other bases -> request_turn_id",
-      "assignees": [{"name": "Sở Y tế: as in the assignee directory, else as the transcript says without 'anh', 'đồng chí'", "id": "D1: the directory code; null when unlisted or ambiguous", "role": "lead (leads or sole) | support ('phối hợp') | joint (together, none leads)", "type": "person | organization"}],
-      "deadline": "trước ngày 20/12: the whole spoken phrase, with 'trước', 'chậm nhất', 'cuối', 'trong', 'khoảng'; null when none",
+      "assignees": [{"name": "Sở Y tế", "id": "D1", "role": "lead | support | joint", "type": "person | organization"}],
+      "deadline": "trước ngày 20/12: the whole spoken phrase; null when none",
       "deadline_date": "2026-12-20",
       "deadline_kind": "before",
       "text": "Hoàn chỉnh báo cáo đề án: the task only, starting with a verb; assignee and deadline stay in their fields"
@@ -336,9 +336,11 @@ every turn of the chair and the commenting members: each assigned or accepted re
 </rule>
 <rule id="assignees">
 Each person or unit is ONE element; a unit name with "và" ("Sở Nông nghiệp và Môi trường") is one element.
-Resolve pronouns and general forms ("các đồng chí", "bên em") from the speakers and the chair's words; "các
-đồng chí" in the chair's conclusion usually means the presenting/drafting unit. When the evidence does not
-identify the party, leave assignees empty.
+name: as in the assignee directory, else as the transcript says it without "anh", "đồng chí". id: its
+directory code; null when unlisted or ambiguous. role: "lead" (leads, or the only one), "support" ("phối
+hợp"), "joint" (together, none leads). Resolve pronouns and general forms ("các đồng chí", "bên em") from
+the speakers and the chair's words; "các đồng chí" in the chair's conclusion usually means the
+presenting/drafting unit. When the evidence does not identify the party, leave assignees empty.
 </rule>
 {DEADLINE_RULES}
 {PROGRESS_TRACKING_SLOT}
@@ -429,18 +431,14 @@ ONE topic segment: what the chair SETTLES, or what the group AGREES on when ther
 <core_directives>
 <rules>
 <rule id="what_is_a_conclusion">
-Conclusions are settled or agreed content: policies and options agreed, rejected or postponed; overall
-assessments of the presented content; authority and procedure; deadlines and schedules (also "không ấn
-định thời hạn"); CONTENT requirements the chair settles for the document under discussion (what to clarify,
-add, fix), also when phrased as an assignment to the presenting unit.
+Conclusions come from the chair's summing-up; a segment with only presentation, Q&A and comments usually
+has none. Record EVERY point of a summing-up, minor ones too, ONE item per point and merging repeats:
+options agreed, rejected or postponed; overall assessments; authority and procedure; deadlines and
+schedules (also "không ấn định thời hạn"); documents to submit; CONTENT requirements for the document under
+discussion (what to clarify, add, fix), also when phrased as an assignment to the presenting unit.
 </rule>
 {CHAIR_CONCLUSION_RULE}
 {CHAIR_HINT}
-<rule id="summing_up">
-Conclusions come from the chair's summing-up; a segment with only presentation, Q&A and comments usually
-has none. Record EVERY point of a summing-up (authority, procedure, content to add, documents to submit,
-deadlines, members' points taken in), minor ones too: ONE item per point, merging repeats.
-</rule>
 <rule id="not_conclusions">
 Leave out: the presented document's own content, goals and plans; status reports and figures; one
 person's unsettled estimates, assessments or proposals; questions, explanations and thinking aloud (the
