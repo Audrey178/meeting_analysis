@@ -8,6 +8,7 @@ không thành việc giao mới.
 from __future__ import annotations
 
 import logging
+from xml.sax.saxutils import escape
 
 from ...utils.llm_call_log import llm_call
 from ...utils.ports import LLMAdapter, LLMUpstreamError
@@ -131,9 +132,9 @@ def _build_action_user_prompt(topic: ExtractorInput) -> str:
 
     speakers = ", ".join(list_distinct_speaker_names(topic["turns"])) or "(unknown)"
     return (
-        f"Meeting date: {format_meeting_date(topic.get('meeting_date'))}\n\n"
-        f"Meeting context:\n{topic['meeting_context']}\n\n"
-        f"Speakers in this segment: {speakers}\n\n"
+        f"<meeting_date>{format_meeting_date(topic.get('meeting_date'))}</meeting_date>\n"
+        f"<meeting_context>\n{topic['meeting_context']}\n</meeting_context>\n"
+        f"<segment_speakers>{escape(speakers)}</segment_speakers>\n"
         f"{format_topic_prompt(topic)}"
     )
 

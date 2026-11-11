@@ -4,9 +4,11 @@
 
 from __future__ import annotations
 
+from xml.sax.saxutils import escape
+
 from ...utils.contracts import SpeakerTurn, TopicLabel, TopicSegment
 from ..shared.schemas import ExtractorInput, SpeakerRegistry
-from ..shared.transcript import format_turns_as_transcript
+from ..shared.transcript import format_turns_as_xml
 from .registry import format_registry_context
 
 
@@ -41,12 +43,15 @@ def build_extractor_input(
 
 
 def format_topic_prompt(topic: ExtractorInput) -> str:
-    """Dựng phần chung cuối user prompt của mọi agent trích xuất: tiêu đề, tóm tắt và bản ghi."""
+    """Dựng phần chung cuối user prompt của mọi agent trích xuất: khối ``<segment>`` gồm tiêu đề, tóm tắt
+    và bản ghi XML."""
 
     return (
-        f"Segment title: {topic['title']}\n"
-        f"Segment summary: {topic['summary']}\n\n"
-        f"Transcript:\n{format_turns_as_transcript(topic['turns'])}"
+        "<segment>\n"
+        f"<title>{escape(topic['title'])}</title>\n"
+        f"<summary>{escape(topic['summary'])}</summary>\n"
+        f"{format_turns_as_xml(topic['turns'])}\n"
+        "</segment>"
     )
 
 

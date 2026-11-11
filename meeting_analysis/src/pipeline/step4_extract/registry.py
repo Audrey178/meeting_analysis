@@ -10,6 +10,7 @@ ghi lại khi nêu bên nhận việc.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from xml.sax.saxutils import escape, quoteattr
 
 from ...utils.contracts import SpeakerTurn
 from ..shared.meeting_inputs.agenda import TaskAgenda
@@ -68,7 +69,9 @@ def format_registry_context(registry: SpeakerRegistry) -> str:
         registry: Danh bạ người nói của cả cuộc họp.
 
     Returns:
-        Văn bản nhiều dòng; một câu báo "không có danh sách người nói" nếu danh bạ hoàn toàn rỗng.
+        Các thẻ XML ``<speakers>``, ``<assignee_directory>`` (mỗi bên một ``<party id=...>``) và
+        ``<progress_tasks>``, mỗi thẻ có khi có dữ liệu; một câu báo "không có danh sách người nói" nếu
+        danh bạ hoàn toàn rỗng.
     """
 
     roster = registry.roster
@@ -76,11 +79,14 @@ def format_registry_context(registry: SpeakerRegistry) -> str:
         return "(No speaker list.)"
     lines = []
     if registry.names:
-        lines.append("Speakers in the whole meeting: " + ", ".join(registry.names) + ".")
+        lines.append(f"<speakers>{escape(', '.join(registry.names))}</speakers>")
     directory = build_actor_directory(registry)
     if directory:
-        lines.append("Assignee directory (code: name; put the code in the id of assignees):")
-        lines.extend(f"- {entry.code}: {_describe_entry(entry, roster)}" for entry in directory)
+        lines.append("<assignee_directory>")
+        lines.extend(
+            f"<party id={quoteattr(entry.code)}>{escape(_describe_entry(entry, roster))}</party>" for entry in directory
+        )
+        lines.append("</assignee_directory>")
     if registry.agenda.tasks:
         lines.append(format_agenda(registry.agenda))
     return "\n".join(lines)
@@ -106,28 +112,30 @@ def _describe_entry(entry: DirectoryEntry, roster: AttendeeRoster) -> str:
 
 
 def format_agenda(agenda: TaskAgenda) -> str:
-    """Trình bày danh sách việc cần báo cáo tiến độ thành khối văn bản cho prompt.
+    """Trình bày danh sách việc cần báo cáo tiến độ thành khối XML ``<progress_tasks>`` cho prompt.
 
-    Mỗi việc một dòng gồm mã, tên việc, bên chủ trì, bên phối hợp, hạn và trạng thái trước phiên họp;
-    trường nào trống thì bỏ.
+    Mỗi việc một thẻ ``<task id=...>`` chứa tên việc, kèm thuộc tính bên chủ trì, bên phối hợp, hạn và
+    trạng thái trước phiên họp; thuộc tính nào trống thì bỏ.
 
     Args:
-        agenda: Danh sách việc. Nên khác rỗng, vì dòng tiêu đề luôn được in.
+        agenda: Danh sách việc. Nên khác rỗng, vì thẻ bao ngoài luôn được in.
 
     Returns:
-        Văn bản nhiều dòng, dòng đầu là tiêu đề.
+        Khối XML nhiều dòng.
     """
 
-    lines = ["Tasks to report progress on in this session (code: task name):"]
+    lines = ["<progress_tasks>"]
     for task in agenda.tasks:
-        details = [f"lead: {task.owner.name}"]
+        attrs = {"id": task.task_id, "lead": task.owner.name}
         if task.support:
-            details.append("support: " + ", ".join(party.name for party in task.support))
+            attrs["support"] = ", ".join(party.name for party in task.support)
         if task.due:
-            details.append(f"deadline: {task.due}")
+            attrs["deadline"] = task.due
         if task.last_status:
-            details.append(f"status before the session: {task.last_status}")
-        lines.append(f"- {task.task_id}: {task.title} ({'; '.join(details)})")
+            attrs["status_before_session"] = task.last_status
+        rendered = " ".join(f"{key}={quoteattr(str(value))}" for key, value in attrs.items())
+        lines.append(f"<task {rendered}>{escape(task.title)}</task>")
+    lines.append("</progress_tasks>")
     return "\n".join(lines)
 
 

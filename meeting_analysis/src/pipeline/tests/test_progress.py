@@ -23,7 +23,7 @@ from ..shared.meeting_inputs.attendees import parse_attendee_roster
 from ..shared.prompts import ACTION_AGENDA_RULE, ACTION_SYSTEM_PROMPT
 from ..shared.schemas import AssigneeMention, ProgressUpdate
 from ..step4_extract.action import ACTION_SCHEMA
-from ..step4_extract.extractors import call_extractor
+from ..step4_extract.extractors import call_extractor, render_system_prompt
 from ..step4_extract.registry import (
     build_speaker_registry,
     format_registry_context,
@@ -45,6 +45,7 @@ from .test_pipeline import (
     TURNS,
     FakeLabeler,
     FakeLLM,
+    _has_turn,
     _verifier_final,
 )
 
@@ -206,7 +207,8 @@ def test_sample_agenda_file_matches_its_attendees():
 
 def test_registry_context_shows_agenda_tasks():
     context = format_registry_context(build_speaker_registry(TURNS, agenda=AGENDA))
-    assert "- T1: Đẩy nhanh khối lượng thi công (lead: Anh Phong; deadline: 2026-10-31" in context
+    assert '<task id="T1" lead="Anh Phong" deadline="2026-10-31"' in context
+    assert "Đẩy nhanh khối lượng thi công</task>" in context
 
 
 # ---------------------------------------------------------------------------
@@ -254,7 +256,7 @@ def test_action_agent_reads_updates_validating_task_ids_and_turns():
     updates_schema = call["schema"]["properties"]["updates"]
     assert updates_schema["required"] == ["T1", "T2"]  # mỗi việc một mục bắt buộc
     assert "not_discussed" in updates_schema["properties"]["T1"]["properties"]["status"]["enum"]
-    assert "Tasks to report progress on" in call["user"]
+    assert "<progress_tasks>" in call["user"]
 
 
 def test_action_agent_reads_member_request_turn_into_evidence():
@@ -555,7 +557,8 @@ def test_action_agent_gets_updates_and_rule_only_with_agenda():
 
     without, with_agenda = llm.calls
     # Không có danh sách việc: prompt và schema của Action agent như trước khi có tính năng này.
-    assert without["schema"] == ACTION_SCHEMA and without["system"] == ACTION_SYSTEM_PROMPT
+    assert without["schema"] == ACTION_SCHEMA
+    assert without["system"] == render_system_prompt(ACTION_SYSTEM_PROMPT, ACTION_SCHEMA)
     assert "updates" not in without["schema"]["properties"]
     # Có danh sách: chỉ thêm updates, ĐỨNG ĐẦU schema; việc giao không mang mã việc cũ.
     assert list(with_agenda["schema"]["properties"]) == ["updates", "member_requests", "action_items", "summary_turn_id"]
@@ -563,7 +566,10 @@ def test_action_agent_gets_updates_and_rule_only_with_agenda():
     assert with_agenda["schema"]["properties"]["action_items"] == ACTION_SCHEMA["properties"]["action_items"]
     update = with_agenda["schema"]["properties"]["updates"]["properties"]["T1"]
     assert "assignees" in update["properties"] and "assignees" in update["required"]
-    assert with_agenda["system"] == f"{ACTION_SYSTEM_PROMPT}\n\n{ACTION_AGENDA_RULE}"
+    assert with_agenda["system"] == render_system_prompt(
+        ACTION_SYSTEM_PROMPT, with_agenda["schema"], progress=ACTION_AGENDA_RULE
+    )
+    assert ACTION_AGENDA_RULE not in without["system"]
     assert "updates" not in ACTION_SCHEMA["properties"]  # schema gốc không bị sửa
 
 
@@ -589,7 +595,7 @@ class FakeProgressLLM(FakeLLM):
         with self._lock:
             self.progress_calls += 1
         updates = {}
-        if "[T5|" in user_prompt:
+        if _has_turn(user_prompt, "T5"):
             updates = {"T1": {
                 "status": "in_progress", "status_turn_id": "T5", "evidence_segment_ids": ["T5"],
                 "deadline": None, "deadline_date": None, "deadline_kind": "unknown", "deadline_extended": False,

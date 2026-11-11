@@ -21,11 +21,14 @@ from ..shared.meeting_inputs.agenda import parse_task_agenda
 from ..shared.meeting_inputs.attendees import AttendeePerson, AttendeeRoster, MeetingChair, parse_meeting_chair
 from ..shared.schemas import SpeakerRegistry
 from ..step4_extract.action import (
+    ACTION_SCHEMA,
     BASIS_STATUS,
     NOT_ASSIGNMENT_BASES,
     run_action_agent,
 )
-from ..step4_extract.decision import run_decision_agent
+from ..step4_extract.content import CONTENT_SCHEMA
+from ..step4_extract.decision import DECISION_SCHEMA, run_decision_agent
+from ..step4_extract.extractors import render_system_prompt
 from ..step4_extract.registry import build_speaker_registry
 from ..step5_verify.verifier.tools import MeetingTools
 from ..shared.judges.turn_act import ClaimSupportJudgement, DecisionRelationJudgement, TurnActJudgement
@@ -34,6 +37,12 @@ from ..step5_verify.verifier.verifier import VERIFIER_SCHEMA
 
 def _turn(turn_id: str, speaker: str, text: str) -> SpeakerTurn:
     return SpeakerTurn(turn_id, speaker, text, None, None)
+
+
+def _has_turn(user_prompt: str, turn_id: str) -> bool:
+    """Prompt có lượt ``turn_id`` không: bản ghi XML của agent trích xuất hoặc dạng "[mã|tên]" của Verifier."""
+
+    return f'<turn id="{turn_id}"' in user_prompt or f"[{turn_id}|" in user_prompt
 
 
 TURNS = (
@@ -92,7 +101,7 @@ class FakeLLM:
 
     def generate_json(self, *, system_prompt, user_prompt, schema):
         kind = self._kind(system_prompt, schema)
-        segment = next((s.segment_id for s in SEGMENTS if any(f"[{t}|" in user_prompt for t in s.turn_ids)), "?")
+        segment = next((s.segment_id for s in SEGMENTS if any(_has_turn(user_prompt, t) for t in s.turn_ids)), "?")
         with self._lock:
             self.calls.append(kind)
             self.prompts.append((kind, system_prompt, user_prompt))
@@ -121,20 +130,20 @@ class FakeLLM:
 
     def _answer(self, kind: str, user_prompt: str) -> dict:
         if kind == "content":
-            turn_id = next(t.turn_id for t in TURNS if f"[{t.turn_id}|" in user_prompt)
+            turn_id = next(t.turn_id for t in TURNS if _has_turn(user_prompt, t.turn_id))
             return {"discussion_points": [{"evidence_segment_ids": [turn_id], "text": "Ý kiến."}]}
         if kind == "action":
             with self._lock:
                 if self.fail_action_once:
                     self.fail_action_once = False
                     raise LLMUpstreamError("gateway down")
-            if "[T1|" in user_prompt:
+            if _has_turn(user_prompt, "T1"):
                 return {"action_items": [{
                     "evidence_segment_ids": ["T1", "T2"], "confirm_turn_id": "T1", "status": "assigned",
                     "assignees": [{"name": "Hiếu", "role": "lead", "type": "person"}],
                     "text": "Map lại nhãn sang 12 lĩnh vực", "deadline": "trước ngày 25/11",
                 }]}
-            if "[T3|" in user_prompt:
+            if _has_turn(user_prompt, "T3"):
                 return {"action_items": [{
                     "evidence_segment_ids": ["T3"], "confirm_turn_id": "T3", "status": "proposed",
                     "assignees": [{"name": "Chị Mai", "role": "lead", "type": "person"}],
@@ -524,7 +533,7 @@ def test_chair_is_shown_to_extractors_and_verifier():
 
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
     verifier_prompt = next(user for kind, _, user in llm.prompts if kind == "verifier")
-    assert action_prompt.startswith("Chair: Anh Tuấn\n")
+    assert action_prompt.startswith("<chair>Anh Tuấn</chair>\n")
     assert verifier_prompt.startswith("Chair: Anh Tuấn\n")
 
 
@@ -571,13 +580,17 @@ def test_extractors_run_with_v3_prompts():
     _start(_analyzer(llm))
 
     systems = {kind: system for kind, system, _ in llm.prompts}
-    assert systems["content"] == prompts.CONTENT_SYSTEM_PROMPT
-    assert systems["action"] == prompts.ACTION_SYSTEM_PROMPT
-    assert systems["decision"] == prompts.DECISION_SYSTEM_PROMPT
+    assert systems["content"] == render_system_prompt(prompts.CONTENT_SYSTEM_PROMPT, CONTENT_SCHEMA)
+    assert systems["action"] == render_system_prompt(prompts.ACTION_SYSTEM_PROMPT, ACTION_SCHEMA)
+    assert systems["decision"] == render_system_prompt(prompts.DECISION_SYSTEM_PROMPT, DECISION_SCHEMA)
+    for system in (systems["content"], systems["action"], systems["decision"]):
+        assert prompts.JSON_SCHEMA_SLOT not in system and prompts.PROGRESS_TRACKING_SLOT not in system
+        assert "<json_schema>{" in system
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["action"]
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["verifier"]
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
-    assert action_prompt.startswith("Chair: (not provided for this session; do NOT guess who the chair is)\n")
+    assert action_prompt.startswith('<chair provided="false">')
+    assert '<turn id="T1" speaker="Anh Tuấn">' in action_prompt
 
 
 def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
@@ -672,12 +685,12 @@ def test_assignment_rule_names_every_basis_and_limits_blanket_acceptance():
     rule = flat(prompts.CHAIR_ASSIGNMENT_RULE)
     for basis in (*BASIS_STATUS, *NOT_ASSIGNMENT_BASES):
         assert f'"{basis}"' in rule
-    assert "Assigned tasks exist even without a chair" in rule
+    assert "Assigned tasks exist also without a chair" in rule
     assert "lưu ý các ý kiến góp ý" in rule
     # Tiếp nhận chung không biến lời trình bày (lộ trình của đề án) thành việc giao.
-    assert "not to the presentation of the presenting unit" in rule
+    assert "General acceptance covers the requests of the commenting members only" in rule
     assert "the presenting/drafting unit is lead" in rule
-    assert "do NOT drop it because no individual" in flat(prompts.VERIFY_RUBRICS["action"])
+    assert "it needs no named individual" in flat(prompts.VERIFY_RUBRICS["action"])
     assert prompts.VERIFY_ACCEPTANCE_NOTE in prompts.VERIFY_RUBRICS["action"]
     note = flat(prompts.VERIFY_ACCEPTANCE_NOTE)
     assert "như anh X nói" in note
@@ -915,7 +928,7 @@ def test_finalize_keeps_only_the_last_conclusion_of_an_issue_across_topics():
             if kind != "decision":
                 return super()._answer(kind, user_prompt)
             for turn_id, text in (("T1", "Trình đề án lên Thủ tướng"), ("T6", "Làm lại đề án trước khi trình")):
-                if f"[{turn_id}|" in user_prompt:
+                if _has_turn(user_prompt, turn_id):
                     return {"member_points": [], "decisions": [{
                         "evidence_segment_ids": [turn_id], "basis": "closing_statement", "request_turn_id": turn_id,
                         "confirm_turn_id": turn_id, "text": text,

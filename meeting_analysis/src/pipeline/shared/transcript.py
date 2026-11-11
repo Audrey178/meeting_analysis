@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Sequence
+from xml.sax.saxutils import escape, quoteattr
 
 from ...utils.contracts import SpeakerTurn, TopicSegment
 from .actors.names import name_key
@@ -40,6 +41,33 @@ def format_turns_as_transcript(turns: tuple[SpeakerTurn, ...]) -> str:
     """
 
     return "\n".join(f"[{turn.turn_id}|{turn.speaker or 'unknown'}] {format_turn_text(turn)}" for turn in turns)
+
+
+def format_turns_as_xml(turns: tuple[SpeakerTurn, ...]) -> str:
+    """Dựng bản ghi dạng XML lồng nhau cho prompt của agent trích xuất, để mô hình trích dẫn theo thuộc tính id.
+
+    Mỗi lượt là một thẻ ``<turn id=... speaker=...>``, mỗi item nguồn trong lượt là một thẻ ``<s id=...>``;
+    lượt không có item nguồn chỉ chứa nguyên văn. Nội dung và thuộc tính được escape theo XML.
+
+    Args:
+        turns: Các lượt nói, theo thứ tự.
+
+    Returns:
+        Khối ``<transcript>`` nhiều dòng; người nói không rõ được ghi là "unknown".
+    """
+
+    lines = ["<transcript>"]
+    for turn in turns:
+        sentences = (
+            "".join(f"<s id={quoteattr(str(item_id))}>{escape(text)}</s>" for item_id, text in turn.source_items)
+            if turn.source_items
+            else escape(turn.text_exact)
+        )
+        lines.append(
+            f"<turn id={quoteattr(turn.turn_id)} speaker={quoteattr(turn.speaker or 'unknown')}>{sentences}</turn>"
+        )
+    lines.append("</transcript>")
+    return "\n".join(lines)
 
 
 def get_turns_of_segment(
@@ -142,6 +170,7 @@ def match_claimed_name_to_real_speaker(
 __all__ = [
     "format_turn_text",
     "format_turns_as_transcript",
+    "format_turns_as_xml",
     "get_turns_of_segment",
     "list_distinct_speaker_names",
     "match_claimed_name_to_real_speaker",

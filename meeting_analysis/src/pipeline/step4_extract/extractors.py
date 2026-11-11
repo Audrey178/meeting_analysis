@@ -13,6 +13,7 @@ hết tiền) thì dừng cả lượt chạy. Nếu mô hình trả về kết 
 from __future__ import annotations
 
 import copy
+import json
 import logging
 from collections.abc import Callable, Mapping, Sequence
 
@@ -22,12 +23,14 @@ from ..shared.prompts import (
     ACTION_SYSTEM_PROMPT,
     CONTENT_SYSTEM_PROMPT,
     DECISION_SYSTEM_PROMPT,
-    format_chair_line,
+    JSON_SCHEMA_SLOT,
+    PROGRESS_TRACKING_SLOT,
+    format_chair_element,
 )
 from ..shared.schemas import AnalysisPart, ExtractorInput, SpeakerRegistry, TopicFailure
-from .action import run_action_agent
-from .content import run_content_agent
-from .decision import run_decision_agent
+from .action import ACTION_SCHEMA, run_action_agent
+from .content import CONTENT_SCHEMA, run_content_agent
+from .decision import DECISION_SCHEMA, run_decision_agent
 from .progress_extract import build_update_schema
 
 logger = logging.getLogger(__name__)
@@ -84,6 +87,22 @@ def with_agenda_fields(schema: Mapping[str, object], task_ids: Sequence[str]) ->
     return schema
 
 
+def render_system_prompt(template: str, schema: Mapping[str, object], progress: str = "") -> str:
+    """Điền hai thẻ giữ chỗ của system prompt agent trích xuất.
+
+    Args:
+        template: System prompt XML có ``<json_schema/>`` và (với agent giao việc) ``<progress_tracking/>``.
+        schema: Schema JSON thật gửi kèm lời gọi; được in gọn trong thẻ ``<json_schema>``.
+        progress: Khối hướng dẫn tiến độ; rỗng khi cuộc họp không có danh sách việc.
+
+    Returns:
+        System prompt hoàn chỉnh.
+    """
+
+    rendered_schema = f"<json_schema>{json.dumps(schema, ensure_ascii=False)}</json_schema>"
+    return template.replace(JSON_SCHEMA_SLOT, rendered_schema).replace(PROGRESS_TRACKING_SLOT, progress)
+
+
 def call_extractor(name: str, llm: LLMAdapter, topic: ExtractorInput, registry: SpeakerRegistry) -> dict:
     """Gọi một agent trích xuất đúng một lần cho một chủ đề.
 
@@ -105,17 +124,21 @@ def call_extractor(name: str, llm: LLMAdapter, topic: ExtractorInput, registry: 
         LLMUpstreamError: Khi LLM lỗi loại ``fatal``.
     """
 
-    chair_line = format_chair_line(registry.chair)
+    chair_line = format_chair_element(registry.chair)
     if name == "content_agent":
-        return run_content_agent(_PromptPrefixedLLM(llm, chair_line), CONTENT_SYSTEM_PROMPT, topic)
+        prompt = render_system_prompt(CONTENT_SYSTEM_PROMPT, CONTENT_SCHEMA)
+        return run_content_agent(_PromptPrefixedLLM(llm, chair_line), prompt, topic)
     if name == "decision_agent":
-        return run_decision_agent(_PromptPrefixedLLM(llm, chair_line), DECISION_SYSTEM_PROMPT, topic, registry.chair)
+        prompt = render_system_prompt(DECISION_SYSTEM_PROMPT, DECISION_SCHEMA)
+        return run_decision_agent(_PromptPrefixedLLM(llm, chair_line), prompt, topic, registry.chair)
     if name != "action_agent":
         raise ValueError(f"agent trích xuất không tồn tại: {name!r}")
-    prompt, schema_hook = ACTION_SYSTEM_PROMPT, None
+    prompt, schema_hook = render_system_prompt(ACTION_SYSTEM_PROMPT, ACTION_SCHEMA), None
     task_ids = registry.agenda.task_ids
     if task_ids:
-        prompt = f"{ACTION_SYSTEM_PROMPT}\n\n{ACTION_AGENDA_RULE}"
+        prompt = render_system_prompt(
+            ACTION_SYSTEM_PROMPT, with_agenda_fields(ACTION_SCHEMA, task_ids), progress=ACTION_AGENDA_RULE
+        )
 
         def schema_hook(schema: Mapping[str, object]) -> dict:
             return with_agenda_fields(schema, task_ids)
@@ -206,5 +229,6 @@ __all__ = [
     "EXTRACTOR_OUTPUTS",
     "call_extractor",
     "extract_topic",
+    "render_system_prompt",
     "with_agenda_fields",
 ]

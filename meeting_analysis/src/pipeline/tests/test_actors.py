@@ -32,7 +32,7 @@ from ..shared.schemas import ActionItemCandidate
 from ..step4_extract.registry import build_speaker_registry, format_registry_context
 from ..step5_verify.check.evidence_check import _actor_reasons
 from ..step5_verify.verifier.tools import MeetingTools
-from .test_pipeline import CommitTurnJudge
+from .test_pipeline import CommitTurnJudge, _has_turn
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 TRANSCRIPT_PATH = REPO_ROOT / "inputs" / "bien-ban-vdt-trang-copy-v1.json"
@@ -302,11 +302,11 @@ class FakeLLM:
             self.verifier_prompts.append(user_prompt)
             return self.verifier_script.pop(0)
         if first_field == "discussion_points":
-            turn = next(t for t in TURNS if f"[{t.turn_id}|" in user_prompt)
+            turn = next(t for t in TURNS if _has_turn(user_prompt, t.turn_id))
             return {"discussion_points": [{"evidence_segment_ids": [turn.turn_id], "text": "Ý kiến."}]}
         if first_field == "decisions":
             return {"decisions": []}
-        if "[T1|" in user_prompt:
+        if _has_turn(user_prompt, "T1"):
             return {"action_items": [{"evidence_segment_ids": ["T1"], "confirm_turn_id": "T1", "status": "assigned",
                                       "assignees": [_assignee("Sở Tài chính", "lead", "organization")],
                                       "text": "Chủ trì cân đối vốn đầu tư công", "deadline": None}]}
@@ -577,8 +577,8 @@ def test_actor_directory_codes_people_then_organizations_and_shows_them_in_conte
         ("N4", "Đỗ Thanh Phong", "P5"), ("D1", "Ban Thường vụ Thành ủy", "O1"), ("D2", "Sở Tài chính", "O3"),
         ("D3", "Sở Xây dựng", "O4"),
     ]
-    assert "- N3: Trần Văn Thông (Ủy viên Ban Thường vụ, Ban Thường vụ Thành ủy, speaker label: Đ/c Thông (HNI))" in context
-    assert "- D2: Sở Tài chính (unit)" in context
+    assert '<party id="N3">Trần Văn Thông (Ủy viên Ban Thường vụ, Ban Thường vụ Thành ủy, speaker label: Đ/c Thông (HNI))</party>' in context
+    assert '<party id="D2">Sở Tài chính (unit)</party>' in context
 
 
 def test_unlisted_speaker_gets_a_code_without_ref_id():
@@ -586,7 +586,7 @@ def test_unlisted_speaker_gets_a_code_without_ref_id():
     entry = next(entry for entry in build_actor_directory(registry) if entry.name == "Hiếu")
 
     assert (entry.code, entry.ref_id) == ("N5", None)
-    assert "- N5: Hiếu (speaker, not in the attendee list)" in format_registry_context(registry)
+    assert '<party id="N5">Hiếu (speaker, not in the attendee list)</party>' in format_registry_context(registry)
 
 
 def test_read_assignee_mentions_reads_code_and_keeps_same_name_people_with_different_codes():
