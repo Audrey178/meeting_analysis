@@ -14,6 +14,7 @@ fastapi>=0.115,<0.116
 uvicorn[standard]>=0.30,<0.31
 pydantic>=2.0
 redis>=5.0,<6           # be/services/analysis_cache.py (V3_CACHE=redis, mặc định); server: docker compose up -d redis
+boto3>=1.28             # be/services/transcript_source.py: đọc transcript từ source.transcript_uri (s3://; MinIO: AWS_ENDPOINT_URL)
 
 # --- Cắt chủ đề + embedding cục bộ ---
 # be/services/pipeline_v3.py import experiments/dialstart ngay khi khởi động (torch + BertTokenizer);

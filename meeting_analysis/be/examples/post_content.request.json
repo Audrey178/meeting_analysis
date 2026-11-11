@@ -1,7 +1,10 @@
 {
   "meeting_id": "MTG-DEMO-001",
   "meeting_date": "2026-09-15",
-  "chair": "id_678768",
+  "chair": {
+    "id": "P1",
+    "full_name": "Nguyễn Cường"
+  },
   "attendees": {
     "people": [
       {
@@ -15,7 +18,7 @@
       {
         "id": "O1",
         "name": "Ban Quản lý dự án Cảng Cái Mép",
-        "parent_id:"X1" (null nếu đơn vị này là đơn vị cấp 0)
+        "parent_id": "X1",
         "aliases": [
           "Ban quản lý"
         ],
@@ -23,10 +26,10 @@
           "xây dựng tờ trình đề án"
         ]
       },
-     {
+      {
         "id": "X1",
         "name": "sở văn hoá",
-        "parent_id:"M1" (null nếu đơn vị này là đơn vị cấp 0)
+        "parent_id": "M1",
         "aliases": [
           "Ban quản lý"
         ],
@@ -36,14 +39,21 @@
       },
       {
         "id": "M1",
-        "name": "Đảng uỷ,
-        "parent_id:"null" (null nếu đơn vị này là đơn vị cấp 0)
+        "name": "Đảng uỷ",
+        "parent_id": null,
         "aliases": [
           "Ban quản lý"
         ],
         "functions": [
           "xây dựng tờ trình đề án"
         ]
+      },
+      {
+        "id": "O2",
+        "name": "Sở Giao thông vận tải",
+        "parent_id": null,
+        "aliases": [],
+        "functions": []
       }
     ]
   },
@@ -52,8 +62,7 @@
       {
         "id": "T1",
         "title": "Hoàn thiện hồ sơ Tờ trình 1374 trình Ban Thường vụ",
-        "owner": {
-               "O1"‘},
+        "owner": "O1",
         "support": [
           "O2"
         ],

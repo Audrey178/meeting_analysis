@@ -61,14 +61,15 @@ class AnalyzeRequest(BaseModel):
         meeting_id: mã cuộc họp (tùy chọn).
         meeting_date: ngày họp (tùy chọn), neo để quy hạn chót của việc giao ("tuần sau")
             về ``deadline_date``; thiếu thì vẫn có ``deadline_kind``.
-        items: danh sách các dòng transcript ở dạng dict.
+        items: danh sách các dòng transcript ở dạng dict; None thì đọc từ ``source.transcript_uri``
+            (``services/transcript_source.py``).
         attendees: danh sách người/đơn vị tham dự (tùy chọn); thiếu thì actor
             chỉ được quy về người nói trong bản ghi.
     """
 
     meeting_id: str | None = None
     meeting_date: date | None = None
-    items: list[dict]
+    items: list[dict] | None = None
     attendees: AttendeesIn | None = None
 
 

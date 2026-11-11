@@ -52,6 +52,7 @@ from services.pipeline_v3 import (
     run_meeting_document_by_id_v3,
     run_meeting_document_v3,
 )
+from services.transcript_source import TranscriptSourceError, with_transcript_items
 
 from src.utils.ports import LLMUpstreamError
 
@@ -61,7 +62,7 @@ def _http_errors(compute: Callable[[], dict]) -> dict:
     """Chạy ``compute`` và đổi lỗi của pipeline thành mã HTTP.
 
     Lỗi HTTP: 504/502 nếu LLM lỗi (502 cả khi chạy lại một document mà có chủ đề lỗi, bản cũ
-    được giữ), 503 nếu không dùng được cache (Redis), 409 nếu bản phân tích đang được chạy lại
+    được giữ, hoặc không đọc được kho lưu transcript), 503 nếu không dùng được cache (Redis), 409 nếu bản phân tích đang được chạy lại
     toàn bộ, 422 nếu transcript/danh sách không hợp lệ.
     """
 
@@ -69,7 +70,7 @@ def _http_errors(compute: Callable[[], dict]) -> dict:
         return compute()
     except LLMUpstreamError as exc:
         raise HTTPException(status_code=504 if exc.timed_out else 502, detail=str(exc)) from exc
-    except PartReloadFailedError as exc:
+    except (PartReloadFailedError, TranscriptSourceError) as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     except CacheUnavailableError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -95,7 +96,7 @@ def _document_endpoint(
         topic_segmenter=Depends(get_topic_segmenter),
         cache: AnalysisCache = Depends(get_analysis_cache_v3),
     ) -> dict:
-        payload = request.model_dump()
+        payload = _http_errors(lambda: with_transcript_items(request.model_dump()))
         result = _http_errors(
             lambda: run_meeting_document_v3(
                 payload,

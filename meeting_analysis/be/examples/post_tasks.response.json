@@ -85,11 +85,29 @@
             "status_conflict": false,
             "uncertain": false,
             "overdue": false,
+            "reassigned": false,
             "summary": "",
             "blockers": [],
             "directive": "",
-            "deadline_removed": false,
-            "assignments": []
+            "deadline_extended": false,
+            "updates": [
+              {
+                "topic_id": "TOPIC_SEG_000000",
+                "status": "in_progress",
+                "summary": "",
+                "directive": "",
+                "blockers": [],
+                "due": null,
+                "deadline_extended": false,
+                "primary": null,
+                "collaborators": [],
+                "deciding": true,
+                "flag": null,
+                "verification": null,
+                "segment_ids": ["i001", "i002"],
+                "turn_ids": ["TURN_000001"]
+              }
+            ]
           }
         }
       }

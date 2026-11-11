@@ -25,6 +25,8 @@ api = [
     "uvicorn[standard]>=0.30",
     # be/services/analysis_cache.py: cache kết quả v3 trên Redis (V3_CACHE=redis, mặc định).
     "redis>=5.0",
+    # be/services/transcript_source.py: đọc transcript từ source.transcript_uri (s3://).
+    "boto3>=1.28",
 ]
 
 # be_v2: BFF/UI backend, PostgreSQL persistence and API contract tests.

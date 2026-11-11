@@ -95,7 +95,7 @@ phụ dùng cùng body này.
 |---|---|---|---|
 | `meeting_id` | string \| null | Không, nhưng **bắt buộc với dạng native** | Mã cuộc họp. Với dạng STT export, nếu thiếu thì dùng `"stt-export"`. Đi vào `analysis_key` |
 | `meeting_date` | `"YYYY-MM-DD"` \| null | Không | Ngày họp. Dùng để quy hạn tương đối ("tuần sau", "cuối tháng") ra `due.date` và để tính `overdue` của việc cũ. Nếu thiếu thì hạn vẫn có `raw` và `kind` nhưng `date` có thể là null |
-| `items` | array of object | **Có** | Các dòng transcript theo thứ tự thời gian. Xem [3.2](#32-items-các-dòng-transcript) |
+| `items` | array of object \| null | Có, **trừ khi** có `source.transcript_uri` | Các dòng transcript theo thứ tự thời gian. Xem [3.2](#32-items-các-dòng-transcript). Thiếu thì đọc từ `source.transcript_uri` (xem [3.5](#35-source)) |
 | `attendees` | object \| null | Không | Danh sách người và đơn vị tham dự, dùng để định danh bên nhận việc. Xem [3.3](#33-attendees) |
 | `chair` | object \| null | Không | Người chủ trì: `{"id": "P4", "full_name": "Phạm An"}`. `id` khớp một người trong `attendees.people` thì dùng tên trong danh sách, không thì dùng `full_name`. Tên này nếu khớp **duy nhất** một người nói trong transcript thì được quy về nhãn người nói đó và đưa vào prompt, giúp nhận ra lời giao việc và kết luận của chủ trì. Nếu null thì model tự suy ra. Gửi chuỗi thay cho object thì trả 422 |
 | `tasks` | object \| null | Không | Danh sách việc cũ (backlog) cần báo cáo tiến độ. **Chỉ document `tasks` dùng.** Xem [3.4](#34-tasks-danh-sách-việc-cũ) |
@@ -281,7 +281,7 @@ agent trích thêm tiến độ và gắn `task_id`/`relation` cho lời giao vi
 | Trường | Kiểu | Mô tả |
 |---|---|---|
 | `transcript_version_id` | string \| null | Mã phiên bản transcript ở hệ thống nguồn |
-| `transcript_uri` | string \| null | URI của transcript |
+| `transcript_uri` | string \| null | URI của transcript. Khi request không có `items`, API đọc transcript từ đây: chỉ hỗ trợ `s3://bucket/key` (MinIO/S3 tương thích: đặt `AWS_ENDPOINT_URL`; thông tin đăng nhập theo biến môi trường AWS). Nội dung là JSON cùng dạng transcript (object có `items`, hoặc mảng item); `meeting_id` của request được ưu tiên, thiếu thì lấy của transcript |
 | `document_uris` | string[] | URI các tài liệu kèm (tờ trình…) |
 
 Response mang `source` của **chính request đó**. Nếu document lấy từ cache qua GET thì mang
@@ -477,7 +477,7 @@ Trong ví dụ, `turns[0].text` đã dùng `review.text` của `i002` ("nguồn"
 `document_type = "meeting_tasks"`.
 
 - **Input**: path param `meeting_id`, là `meeting_id` trong response của `POST /content`. Không có body.
-- **Output**: `TasksDocument`. Ví dụ đầy đủ: `be/examples/get_tasks.response.json`.
+- **Output**: `TasksDocument`. Ví dụ đầy đủ: `be/examples/post_tasks.response.json` (cùng dạng response `POST /tasks`).
 - **Cách lấy**: có trong cache thì trả ngay; đang tính nền thì chờ; chưa có thì chạy Action agent trên
   đầu vào đã cache (dùng `attendees` và `tasks` của request `/content`). Cuộc họp chưa gọi
   `POST /content` thì trả **404** (`be/examples/get_tasks.response_404.json`).
@@ -593,7 +593,7 @@ Một dòng việc chỉ có `task_id`, `source_uri` và `extracted`.
 `document_type = "meeting_decisions"`.
 
 - **Input**: path param `meeting_id`. Không có body.
-- **Output**: `DecisionsDocument`. Ví dụ đầy đủ: `be/examples/get_decisions.response.json`.
+- **Output**: `DecisionsDocument`. Ví dụ đầy đủ: `be/examples/post_decision.response.json` (cùng dạng response `POST /decisions`).
 - **Cách lấy**: như [mục 7](#7-get-v3meetingstasksmeeting_id--giao-việc), nhưng chạy Decision agent. Không dùng `tasks` của request.
 
 ```json
@@ -683,10 +683,10 @@ Mọi lỗi có body `{"detail": "<thông điệp>"}`.
 
 | Mã | Khi nào |
 |---|---|
-| 422 | Body sai schema; transcript không hợp lệ (xem [3.2.4](#324-ràng-buộc-và-lỗi)); `attendees` hoặc `tasks` sai dạng; `chair` không phải object `{id, full_name}` |
+| 422 | Body sai schema; transcript không hợp lệ (xem [3.2.4](#324-ràng-buộc-và-lỗi)); `attendees` hoặc `tasks` sai dạng; `chair` không phải object `{id, full_name}`; thiếu cả `items` lẫn `source.transcript_uri`, URI không phải `s3://`, không tìm thấy object, hoặc nội dung không phải transcript |
 | 404 | GET theo `meeting_id`: cuộc họp chưa gọi `POST /content` (hoặc request đã lưu hết hạn) |
 | 409 | Bản phân tích đang được tính lại toàn bộ liên tục bởi request khác (`refresh_base` song song). Thử lại sau |
-| 502 | LLM hoặc embedding lỗi; hoặc `refresh` một document mà có chủ đề lỗi (bản cũ được giữ). Gateway trả 401/402/403 (sai key, hết tiền) thì cả lượt chạy dừng và trả 502, không trả kết quả thiếu chủ đề |
+| 502 | LLM hoặc embedding lỗi; không đọc được kho lưu transcript (`transcript_uri`); hoặc `refresh` một document mà có chủ đề lỗi (bản cũ được giữ). Gateway trả 401/402/403 (sai key, hết tiền) thì cả lượt chạy dừng và trả 502, không trả kết quả thiếu chủ đề |
 | 504 | LLM hoặc embedding quá thời gian |
 | 503 | Không dùng được cache (Redis) |
 

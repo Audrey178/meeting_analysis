@@ -18,21 +18,6 @@
     "warnings": [],
     "confidence": null
   },
-  "extensions": {
-    "analysis_schema_version": null,
-    "input_fingerprint": "eebc9d496fb7b65c5df15de182e0b279",
-    "document_key": "content@740838828ca786bf",
-    "prompt_version": null,
-    "model": "google/gemma-4-26B-A4B-it",
-    "transcript_review_state": null,
-    "citation_namespace": "transcript_item_id",
-    "task_identity_strategy": null,
-    "artifact_version_id": 2,
-    "audit": {
-      "verification_records": [],
-      "failed_topics": []
-    }
-  },
   "document_type": "meeting_content",
   "data": {
     "topics": [
