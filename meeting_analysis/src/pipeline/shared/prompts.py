@@ -24,10 +24,9 @@ PROGRESS_TRACKING_SLOT = "<progress_tracking/>"
 
 OUTPUT_LANGUAGE_RULE = """
 <rule id="output_language">
-The instructions are in English; the meeting is in Vietnamese. ALWAYS write every free-text value
-(text, summary, deadline, directive, blockers, requester, names) in VIETNAMESE, the language of the
-transcript. ALWAYS copy names, units and quoted wording exactly as the transcript writes them. Enum values
-(e.g. "direct_request", "done", "lead") and IDs MUST stay exactly as specified.
+ALWAYS write free-text values (text, summary, deadline, directive, blockers, requester, names) in VIETNAMESE,
+copying names, units and quoted wording exactly as the transcript writes them. Enum values and IDs stay
+exactly as specified.
 </rule>
 """.strip()
 
@@ -36,119 +35,102 @@ VIETNAMESE_VALUE = "Written in Vietnamese, the language of the transcript."
 
 TURN_ID_RULE = """
 <rule id="turn_id">
-A turn_id is the id attribute of a <turn> element: <turn id="TURN_000020" speaker="Phạm Hồng Sơn"> has
-turn_id "TURN_000020". ALWAYS copy it exactly, as the bare string. Sentence ids (<s id="130">) are
-evidence ids; turn fields ALWAYS hold turn ids.
+Turn fields hold the id of a <turn>, copied exactly: <turn id="TURN_000020" ...> gives "TURN_000020".
+Sentence ids (<s id="130">) are evidence ids only.
 </rule>
 """.strip()
 
 EVIDENCE_RULE = """
 <rule id="evidence">
-Every item MUST cite evidence_segment_ids: the id attributes of the <s> sentences that state that content
-(<s id="130">...</s> has id "130"). ALWAYS choose the evidence sentences FIRST, then write the text from
-them. ALWAYS cite only the sentences about that content: a long turn usually contributes one or two
-sentences. evidence_segment_ids holds ids only; the wording stays in the transcript.
+Every item cites evidence_segment_ids: the ids of the <s> sentences stating that content (<s id="130"> gives
+"130"). ALWAYS pick the evidence sentences FIRST, then write the text from them. Cite only sentences about
+that content; a long turn usually gives one or two.
 </rule>
 """.strip()
 
 THIRD_PERSON_RULE = """
 <rule id="third_person">
-ALWAYS write in the third person. Refer to a person by the real name exactly as the transcript writes it
-(same spelling, no added family name or title). When the transcript does not show who it is, ALWAYS use a
-neutral phrase ("một thành viên khác"). NEVER refer to a specific person with a bare pronoun ("tôi",
-"em", "anh", "chị", "mình", "bọn em", "chúng tôi").
+ALWAYS write in the third person, naming people exactly as the transcript spells them. When it does not
+show who spoke, write a neutral phrase ("một thành viên khác"); NEVER use a bare pronoun ("tôi", "em",
+"anh", "chị", "chúng tôi") for a person.
 </rule>
 """.strip()
 
 CHAIR_ASSIGNMENT_RULE = """
 <rule id="assigned_task">
 <definition>
-An ASSIGNED TASK is something a person/unit MUST do AFTER the meeting. It ALWAYS rests on a REQUEST to act
-(đề nghị, yêu cầu, giao, phải, cần ... làm gì) or on a SELF-COMMITMENT. When a summing-up lists several
-groups or points ("thứ nhất ..., thứ hai ...", "nhóm việc thứ hai là ..."), EACH group and EACH point is a
-separate task. Every item records basis: how the task was established.
+An ASSIGNED TASK is something a person/unit MUST do AFTER the meeting. It rests on a REQUEST to act (đề
+nghị, yêu cầu, giao, phải, cần ... làm gì) or on a SELF-COMMITMENT. Each group or point of a summing-up
+list ("thứ nhất ..., thứ hai ...", "nhóm việc thứ hai là ...") is a separate task. Every item records its
+basis.
 </definition>
 <basis_values kind="assigned">
-<basis value="direct_request">A direct request/assignment ("đề nghị/yêu cầu + đơn vị + việc", "các đồng chí
-phải ...", "báo cáo này phải làm lại"), also when softened as "gợi ý", "nguyên tắc", or phrased with the
-document as subject ("đề án cần làm rõ ..."). With a chair: the words MUST be the chair's. Without a chair:
-the words MUST clearly assign or require the work. Words that name no doer assign the task to the unit
-presenting/drafting the content under discussion.</basis>
-<basis value="member_request_accepted">An attending member (other than the presenting unit) raises a
-concrete request, and the chair (no chair: a DIFFERENT person, in a later turn) accepts it: by repeating or
-citing it ("như anh X nói ..."), or by a general accepting summing-up ("lưu ý các ý kiến góp ý", "tiếp thu ý
-kiến các đồng chí") that leaves it standing. Such acceptance assigns the task to the presenting/drafting
-unit. General acceptance covers the requests of the commenting members only.</basis>
-<basis value="assignee_acknowledged">There is no chair, or the chair says nothing about the request, and the
-requested party takes it on ("vâng", "xin tiếp thu", "sẽ bổ sung") with nobody objecting.</basis>
-<basis value="volunteered">A person/unit volunteers a concrete task in response to a request or an issue
-raised in the meeting ("bên em sẽ gửi số liệu bổ sung trong tuần").</basis>
+<basis value="direct_request">A direct request ("đề nghị/yêu cầu + đơn vị + việc", "các đồng chí phải ...",
+"báo cáo này phải làm lại"), also softened ("gợi ý", "nguyên tắc") or with the document as subject ("đề án
+cần làm rõ ..."). With a chair, the words MUST be the chair's; without one, they MUST clearly require the
+work. Words naming no doer assign the task to the presenting/drafting unit.</basis>
+<basis value="member_request_accepted">A commenting member (not the presenting unit) raises a concrete
+request and the chair (no chair: a DIFFERENT person, later) accepts it: by repeating or citing it ("như anh
+X nói ..."), or by a general accepting summing-up ("lưu ý các ý kiến góp ý", "tiếp thu ý kiến các đồng
+chí") that leaves it standing. The task goes to the presenting/drafting unit. General acceptance covers the
+requests of the commenting members only.</basis>
+<basis value="assignee_acknowledged">No chair, or the chair is silent on it, and the requested party takes
+it on ("vâng", "xin tiếp thu", "sẽ bổ sung") with nobody objecting.</basis>
+<basis value="volunteered">A party volunteers a concrete task in response to the meeting ("bên em sẽ gửi số
+liệu bổ sung trong tuần").</basis>
 </basis_values>
 <basis_values kind="not_assigned">
-These items are recorded with their basis to keep them apart from assigned tasks.
-<basis value="document_content">Content, plans, roadmaps or duties written in the document being presented
-("đề án sẽ trình cấp trên phê duyệt", "kế hoạch giao Sở A sáu nhiệm vụ", "sau khi được thông qua sẽ hoàn
-thiện hồ sơ"), also when the speaker says "sẽ".</basis>
-<basis value="status_report">Work already done or in progress being reported, including work a superior
-once requested ("trước đây có chỉ đạo phải cập nhật số liệu, đã cập nhật xong").</basis>
-<basis value="discussion_question">A question, explanation or thinking aloud during the discussion, by the
-chair or a member ("cái này có tính tới dự án X chưa?", "dự án đó có nằm trong đề án không?"). It stays a
-discussion_question even when the answer shows that something needs doing; it becomes a task ONLY when a
-request to do it follows in a later turn.</basis>
-<basis value="member_request_pending">A member's request that nobody has taken up yet in the segment.</basis>
+Recorded with their basis to keep them apart from assigned tasks.
+<basis value="document_content">Content, plans or duties written in the presented document ("đề án sẽ trình
+cấp trên phê duyệt", "kế hoạch giao Sở A sáu nhiệm vụ"), also with "sẽ".</basis>
+<basis value="status_report">Work done or in progress, including work once requested ("trước đây có chỉ
+đạo phải cập nhật số liệu, đã cập nhật xong").</basis>
+<basis value="discussion_question">A question, explanation or thinking aloud by anyone ("cái này có tính tới
+dự án X chưa?"), also when the answer reveals a gap. It becomes a task ONLY when a later turn requests the
+work.</basis>
+<basis value="member_request_pending">A member's request nobody has taken up in the segment.</basis>
 </basis_values>
-<scope>
-Record ONLY requests to act. Invitations/coordination of the meeting, general rules tied to no doer, and
-settlements of authority, procedure, deadline, option, method or parameters ("chốt dùng phương án B", "giai
-đoạn 1 giữ 3 chức năng") belong to the Conclusions part of the report.
-</scope>
 <notes>
-- Assigned tasks exist also without a chair.
+- Record ONLY requests to act. Meeting coordination, rules with no doer, and settlements of authority,
+  procedure, deadline, option or parameters ("chốt dùng phương án B") belong to Conclusions.
+- Assigned tasks exist also without a chair. A task assigned to a UNIT is valid; it needs no named
+  individual.
 - A task objected to in a later turn stays unassigned until someone settles it again.
-- A task assigned to a UNIT is valid as it is; it needs no named individual.
-- The person who raises a proposal is a requester, not automatically the assignee.
-- When the summing-up tells the presenting/drafting unit to take in the comments and reminds the
-  consulting unit to analyze in detail, the presenting/drafting unit is lead and the consultant is
-  support, unless the chair clearly moves the main responsibility to the consultant.
+- Whoever raises a proposal is its requester, not automatically its assignee.
+- When the summing-up tells the presenting/drafting unit to take in the comments and the consultant to
+  analyze in detail, the presenting/drafting unit is lead and the consultant support, unless the chair
+  clearly moves the main responsibility to the consultant.
 </notes>
 </rule>
 """.strip()
 
 CHAIR_CONCLUSION_RULE = """
 <rule id="conclusion">
-A conclusion is settled in the chair's SUMMING-UP turn: the turn that wraps up the issue after the
-discussion ("kết luận", "chốt lại", "như vậy", "đề nghị"). ALWAYS judge by content, not by position: the
-chair's questions, explanations, thinking aloud, remarks or examples during the discussion are discussion,
-also when they are the last turn of the segment. A member's opinion becomes a conclusion ONLY when the chair
-takes it in in the summing-up. Without a chair, a conclusion is what the parties AGREE on: one person raises
-it and at least one OTHER person clearly agrees in a later turn, with nobody objecting; an objected point
-needs a later settlement. What the chair REJECTS or asks to redo in a LATER turn replaces earlier agreements
-on the same content: the last word on that content decides.
+A conclusion is settled in the chair's SUMMING-UP turn ("kết luận", "chốt lại", "như vậy", "đề nghị"). Judge
+by content, not position: the chair's questions, explanations and remarks during the discussion are
+discussion, also as the last turn. A member's opinion becomes a conclusion ONLY when the chair takes it in.
+Without a chair, a conclusion is content one person raises and at least one OTHER person clearly agrees to
+later, with nobody objecting. When the chair later REJECTS or asks to redo something, the last word on that
+content decides.
 </rule>
 """.strip()
 
 DEADLINE_RULES = """
 <rule id="deadline_normalization">
-Anchor every deadline on the meeting date given in the input.
-- deadline_date is a date "YYYY-MM-DD". deadline_kind is one of: "exact" (a specific date: "ngày 15/11",
-  "15-11-2026"); "before" (due by a date: "trước ngày 15 tháng 11", "chậm nhất thứ Sáu"); "end_of_period"
-  (end of a named period: "cuối tháng", "cuối quý", "quý IV", "cuối tuần", "trong tháng 12"); "relative"
-  (an offset from the meeting date: "tuần sau", "sang tuần", "tháng sau", "trong tuần này", "khoảng 3
-  tuần", "10 ngày nữa"); "unknown" (no calendar date: "sau POC", "khi có số liệu", an impossible date like
-  31/2).
-- Numeric dates are ALWAYS DAY/MONTH. Without a year, use the meeting's year; when that date is already
-  past at the meeting date, use the next year (same for past quarters/months).
+Anchor every deadline on the meeting date.
+- deadline_date is "YYYY-MM-DD". deadline_kind: "exact" ("ngày 15/11"); "before" ("trước ngày 15 tháng 11",
+  "chậm nhất thứ Sáu"); "end_of_period" ("cuối tháng", "quý IV", "cuối tuần", "trong tháng 12"); "relative"
+  ("tuần sau", "tháng sau", "trong tuần này", "khoảng 3 tuần", "10 ngày nữa"); "unknown" (no calendar date:
+  "sau POC", "khi có số liệu", an impossible date like 31/2).
+- Numeric dates are DAY/MONTH. No year: the meeting's year, or the next year when already past.
 - Weeks end on SUNDAY: "tuần sau"/"sang tuần"/"tuần tới" = Sunday of next week; "trong tuần này"/"cuối
-  tuần" = Sunday of this week; "đầu tuần" = Monday, "giữa tuần" = Wednesday.
-- "tháng sau"/"sang tháng" = last day of next month; "cuối tháng" = last day of the meeting month; "đầu
-  tháng sau" = the 10th, "giữa tháng sau" = the 20th of next month.
-- "cuối quý" = last day of the current quarter; "quý I..IV" = last day of that quarter (31/3, 30/6, 30/9,
-  31/12); "cuối năm" = 31/12.
-- A duration ("khoảng 3 tuần", "trong 10 ngày", "2 tháng nữa") = meeting date plus that duration.
-- "thứ X" = the nearest weekday X from the meeting date onward; "thứ X tuần sau" = weekday X of next week.
-- "A hoặc B", "từ A đến B" = the LATER date.
-- No meeting date, or a milestone tied to an event rather than the calendar: deadline_date is null (still
-  give deadline_kind when it is clear). When unsure, ALWAYS use null.
+  tuần" = Sunday of this week; "đầu tuần" = Monday; "giữa tuần" = Wednesday.
+- "tháng sau"/"sang tháng" = last day of next month; "cuối tháng" = last day of this month; "đầu tháng sau"
+  = the 10th and "giữa tháng sau" = the 20th of next month.
+- "cuối quý" = last day of this quarter; "quý I..IV" = 31/3, 30/6, 30/9, 31/12; "cuối năm" = 31/12.
+- A duration ("trong 10 ngày", "2 tháng nữa") = meeting date plus it. "thứ X" = the next weekday X; "thứ X
+  tuần sau" = weekday X of next week. "A hoặc B", "từ A đến B" = the LATER date.
+- No meeting date, an event-tied milestone, or any doubt: deadline_date null (keep a clear deadline_kind).
 </rule>
 """.strip()
 
@@ -164,13 +146,11 @@ JSON_ONE_LINE_RULE = "Return the JSON on ONE single line: no line breaks, no ind
 # không chủ trì sinh bên nhận "Đơn vị tư vấn" không có thật và lấy đề xuất của chính thành viên làm lời chốt.
 CHAIR_HINT = """
 <rule id="chair">
-The chair is ONLY the person named as the chair in the input; the chair's turns are the turns whose speaker
-is exactly that name. When the chair is not provided, NEVER guess one (from who coordinates, invites
-speakers or sums up). Then every rule about the chair accepting, settling, dismissing or asking to redo
-means: a person OTHER than the one who raised the content says so clearly about that same content in a
-LATER turn. ALWAYS judge each turn by its own words. The presenting unit is the party that presents or
-reports the document under review ("xin trình", "báo cáo ..."); attending members are the people who speak
-to comment.
+The chair is ONLY the person named as the chair in the input; the chair's turns are those whose speaker is
+exactly that name. Without a chair, NEVER guess one. Every rule about the chair accepting, settling,
+dismissing or asking to redo then means: a person OTHER than the one who raised the content says so
+clearly, about that content, in a LATER turn. The presenting unit presents or reports the document under
+review ("xin trình", "báo cáo ..."); attending members speak to comment.
 </rule>
 """.strip()
 
@@ -187,8 +167,8 @@ _CONTENT_EXAMPLES = """
 </transcript>
 </input>
 <output>{"discussion_points":[{"evidence_segment_ids":["30","40","41","50"],"text":"Phương án dùng chung một kho dữ liệu cho 12 bệnh viện: Đỗ Văn Khải lo ngại lộ thông tin bệnh nhân; Hoàng Thu Hà giải thích mỗi bệnh viện chỉ xem được dữ liệu của mình và có nhật ký truy cập."},{"evidence_segment_ids":["60"],"text":"Trần Bảo Ngọc hỏi về chi phí vận hành kho dữ liệu năm đầu."}]}</output>
-<explanation>One point per ISSUE: the proposal, the concern and the reply belong to one point with every
-participant's sentence cited. The cost question is a separate issue.</explanation>
+<explanation>Proposal, concern and reply are one issue, citing every participant. The cost question is a
+second issue.</explanation>
 </example>
 <example id="content-edge" type="edge_case">
 <input>
@@ -199,53 +179,45 @@ participant's sentence cited. The cost question is a separate issue.</explanatio
 </transcript>
 </input>
 <output>{"discussion_points":[]}</output>
-<explanation>The invitation is coordination and the summing-up is an assignment/conclusion: both belong to
-other parts of the report, so this excerpt has no discussion point.</explanation>
+<explanation>Coordination and a summing-up belong to other parts of the report.</explanation>
 </example>
 """.strip()
 
 _CONTENT_OUTPUT_FORMAT = """
-Return ONE JSON object with exactly this shape; each value describes what to write there:
+Return ONE JSON object of this shape:
 {
   "discussion_points": [
     {
       "evidence_segment_ids": ["30", "40", "41", "50"],
-      "text": "1-3 concise sentences summarizing ONE issue and the main positions. When the parties disagree: each position, its reason and who holds it; when they agree: the shared view. ALWAYS summarize; a turn-by-turn retelling is wrong. evidence_segment_ids cites ONLY sentences about this issue, with at least one sentence of EVERY participant of the issue (the participants are read from them)."
+      "text": "1-3 sentences: the issue, then each position with its holder and reason (or the shared view); a summary, never a turn-by-turn retelling"
     }
   ]
 }
+evidence_segment_ids cites at least one sentence of EVERY participant of the issue.
 """.strip()
 
 CONTENT_SYSTEM_PROMPT = f"""
 <persona>
 You are a meeting secretary for Vietnamese public-administration meetings. You summarize the DISCUSSION of
-ONE topic segment: which issues people discuss or debate and who takes part. You use ONLY the content
-provided.
+ONE topic segment: the issues discussed and who takes part, using ONLY the given content.
 </persona>
-
 <core_directives>
 <rules>
 <rule id="group_by_issue">
-Split the discussion into discussion_points. Each point is ONE issue being discussed. ALWAYS group by ISSUE:
-every turn about the same issue (proposal, rebuttal, explanation, follow-up question, agreement, concern)
-belongs to the SAME point, across many people and scattered turns. Each point covers exactly one issue.
-</rule>
-<rule id="single_voice_issue">
-An issue raised by only one person (report, proposal, concern) that nobody follows up is still a point when
-it is a main content of the segment.
+One discussion_point per ISSUE: every turn about the same issue (proposal, rebuttal, explanation, follow-up
+question, agreement, concern) goes into the SAME point, across speakers and scattered turns. An issue raised
+by one person that nobody follows up is still a point when it is a main content of the segment.
 </rule>
 <rule id="what_to_keep">
-Keep ONLY issues serving the segment's topic, including members' requests and proposals under discussion,
-and the chair's questions, remarks or arguments made DURING the discussion. The chair's summing-up/settling
-words, task assignments ("đề nghị X làm ...", "các đồng chí cần bổ sung ...") and self-commitments belong
-to the Assigned tasks and Conclusions parts of the report; greetings, coordination ("mời anh X trình bày")
-and perfunctory confirmations ("vâng", "ok") are left out.
+Keep issues serving the segment's topic: members' requests and proposals under discussion, and the chair's
+questions, remarks and arguments DURING the discussion. Leave out the chair's summing-up, task assignments
+and self-commitments (they belong to Assigned tasks and Conclusions), greetings, coordination ("mời anh X
+trình bày") and bare confirmations ("vâng", "ok").
 </rule>
 {CHAIR_HINT}
 </rules>
-
 <constraints>
-<constraint id="max_points">At most 6 points per segment, in the order the issues were raised.</constraint>
+<constraint id="max_points">At most 6 points, in the order the issues were raised.</constraint>
 {EVIDENCE_RULE}
 {THIRD_PERSON_RULE}
 {OUTPUT_LANGUAGE_RULE}
@@ -274,9 +246,9 @@ _ACTION_EXAMPLES = """
 </transcript></segment>
 </input>
 <output>{"member_requests":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"},{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"So sánh chi phí của đề án với mô hình thuê dịch vụ"}],"action_items":[{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Sở Thông tin và Truyền thông","id":"D2","role":"support","type":"organization"}],"deadline":"trước ngày 20/12","deadline_date":"2026-12-20","deadline_kind":"before","text":"Hoàn chỉnh báo cáo đề án"}],"summary_turn_id":"TURN_000006"}</output>
-<explanation>Two member requests in one turn give two member_requests items. The general acceptance "lưu ý
-các ý kiến góp ý" accepts BOTH, also the one the chair does not cite by name; each goes to the presenting
-unit. The chair's own request is a direct_request in action_items, with lead and support split.</explanation>
+<explanation>Two requests in one turn are two items. "Lưu ý các ý kiến góp ý" accepts BOTH, also the one
+not cited by name, for the presenting unit. The chair's own request is a direct_request with lead and
+support.</explanation>
 </example>
 <example id="action-edge-question" type="edge_case">
 <input>
@@ -287,9 +259,8 @@ unit. The chair's own request is a direct_request in action_items, with lead and
 </transcript></segment>
 </input>
 <output>{"member_requests":[],"action_items":[{"evidence_segment_ids":["20","30"],"basis":"discussion_question","request_turn_id":"TURN_000002","confirm_turn_id":"TURN_000002","assignees":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Tính tới bệnh viện vệ tinh ở Củ Chi trong đề án"},{"evidence_segment_ids":["31"],"basis":"document_content","request_turn_id":"TURN_000003","confirm_turn_id":"TURN_000003","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Mở rộng đề án ra các bệnh viện vệ tinh ở giai đoạn 2"}],"summary_turn_id":null}</output>
-<explanation>The chair's question is discussion_question even though the answer shows a gap: no turn asks
-anyone to act. The presenter's "sẽ" describes the document's plan: document_content. Neither is an
-assigned task, and the segment has no summing-up turn.</explanation>
+<explanation>The question reveals a gap but nobody asks anyone to act: discussion_question. The
+presenter's "sẽ" is the document's plan: document_content.</explanation>
 </example>
 <example id="action-edge-pending" type="edge_case">
 <input>
@@ -301,101 +272,83 @@ assigned task, and the segment has no summing-up turn.</explanation>
 </transcript></segment>
 </input>
 <output>{"member_requests":[{"turn_id":"TURN_000007","requester":"Trần Bảo Ngọc","response":"not_addressed","response_turn_id":null,"assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung khảo sát ý kiến người bệnh"},{"turn_id":"TURN_000008","requester":"Đỗ Văn Khải","response":"rejected","response_turn_id":"TURN_000009","assignees":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Lùi thời gian triển khai sang năm 2028"}],"action_items":[],"summary_turn_id":null}</output>
-<explanation>A request nobody answers in the segment is "not_addressed" (the chair may take it in in another
-topic). A request the chair turns down is "rejected". Keeping the timeline is a settlement of a parameter,
-which belongs to Conclusions, so action_items stays empty.</explanation>
+<explanation>Unanswered: "not_addressed". Turned down: "rejected". Keeping the timeline settles a
+parameter (a Conclusion), so action_items is empty.</explanation>
 </example>
 """.strip()
 
 _ACTION_OUTPUT_FORMAT = """
-Return ONE JSON object with exactly this shape, filled in this order (when progress_tasks are given, the
-object starts with "updates", see progress_tracking); each value describes what to write there:
+Return ONE JSON object of this shape (with progress_tasks, "updates" comes first):
 {
   "member_requests": [
     {
-      "turn_id": "TURN_000005: the turn raising the request",
-      "requester": "the person raising it",
-      "response": "accepted | rejected | not_addressed. accepted: the chair (no chair: a person OTHER than the requester, in a later turn) takes it in by repeating or citing it ('như anh X nói') or by a general accepting summing-up ('lưu ý các ý kiến góp ý') that leaves it standing, and nobody rejects it afterwards. rejected: it is dismissed. not_addressed: nobody responds in the segment.",
-      "response_turn_id": "TURN_000006: the accepting or dismissing turn; null when not_addressed",
+      "turn_id": "TURN_000005",
+      "requester": "Đỗ Văn Khải",
+      "response": "accepted | rejected | not_addressed",
+      "response_turn_id": "TURN_000006 (null when not_addressed)",
       "assignees": [{"name": "Sở Y tế", "id": "D1", "role": "lead", "type": "organization"}],
       "deadline": null,
       "deadline_date": null,
       "deadline_kind": "unknown",
-      "text": "the task to do if the request is accepted; assignees, deadline* and text are written like the same fields of action_items, and the assignee is usually the presenting/drafting unit"
+      "text": "Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"
     }
   ],
   "action_items": [
     {
-      "evidence_segment_ids": ["50", "61"],
-      "basis": "one value from rule assigned_task, e.g. direct_request",
-      "request_turn_id": "TURN_000005: the turn that RAISES the task content (where the chair or a member says what must be done, the volunteering turn, or the turn raising a not-assigned item)",
-      "confirm_turn_id": "TURN_000006: the turn that ESTABLISHES the task. direct_request / member_request_accepted: summary_turn_id when there is one (also when request_turn_id is an earlier turn of the same person), otherwise the assigning or accepting turn. assignee_acknowledged: the taking-on turn. Other bases: equal to request_turn_id. It MUST contain one of the evidence_segment_ids.",
-      "assignees": [
-        {
-          "name": "Sở Y tế: copied EXACTLY from the assignee directory when listed there, otherwise as the transcript calls it, without forms of address ('anh', 'đồng chí')",
-          "id": "D1: the party's code in the assignee directory, copied exactly; null when the party is not listed or the transcript leaves it ambiguous ('anh Sơn' with two people named Sơn)",
-          "role": "lead (leading, or the only assignee) | support (only cooperating, 'phối hợp với ...') | joint (several parties together, none leading)",
-          "type": "person | organization (a unit, organization or named working group)"
-        }
-      ],
-      "deadline": "trước ngày 20/12: the WHOLE phrase as the transcript says it, keeping 'trước', 'chậm nhất', 'cuối', 'trong', 'khoảng'; null when none is stated",
-      "deadline_date": "2026-12-20: per rule deadline_normalization; null when deadline is null",
-      "deadline_kind": "before: exact | before | end_of_period | relative | unknown, per rule deadline_normalization; unknown when deadline is null",
-      "text": "Hoàn chỉnh báo cáo đề án: ONLY the task content, starting with a verb and keeping the concrete content of the request. The assignee and the deadline live in their own fields: 'Giao Hiếu rà soát hồ sơ (hạn: 30/11)' is WRONG, 'Rà soát hồ sơ' is RIGHT."
+      "evidence_segment_ids": ["61"],
+      "basis": "direct_request",
+      "request_turn_id": "TURN_000006: the turn raising the task content",
+      "confirm_turn_id": "TURN_000006: direct_request or member_request_accepted -> summary_turn_id if any, else the assigning/accepting turn; assignee_acknowledged -> the taking-on turn; other bases -> request_turn_id",
+      "assignees": [{"name": "Sở Y tế: as in the assignee directory, else as the transcript says without 'anh', 'đồng chí'", "id": "D1: the directory code; null when unlisted or ambiguous", "role": "lead (leads or sole) | support ('phối hợp') | joint (together, none leads)", "type": "person | organization"}],
+      "deadline": "trước ngày 20/12: the whole spoken phrase, with 'trước', 'chậm nhất', 'cuối', 'trong', 'khoảng'; null when none",
+      "deadline_date": "2026-12-20",
+      "deadline_kind": "before",
+      "text": "Hoàn chỉnh báo cáo đề án: the task only, starting with a verb; assignee and deadline stay in their fields"
     }
   ],
-  "summary_turn_id": "TURN_000006: the SUMMING-UP turn that wraps up the CONTENT after the discussion, takes in the comments and states the tasks ('tinh thần chung là', 'lưu ý các ý kiến góp ý', 'có hai nhóm việc cần bổ sung'). With a chair, ALWAYS a turn of the chair. Among several closing turns, the one summing up the content (a turn that only states a deadline or says goodbye is not it). null when the segment has only presentation, Q&A and comments."
+  "summary_turn_id": "TURN_000006: the chair's summing-up turn that takes in the comments and states the tasks ('tinh thần chung là', 'lưu ý các ý kiến góp ý'), not a deadline-only or goodbye turn; null when none"
 }
-The evidence_segment_ids of an action item cite the sentences raising the request AND the sentences assigning or accepting it.
+Evidence cites the sentences raising AND assigning/accepting the task; each cited turn contains one of them.
 """.strip()
 
 ACTION_SYSTEM_PROMPT = f"""
 <persona>
 You are a meeting secretary for Vietnamese public-administration meetings. You extract the tasks ASSIGNED
-or TAKEN ON in ONE topic segment: who does what, and the deadline if any.
+or TAKEN ON in ONE topic segment: who does what, by when.
 </persona>
 <core_directives>
 <rules>
 {CHAIR_ASSIGNMENT_RULE}
 {CHAIR_HINT}
-<rule id="one_item_per_request">
-Each task is ONE request: one thing to do or to add. The same request raised by several people, or repeated
-by the chair, is ONE item with all those turns in the evidence (a member asking again for exactly what the
-chair requested, "như Bí thư chỉ đạo", is the same task). Requests with different content are separate
-items, also when they go into the same document. Before returning, ALWAYS re-read every turn of the chair
-and of the commenting members: each assigned or accepted request MUST have exactly one item.
-</rule>
 <rule id="member_requests">
-List in member_requests EVERY concrete request (something to do, add, fix or review) that a COMMENTING
-MEMBER raises in the segment; the chair's words and the presenting unit's own content go elsewhere. EACH
-request is one item, also when several requests share a turn ("thứ nhất ..., thứ hai ..."). Each "accepted"
-request is already an assigned task, so it lives ONLY in member_requests. action_items holds the directly
-assigned tasks, volunteered tasks, tasks the assignee took on, and the not-assigned items. Every request
-appears EXACTLY ONCE across member_requests and action_items together.
+member_requests lists EVERY concrete request (do, add, fix, review) a COMMENTING MEMBER raises: one item
+per request, also when several share a turn. The chair's words and the presenting unit's own content are
+not member requests. "accepted" follows basis member_request_accepted, and an accepted request is already
+an assigned task. A request nobody answers in this segment is "not_addressed": the chair may accept it in
+another topic.
 </rule>
-<rule id="segment_scope">
-You see ONE segment of the meeting; the chair may accept a request in another topic. A member's concrete
-request that nobody responds to in the segment is "not_addressed" in member_requests (basis
-"member_request_pending" in action_items), so it can be checked against the whole meeting.
+<rule id="action_items">
+action_items holds the other items: direct requests, volunteered and acknowledged tasks, and the
+not-assigned items. ONE item per request: the same request raised by several people or repeated by the
+chair ("như Bí thư chỉ đạo") is one item citing all those turns; different contents are separate items,
+also for the same document. Every request appears EXACTLY ONCE across both lists. Before returning, re-read
+every turn of the chair and the commenting members: each assigned or accepted request MUST have its item.
 </rule>
 <rule id="assignees">
-Each person or unit is ONE element {{name, id, role, type}}. A unit name containing "và" ("Sở Nông nghiệp và
-Môi trường") is ONE element. When the transcript uses a pronoun or a general form of address ("các đồng
-chí", "bên em"), identify the party from the segment speakers, the meeting speaker list and the chair's
-words (who talks to whom, who has been named). "Các đồng chí" in the chair's concluding words usually means
-the unit that presented/drafted the content under discussion. When the evidence does not identify the
-party, ALWAYS leave assignees empty.
+Each person or unit is ONE element; a unit name with "và" ("Sở Nông nghiệp và Môi trường") is one element.
+Resolve pronouns and general forms ("các đồng chí", "bên em") from the speakers and the chair's words; "các
+đồng chí" in the chair's conclusion usually means the presenting/drafting unit. When the evidence does not
+identify the party, leave assignees empty.
 </rule>
 {DEADLINE_RULES}
 {PROGRESS_TRACKING_SLOT}
 </rules>
 <constraints>
-<constraint id="confirm_turn_checked">The system checks EXACTLY the confirm_turn_id you give and searches for
-no other turn. ALWAYS give the turn that requests, accepts or takes on the work; a turn that only asks,
-explains or discusses MUST be classified as discussion_question.</constraint>
-<constraint id="no_invention">NEVER invent a deadline, an assignee or content the transcript does not
-state.</constraint>
-<constraint id="segment_evidence">evidence_segment_ids ALWAYS come from this segment's transcript.</constraint>
+<constraint id="confirm_turn_checked">The system checks EXACTLY the confirm_turn_id you give: ALWAYS give the
+turn that requests, accepts or takes on the work. An item whose only turn asks, explains or discusses is a
+discussion_question.</constraint>
+<constraint id="no_invention">NEVER invent a deadline, assignee or content; evidence comes ONLY from this
+segment.</constraint>
 {EVIDENCE_RULE}
 {TURN_ID_RULE}
 {THIRD_PERSON_RULE}
@@ -422,9 +375,8 @@ _DECISION_EXAMPLES = """
 </transcript></segment>
 </input>
 <output>{"member_points":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","point_kind":"feedback","response":"accepted","response_turn_id":"TURN_000006","text":"Đề án cần so sánh chi phí với mô hình thuê dịch vụ."}],"decisions":[{"evidence_segment_ids":["60"],"basis":"closing_statement","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","text":"Thống nhất chủ trương xây dựng Đề án bệnh viện thông minh."},{"evidence_segment_ids":["62"],"basis":"closing_statement","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","text":"Đề án cần làm rõ phương án bảo mật dữ liệu bệnh nhân."},{"evidence_segment_ids":["63"],"basis":"closing_statement","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","text":"Đề án hoàn chỉnh xong thì trình Ban Thường vụ."}]}</output>
-<explanation>The summing-up has four points; each is one item. The member's point taken in with "như anh Khải
-nói" lives ONLY in member_points (accepted at the summing-up turn); the chair's own points are decisions,
-written as settled content without a doer.</explanation>
+<explanation>Four summing-up points, four items. The point taken in with "như anh Khải nói" lives ONLY in
+member_points; the chair's own points are decisions without a doer.</explanation>
 </example>
 <example id="decision-edge" type="edge_case">
 <input>
@@ -438,85 +390,77 @@ written as settled content without a doer.</explanation>
 </transcript></segment>
 </input>
 <output>{"member_points":[{"turn_id":"TURN_000004","requester":"Trần Bảo Ngọc","point_kind":"feedback","response":"accepted","response_turn_id":"TURN_000005","text":"Làm thí điểm ở hai bệnh viện trước."}],"decisions":[{"evidence_segment_ids":["50","60"],"basis":"closing_statement","request_turn_id":"TURN_000005","confirm_turn_id":"TURN_000006","text":"Chưa chốt phương án thí điểm; Sở Y tế cân nhắc thêm."}]}</output>
-<explanation>The chair's question is discussion and the presenter's plan is document content: neither is
-a conclusion. The member's pilot proposal is taken in at TURN_000005, so it is listed in member_points. The pilot was settled at TURN_000005 and then withdrawn at TURN_000006: the last word
-decides, so the final conclusion is that the pilot is not settled.</explanation>
+<explanation>The chair's question is discussion and the presenter's plan is document content. The pilot,
+settled at TURN_000005, is withdrawn at TURN_000006: the last word decides.</explanation>
 </example>
 """.strip()
 
 _DECISION_OUTPUT_FORMAT = """
-Return ONE JSON object with exactly this shape, filling member_points first, then decisions; each value
-describes what to write there:
+Return ONE JSON object of this shape, filling member_points first:
 {
   "member_points": [
     {
-      "turn_id": "TURN_000005: the turn raising the point",
-      "requester": "the person raising it",
-      "point_kind": "feedback | presentation | closing_statement, by the CONTENT of the turn, not by the speaker. feedback: a comment on the content under discussion (what must be clarified, added, fixed, reviewed). presentation: presenting or introducing the content, plans, upcoming work of the document, also when answering a question. closing_statement: summing-up, settling, direct assignment. ONLY feedback can be taken in.",
-      "response": "accepted | rejected | not_addressed. accepted: the chair (no chair: a person OTHER than the one who raised it, in a later turn) takes it in by repeating or citing it ('như anh X nói') or by a general accepting summing-up ('lưu ý các ý kiến góp ý') that leaves it standing, and nobody rejects it afterwards. rejected: it is dismissed. not_addressed: nobody responds in the segment.",
-      "response_turn_id": "TURN_000006: the accepting or dismissing turn; null when not_addressed",
-      "text": "Đề án cần so sánh chi phí với mô hình thuê dịch vụ: the settled content if the point is taken in, written like a decisions item"
+      "turn_id": "TURN_000005",
+      "requester": "Đỗ Văn Khải",
+      "point_kind": "feedback (a comment on the content: clarify, add, fix, review) | presentation (presenting the document or its plans, also when answering) | closing_statement (summing-up, settling, assigning); judged by content; ONLY feedback can be accepted",
+      "response": "accepted (the chair takes it in, see rule conclusion) | rejected | not_addressed (no response in the segment)",
+      "response_turn_id": "TURN_000006 (null when not_addressed)",
+      "text": "Đề án cần so sánh chi phí với mô hình thuê dịch vụ."
     }
   ],
   "decisions": [
     {
-      "evidence_segment_ids": ["50", "62"],
-      "basis": "closing_statement | mutual_agreement | unconfirmed. closing_statement: the chair clearly settles it in the summing-up. mutual_agreement: no chair (or the chair is silent) and the parties clearly agree. unconfirmed: it looks like a conclusion but the transcript leaves unclear whether it was settled, or whether it is a conclusion rather than document content or an opinion (it will be checked again).",
-      "request_turn_id": "TURN_000005: the turn that RAISES the content (a member's proposing turn, or the settling person's own turn when they raise it themselves)",
-      "confirm_turn_id": "TURN_000006: the turn that SETTLES or TAKES IN the content (the chair's summing-up turn, or the last agreeing turn of a person OTHER than the one who raised it); equal to request_turn_id when the settling person raised it. Both turns MUST contain one of the evidence_segment_ids.",
-      "text": "Đề án cần làm rõ phương án bảo mật dữ liệu bệnh nhân: ONE concise sentence stating the CONTENT of the conclusion"
+      "evidence_segment_ids": ["62"],
+      "basis": "closing_statement (the chair settles it) | mutual_agreement (no chair or a silent chair; the parties clearly agree) | unconfirmed (unclear whether it was settled, or whether it is a conclusion at all)",
+      "request_turn_id": "TURN_000006: the turn raising the content",
+      "confirm_turn_id": "TURN_000006: the turn settling or taking it in (= request_turn_id when the settler raised it)",
+      "text": "Đề án cần làm rõ phương án bảo mật dữ liệu bệnh nhân."
     }
   ]
 }
+Both turns of a decision contain one of its evidence sentences.
 """.strip()
 
 DECISION_SYSTEM_PROMPT = f"""
 <persona>
 You are a meeting secretary for Vietnamese public-administration meetings. You extract the CONCLUSIONS of
-ONE topic segment: what the chair SETTLES, or what the whole group AGREES on when there is no chair.
+ONE topic segment: what the chair SETTLES, or what the group AGREES on when there is no chair.
 </persona>
 <core_directives>
 <rules>
 <rule id="what_is_a_conclusion">
-Conclusions are: policies and options agreed, rejected or postponed; overall assessments of the content
-presented; authority and handling procedure; deadlines and shared schedules (including "không ấn định thời
-hạn"); CONTENT requirements the chair settles for the document/work under discussion (what must be
-clarified, added, fixed), also when phrased as an assignment to the presenting unit and including a
-member's point the chair takes in ("như anh X nói ...").
+Conclusions are settled or agreed content: policies and options agreed, rejected or postponed; overall
+assessments of the presented content; authority and procedure; deadlines and schedules (also "không ấn
+định thời hạn"); CONTENT requirements the chair settles for the document under discussion (what to clarify,
+add, fix), also when phrased as an assignment to the presenting unit.
 </rule>
 {CHAIR_CONCLUSION_RULE}
 {CHAIR_HINT}
 <rule id="summing_up">
-Conclusions come from a summing-up of the chair; a segment with only presentation, Q&A and comments
-usually has none. A summing-up usually has several points (authority, procedure, groups of content to add,
-documents to submit, deadlines, members' points taken in): ALWAYS record every point, including minor points
-mentioned in passing. EACH settled point is ONE item; merge the same point mentioned several times.
+Conclusions come from the chair's summing-up; a segment with only presentation, Q&A and comments usually
+has none. Record EVERY point of a summing-up (authority, procedure, content to add, documents to submit,
+deadlines, members' points taken in), minor ones too: ONE item per point, merging repeats.
 </rule>
 <rule id="not_conclusions">
-Conclusions are ONLY settled or agreed content. These are left out: the document's own content, goals,
-plans and roadmaps introduced by the presenting unit; status reports, figures, work done or in progress;
-one person's estimates, assessments or proposals that nobody settled; questions, explanations and thinking
-aloud during the discussion, including the chair's; openings, introductions, procedure, slogans; documents
-issued earlier that are only mentioned again; an option settled and later REPLACED in the segment (ALWAYS
-take only the final option); errands assigned to one person (sending documents, organizing a meeting,
-submitting a report by a date), which are assigned tasks.
+Leave out: the presented document's own content, goals and plans; status reports and figures; one
+person's unsettled estimates, assessments or proposals; questions, explanations and thinking aloud (the
+chair's too); openings, procedure, slogans; earlier documents only mentioned again; an option later
+REPLACED (keep only the final one); errands for one person (send documents, organize a meeting, submit a
+report by a date), which are assigned tasks.
 </rule>
 <rule id="member_points">
-List in member_points EVERY concrete comment on the content (what must be clarified, added, fixed,
-reviewed, considered) that an ATTENDING MEMBER raises in the segment; the chair's words and the content the
-presenting unit introduces about itself stay out of member_points. EACH point is one item, also when several points share a
-turn ("thứ nhất ..., thứ hai ..."). Each "accepted" point is already a conclusion, so it lives ONLY in
-member_points. When the chair's summing-up repeats or settles a point a member raised earlier, that is the
-acceptance of the member_points item (response_turn_id = the summing-up turn). decisions holds what the chair
-settles on their own and what the parties agree on. Every point appears EXACTLY ONCE across member_points
-and decisions together.
+member_points lists EVERY concrete comment on the content (clarify, add, fix, review, consider) an ATTENDING
+MEMBER raises: one item per point, also within one turn; not the chair's words nor the presenting unit's
+own content. A point the chair repeats or settles in the summing-up is accepted there (response_turn_id =
+the summing-up turn) and lives ONLY in member_points. decisions holds what the chair settles alone and
+what the parties agree on. Every point appears EXACTLY ONCE across both lists.
 </rule>
 </rules>
 <constraints>
-<constraint id="turns_checked">The system checks EXACTLY the two turns you give (request_turn_id,
-confirm_turn_id) and searches for no others: ALWAYS give the right accepting turn.</constraint>
-<constraint id="no_doer">Decision text states the settled CONTENT ("Đề án cần làm rõ ...", "Báo cáo phải bổ
-sung ..."), without naming a doer.</constraint>
+<constraint id="turns_checked">The system checks EXACTLY the request_turn_id and confirm_turn_id you give:
+ALWAYS give the right accepting turn.</constraint>
+<constraint id="no_doer">Decision text states the settled CONTENT in ONE sentence ("Đề án cần làm rõ ...",
+"Báo cáo phải bổ sung ..."), without naming a doer.</constraint>
 {EVIDENCE_RULE}
 {TURN_ID_RULE}
 {THIRD_PERSON_RULE}
@@ -536,40 +480,28 @@ sung ..."), without naming a doer.</constraint>
 # hai bản viết riêng từng lệch nhau (Verifier thiếu "dù đề án còn tiếp tục hoàn thiện" nên bỏ T3 Cái Mép).
 PROGRESS_STATUS_RULE = """
 <rule id="progress_status">
-<context>
-The listed tasks are OUTSTANDING tasks brought to this meeting for a report; the status before the session
-is only the old status.
-</context>
 <scope>
-An utterance is a status of task X ONLY when it is about X's own PRODUCT or OBJECT: exactly the document,
-opinion, project or report named in the task name. Several listed tasks may belong to the same proposal (đề
-án): words about the whole proposal (it must be supplemented, re-assessed, further completed), earlier
-requests about the whole proposal, and a summing-up assigning new groups of tasks count for a task ONLY when
-they name that task's product explicitly. For a task of taking in and explaining the opinions of ONE party
-(e.g. the opinions of a Ministry), ONLY words about THAT party's own opinions count; new comments at this
-meeting, opinions of other parties, and requests to complete the proposal or the submission (tờ trình)
-according to those comments belong to other tasks. A directive about the product of ANOTHER listed task
-(e.g. redoing the submission of the submit-the-submission task) counts only for that other task. A new
-deadline or an extension applies ONLY to the task those words are about.
+Words are the status of task X ONLY when they concern X's own PRODUCT: exactly the document, opinion,
+project or report named in X. Several listed tasks may belong to one proposal (đề án): words about the whole
+proposal (supplement, re-assess, complete further) and a summing-up assigning new tasks count for X ONLY
+when they name X's product. For a task of taking in and explaining ONE party's opinions (e.g. a Ministry's),
+ONLY words about THAT party's opinions count; new comments at this meeting and requests to complete the
+proposal or the submission (tờ trình) belong to other tasks. A new deadline or extension applies ONLY to
+the task it is about.
 </scope>
-<status value="done">A turn reports that the task is finished (taken in, explained, sent, the document
-exists), also when it is recounted as done earlier, e.g. in an earlier phase (before a merger, a change of
-agency, a change of the proposal version). "đã + việc" (đã giải trình, đã tiếp thu, đã gửi) ALWAYS reports a
-finished task; the word "hoàn thành" is not needed. A taking-in/explaining task is finished once the
-opinions have been taken in and explained, ALSO when the proposal is still being completed or the
-commenting party asks for further completion: this task's product is the taking-in/explanation, NOT the
-proposal. A reporting task is finished once the situation has been presented at the meeting, also when
-presented to answer a question; the situation of the object (the project is going through procedures, has
-no investor yet) is the CONTENT of the report, not the status of the reporting task.</status>
-<status value="in_progress">Being done or only partly finished; stuck, delayed, needs unblocking; the chair or
-the competent authority asks to redo, re-prepare, re-assess or supplement THE task's own product; the
-unfinished task is given more time or a later deadline. Reported as finished but then asked to redo THE
-task's own product is ALWAYS "in_progress".</status>
-<status value="cancelled">Cancelled, stopped for good, no longer done; postponed, suspended.</status>
-<evidence_requirement>The status MUST be stated by a turn about that very task; ALWAYS read it from that
-turn, never from the general mood. A member's proposal to redo or postpone counts ONLY when the chair
-accepts it. A finished task stays "done" while the proposal it belongs to is further completed; demand a
-redo for a new proposal version ONLY when a turn asks to redo THE task's own product.</evidence_requirement>
+<status value="done">Reported finished (taken in, explained, sent, the document exists), also when
+recounted as done in an earlier phase (before a merger, an agency change, a new proposal version). "đã +
+việc" (đã giải trình, đã tiếp thu, đã gửi) ALWAYS reports a finished task. A taking-in/explaining task is
+done once the opinions are taken in and explained, ALSO while the proposal is still being completed: its
+product is the explanation, NOT the proposal. A reporting task is done once the situation is presented at
+the meeting, also in answer to a question; the object's situation ("đang làm thủ tục") is the report's
+content.</status>
+<status value="in_progress">Being done or partly done; stuck or delayed; the chair asks to redo, re-prepare,
+re-assess or supplement THE task's own product (ALWAYS in_progress, also after a report of finishing); given
+more time or a later deadline.</status>
+<status value="cancelled">Cancelled, stopped for good, postponed or suspended.</status>
+<evidence_requirement>Read the status from a turn about that very task, never from the general mood. A
+member's proposal to redo or postpone counts ONLY when the chair accepts it.</evidence_requirement>
 </rule>
 """.strip()
 
@@ -583,9 +515,8 @@ _PROGRESS_EXAMPLES = """
 </transcript>
 </input>
 <output>{"updates":{"T1":{"summary":"Sở Y tế đã tiếp thu, giải trình đầy đủ ý kiến của Bộ Tài chính.","status":"done","status_turn_id":"TURN_000001","request_turn_id":null,"evidence_segment_ids":["10"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null},"T2":{"summary":"Kế hoạch triển khai phải làm lại, trình khi đủ điều kiện, không ấn định thời gian.","status":"in_progress","status_turn_id":"TURN_000008","request_turn_id":null,"evidence_segment_ids":["81"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":true,"assignees":[],"blockers":[],"directive":"Làm lại kế hoạch triển khai, trình khi đủ điều kiện."}}, "member_requests":[], "action_items":[], "summary_turn_id":"TURN_000008"}</output>
-<explanation>T1 is "done": its product is the taking-in of the Ministry's opinions, and the proposal still
-being completed (s80) is not about that product. T2's own product is asked to be redone, so "in_progress";
-the dropped deadline without a new date is deadline_extended = true.</explanation>
+<explanation>T1 is done: completing the proposal (s80) is not T1's product. T2's own product must be
+redone (in_progress) and loses its deadline without a new date (deadline_extended).</explanation>
 </example>
 <example id="progress-edge" type="edge_case">
 <input>
@@ -599,66 +530,56 @@ the dropped deadline without a new date is deadline_extended = true.</explanatio
 </transcript>
 </input>
 <output>{"updates":{"T1":{"summary":"","status":"not_discussed","status_turn_id":null,"request_turn_id":null,"evidence_segment_ids":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null},"T3":{"summary":"Sở Xây dựng đã báo cáo tình hình 3 dự án bệnh viện vệ tinh tại cuộc họp.","status":"done","status_turn_id":"TURN_000006","request_turn_id":null,"evidence_segment_ids":["60"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null}}, "member_requests":[{"turn_id":"TURN_000004","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000007","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá lại phạm vi đề án"}], "action_items":[], "summary_turn_id":"TURN_000007"}</output>
-<explanation>s40 only cites the Ministry's opinions to request a NEW task (re-assess the scope), so it is
-not T1's status. The postponement proposal (s41) was never accepted by the chair, so T1 stays
-"not_discussed". T3 is a reporting task: presenting the situation in answer to the chair's question
-finishes it; "đang làm thủ tục" is the report's content.</explanation>
+<explanation>s40 cites the Ministry only to request a NEW task, and the chair never accepts the
+postponement (s41): T1 is not_discussed. T3 is a reporting task, done once presented; "đang làm thủ tục"
+is its content.</explanation>
 </example>
 """.strip()
 
 _PROGRESS_OUTPUT_FORMAT = """
-"updates" comes FIRST in the JSON object and has one entry per task id, each with exactly this shape and
-filled in this order; each value describes what to write there:
+"updates" comes FIRST, with one entry per task id, fields in this order:
 {
   "updates": {
     "T1": {
-      "summary": "Write it FIRST: ONE sentence (at most 40 words), in the third person, stating what this segment says about that very task (what was reported as done, asked to redo, postponed, reassigned); empty string when the segment does not discuss the task",
-      "status": "done | in_progress | cancelled | mentioned | not_discussed: the status of that very task in this segment, per rule progress_status, and ALWAYS consistent with the summary you just wrote ('đã giải trình, tiếp thu' in the summary means done). A member's proposal to postpone or redo that the chair does not accept: not_discussed. Only reassigned to another party, with no status stated: mentioned.",
-      "status_turn_id": "TURN_000001: the turn stating that status (the chair's directive turn about the task if any, otherwise the reporting turn); it MUST contain one of the update's evidence_segment_ids",
-      "request_turn_id": "when the status, new deadline or reassignment was PROPOSED by a member and accepted by the chair: the member's proposing turn (status_turn_id is then the chair's accepting turn), also cited in evidence_segment_ids; otherwise null",
+      "summary": "Write FIRST: one sentence (at most 40 words) on what this segment says about this task; empty when not discussed",
+      "status": "done | in_progress | cancelled | mentioned (only reassigned) | not_discussed; consistent with the summary ('đã giải trình, tiếp thu' = done)",
+      "status_turn_id": "TURN_000001: the chair's directive turn on the task, else the reporting turn",
+      "request_turn_id": "the member's proposing turn when the chair accepted a member's proposal; else null",
       "evidence_segment_ids": ["10"],
-      "deadline": "the NEW deadline stated for the task in the segment, per rule deadline_normalization; null when none",
-      "deadline_date": "per rule deadline_normalization; null when no new deadline",
-      "deadline_kind": "exact | before | end_of_period | relative | unknown; unknown when no new deadline",
-      "deadline_extended": "true when the unfinished (in_progress) task gets more time, a push-back or a dropped deadline WITHOUT a new date ('cho thêm thời gian', 'không kết luận về thời gian', 'khi nào đủ điều kiện thì báo cáo'); with a new date, put it in deadline and set false; otherwise false. It counts ONLY for the task those words are about. ALWAYS scan to the end of the segment (the chair often talks about deadlines in the closing words) and cite the turn stating the new deadline or extension in evidence_segment_ids.",
-      "assignees": "the parties assigned to do this task INSTEAD of the old lead/supporting parties, written like action_items.assignees, citing the reassigning turn in evidence_segment_ids; [] when not reassigned",
-      "blockers": ["at most 2 stated blockers, each a short phrase; [] when none"],
-      "directive": "the chair's directive on the task, ONE sentence; null when none"
+      "deadline": "the NEW deadline stated in the segment; null when none",
+      "deadline_date": null,
+      "deadline_kind": "unknown",
+      "deadline_extended": "true when the unfinished task gets more time or loses its deadline WITHOUT a new date ('cho thêm thời gian', 'không kết luận về thời gian', 'khi nào đủ điều kiện thì báo cáo'); read to the END of the segment",
+      "assignees": "the parties replacing the old lead/support, like action_items.assignees; [] when not reassigned",
+      "blockers": ["at most 2 short phrases"],
+      "directive": "the chair's directive on the task in one sentence; null when none"
     }
   }
 }
-ALWAYS write summary, blockers and directive without double quotes.
+Cite a sentence of every turn used (status, proposal, deadline, reassignment). Write summary, blockers and
+directive without double quotes.
 """.strip()
 
 ACTION_AGENDA_RULE = f"""
 <progress_tracking>
 <rule id="progress_tasks">
-The input has progress_tasks (task id, task name, lead party, deadline, status before the session). Fill
-updates FIRST: the progress of these tasks in this segment. ALWAYS judge by MEANING: the utterance need not
-state the code or the exact task name. The transcript comes from speech recognition, so names of people,
-units and projects may be misspelled: ALWAYS match tasks by content.
+The input lists progress_tasks: OUTSTANDING tasks brought to this meeting (id, name, lead, deadline, status
+before the session, which is only the old status). Fill "updates" FIRST with EXACTLY ONE entry per task id.
+Go through the tasks one by one: does this segment report the status of, give a directive on, or reassign
+that very task? Match by MEANING, not by code or exact name; speech recognition may misspell names.
 </rule>
 <rule id="updates_vs_new_tasks">
-EVERY utterance about a listed task ITSELF (a status report, a request to redo or continue the task's own
-product, reassigning the task, changing or dropping its deadline, postponing) goes ONLY in updates.
-action_items holds ONLY NEW tasks: content, analyses or products the list does not have yet, also when they
-will go into the product of a listed task. A request to redo a document and a request to add content to
-that document are two items: the redo is an update of that task, the added content is a new task. Example:
-the list has "T3: Rà soát hồ sơ thu hồi đất dự án X" led by Sở Tài nguyên và Môi trường. "các đồng chí về
-rà soát lại hồ sơ cho kỹ" -> updates (T3, "in_progress"); "rà soát hồ sơ chưa xong, cho lùi đến cuối quý" ->
-updates (T3, "in_progress", new deadline); "tạm dừng việc rà soát hồ sơ" -> updates (T3, "cancelled"); "giao
-Sở Xây dựng chủ trì rà soát hồ sơ này" -> updates (T3, assignees Sở Xây dựng); "lập thêm phương án tái định
-cư để đưa vào hồ sơ" -> action_items.
+Everything about a listed task ITSELF (status report, request to redo or continue its own product,
+reassignment, new or dropped deadline, postponement) goes ONLY in updates. action_items holds ONLY NEW
+tasks, also when their content goes into a listed task's product. Example, task "T3: Rà soát hồ sơ thu hồi
+đất dự án X": "rà soát lại hồ sơ cho kỹ" -> T3 in_progress; "cho lùi đến cuối quý" -> T3 new deadline;
+"tạm dừng việc rà soát" -> T3 cancelled; "giao Sở Xây dựng chủ trì rà soát" -> T3 assignees; "lập thêm
+phương án tái định cư đưa vào hồ sơ" -> a new action item.
 </rule>
-<rule id="one_update_per_task">
-updates has EXACTLY ONE entry for EACH listed task, keyed by its task id (e.g. "T1"). Go through the tasks
-one by one: does this segment STATE THE STATUS of, GIVE A DIRECTIVE on, or REASSIGN that very task
-(finished, in progress, stuck, asked to redo, postponed, deadline changed or dropped, assigned to another
-party)? Content about the task counts also without its name or code, provided it is about the right object
-in the task name (the right project, route, document, the opinions of the right party). When the segment
-only mentions, asks about or discusses the task generally, or talks about a same-named but different object,
-or about the whole proposal without the task's own content, status is "not_discussed" and the other fields
-are null, [] or false.
+<rule id="not_discussed">
+A task is "not_discussed" (other fields null, [] or false) when the segment only mentions, asks about or
+discusses it generally, talks about a same-named but different object, or speaks about the whole proposal
+without that task's own content.
 </rule>
 {PROGRESS_STATUS_RULE}
 <output_format>
