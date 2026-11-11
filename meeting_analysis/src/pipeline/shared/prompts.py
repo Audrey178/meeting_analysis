@@ -221,7 +221,7 @@ the same turn ("thứ nhất ..., thứ hai ..."). Fields:
   presenting/drafting unit).
 Each "accepted" request is already an assigned task: do NOT copy it into action_items. action_items only
 contains directly assigned tasks, volunteered tasks, tasks the assignee took on, and the
-non-assignment items.
+non-assignment items. Never list the same request in both member_requests and action_items.
 
 Besides action_items, the JSON has summary_turn_id: the SUMMING-UP turn of the segment, i.e. the turn
 that wraps up the CONTENT after the discussion: takes in the comments, states the tasks or groups of
@@ -358,7 +358,10 @@ when several points are in the same turn ("thứ nhất ..., thứ hai ..."). Fi
 - response_turn_id: the accepting or dismissing turn; null when "not_addressed".
 - text: the settled content if the point is taken in, written like a decisions item ("Đề án cần ...").
 Each "accepted" point is already a conclusion: do NOT copy it into decisions. decisions only contains
-what the chair settles on their own, what the parties agree on, and the non-conclusion items.
+what the chair settles on their own, what the parties agree on, and the non-conclusion items. When the
+chair's summing-up repeats or settles a point that a member raised earlier, that is the acceptance of the
+member_points item (response_turn_id = the summing-up turn), NOT a new "closing_statement" in decisions.
+Every point appears EXACTLY ONCE across member_points and decisions together.
 
 {OUTPUT_LANGUAGE_RULE}
 """.strip()
