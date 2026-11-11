@@ -32,19 +32,19 @@ TURN_ACT_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "turn_act",
     "instructions": (
-        "Input là trích đoạn cuộc họp tiếng Việt: vài lượt ngữ cảnh rồi LƯỢT CẦN XÉT. "
-        "Chỉ phân loại LƯỢT CẦN XÉT, dùng ngữ cảnh để hiểu nó. Xét theo nghĩa, không theo từ khoá: "
-        "khẩu ngữ như 'nhá', 'cứ làm đi', 'coi như xong', 'giúp anh' vẫn có thể là giao/chốt; "
-        "'đề nghị' nêu bên phải làm và việc phải làm thường là giao việc, 'đề nghị' xin người khác "
-        "xem xét, cân nhắc thường là kiến nghị. Không suy diễn từ vai người nói."
+        "The input is an excerpt of a Vietnamese meeting: a few context turns, then the TURN TO JUDGE. "
+        "Classify only the TURN TO JUDGE, using the context to understand it. Judge by meaning, not keywords: "
+        "colloquial phrasing like 'nhá', 'cứ làm đi', 'coi như xong', 'giúp anh' can still be an assignment/settlement; "
+        "'đề nghị' naming who must act and what must be done is usually an assignment, 'đề nghị' asking others "
+        "to review or consider is usually a recommendation. Do not infer from the speaker's role."
     ),
     "choices": [
-        {"value": "assignment", "description": "Giao việc cho người/đơn vị cụ thể, hoặc một người nhận/cam kết làm việc."},
-        {"value": "conclusion", "description": "Chốt, kết luận hoặc thống nhất một quyết định."},
-        {"value": "proposal", "description": "Mới là ý kiến, đề xuất, kiến nghị, ghi nhận; chưa ai chốt hay nhận."},
-        {"value": "rejection", "description": "Gạt đi, đảo lại hoặc huỷ một đề xuất/quyết định/việc trước đó."},
-        {"value": "discussion", "description": "Trình bày, báo cáo, hỏi đáp; không giao, không chốt."},
-        {"value": "other", "description": "Không thuộc các loại trên."},
+        {"value": "assignment", "description": "Assigns a task to a specific person/unit, or someone takes on/commits to a task."},
+        {"value": "conclusion", "description": "Settles, concludes or agrees on a decision."},
+        {"value": "proposal", "description": "Only an opinion, proposal, recommendation or acknowledgement; nobody has settled or taken it on yet."},
+        {"value": "rejection", "description": "Dismisses, reverses or cancels an earlier proposal/decision/task."},
+        {"value": "discussion", "description": "Presentation, report, Q&A; no assignment, no settlement."},
+        {"value": "other", "description": "None of the above."},
     ],
 }
 
@@ -52,32 +52,32 @@ CLAIM_SUPPORT_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "claim_support",
     "instructions": (
-        "Input gồm NỘI DUNG VIỆC CẦN KIỂM, các LƯỢT BẰNG CHỨNG LIÊN QUAN và "
-        "LƯỢT CHỐT. Chỉ hỏi LƯỢT CHỐT có thực sự giao/nhận hoặc tiếp nhận "
-        "đúng nội dung việc đó không. Bằng chứng trước chỉ giúp hiểu tham chiếu như "
-        "'như anh X nói', 'tiếp thu các ý kiến'; nó không tự biến một đề xuất thành "
-        "việc đã giao. Không suy diễn từ vai người nói hay việc lượt này nói chung là "
-        "một lời chỉ đạo. Nội dung khác đầu ra, phạm vi hoặc đối tượng là không khớp."
+        "The input has the CLAIM TO CHECK, the RELATED EVIDENCE TURNS and the "
+        "CONFIRMING TURN. Only ask whether the CONFIRMING TURN really assigns/takes on or accepts "
+        "exactly the content of that claim. The earlier evidence only helps resolve references such as "
+        "'như anh X nói', 'tiếp thu các ý kiến'; it does not by itself turn a proposal into "
+        "an assigned task. Do not infer from the speaker's role or from the turn being a directive "
+        "in general. Content with a different output, scope or object does not match."
     ),
     "choices": [
         {
             "value": "direct",
-            "description": "Lượt chốt trực tiếp nói/giao/nhận đúng nội dung việc cần kiểm.",
+            "description": "The confirming turn directly states/assigns/takes on exactly the claimed content.",
         },
         {
             "value": "accepted_reference",
             "description": (
-                "Lượt chốt quy chiếu rõ và tiếp nhận ý kiến cụ thể hoặc toàn bộ nhóm ý kiến "
-                "có chứa đúng việc này, không loại trừ nó."
+                "The confirming turn clearly refers to and accepts the specific opinion, or the whole group of "
+                "opinions, that contains exactly this claim, without excluding it."
             ),
         },
         {
             "value": "unsupported",
-            "description": "Lượt chốt nói/giao/tiếp nhận việc khác hoặc không tiếp nhận việc này.",
+            "description": "The confirming turn states/assigns/accepts something else, or does not accept this claim.",
         },
         {
             "value": "ambiguous",
-            "description": "Không đủ căn cứ để biết lượt chốt có bao quát đúng việc này hay không.",
+            "description": "Not enough grounds to tell whether the confirming turn covers exactly this claim.",
         },
     ],
 }
@@ -86,17 +86,17 @@ PROPOSAL_RESPONSE_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "proposal_response",
     "instructions": (
-        "Input là trích đoạn cuộc họp tiếng Việt: LƯỢT NÊU NỘI DUNG, NỘI DUNG cần xét (một ý trong lượt đó), "
-        "rồi LƯỢT PHẢN HỒI nói sau đó. Chỉ hỏi: LƯỢT PHẢN HỒI đối xử với NỘI DUNG đó thế nào. Xét theo "
-        "nghĩa, không theo từ khoá. Lời cảm ơn, mời người khác phát biểu, chuyển ý không phải là tiếp "
-        "nhận. Không suy diễn từ vai người nói."
+        "The input is an excerpt of a Vietnamese meeting: the RAISING TURN, the CONTENT TO JUDGE (one point of "
+        "that turn), then the RESPONSE TURN spoken later. Only ask: how does the RESPONSE TURN treat that CONTENT. "
+        "Judge by meaning, not keywords. Thanks, inviting others to speak, or changing the subject is not "
+        "acceptance. Do not infer from the speaker's role."
     ),
     "choices": [
-        {"value": "direct_acceptance", "description": "Nhắc lại, đồng ý hoặc dẫn đúng nội dung này (vd. 'như anh X nói ...' về chính ý đó)."},
-        {"value": "general_acceptance", "description": "Tiếp nhận chung các ý kiến trước đó (lưu ý, tiếp thu các ý kiến) mà không gạt hay loại trừ nội dung này."},
-        {"value": "modification", "description": "Chấp nhận nhưng đổi nội dung, phạm vi hoặc cách làm."},
-        {"value": "rejection", "description": "Gạt đi, phản đối, rút lại, bảo không cần hoặc chưa làm."},
-        {"value": "no_response", "description": "Không nói gì về nội dung này: chỉ cảm ơn, mời ý kiến khác, hoặc nói việc khác."},
+        {"value": "direct_acceptance", "description": "Repeats, agrees with or cites exactly this content (e.g. 'như anh X nói ...' about that very point)."},
+        {"value": "general_acceptance", "description": "Generally accepts the earlier opinions (lưu ý, tiếp thu các ý kiến) without dismissing or excluding this content."},
+        {"value": "modification", "description": "Accepts it but changes the content, scope or method."},
+        {"value": "rejection", "description": "Dismisses, objects, withdraws, says it is not needed or not to be done yet."},
+        {"value": "no_response", "description": "Says nothing about this content: only thanks, invites other opinions, or talks about something else."},
     ],
 }
 # Ngưỡng của ``PROPOSAL_RESPONSE_QUESTION`` (từ prototype, chưa đo lại trên dữ liệu khác Cái Mép) và trần
@@ -111,25 +111,25 @@ DECISION_RELATION_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "decision_relation",
     "instructions": (
-        "Input là hai KẾT LUẬN của cùng một cuộc họp tiếng Việt; KẾT LUẬN SAU được chốt muộn hơn. Hỏi: hai kết luận có "
-        "phải là CÙNG MỘT quyết định (cùng đối tượng cụ thể và cùng việc được quyết) không, và nếu cùng thì kết luận "
-        "sau có thay đổi kết luận trước không. Mọi kết luận trong cuộc họp đều nói về cùng một đề án/văn bản: điều đó "
-        "KHÔNG làm chúng thành cùng một quyết định. Hai yêu cầu khác nhau về cùng đề án (vd. làm rõ trách nhiệm / "
-        "đánh giá tác động / thời hạn / thẩm quyền trình) là khác vấn đề. Xét theo nghĩa, không theo từ khoá."
+        "The input is two CONCLUSIONS of the same Vietnamese meeting; the LATER CONCLUSION was settled later. Ask: are "
+        "the two conclusions the SAME decision (same specific object and same thing decided), and if so, does the later "
+        "conclusion change the earlier one. All conclusions of a meeting are about the same proposal/document: that does "
+        "NOT make them the same decision. Two different requirements about the same proposal (e.g. clarify responsibility / "
+        "assess impact / deadline / submission authority) are different matters. Judge by meaning, not keywords."
     ),
     "choices": [
         {
             "value": "changed",
             "description": (
-                "Cùng vấn đề, và kết luận sau đảo lại, huỷ, thay thế hoặc sửa nội dung, phạm vi, cách làm, "
-                "thời hạn của kết luận trước."
+                "Same matter, and the later conclusion reverses, cancels, replaces or modifies the content, scope, "
+                "method or deadline of the earlier conclusion."
             ),
         },
         {
             "value": "unchanged",
-            "description": "Cùng vấn đề, kết luận sau nhắc lại, xác nhận hoặc chỉ thêm chi tiết không trái kết luận trước.",
+            "description": "Same matter; the later conclusion repeats, confirms or only adds details that do not contradict the earlier one.",
         },
-        {"value": "different_matter", "description": "Hai quyết định khác nhau, kể cả khi cùng nói về một đề án hay văn bản."},
+        {"value": "different_matter", "description": "Two different decisions, even when both are about the same proposal or document."},
     ],
 }
 
@@ -137,25 +137,25 @@ ASSIGNMENT_RELATION_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "assignment_relation",
     "instructions": (
-        "Input là hai VIỆC ĐƯỢC GIAO cho cùng bên nhận việc trong một cuộc họp tiếng Việt; VIỆC SAU được giao muộn "
-        "hơn. Hỏi: hai việc có phải là CÙNG MỘT việc (cùng sản phẩm/kết quả phải làm ra) không, và nếu cùng thì lần "
-        "giao sau có thay đổi lần giao trước không. Mọi việc trong cuộc họp đều xoay quanh cùng một đề án/văn bản: "
-        "điều đó KHÔNG làm chúng thành cùng một việc. Hai yêu cầu khác nhau về cùng đề án (vd. làm lại tờ trình / "
-        "đánh giá lại tác động / bổ sung cơ chế / xem lại tên) là hai việc khác nhau. Xét theo nghĩa, không theo từ khoá."
+        "The input is two ASSIGNED TASKS for the same assignee in a Vietnamese meeting; the LATER TASK was assigned "
+        "later. Ask: are the two the SAME task (same product/result to deliver), and if so, does the later assignment "
+        "change the earlier one. All tasks of a meeting revolve around the same proposal/document: "
+        "that does NOT make them the same task. Two different requests about the same proposal (e.g. redo the submission / "
+        "re-assess impact / add mechanisms / review the name) are two different tasks. Judge by meaning, not keywords."
     ),
     "choices": [
         {
             "value": "changed",
             "description": (
-                "Cùng một việc, và lần giao sau huỷ, thay thế hoặc sửa nội dung, phạm vi, cách làm, thời hạn của "
-                "lần giao trước."
+                "Same task, and the later assignment cancels, replaces or modifies the content, scope, method or "
+                "deadline of the earlier assignment."
             ),
         },
         {
             "value": "unchanged",
-            "description": "Cùng một việc, lần giao sau nhắc lại, xác nhận hoặc chỉ thêm chi tiết không trái lần trước.",
+            "description": "Same task; the later assignment repeats, confirms or only adds details that do not contradict the earlier one.",
         },
-        {"value": "different_matter", "description": "Hai việc khác nhau, kể cả khi cùng nói về một đề án hay văn bản."},
+        {"value": "different_matter", "description": "Two different tasks, even when both are about the same proposal or document."},
     ],
 }
 
@@ -337,11 +337,11 @@ def render_turn_act_input(turn: SpeakerTurn, context: Sequence[SpeakerTurn]) -> 
     """
 
     def line(item: SpeakerTurn) -> str:
-        return f"{item.speaker or 'Không rõ'}: {item.text_exact}"
+        return f"{item.speaker or 'Unknown'}: {item.text_exact}"
 
     previous = list(context)[-CONTEXT_TURNS:] if CONTEXT_TURNS else []
-    parts = ["NGỮ CẢNH:\n" + "\n".join(line(t) for t in previous)] if previous else []
-    parts.append("LƯỢT CẦN XÉT:\n" + line(turn))
+    parts = ["CONTEXT:\n" + "\n".join(line(t) for t in previous)] if previous else []
+    parts.append("TURN TO JUDGE:\n" + line(turn))
     return "\n\n".join(parts)
 
 
@@ -360,13 +360,13 @@ def render_claim_support_input(claim: str, turn: SpeakerTurn, evidence: Sequence
     """
 
     def line(item: SpeakerTurn) -> str:
-        return f"[{item.turn_id}|{item.speaker or 'Không rõ'}] {item.text_exact}"
+        return f"[{item.turn_id}|{item.speaker or 'Unknown'}] {item.text_exact}"
 
     related = [item for item in evidence if item.turn_id != turn.turn_id]
-    parts = [f"NỘI DUNG VIỆC CẦN KIỂM:\n{claim}"]
+    parts = [f"CLAIM TO CHECK:\n{claim}"]
     if related:
-        parts.append("CÁC LƯỢT BẰNG CHỨNG LIÊN QUAN:\n" + "\n".join(line(item) for item in related))
-    parts.append("LƯỢT CHỐT:\n" + line(turn))
+        parts.append("RELATED EVIDENCE TURNS:\n" + "\n".join(line(item) for item in related))
+    parts.append("CONFIRMING TURN:\n" + line(turn))
     return "\n\n".join(parts)
 
 
@@ -374,21 +374,21 @@ def render_proposal_response_input(claim: str, proposal: SpeakerTurn, response: 
     """Ghép lượt nêu nội dung, nội dung cần xét và lượt phản hồi thành input câu hỏi phản hồi đề xuất."""
 
     def line(item: SpeakerTurn) -> str:
-        return f"[{item.speaker or 'Không rõ'}] {item.text_exact}"
+        return f"[{item.speaker or 'Unknown'}] {item.text_exact}"
 
-    return f"LƯỢT NÊU NỘI DUNG:\n{line(proposal)}\n\nNỘI DUNG CẦN XÉT:\n{claim}\n\nLƯỢT PHẢN HỒI:\n{line(response)}"
+    return f"RAISING TURN:\n{line(proposal)}\n\nCONTENT TO JUDGE:\n{claim}\n\nRESPONSE TURN:\n{line(response)}"
 
 
 def render_decision_relation_input(earlier: str, later: str) -> str:
     """Ghép hai kết luận (trước, sau) thành input câu hỏi quan hệ kết luận; không gửi kèm lượt chốt."""
 
-    return f"KẾT LUẬN TRƯỚC:\n{earlier}\n\nKẾT LUẬN SAU:\n{later}"
+    return f"EARLIER CONCLUSION:\n{earlier}\n\nLATER CONCLUSION:\n{later}"
 
 
 def render_assignment_relation_input(earlier: str, later: str) -> str:
     """Ghép hai việc giao (trước, sau; đã kèm bên nhận việc và thời hạn) thành input câu hỏi quan hệ."""
 
-    return f"VIỆC TRƯỚC:\n{earlier}\n\nVIỆC SAU:\n{later}"
+    return f"EARLIER TASK:\n{earlier}\n\nLATER TASK:\n{later}"
 
 
 _SENTENCE_BREAK = re.compile(r"(?<=[.!?…])\s+")

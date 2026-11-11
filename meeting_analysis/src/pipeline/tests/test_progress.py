@@ -206,7 +206,7 @@ def test_sample_agenda_file_matches_its_attendees():
 
 def test_registry_context_shows_agenda_tasks():
     context = format_registry_context(build_speaker_registry(TURNS, agenda=AGENDA))
-    assert "- T1: Đẩy nhanh khối lượng thi công (chủ trì: Anh Phong; hạn: 2026-10-31" in context
+    assert "- T1: Đẩy nhanh khối lượng thi công (lead: Anh Phong; deadline: 2026-10-31" in context
 
 
 # ---------------------------------------------------------------------------
@@ -254,7 +254,7 @@ def test_action_agent_reads_updates_validating_task_ids_and_turns():
     updates_schema = call["schema"]["properties"]["updates"]
     assert updates_schema["required"] == ["T1", "T2"]  # mỗi việc một mục bắt buộc
     assert "not_discussed" in updates_schema["properties"]["T1"]["properties"]["status"]["enum"]
-    assert "Việc cần báo cáo tiến độ" in call["user"]
+    assert "Tasks to report progress on" in call["user"]
 
 
 def test_action_agent_reads_member_request_turn_into_evidence():
@@ -426,7 +426,7 @@ def test_decisions_judge_picks_question_by_task_kind_once_per_title():
     assert (product.report_task, product.p_status("in_progress")) == (False, 0.92)
     # Mỗi tên việc chỉ xếp kiểu một lần; lượt đã hỏi thì lấy từ cache.
     assert [name for name, _ in client.calls] == ["task_kind", "report_act", "report_act", "task_kind", "progress_act"]
-    assert client.calls[0][1] == "VIỆC:\nBáo cáo tình hình 3 dự án cảng"
+    assert client.calls[0][1] == "TASK:\nBáo cáo tình hình 3 dự án cảng"
 
 
 def test_split_turn_text_keeps_sentences_whole():

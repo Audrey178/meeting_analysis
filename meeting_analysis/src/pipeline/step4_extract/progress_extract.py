@@ -22,6 +22,7 @@ from ..shared.llm_output import (
     validate_evidence_items,
 )
 from ..shared.meeting_inputs.agenda import TaskAgenda
+from ..shared.prompts import VIETNAMESE_VALUE
 from ..shared.schemas import UPDATE_STATUSES, ActionItemCandidate, ProgressUpdate, ExtractorInput
 from .deadline import resolve_deadline
 
@@ -58,14 +59,14 @@ def build_update_schema(task_ids: Sequence[str]) -> dict:
             "status_turn_id": {"type": ["string", "null"]},
             "request_turn_id": {"type": ["string", "null"]},
             "evidence_segment_ids": {"type": "array", "items": {"type": "string"}},
-            "deadline": {"type": ["string", "null"]},
+            "deadline": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
             "deadline_date": {"type": ["string", "null"]},
             "deadline_kind": {"type": "string", "enum": _DEADLINE_KINDS},
             "deadline_extended": {"type": "boolean"},
             "assignees": ASSIGNEES_SCHEMA,
-            "summary": {"type": "string"},
-            "blockers": {"type": "array", "items": {"type": "string"}},
-            "directive": {"type": ["string", "null"]},
+            "summary": {"type": "string", "description": VIETNAMESE_VALUE},
+            "blockers": {"type": "array", "items": {"type": "string", "description": VIETNAMESE_VALUE}},
+            "directive": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
         },
     }
     item["required"] = list(item["properties"])

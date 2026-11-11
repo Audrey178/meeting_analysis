@@ -24,6 +24,7 @@ from ...shared.prompts import (
     CHAIR_HINT,
     JSON_ONE_LINE_RULE,
     VERIFY_RUBRICS,
+    VIETNAMESE_VALUE,
     format_chair_line,
 )
 from ...shared.schemas import (
@@ -46,68 +47,70 @@ from .verdict import KIND_LABELS, describe_candidate, resolve_verdict, suggested
 logger = logging.getLogger(__name__)
 
 VERIFIER_SYSTEM_PROMPT = """
-Bạn là KIỂM CHỨNG VIÊN cho một candidate {kind_label} trích từ MỘT đoạn chủ đề của cuộc
-họp, bị bộ lọc tự động đánh dấu CHƯA CHẮC CHẮN.
+You are the VERIFIER for a {kind_label} candidate extracted from ONE topic segment of a meeting
+and flagged as UNCERTAIN by the automatic filter.
 
-Tiêu chí:
+Criteria:
 {rubric}
 {chair_hint}
 
-Bạn có các tool CHỈ ĐỌC để tra bằng chứng trong CẢ cuộc họp:
+You have READ-ONLY tools to look up evidence in the WHOLE meeting:
 {tools}
 
-Mỗi lượt trả về đúng MỘT JSON, các trường theo thứ tự:
-- thought: 1-2 câu: đã biết gì từ bản ghi và các bước trước, còn thiếu gì, vì sao tra
-  tiếp hoặc vì sao đã đủ căn cứ.
-- Muốn tra thêm: action là tên tool, argument là tham số; các trường kết luận để null.
-- Đủ căn cứ: action = "final", argument = null, và điền verdict:
-  "keep" | "revise" | "drop" | "unresolved" (chỉ khi bằng chứng thật sự mâu thuẫn
-  hoặc thiếu), deciding_turn_id (BẮT BUỘC khi keep/revise: turn_id của lượt nói
-  GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT, có thể ở chủ đề khác), reasoning (1-2 câu).
+Each step returns exactly ONE JSON, with the fields in this order:
+- thought: 1-2 sentences: what you know from the transcript and the previous steps, what is
+  missing, why you look further or why you have enough grounds.
+- To look further: action is the tool name, argument is its parameter; the conclusion fields are null.
+- Enough grounds: action = "final", argument = null, and fill verdict:
+  "keep" | "revise" | "drop" | "unresolved" (only when the evidence is truly contradictory
+  or missing), deciding_turn_id (REQUIRED for keep/revise: turn_id of the turn that
+  ASSIGNS/TAKES ON the task or CONCLUDES/AGREES, possibly in another topic), reasoning (1-2 sentences).
 
-Với VIỆC GIAO, bên nhận việc có thể là NGƯỜI hoặc ĐƠN VỊ ("giao Sở Tài chính chủ trì" là hợp lệ).
-Khi bên nhận việc chỉ là tên gọi, có thể trùng người khác, hoặc bị nghi ngờ: gọi
-lookup_speaker("<cách gọi> @<turn_id lượt chốt>") rồi ĐỀ XUẤT (bạn không tự sửa candidate; agent trích
-xuất sẽ sửa theo đề xuất, nên cần đổi bên nhận việc thì verdict = "revise"):
-  revised_assignees: MỖI bên nhận việc một phần tử {{name, role, type}}; name là ĐÚNG tên một
-  ứng viên tool trả về (không tự viết tên khác); role "lead" (chủ trì) | "support" (phối hợp) |
-  "joint" (cùng thực hiện, không ai chủ trì); type "person" | "organization".
-  actor_reason: vì sao chọn ứng viên đó (ai nói gì ở lượt nào; chỉ dựa vào chức vị/đơn
-  vị khi bản ghi không phân định được).
-Không có ứng viên nào rõ ràng thì để mỗi bên type = "unknown" (name giữ cách gọi trong bản ghi;
-việc giao vẫn giữ). Không cần sửa bên nhận việc thì revised_assignees = [].
-Với quyết định, hai trường này để rỗng/null.
+For an ASSIGNED TASK, the assignee may be a PERSON or a UNIT ("giao Sở Tài chính chủ trì" is valid).
+When the assignee is only a form of address, may match someone else, or is doubtful: call
+lookup_speaker("<form of address> @<turn_id of the confirming turn>") and then SUGGEST (you do not edit the
+candidate yourself; the extractor agent edits it per your suggestion, so to change the assignee use
+verdict = "revise"):
+  revised_assignees: ONE element {{name, role, type}} PER assignee; name is EXACTLY the name of a
+  candidate returned by the tool (do not write another name); role "lead" (leads) | "support" (cooperates) |
+  "joint" (does it together, nobody leads); type "person" | "organization".
+  actor_reason: why that candidate (who said what in which turn; rely on position/unit only
+  when the transcript cannot tell).
+If no candidate is clear, set type = "unknown" for each party (name keeps the transcript's form of address;
+the assigned task is still kept). If the assignee does not need changing, revised_assignees = [].
+For decisions, leave these two fields empty/null.
 
-"Cờ của bộ lọc tự động" chỉ cho biết vì sao candidate bị gửi kiểm tra: bộ lọc chỉ
-chấm MỘT lượt nói mà agent trích xuất khai và hay sai, nên cờ đó KHÔNG phải bằng
-chứng và KHÔNG được dùng làm lý do bỏ. Lượt GIAO/CHỐT thật có thể khác lượt agent
-khai. Trước khi kết luận drop/unresolved, đọc các lời chốt và lời tiếp nhận trong đoạn
-(có người chủ trì: các lượt của người chủ trì), nhất là các lượt cuối đoạn (tổng kết, "đề nghị các đồng chí
-...", "giao ...", "chuẩn bị lại ..."); thấy lượt giao/chốt đúng nội dung candidate
-thì keep/revise với deciding_turn_id là lượt đó.
+The "Automatic filter flags" only tell why the candidate was sent for checking: the filter only
+scores ONE turn that the extractor agent gave and is often wrong, so those flags are NOT evidence
+and must NOT be used as a reason to drop. The real ASSIGNING/SETTLING turn may differ from the turn
+the agent gave. Before concluding drop/unresolved, read the settling and accepting words in the segment
+(with a chair: the chair's turns), especially the last turns of the segment (summing-up, "đề nghị các đồng chí
+...", "giao ...", "chuẩn bị lại ..."); if you find an assigning/settling turn with the candidate's content,
+keep/revise with deciding_turn_id set to that turn.
 
-BẮT BUỘC so NỘI DUNG: deciding_turn_id không chỉ phải là một lượt giao/chốt nói
-chung, mà chính lượt đó phải nói đúng việc candidate hoặc quy chiếu/tiếp nhận rõ
-yêu cầu cụ thể ở lượt evidence. Không được dùng một lượt tổng kết về việc A
-làm căn cứ cho việc B chỉ vì lượt đó là lời chốt. Lượt của chính người nêu ý không
-phải lời tiếp nhận ý đó.
+You MUST compare CONTENT: deciding_turn_id must not merely be an assigning/settling turn in
+general; that very turn must state the candidate's task or clearly refer to/accept the specific
+request in the evidence turn. Do not use a summing-up turn about task A as grounds for task B just
+because it is a settling turn. A turn of the person who raised the point is not an acceptance of
+that point.
 
-reasoning là FEEDBACK gửi lại agent trích xuất khi bạn không giữ: nêu cụ thể điểm
-sai/thiếu và lượt nói làm căn cứ, để agent sửa hoặc phản biện. Đã có các vòng trao đổi
-trước thì xét lập luận của agent trên bản ghi, không nhượng bộ chỉ vì agent phản biện.
+reasoning is the FEEDBACK sent back to the extractor agent when you do not keep: state precisely what
+is wrong/missing and the grounding turn, so the agent can fix or rebut it. If there are earlier rounds,
+weigh the agent's argument against the transcript; do not concede just because the agent objects.
 
-Chỉ dựa vào bằng chứng có thật trong bản ghi. "Nội dung có nhắc trong bản ghi" CHƯA đủ
-để giữ. Tra ít nhất có thể.
+Rely only on evidence actually in the transcript. "The content is mentioned in the transcript" is NOT
+enough to keep. Look up as little as possible.
 
-KHÔNG dùng dấu nháy kép (") trong thought, reasoning, actor_reason: dẫn lượt nói bằng
-turn_id, không trích nguyên văn. {json_rule}
+Write thought, reasoning and actor_reason in VIETNAMESE, the language of the transcript. Do NOT use
+double quotes (") in thought, reasoning, actor_reason: cite turns by turn_id, do not quote verbatim.
+{json_rule}
 """.strip()
 
 
 VERIFIER_SCHEMA: dict = {
     "type": "object",
     "properties": {
-        "thought": {"type": "string"},
+        "thought": {"type": "string", "description": VIETNAMESE_VALUE},
         "action": {"type": "string", "enum": [*TOOL_NAMES, "final"]},
         "argument": {"type": ["string", "null"]},
         "deciding_turn_id": {"type": ["string", "null"]},
@@ -117,15 +120,15 @@ VERIFIER_SCHEMA: dict = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "description": VIETNAMESE_VALUE},
                     "role": {"type": "string", "enum": list(ASSIGNEE_ROLES)},
                     "type": {"type": "string", "enum": [*ASSIGNEE_TYPES, "unknown"]},
                 },
                 "required": ["name", "role", "type"],
             },
         },
-        "actor_reason": {"type": ["string", "null"]},
-        "reasoning": {"type": ["string", "null"]},
+        "actor_reason": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
+        "reasoning": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
     },
     "required": [
         "thought", "action", "argument", "verdict", "deciding_turn_id", "revised_assignees",
@@ -134,34 +137,34 @@ VERIFIER_SCHEMA: dict = {
 }
 
 PROPOSER_SYSTEM_PROMPT = """
-Bạn là AGENT TRÍCH XUẤT đã đề xuất candidate {kind_label} dưới đây từ MỘT đoạn chủ đề
-của cuộc họp. KIỂM CHỨNG VIÊN vừa phản hồi: kết luận và lý do (feedback). Đối chiếu
-feedback với bản ghi rồi chọn đúng MỘT lập trường:
-- "accept": đồng ý với kiểm chứng viên. Họ đề nghị sửa (revise) thì CHÍNH BẠN viết bản sửa theo
-  đề xuất của họ vào revised_text/revised_assignees (kiểm chứng viên không sửa hộ); họ đề nghị
-  bỏ / không đủ căn cứ thì candidate bị bỏ.
-- "amend": sửa candidate cho đúng bản ghi: revised_text (nội dung mới, bắt đầu bằng
-  động từ, không chứa tên người nhận việc hay thời hạn) và/hoặc revised_assignees (chỉ với
-  việc giao: mỗi người/đơn vị nhận việc một phần tử {{name, role, type}} với role "lead" |
-  "support" | "joint", type "person" | "organization"; name đúng nguyên văn bản ghi), kèm
-  confirm_turn_id là lượt nói GIAO/NHẬN việc hoặc KẾT LUẬN/THỐNG NHẤT. Không sửa bên nhận
-  việc thì revised_assignees = [].
-- "defend": giữ nguyên candidate, chỉ ra confirm_turn_id mà kiểm chứng viên bỏ sót.
+You are the EXTRACTOR AGENT that proposed the {kind_label} candidate below from ONE topic segment
+of a meeting. The VERIFIER has just responded: a verdict and its reason (feedback). Check the
+feedback against the transcript, then choose exactly ONE stance:
+- "accept": agree with the verifier. If they ask for a revision (revise), YOU write the revision per
+  their suggestion into revised_text/revised_assignees (the verifier does not edit for you); if they
+  ask to drop / find no grounds, the candidate is dropped.
+- "amend": fix the candidate to match the transcript: revised_text (new content, starting with a
+  verb, without the assignee's name or the deadline) and/or revised_assignees (assigned tasks only:
+  one element {{name, role, type}} per assigned person/unit with role "lead" |
+  "support" | "joint", type "person" | "organization"; name exactly as in the transcript), together with
+  confirm_turn_id, the turn that ASSIGNS/TAKES ON the task or CONCLUDES/AGREES. If the assignee does not
+  change, revised_assignees = [].
+- "defend": keep the candidate as is and point to the confirm_turn_id the verifier missed.
 
-Điền confirm_turn_id TRƯỚC khi chọn lập trường: lượt nói GIAO/NHẬN việc hoặc KẾT LUẬN/
-THỐNG NHẤT trong bản ghi làm căn cứ cho candidate, null nếu không có. Đã chỉ ra được
-lượt đó thì lập trường là "amend" hoặc "defend", KHÔNG phải "accept"; argument phải
-cùng chiều với lập trường đã chọn.
+Fill confirm_turn_id BEFORE choosing the stance: the turn in the transcript that ASSIGNS/TAKES ON the
+task or CONCLUDES/AGREES and grounds the candidate, null if there is none. If you can point to that
+turn, the stance is "amend" or "defend", NOT "accept"; argument must agree with the chosen stance.
 
-Tiêu chí:
+Criteria:
 {rubric}
 {chair_hint}
 
-TUYỆT ĐỐI KHÔNG bịa nội dung không có trong bản ghi. Không tìm được lượt giao/nhận/chốt
-thì chọn "accept". Trường không dùng để null.
+NEVER invent content that is not in the transcript. If you cannot find an assigning/taking-on/settling
+turn, choose "accept". Unused fields are null.
 
-argument: TỐI ĐA 2 câu ngắn (dưới 300 ký tự), dẫn chứng bằng turn_id. KHÔNG trích
-nguyên văn lượt nói và KHÔNG dùng dấu nháy kép (") trong bất kỳ trường nào. {json_rule}
+argument: AT MOST 2 short sentences (under 300 characters), citing turns by turn_id. Write argument and
+revised_text in VIETNAMESE, the language of the transcript. Do NOT quote turns verbatim and do NOT use
+double quotes (") in any field. {json_rule}
 """.strip()
 
 
@@ -175,20 +178,20 @@ PROPOSER_SCHEMA: dict = {
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {"type": "string"},
+                    "name": {"type": "string", "description": VIETNAMESE_VALUE},
                     "role": {"type": "string", "enum": list(ASSIGNEE_ROLES)},
                     "type": {"type": "string", "enum": list(ASSIGNEE_TYPES)},
                 },
                 "required": ["name", "role", "type"],
             },
         },
-        "revised_text": {"type": ["string", "null"]},
-        "argument": {"type": "string"},
+        "revised_text": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
+        "argument": {"type": "string", "description": VIETNAMESE_VALUE},
     },
     "required": ["confirm_turn_id", "stance", "revised_assignees", "revised_text", "argument"],
 }
 
-_STANCE_LABELS = {"accept": "đồng ý", "amend": "đã sửa candidate", "defend": "giữ nguyên, phản biện"}
+_STANCE_LABELS = {"accept": "agreed", "amend": "amended the candidate", "defend": "kept it, rebutted"}
 
 
 _AMEND_MIN_RETAINED = 0.5
@@ -216,15 +219,15 @@ def _build_candidate_prompt(task: VerifyTask, candidate) -> str:
         Phần đầu của user prompt.
     """
 
-    reasons = "; ".join(task["reasons"]) or "(không có lý do cụ thể)"
+    reasons = "; ".join(task["reasons"]) or "(no specific reason)"
     return (
         f"{format_chair_line(task['registry'].chair)}\n"
         f"Candidate: {describe_candidate(candidate, task['kind'])}\n"
-        f"Agent trích xuất tự khai: trạng thái '{candidate.status}', "
-        f"lượt chốt {candidate.confirm_turn_id or '(không nêu)'}, "
-        f"bằng chứng {', '.join(candidate.evidence_turn_ids)}\n"
-        f"Cờ của bộ lọc tự động (chỉ là gợi ý, có thể sai, KHÔNG phải bằng chứng): {reasons}\n\n"
-        f"Bản ghi của đoạn:\n{format_turns_as_transcript(task['turns'])}"
+        f"Extractor agent's own claim: status '{candidate.status}', "
+        f"confirming turn {candidate.confirm_turn_id or '(not given)'}, "
+        f"evidence {', '.join(candidate.evidence_turn_ids)}\n"
+        f"Automatic filter flags (only hints, may be wrong, NOT evidence): {reasons}\n\n"
+        f"Segment transcript:\n{format_turns_as_transcript(task['turns'])}"
     )
 
 
@@ -389,7 +392,7 @@ class Verifier:
         )
         base_prompt = _build_candidate_prompt(task, candidate)
         if rounds:
-            base_prompt += f"\n\nCác vòng trao đổi trước:\n{format_rounds(rounds, 'candidate', _STANCE_LABELS)}"
+            base_prompt += f"\n\nPrevious rounds:\n{format_rounds(rounds, 'candidate', _STANCE_LABELS)}"
         return run_react(
             self.llm, tools, system_prompt=system_prompt, schema=VERIFIER_SCHEMA, base_prompt=base_prompt,
             max_calls=self.config.verifier_max_tool_calls + 1, log_name="verifier", segment_id=task["segment_id"],
@@ -451,13 +454,13 @@ class Verifier:
         kind = task["kind"]
         parts = [_build_candidate_prompt(task, claim)]
         if rounds:
-            parts.append(f"Các vòng trao đổi trước:\n{format_rounds(rounds, 'candidate', _STANCE_LABELS)}")
-        parts.append(f"Kiểm chứng viên kết luận: {review.verdict}\nFeedback: {review.feedback}")
+            parts.append(f"Previous rounds:\n{format_rounds(rounds, 'candidate', _STANCE_LABELS)}")
+        parts.append(f"Verifier verdict: {review.verdict}\nFeedback: {review.feedback}")
         if review.suggestion:
-            reason = f"\nLý do: {review.suggestion_reason}" if review.suggestion_reason else ""
-            parts.append(f"Kiểm chứng viên đề xuất bên nhận việc: {review.suggestion}{reason}")
+            reason = f"\nReason: {review.suggestion_reason}" if review.suggestion_reason else ""
+            parts.append(f"Verifier suggests assignees: {review.suggestion}{reason}")
         if review.steps:
-            parts.append(f"Bằng chứng kiểm chứng viên đã tra:\n{format_steps(review.steps)}")
+            parts.append(f"Evidence the verifier looked up:\n{format_steps(review.steps)}")
         user_prompt = "\n\n".join(parts)
         with llm_call("verifier_feedback", segment_id=task["segment_id"], prompt_chars=len(user_prompt)):
             response = dict(

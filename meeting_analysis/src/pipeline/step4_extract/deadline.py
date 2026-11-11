@@ -375,14 +375,15 @@ _WEEKDAY_NAMES = ("thứ Hai", "thứ Ba", "thứ Tư", "thứ Năm", "thứ Sá
 def format_meeting_date(meeting_date: str | None) -> str:
     """Trình bày ngày họp kèm thứ cho prompt.
 
-    Ví dụ "2026-10-08" thành "2026-10-08 (thứ Năm)". None hoặc sai định dạng thành "(không rõ)".
+    Ví dụ "2026-10-08" thành "2026-10-08 (thứ Năm)". None hoặc sai định dạng thành "(unknown)".
+    Tên thứ giữ tiếng Việt để khớp cách bản ghi nói hạn ("thứ Sáu tuần sau").
     """
 
     try:
         parsed = date.fromisoformat(meeting_date) if meeting_date else None
     except ValueError:
         parsed = None
-    return f"{parsed.isoformat()} ({_WEEKDAY_NAMES[parsed.weekday()]})" if parsed else "(không rõ)"
+    return f"{parsed.isoformat()} ({_WEEKDAY_NAMES[parsed.weekday()]})" if parsed else "(unknown)"
 
 
 def resolve_deadline(item: dict, deadline_raw: str | None, meeting_date: str | None) -> NormalizedDeadline:

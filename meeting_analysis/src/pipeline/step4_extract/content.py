@@ -14,6 +14,7 @@ from ..shared.llm_output import (
     split_dict_entries,
     validate_evidence_items,
 )
+from ..shared.prompts import VIETNAMESE_VALUE
 from ..shared.schemas import DiscussionPoint, ExtractorInput, TopicFailure
 from .extractor_input import format_topic_prompt
 from ..shared.transcript import list_distinct_speaker_names
@@ -29,7 +30,7 @@ CONTENT_SCHEMA: dict = {
                 "type": "object",
                 "properties": {
                     "evidence_segment_ids": {"type": "array", "items": {"type": "string"}},
-                    "text": {"type": "string"},
+                    "text": {"type": "string", "description": VIETNAMESE_VALUE},
                 },
                 "required": ["evidence_segment_ids", "text"],
             },

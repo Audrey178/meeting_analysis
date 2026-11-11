@@ -309,7 +309,7 @@ def _assignment_text(item: ActionItemCandidate) -> str:
     Cần kèm thời hạn vì lần giao sau có thể chỉ đổi hạn mà giữ nguyên nội dung.
     """
 
-    return f"{item.text}\nBên nhận việc: {item.actor or 'không rõ'}\nThời hạn: {item.deadline_raw or 'không nêu'}"
+    return f"{item.text}\nAssignee: {item.actor or 'unknown'}\nDeadline: {item.deadline_raw or 'not stated'}"
 
 
 class AssignmentKind(_ClosingTurnKind):

@@ -35,21 +35,21 @@ PROGRESS_ACT_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "progress_act",
     "instructions": (
-        "Input là trích đoạn cuộc họp tiếng Việt: VIỆC ĐANG XÉT, vài lượt ngữ cảnh rồi LƯỢT CẦN XÉT. "
-        "Chỉ phân loại điều LƯỢT CẦN XÉT nói về tiến độ của VIỆC ĐANG XÉT, dùng ngữ cảnh để hiểu nó. "
-        "Xét theo nghĩa, không theo từ khoá. Báo cáo của người thực hiện và chỉ đạo của người chủ trì "
-        "đều tính; nhận xét, hỏi lại, bàn nội dung mà không nêu tình trạng thực hiện là mention_only. "
-        "Lượt chỉ nói về cả đề án/kế hoạch lớn chứa việc (đề án phải bổ sung, đánh giá lại, tiếp tục hoàn "
-        "thiện) mà không nêu sản phẩm hay đối tượng riêng của VIỆC ĐANG XÉT là other."
+        "The input is an excerpt of a Vietnamese meeting: the TASK UNDER REVIEW, a few context turns, then the TURN TO JUDGE. "
+        "Classify only what the TURN TO JUDGE says about the progress of the TASK UNDER REVIEW, using the context to understand it. "
+        "Judge by meaning, not keywords. Reports by the doer and directives by the chair "
+        "both count; remarks, follow-up questions, or discussing content without stating how the work stands is mention_only. "
+        "A turn only about the whole proposal/larger plan containing the task (the proposal must be supplemented, re-assessed, "
+        "further completed) without naming the TASK UNDER REVIEW's own product or object is other."
     ),
     "choices": [
-        {"value": "reported_done", "description": "Việc đã làm xong, đã hoàn thành, đã có kết quả/văn bản."},
-        {"value": "reported_in_progress", "description": "Việc đang được thực hiện, đang làm thủ tục, mới xong một phần, hoặc chưa xong và được thêm thời gian, lùi hạn."},
-        {"value": "reported_blocked", "description": "Việc bị vướng, chậm, thiếu điều kiện, cần tháo gỡ."},
-        {"value": "redo_requested", "description": "Yêu cầu làm lại, đánh giá lại, bổ sung, chỉnh sửa kết quả của việc."},
-        {"value": "paused_or_cancelled", "description": "Huỷ, dừng hẳn, không làm nữa; hoặc hoãn, tạm dừng việc."},
-        {"value": "mention_only", "description": "Chỉ nhắc tới, hỏi, bàn nội dung; không nêu tình trạng thực hiện."},
-        {"value": "other", "description": "Không nói về việc này, hoặc chỉ nói về cả đề án/kế hoạch lớn chứa việc."},
+        {"value": "reported_done", "description": "The task is done, completed, its result/document exists."},
+        {"value": "reported_in_progress", "description": "The task is being done, going through procedures, only partly finished, or unfinished and given more time or a later deadline."},
+        {"value": "reported_blocked", "description": "The task is stuck, delayed, lacks conditions, needs unblocking."},
+        {"value": "redo_requested", "description": "A request to redo, re-assess, supplement or revise the task's result."},
+        {"value": "paused_or_cancelled", "description": "Cancelled, stopped for good, no longer done; or postponed, suspended."},
+        {"value": "mention_only", "description": "Only mentions, asks about or discusses content; does not state how the work stands."},
+        {"value": "other", "description": "Not about this task, or only about the whole proposal/larger plan containing the task."},
     ],
 }
 
@@ -66,19 +66,19 @@ REPORT_ACT_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "report_act",
     "instructions": (
-        "Input là trích đoạn cuộc họp tiếng Việt: VIỆC ĐANG XÉT (một việc báo cáo tình hình cho cuộc họp), vài lượt "
-        "ngữ cảnh rồi LƯỢT CẦN XÉT. Chỉ phân loại điều LƯỢT CẦN XÉT nói về việc báo cáo đó, dùng ngữ cảnh để hiểu nó. "
-        "Xét theo nghĩa, không theo từ khoá. Tình hình của đối tượng được báo cáo (dự án đang làm, chưa xong, vướng...) "
-        "là NỘI DUNG báo cáo, không phải tình trạng của việc báo cáo. Lượt chỉ nói về cả đề án/kế hoạch lớn "
-        "(đề án phải bổ sung, đánh giá lại, chuẩn bị trình) mà không nói tới việc báo cáo này là other."
+        "The input is an excerpt of a Vietnamese meeting: the TASK UNDER REVIEW (a task of reporting a situation to the meeting), "
+        "a few context turns, then the TURN TO JUDGE. Classify only what the TURN TO JUDGE says about that report, using the context to understand it. "
+        "Judge by meaning, not keywords. The situation of the reported object (the project is under way, unfinished, stuck...) "
+        "is the CONTENT of the report, not the state of the reporting task. A turn only about the whole proposal/larger plan "
+        "(the proposal must be supplemented, re-assessed, prepared for submission) without mentioning this report is other."
     ),
     "choices": [
-        {"value": "report_given", "description": "Lượt nói trình bày nội dung mà việc yêu cầu báo cáo, kể cả khi trả lời câu hỏi về nội dung đó."},
-        {"value": "report_not_ready", "description": "Nói báo cáo chưa xong, đang chuẩn bị, chưa đủ số liệu."},
-        {"value": "report_postponed", "description": "Xin lùi, hoãn báo cáo sang lúc khác."},
-        {"value": "report_redo_requested", "description": "Yêu cầu báo cáo lại, bổ sung, làm rõ thêm nội dung đã báo cáo."},
-        {"value": "mention_only", "description": "Chỉ nhắc tới hoặc hỏi về nội dung; chưa trình bày."},
-        {"value": "other", "description": "Không nói về việc này."},
+        {"value": "report_given", "description": "The turn presents the content the task asks to report, including when answering a question about that content."},
+        {"value": "report_not_ready", "description": "Says the report is not finished, being prepared, or lacks figures."},
+        {"value": "report_postponed", "description": "Asks to push back or postpone the report to another time."},
+        {"value": "report_redo_requested", "description": "Asks to report again, supplement, or further clarify the reported content."},
+        {"value": "mention_only", "description": "Only mentions or asks about the content; not yet presented."},
+        {"value": "other", "description": "Not about this task."},
     ],
 }
 
@@ -87,12 +87,12 @@ TASK_KIND_QUESTION: dict[str, Any] = {
     "type": "choice",
     "name": "task_kind",
     "instructions": (
-        "Input là tên một việc trong danh sách việc cần báo cáo tiến độ tại một cuộc họp tiếng Việt. "
-        "Xét theo nghĩa, không theo từ khoá: việc này hoàn thành bằng cách nào?"
+        "The input is the name of a task in the list of tasks to report progress on at a Vietnamese meeting. "
+        "Judge by meaning, not keywords: how is this task completed?"
     ),
     "choices": [
-        {"value": "report_at_meeting", "description": "Việc chỉ yêu cầu báo cáo, trình bày tình hình hay thông tin về một đối tượng (dự án, công việc, số liệu) cho cuộc họp; xong khi đã báo cáo."},
-        {"value": "deliverable", "description": "Việc phải làm ra một sản phẩm hay kết quả: văn bản, tờ trình, hồ sơ, báo cáo viết, ý kiến được tiếp thu, công trình, thủ tục được duyệt...; xong khi có sản phẩm đó."},
+        {"value": "report_at_meeting", "description": "The task only asks to report or present the situation or information about an object (project, work, figures) to the meeting; done once reported."},
+        {"value": "deliverable", "description": "The task must produce a product or result: a document, submission, dossier, written report, opinions taken in, a construction work, an approved procedure...; done once that product exists."},
     ],
 }
 
@@ -187,7 +187,7 @@ def render_progress_act_input(task_title: str, turn: SpeakerTurn, context: Seque
         Văn bản input.
     """
 
-    return f"VIỆC ĐANG XÉT:\n{task_title}\n\n{render_turn_act_input(turn, context)}"
+    return f"TASK UNDER REVIEW:\n{task_title}\n\n{render_turn_act_input(turn, context)}"
 
 
 def judge_turn_windows(
@@ -262,7 +262,7 @@ class DecisionsApiProgressActJudge:
             known = self._kinds.get(task_title)
         if known is not None:
             return known
-        answer = self._ask(f"VIỆC:\n{task_title}", TASK_KIND_QUESTION)
+        answer = self._ask(f"TASK:\n{task_title}", TASK_KIND_QUESTION)
         probabilities = {p.value: p.probability for p in answer.probabilities}
         report = probabilities.get("report_at_meeting", 0.0) >= REPORT_TASK_MIN
         with self._lock:

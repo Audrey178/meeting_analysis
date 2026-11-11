@@ -73,13 +73,13 @@ def format_registry_context(registry: SpeakerRegistry) -> str:
 
     roster = registry.roster
     if not registry.names and not roster.people and not roster.organizations and not registry.agenda.tasks:
-        return "(Không có danh sách người nói.)"
+        return "(No speaker list.)"
     lines = []
     if registry.names:
-        lines.append("Người nói trong cả cuộc họp: " + ", ".join(registry.names) + ".")
+        lines.append("Speakers in the whole meeting: " + ", ".join(registry.names) + ".")
     directory = build_actor_directory(registry)
     if directory:
-        lines.append("Danh bạ bên nhận việc (mã: tên; ghi mã vào id của assignees):")
+        lines.append("Assignee directory (code: name; put the code in the id of assignees):")
         lines.extend(f"- {entry.code}: {_describe_entry(entry, roster)}" for entry in directory)
     if registry.agenda.tasks:
         lines.append(format_agenda(registry.agenda))
@@ -93,15 +93,15 @@ def _describe_entry(entry: DirectoryEntry, roster: AttendeeRoster) -> str:
         org = roster.find_organization(entry.ref_id)
         aliases = org.aliases if org else ()
         # Thiếu chức năng function
-        return f"{entry.name} (đơn vị; còn gọi: {', '.join(aliases)})" if aliases else f"{entry.name} (đơn vị)"
+        return f"{entry.name} (unit; also called: {', '.join(aliases)})" if aliases else f"{entry.name} (unit)"
     person = next((person for person in roster.people if person.person_id == entry.ref_id), None)
     if person is None:
-        return f"{entry.name} (người nói, không có trong danh sách tham dự)"
+        return f"{entry.name} (speaker, not in the attendee list)"
     org = roster.find_organization(person.org_id)
     details = [part for part in (person.position, org.name if org else "") if part]
     other_labels = sorted(label for label in entry.speaker_names if label != entry.name)
     if other_labels:
-        details.append("người nói: " + ", ".join(other_labels))
+        details.append("speaker label: " + ", ".join(other_labels))
     return f"{entry.name} ({', '.join(details)})" if details else entry.name
 
 
@@ -118,15 +118,15 @@ def format_agenda(agenda: TaskAgenda) -> str:
         Văn bản nhiều dòng, dòng đầu là tiêu đề.
     """
 
-    lines = ["Việc cần báo cáo tiến độ trong phiên họp (mã: tên việc):"]
+    lines = ["Tasks to report progress on in this session (code: task name):"]
     for task in agenda.tasks:
-        details = [f"chủ trì: {task.owner.name}"]
+        details = [f"lead: {task.owner.name}"]
         if task.support:
-            details.append("phối hợp: " + ", ".join(party.name for party in task.support))
+            details.append("support: " + ", ".join(party.name for party in task.support))
         if task.due:
-            details.append(f"hạn: {task.due}")
+            details.append(f"deadline: {task.due}")
         if task.last_status:
-            details.append(f"trạng thái trước họp: {task.last_status}")
+            details.append(f"status before the session: {task.last_status}")
         lines.append(f"- {task.task_id}: {task.title} ({'; '.join(details)})")
     return "\n".join(lines)
 

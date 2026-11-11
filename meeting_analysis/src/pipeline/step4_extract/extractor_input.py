@@ -44,9 +44,9 @@ def format_topic_prompt(topic: ExtractorInput) -> str:
     """Dựng phần chung cuối user prompt của mọi agent trích xuất: tiêu đề, tóm tắt và bản ghi."""
 
     return (
-        f"Tiêu đề đoạn: {topic['title']}\n"
-        f"Tóm tắt đoạn: {topic['summary']}\n\n"
-        f"Bản ghi:\n{format_turns_as_transcript(topic['turns'])}"
+        f"Segment title: {topic['title']}\n"
+        f"Segment summary: {topic['summary']}\n\n"
+        f"Transcript:\n{format_turns_as_transcript(topic['turns'])}"
     )
 
 

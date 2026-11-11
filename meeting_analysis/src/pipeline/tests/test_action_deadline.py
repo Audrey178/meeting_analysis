@@ -35,14 +35,14 @@ def _run(item: dict, meeting_date: str | None = "2026-10-08"):
 def test_meeting_date_and_rules_are_in_prompt():
     _, prompt = _run({"deadline": None, "deadline_date": None, "deadline_kind": "unknown"})
 
-    assert "Ngày họp: 2026-10-08 (thứ Năm)" in prompt
-    assert "QUY TẮC CHUẨN HOÁ HẠN" in ACTION_SYSTEM_PROMPT
+    assert "Meeting date: 2026-10-08 (thứ Năm)" in prompt
+    assert "DEADLINE NORMALIZATION RULES" in ACTION_SYSTEM_PROMPT
 
 
 def test_missing_meeting_date_is_marked_unknown_in_prompt():
     _, prompt = _run({"deadline": None, "deadline_date": None, "deadline_kind": "unknown"}, meeting_date=None)
 
-    assert "Ngày họp: (không rõ)" in prompt
+    assert "Meeting date: (unknown)" in prompt
 
 
 def test_llm_resolved_deadline_is_kept():

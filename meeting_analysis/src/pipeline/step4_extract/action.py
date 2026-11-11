@@ -21,6 +21,7 @@ from ..shared.llm_output import (
 )
 from ..shared.meeting_inputs.agenda import TaskAgenda
 from ..shared.meeting_inputs.attendees import MeetingChair
+from ..shared.prompts import VIETNAMESE_VALUE
 from ..shared.schemas import ActionItemCandidate, ExtractorInput, TopicFailure
 from .extractor_input import format_topic_prompt
 from ..shared.transcript import (
@@ -44,20 +45,20 @@ NOT_ASSIGNMENT_BASES = ("document_content", "status_report", "discussion_questio
 
 _ASSIGNMENT_FIELDS: dict = {
     "assignees": ASSIGNEES_SCHEMA,
-    "deadline": {"type": ["string", "null"]},
+    "deadline": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
     "deadline_date": {"type": ["string", "null"]},
     "deadline_kind": {
         "type": "string",
         "enum": ["exact", "before", "end_of_period", "relative", "unknown"],
     },
-    "text": {"type": "string"},
+    "text": {"type": "string", "description": VIETNAMESE_VALUE},
 }
 
 _MEMBER_REQUEST_SCHEMA: dict = {
     "type": "object",
     "properties": {
         "turn_id": {"type": "string"},
-        "requester": {"type": "string"},
+        "requester": {"type": "string", "description": VIETNAMESE_VALUE},
         "response": {"type": "string", "enum": list(RESPONSES)},
         "response_turn_id": {"type": ["string", "null"]},
         **_ASSIGNMENT_FIELDS,
@@ -128,11 +129,11 @@ def _build_action_user_prompt(topic: ExtractorInput) -> str:
     Gồm ngày họp (kèm thứ), bối cảnh cuộc họp, người nói trong chủ đề, rồi phần chung của chủ đề.
     """
 
-    speakers = ", ".join(list_distinct_speaker_names(topic["turns"])) or "(không rõ)"
+    speakers = ", ".join(list_distinct_speaker_names(topic["turns"])) or "(unknown)"
     return (
-        f"Ngày họp: {format_meeting_date(topic.get('meeting_date'))}\n\n"
-        f"Bối cảnh cuộc họp:\n{topic['meeting_context']}\n\n"
-        f"Người nói trong đoạn này: {speakers}\n\n"
+        f"Meeting date: {format_meeting_date(topic.get('meeting_date'))}\n\n"
+        f"Meeting context:\n{topic['meeting_context']}\n\n"
+        f"Speakers in this segment: {speakers}\n\n"
         f"{format_topic_prompt(topic)}"
     )
 

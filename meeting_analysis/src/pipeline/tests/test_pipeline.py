@@ -112,7 +112,7 @@ class FakeLLM:
     def _kind(system_prompt: str, schema: dict) -> str:
         if "stance" in schema["properties"]:
             return "proposer"
-        if "KIỂM CHỨNG VIÊN" in system_prompt:
+        if "You are the VERIFIER" in system_prompt:
             return "verifier"
         return {"discussion_points": "content", "member_requests": "action", "updates": "action", "member_points": "decision",
                 "stance": "proposer"}[
@@ -258,8 +258,8 @@ def test_tools_read_whole_meeting_and_report_errors_as_observations():
     tools = MeetingTools(TURNS, SpeakerRegistry(("Anh Tuấn", "Hiếu", "Chị Mai", "Anh Phong")))
 
     assert tools.run("get_turn", "[T4|Anh Tuấn]").startswith("[T4|Anh Tuấn]")
-    assert "LỖI" in tools.run("get_turn", "T99")
-    assert "LỖI" in tools.run("delete_turn", "T1")
+    assert "ERROR" in tools.run("get_turn", "T99")
+    assert "ERROR" in tools.run("delete_turn", "T1")
     assert "[T3|" in tools.run("search_meeting", "mở lại phản ánh")
     assert "Anh Phong" in tools.run("lookup_speaker", "Phong")
 
@@ -447,7 +447,7 @@ def test_accept_that_cites_a_turn_is_treated_as_defend():
     ]
     assert record.decided_by == "consensus" and record.verdict == "keep"
     second_verifier_prompt = [user for kind, _, user in llm.prompts if kind == "verifier"][1]
-    assert "giữ nguyên, phản biện, lượt T4" in second_verifier_prompt
+    assert "kept it, rebutted, turn T4" in second_verifier_prompt
 
 
 def test_invalid_stance_gets_another_round_with_a_readable_label():
@@ -460,7 +460,7 @@ def test_invalid_stance_gets_another_round_with_a_readable_label():
     (record,) = report.verification_records
     assert [(r.verdict, r.stance) for r in record.rounds] == [("drop", ""), ("keep", "")]
     second_verifier_prompt = [user for kind, _, user in llm.prompts if kind == "verifier"][1]
-    assert "Agent trích xuất (không rõ lập trường)" in second_verifier_prompt
+    assert "Extractor agent (unknown stance)" in second_verifier_prompt
 
 
 def test_accept_of_a_revision_with_a_turn_stays_accept():
@@ -472,7 +472,7 @@ def test_accept_of_a_revision_with_a_turn_stays_accept():
     (record,) = report.verification_records
     assert record.rounds[0].stance == "accept" and record.verdict == "revise"
     proposer_prompt = next(user for kind, _, user in llm.prompts if kind == "proposer")
-    assert "Kiểm chứng viên đề xuất bên nhận việc: Anh Tuấn (lead, person)" in proposer_prompt
+    assert "Verifier suggests assignees: Anh Tuấn (lead, person)" in proposer_prompt
     assert [a.actor for a in report.assignments if a.text == PROPOSAL_TEXT] == ["Anh Tuấn"]
 
 
@@ -481,7 +481,7 @@ def test_filter_reasons_are_presented_as_hints_not_evidence():
     _start(_analyzer(llm))
 
     verifier_prompt = next(user for kind, _, user in llm.prompts if kind == "verifier")
-    assert "Cờ của bộ lọc tự động (chỉ là gợi ý, có thể sai, KHÔNG phải bằng chứng)" in verifier_prompt
+    assert "Automatic filter flags (only hints, may be wrong, NOT evidence)" in verifier_prompt
     assert "Lý do bị đánh dấu chưa chắc chắn" not in verifier_prompt
 
 
@@ -492,7 +492,7 @@ def test_repeated_tool_call_is_not_run_again():
 
     first, second = report.verification_records[0].steps
     assert "[T3|" in first.observation
-    assert second.observation.startswith("LỖI: đã tra search_meeting") and "Bước 1" in second.observation
+    assert second.observation.startswith("ERROR: already looked up search_meeting") and "Step 1" in second.observation
 
 
 def test_search_prefers_short_on_topic_turn_over_long_rambling_turn():
@@ -524,8 +524,8 @@ def test_chair_is_shown_to_extractors_and_verifier():
 
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
     verifier_prompt = next(user for kind, _, user in llm.prompts if kind == "verifier")
-    assert action_prompt.startswith("Người chủ trì: Anh Tuấn\n")
-    assert verifier_prompt.startswith("Người chủ trì: Anh Tuấn\n")
+    assert action_prompt.startswith("Chair: Anh Tuấn\n")
+    assert verifier_prompt.startswith("Chair: Anh Tuấn\n")
 
 
 def test_chair_name_comes_from_roster_by_id():
@@ -577,7 +577,7 @@ def test_extractors_run_with_v3_prompts():
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["action"]
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["verifier"]
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")
-    assert action_prompt.startswith("Người chủ trì: (phiên họp không cung cấp; KHÔNG đoán ai là người chủ trì)\n")
+    assert action_prompt.startswith("Chair: (not provided for this session; do NOT guess who the chair is)\n")
 
 
 def test_chair_conclusion_rule_is_shared_by_decision_agent_and_verifier():
@@ -604,7 +604,7 @@ def test_verifier_history_keeps_thoughts_and_turn_comes_before_verdict():
     _start(_analyzer(llm))
 
     second_verifier_prompt = [user for kind, _, user in llm.prompts if kind == "verifier"][1]
-    assert "Suy nghĩ: tìm lượt chốt\nHành động: search_meeting(mở lại phản ánh)" in second_verifier_prompt
+    assert "Thought: tìm lượt chốt\nAction: search_meeting(mở lại phản ánh)" in second_verifier_prompt
     fields = list(VERIFIER_SCHEMA["properties"])
     assert fields.index("deciding_turn_id") < fields.index("verdict")
 
@@ -618,8 +618,8 @@ def test_tools_accept_short_turn_ids_from_the_verifier():
 
     for alias in ("T30", "000030", "30", "[TURN_000030|Anh Tuấn]"):
         assert tools.run("get_turn", alias).startswith("[TURN_000030|Anh Tuấn]")
-    assert "LỖI" not in tools.run("lookup_speaker", "Anh Tuấn @T9")
-    assert "LỖI" in tools.run("get_turn", "T31")
+    assert "ERROR" not in tools.run("lookup_speaker", "Anh Tuấn @T9")
+    assert "ERROR" in tools.run("get_turn", "T31")
 
 
 def test_amend_keeps_the_revised_text_and_rejects_switching_to_another_task():
@@ -672,16 +672,16 @@ def test_assignment_rule_names_every_basis_and_limits_blanket_acceptance():
     rule = flat(prompts.CHAIR_ASSIGNMENT_RULE)
     for basis in (*BASIS_STATUS, *NOT_ASSIGNMENT_BASES):
         assert f'"{basis}"' in rule
-    assert "Không có người chủ trì vẫn có việc giao" in rule
+    assert "Assigned tasks exist even without a chair" in rule
     assert "lưu ý các ý kiến góp ý" in rule
     # Tiếp nhận chung không biến lời trình bày (lộ trình của đề án) thành việc giao.
-    assert "không áp cho lời trình bày của đơn vị trình" in rule
-    assert "đơn vị trình/soạn thảo là lead" in rule
-    assert "KHÔNG bỏ vì không nêu cá nhân" in flat(prompts.VERIFY_RUBRICS["action"])
+    assert "not to the presentation of the presenting unit" in rule
+    assert "the presenting/drafting unit is lead" in rule
+    assert "do NOT drop it because no individual" in flat(prompts.VERIFY_RUBRICS["action"])
     assert prompts.VERIFY_ACCEPTANCE_NOTE in prompts.VERIFY_RUBRICS["action"]
     note = flat(prompts.VERIFY_ACCEPTANCE_NOTE)
     assert "như anh X nói" in note
-    assert "KHÔNG biến nội dung văn bản đang trình" in note
+    assert "does NOT turn the content of the document being presented" in note
 
 
 def test_action_basis_sets_status_and_drops_document_content_and_reports():

@@ -14,6 +14,7 @@ from ..shared.llm_output import (
     split_dict_entries,
     validate_evidence_items,
 )
+from ..shared.prompts import VIETNAMESE_VALUE
 from ..shared.schemas import DecisionCandidate, ExtractorInput, TopicFailure
 from .extractor_input import format_topic_prompt
 from .member_input import POINT_KINDS, RESPONSES, accepted_member_inputs
@@ -31,11 +32,11 @@ _MEMBER_POINT_SCHEMA: dict = {
     "type": "object",
     "properties": {
         "turn_id": {"type": "string"},
-        "requester": {"type": "string"},
+        "requester": {"type": "string", "description": VIETNAMESE_VALUE},
         "point_kind": {"type": "string", "enum": list(POINT_KINDS)},
         "response": {"type": "string", "enum": list(RESPONSES)},
         "response_turn_id": {"type": ["string", "null"]},
-        "text": {"type": "string"},
+        "text": {"type": "string", "description": VIETNAMESE_VALUE},
     },
     "required": ["turn_id", "requester", "point_kind", "response", "response_turn_id", "text"],
 }
@@ -53,7 +54,7 @@ DECISION_SCHEMA: dict = {
                     "basis": {"type": "string", "enum": list(BASIS_STATUS)},
                     "request_turn_id": {"type": ["string", "null"]},
                     "confirm_turn_id": {"type": ["string", "null"]},
-                    "text": {"type": "string"},
+                    "text": {"type": "string", "description": VIETNAMESE_VALUE},
                 },
                 "required": ["evidence_segment_ids", "basis", "request_turn_id", "confirm_turn_id", "text"],
             },

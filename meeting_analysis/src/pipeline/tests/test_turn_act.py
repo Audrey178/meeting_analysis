@@ -134,7 +134,7 @@ def test_decisions_judge_parses_answer_and_caches() -> None:
     assert len(calls) == 1
     assert calls[0]["model"] == "m"
     assert calls[0]["input"] == render_turn_act_input(TURNS[1], TURNS[:1])
-    assert "LƯỢT CẦN XÉT:\nAnh Sơn: Thế thì cứ làm" in calls[0]["input"]
+    assert "TURN TO JUDGE:\nAnh Sơn: Thế thì cứ làm" in calls[0]["input"]
 
 
 def test_decisions_judge_checks_claim_content_and_caches_separately() -> None:
@@ -158,7 +158,7 @@ def test_decisions_judge_checks_claim_content_and_caches_separately() -> None:
     assert len(calls) == 1
     assert calls[0]["questions"][0]["name"] == "claim_support"
     assert calls[0]["input"] == render_claim_support_input("Lấy ý kiến chuyên gia", TURNS[1], evidence)
-    assert "NỘI DUNG VIỆC CẦN KIỂM:\nLấy ý kiến chuyên gia" in calls[0]["input"]
+    assert "CLAIM TO CHECK:\nLấy ý kiến chuyên gia" in calls[0]["input"]
 
 
 def test_claim_support_has_clear_reference_and_verifier_gray_zone() -> None:

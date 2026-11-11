@@ -12,7 +12,7 @@ from ...shared.llm_output import read_stripped_text
 from ...shared.schemas import ConsensusRound, VerifierStep
 from .tools import MeetingTools
 
-_FINAL_TURN_NOTE = "ĐÂY LÀ LƯỢT CUỐI: bắt buộc action = \"final\" và điền verdict."
+_FINAL_TURN_NOTE = "THIS IS THE LAST STEP: action must be \"final\" and verdict must be filled."
 
 
 def format_steps(steps: Sequence[VerifierStep]) -> str:
@@ -28,8 +28,8 @@ def format_steps(steps: Sequence[VerifierStep]) -> str:
     """
 
     return "\n\n".join(
-        f"Bước {i}\nSuy nghĩ: {step.thought or '(không ghi)'}\n"
-        f"Hành động: {step.action}({step.argument})\nKết quả:\n{step.observation}"
+        f"Step {i}\nThought: {step.thought or '(none)'}\n"
+        f"Action: {step.action}({step.argument})\nResult:\n{step.observation}"
         for i, step in enumerate(steps, 1)
     )
 
@@ -47,11 +47,11 @@ def format_rounds(rounds: Sequence[ConsensusRound], item_label: str, stance_labe
     """
 
     return "\n".join(
-        f"Vòng {index} - {item_label}: {round_.candidate_text}\n"
-        f"  Kiểm chứng viên: {round_.verdict}"
-        f"{f' (lượt {round_.deciding_turn_id})' if round_.deciding_turn_id else ''}: {round_.feedback}\n"
-        f"  Agent trích xuất ({stance_labels.get(round_.stance, 'không rõ lập trường')}"
-        f"{f', lượt {round_.confirm_turn_id}' if round_.confirm_turn_id else ''}): {round_.response}"
+        f"Round {index} - {item_label}: {round_.candidate_text}\n"
+        f"  Verifier: {round_.verdict}"
+        f"{f' (turn {round_.deciding_turn_id})' if round_.deciding_turn_id else ''}: {round_.feedback}\n"
+        f"  Extractor agent ({stance_labels.get(round_.stance, 'unknown stance')}"
+        f"{f', turn {round_.confirm_turn_id}' if round_.confirm_turn_id else ''}): {round_.response}"
         for index, round_ in enumerate(rounds, 1)
     )
 
@@ -61,7 +61,7 @@ def _build_step_prompt(base_prompt: str, steps: list[VerifierStep], is_last: boo
 
     parts = [base_prompt]
     if steps:
-        parts.append(f"Lịch sử tra cứu:\n{format_steps(steps)}")
+        parts.append(f"Lookup history:\n{format_steps(steps)}")
     if is_last:
         parts.append(_FINAL_TURN_NOTE)
     return "\n\n".join(parts)
@@ -85,8 +85,8 @@ def _repeat_notice(steps: list[VerifierStep], action: str, argument: str) -> str
     for index, step in enumerate(steps, 1):
         if step.action == action and " ".join(step.argument.casefold().split()) == key:
             return (
-                f"LỖI: đã tra {action}({argument}) ở Bước {index}, kết quả như trên. "
-                "Đọc kỹ bản ghi của đoạn, tra cách khác hoặc kết luận."
+                f"ERROR: already looked up {action}({argument}) in Step {index}, result as above. "
+                "Read the segment transcript carefully, look up something else, or conclude."
             )
     return None
 

@@ -267,9 +267,9 @@ def test_lookup_speaker_lists_scored_candidates():
     ambiguous = tools.run("lookup_speaker", "Sơn")
     resolved = tools.run("lookup_speaker", "Sơn @T5")
 
-    assert "P1 | Phạm Hồng Sơn | person" in ambiguous and "MƠ HỒ" in ambiguous
-    assert "RÕ RÀNG: 'Sơn' là Lê Văn Sơn (person)" in resolved
-    assert "LỖI" in tools.run("lookup_speaker", "Sơn @T99")
+    assert "P1 | Phạm Hồng Sơn | person" in ambiguous and "AMBIGUOUS" in ambiguous
+    assert "CLEAR: 'Sơn' is Lê Văn Sơn (person)" in resolved
+    assert "ERROR" in tools.run("lookup_speaker", "Sơn @T99")
     assert "O3 | Sở Tài chính | organization" in tools.run("lookup_speaker", "Sở Tài chính")
 
 
@@ -295,10 +295,10 @@ class FakeLLM:
         if "stance" in schema["properties"]:
             # Agent trích xuất tự viết lại bên nhận việc theo đề xuất của Verifier (Verifier không sửa hộ).
             self.proposer_prompts.append(user_prompt)
-            adopted = [_assignee("Lê Văn Sơn", "lead", "person")] if "đề xuất bên nhận việc: Lê Văn Sơn" in user_prompt else []
+            adopted = [_assignee("Lê Văn Sơn", "lead", "person")] if "Verifier suggests assignees: Lê Văn Sơn" in user_prompt else []
             return {"stance": "accept", "argument": "đồng ý", "confirm_turn_id": None,
                     "revised_text": None, "revised_assignees": adopted}
-        if "KIỂM CHỨNG VIÊN" in system_prompt:
+        if "You are the VERIFIER" in system_prompt:
             self.verifier_prompts.append(user_prompt)
             return self.verifier_script.pop(0)
         if first_field == "discussion_points":
@@ -399,7 +399,7 @@ def test_organization_alias_is_optional_and_grounds_actor():
 
     assert roster.organizations[0].aliases == ("Đảng ủy ban",)
     assert ROSTER.organizations[0].aliases == ()
-    assert "còn gọi: Đảng ủy ban" in format_registry_context(registry)
+    assert "also called: Đảng ủy ban" in format_registry_context(registry)
 
 
 # ----- các bên nhận việc do agent khai -----
@@ -577,8 +577,8 @@ def test_actor_directory_codes_people_then_organizations_and_shows_them_in_conte
         ("N4", "Đỗ Thanh Phong", "P5"), ("D1", "Ban Thường vụ Thành ủy", "O1"), ("D2", "Sở Tài chính", "O3"),
         ("D3", "Sở Xây dựng", "O4"),
     ]
-    assert "- N3: Trần Văn Thông (Ủy viên Ban Thường vụ, Ban Thường vụ Thành ủy, người nói: Đ/c Thông (HNI))" in context
-    assert "- D2: Sở Tài chính (đơn vị)" in context
+    assert "- N3: Trần Văn Thông (Ủy viên Ban Thường vụ, Ban Thường vụ Thành ủy, speaker label: Đ/c Thông (HNI))" in context
+    assert "- D2: Sở Tài chính (unit)" in context
 
 
 def test_unlisted_speaker_gets_a_code_without_ref_id():
@@ -586,7 +586,7 @@ def test_unlisted_speaker_gets_a_code_without_ref_id():
     entry = next(entry for entry in build_actor_directory(registry) if entry.name == "Hiếu")
 
     assert (entry.code, entry.ref_id) == ("N5", None)
-    assert "- N5: Hiếu (người nói, không có trong danh sách tham dự)" in format_registry_context(registry)
+    assert "- N5: Hiếu (speaker, not in the attendee list)" in format_registry_context(registry)
 
 
 def test_read_assignee_mentions_reads_code_and_keeps_same_name_people_with_different_codes():

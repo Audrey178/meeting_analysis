@@ -288,6 +288,6 @@ def test_prompt_shows_part_of_long_evidence_turn_near_the_task():
 
     prompt = ProgressVerifier(ScriptLLM(), ScriptLLM(), AnalysisConfig())._base_prompt(task, update, [])
 
-    snippet = prompt.split("Đoạn bằng chứng:\n", 1)[1].split("\n", 1)[0]
+    snippet = prompt.split("Evidence excerpts:\n", 1)[1].split("\n", 1)[0]
     assert snippet.startswith("[TURN_000002|Đỗ Thanh Phong] …")
     assert "đã trình chủ trương đầu tư xong" in snippet

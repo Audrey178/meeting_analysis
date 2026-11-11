@@ -8,6 +8,7 @@ from collections.abc import Sequence
 from dataclasses import replace
 
 from ..llm_output import read_stripped_text, split_dict_entries
+from ..prompts import VIETNAMESE_VALUE
 from ..schemas import ASSIGNEE_ROLES, ASSIGNEE_TYPES, AssigneeMention
 from .names import is_bare_personal_pronoun, name_key
 
@@ -20,7 +21,7 @@ ASSIGNEES_SCHEMA: dict = {
     "items": {
         "type": "object",
         "properties": {
-            "name": {"type": "string"},
+            "name": {"type": "string", "description": VIETNAMESE_VALUE},
             "id": {"type": ["string", "null"]},
             "role": {"type": "string", "enum": list(ASSIGNEE_ROLES)},
             "type": {"type": "string", "enum": list(ASSIGNEE_TYPES)},

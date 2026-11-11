@@ -17,6 +17,7 @@ from ...utils.config import TopicLabelerConfig
 from ...utils.contracts import TopicLabel, TopicSegment
 from ...utils.llm_call_log import llm_call
 from ...utils.ports import LLMAdapter, LLMUpstreamError, TopicLabelAdapter
+from ..shared.prompts import VIETNAMESE_VALUE
 from ..shared.text import VN_STOPWORDS, word_tokens
 
 logger = logging.getLogger(__name__)
@@ -73,124 +74,122 @@ class StructuredLLMTopicLabeler:
         if segment.segment_id is None:
             raise ValueError("segment must have a segment_id")
         text = segment.text
-        title_schema: dict = {"type": "string"}
+        title_schema: dict = {"type": "string", "description": VIETNAMESE_VALUE}
         result = self.llm.generate_json(
             system_prompt=(
                 """
-Bạn là thư ký cuộc họp chuyên biên tập bản ghi ASR thành tiêu đề và
-tóm tắt có nội dung cụ thể, chính xác, dễ hiểu.
+You are a meeting secretary who edits ASR transcripts into specific, accurate, easy-to-read titles
+and summaries.
 
-NHIỆM VỤ
-Đọc bản ghi của một đoạn chủ đề và trả về:
-- title: vấn đề hoặc đầu việc cụ thể đang được trao đổi.
-- summary: nội dung thực chất của trao đổi, gồm các thông tin quan trọng
-  đã được nêu rõ trong đoạn.
+TASK
+Read the transcript of one topic segment and return:
+- title: the concrete issue or task being discussed.
+- summary: the substance of the exchange, including the important information stated clearly in
+  the segment.
 
-Không chỉ mô tả rằng mọi người đang họp, thảo luận hoặc phối hợp.
-Người đọc phải biết đoạn này bàn việc gì, xử lý như thế nào và có
-kết quả, yêu cầu hoặc vướng mắc gì nếu các thông tin đó xuất hiện.
+Do not merely describe that people are meeting, discussing or coordinating.
+The reader must learn what this segment is about, how it is handled, and what results,
+requirements or blockers there are, if that information appears.
 
-1. XÁC ĐỊNH TRỌNG TÂM
-- Đọc toàn bộ đoạn, tự nhận diện lĩnh vực từ mạch nội dung.
-- Xác định đối tượng cụ thể đang được bàn đến và hành động hoặc vấn đề
-  gắn với đối tượng đó.
-- Ưu tiên các nội dung được giải thích, demo, đánh giá hoặc chốt đầu việc;
-  không để một từ nhiễu hay câu chuyển tiếp chi phối chủ đề.
-- Nếu đoạn chứa nhiều ý, chọn ý trọng tâm cho title và giữ các ý quan trọng
-  còn lại trong summary. Không tự tạo quan hệ giữa những ý độc lập.
+1. FIND THE FOCUS
+- Read the whole segment and identify the domain from the flow of content.
+- Identify the concrete object being discussed and the action or issue tied to that object.
+- Prioritize content that is explained, demoed, evaluated or settled as a task;
+  do not let a noisy word or a transition sentence drive the topic.
+- If the segment holds several points, pick the central point for the title and keep the other
+  important points in the summary. Do not invent relations between independent points.
 
-2. TITLE: CỤ THỂ ĐẾN MỨC NỘI DUNG CHO PHÉP
-- Đặt tiêu đề ở cấp độ đầu việc, tính năng, quy trình hoặc vấn đề cụ thể;
-  không dừng ở cấp độ “dự án”, “sản phẩm”, “công nghệ” hoặc “công việc”.
-- Ưu tiên cấu trúc tự nhiên:
-  [Hành động/vấn đề chính] + [đối tượng cụ thể] + [phạm vi nếu cần].
-- Dùng động từ đúng với nội dung như: demo, rà soát, điều chỉnh,
+2. TITLE: AS SPECIFIC AS THE CONTENT ALLOWS
+- Title at the level of a specific task, feature, procedure or issue;
+  do not stop at the level of "dự án", "sản phẩm", "công nghệ" or "công việc".
+- Prefer a natural structure:
+  [Main action/issue] + [specific object] + [scope if needed].
+- Use verbs that match the content, such as: demo, rà soát, điều chỉnh,
   xây dựng, tích hợp, xử lý, đánh giá, phân công.
-  Không mặc định mọi đoạn đều là “Thảo luận về...”.
-- Nếu bản ghi xác định được hạng mục, chức năng hoặc quy trình,
-  phải gọi đúng hạng mục, chức năng hoặc quy trình đó trong tiêu đề,
-  thay vì thay bằng một danh từ bao quát.
-- Không liệt kê mọi ý vào tiêu đề. Không thêm mục tiêu hoặc kết quả
-  chưa được nêu để làm tiêu đề có vẻ cụ thể.
-- Viết hoa theo quy tắc tiếng Việt thông thường.
+  Do not assume every segment is "Thảo luận về...".
+- If the transcript identifies the item, function or procedure, name exactly that item, function
+  or procedure in the title instead of replacing it with a generic noun.
+- Do not list every point in the title. Do not add goals or results that were not stated to make
+  the title look specific.
+- Capitalize by ordinary Vietnamese rules.
 
-3. SUMMARY: TÓM TẮT NỘI DUNG, KHÔNG TÓM TẮT HÀNH VI THẢO LUẬN
-- Viết một đoạn 2–4 câu, có thể ngắn hơn nếu ít thông tin.
-- Câu đầu nêu trực tiếp vấn đề, tiến độ hoặc nội dung chính.
-  Không mở đầu bằng “Cuộc họp tập trung vào”, “Nội dung xoay quanh”
-  hoặc “Trong cuộc họp, các thành viên đã thảo luận”.
-- Các câu tiếp theo nêu phương án, chi tiết kỹ thuật/nghiệp vụ quan trọng,
-  kết quả, vướng mắc hoặc hành động tiếp theo nếu có.
-- Mỗi câu phải bổ sung thông tin có thể kiểm chứng từ bản ghi.
-  Bỏ câu chỉ diễn đạt mục tiêu chung mà không cung cấp nội dung mới.
+3. SUMMARY: SUMMARIZE THE CONTENT, NOT THE ACT OF DISCUSSING
+- Write one paragraph of 2-4 sentences, shorter if there is little information.
+- The first sentence states the issue, progress or main content directly.
+  Do not start with "Cuộc họp tập trung vào", "Nội dung xoay quanh"
+  or "Trong cuộc họp, các thành viên đã thảo luận".
+- The following sentences state options, important technical/business details,
+  results, blockers or next actions if any.
+- Each sentence must add information verifiable from the transcript.
+  Drop sentences that only express a general goal without new content.
 
-Giữ lại các chi tiết phân biệt topic khi bản ghi đủ rõ:
-- Tính năng nào được demo hoặc cần hoàn thiện.
-- Hạng mục nào đã xong, đang làm hoặc còn vướng.
-- Quy trình nhận đầu vào gì, tạo đầu ra gì, qua các bước chính nào.
-- Phương án nào được đề xuất, thay đổi hoặc loại khỏi phạm vi.
-- Yêu cầu hoặc ràng buộc nào ảnh hưởng đến cách triển khai.
-- Ai thực hiện việc gì, thời hạn nào, nếu xác định được.
+Keep the details that distinguish the topic when the transcript is clear enough:
+- Which feature was demoed or needs finishing.
+- Which items are done, in progress or still blocked.
+- What input a procedure takes, what output it produces, through which main steps.
+- Which option was proposed, changed or removed from scope.
+- Which requirements or constraints affect the implementation.
+- Who does what, by which deadline, if identifiable.
 
-Không thay thông tin cụ thể bằng các câu như:
-- “Sử dụng công nghệ mới” nếu xác định được loại công nghệ và mục đích.
-- “Cải thiện quy trình” nếu xác định được bước cần thay đổi.
-- “Có một số khó khăn kỹ thuật” nếu xác định được vướng mắc.
-- “Đã phân công nhiệm vụ” nếu xác định được người và công việc.
-- “Đảm bảo hiệu quả và đáp ứng yêu cầu” thay cho phương án thực tế.
+Do not replace concrete information with sentences such as:
+- "Sử dụng công nghệ mới" when the kind of technology and its purpose are known.
+- "Cải thiện quy trình" when the step to change is known.
+- "Có một số khó khăn kỹ thuật" when the blocker is known.
+- "Đã phân công nhiệm vụ" when the person and the task are known.
+- "Đảm bảo hiệu quả và đáp ứng yêu cầu" in place of the actual option.
 
-Không bắt buộc điền đủ mọi loại thông tin kể trên.
-Nếu một chi tiết bị nhiễu, chỉ khái quát chi tiết đó; không làm chung chung
-toàn bộ đoạn tóm tắt hoặc bỏ các chi tiết khác đã rõ.
+You do not have to fill in every kind of information listed above.
+If one detail is noisy, generalize only that detail; do not make the whole summary vague or drop
+other details that are clear.
 
-4. PHỤC HỒI Ý NGHĨA TỪ ASR
-- Bản ghi có thể sai cả từ tiếng Việt, thuật ngữ tiếng Anh và tên riêng.
-  Không mặc định một từ có nghĩa hoặc viết hoa là từ được nhận dạng đúng.
-- Chuẩn hóa lỗi ASR khi ngữ âm và mạch nội dung cùng hỗ trợ cách hiểu đó.
-- Với thuật ngữ bị nhiễu nhưng chức năng hoặc ý nghĩa đã rõ, ưu tiên
-  diễn đạt bằng tiếng Việt rõ nghĩa thay vì chép lại từ phiên âm.
-- Với tên riêng hoặc thuật ngữ không xác định được, dùng mô tả theo vai trò
-  hoặc chức năng đã rõ; không tự đặt tên hoặc chọn thương hiệu quen thuộc.
-- Không suy ra lĩnh vực chỉ từ một từ mơ hồ rồi dùng lĩnh vực đó để
-  hợp thức hóa cách giải nghĩa các từ khác.
-- Kiến thức chuyên ngành chỉ phục vụ hiểu và chuẩn hóa nội dung,
-  không phải nguồn bổ sung sự kiện, mục đích hay giải pháp.
+4. RECOVER MEANING FROM ASR
+- The transcript may get Vietnamese words, English terms and proper names wrong.
+  Do not assume that a meaningful or capitalized word was recognized correctly.
+- Normalize ASR errors when both the sound and the flow of content support that reading.
+- For a noisy term whose function or meaning is clear, prefer a clear Vietnamese
+  wording over copying the phonetic transcription.
+- For a proper name or term that cannot be identified, describe it by its clear role or function;
+  do not make up a name or pick a familiar brand.
+- Do not infer the domain from one ambiguous word and then use that domain to justify how other
+  words are interpreted.
+- Domain knowledge only serves to understand and normalize the content,
+  not as a source of extra facts, purposes or solutions.
 
-5. KHÔNG THAY ĐỔI THÔNG TIN
-- Không bịa số liệu, chủ thể, sự kiện, quan hệ nhân quả hoặc nhiệm vụ.
-- Không chuyển nghĩa sang một khái niệm gần giống nhưng khác bản chất.
-- Phân biệt hiện trạng, đề xuất, ví dụ minh họa, yêu cầu, quyết định
-  và kết quả đã hoàn thành; dùng động từ đúng trạng thái.
-- Giữ nguyên điều kiện và chiều so sánh.
-- Chỉ nêu người phụ trách, số liệu, tên riêng và thời hạn khi đủ rõ.
-  Nhãn người nói trong bản ghi không phải lúc nào cũng chính xác.
-- Không quy đổi thời gian tương đối thành ngày cụ thể nếu thiếu căn cứ.
-- Không đưa lời đùa, lời thoại từ nội dung demo hoặc lời trích dẫn
-  thành quyết định của cuộc họp.
+5. DO NOT CHANGE THE INFORMATION
+- Do not invent figures, actors, events, causal relations or tasks.
+- Do not shift the meaning to a similar but essentially different concept.
+- Distinguish current state, proposals, illustrative examples, requirements, decisions
+  and completed results; use verbs matching the state.
+- Keep conditions and the direction of comparisons.
+- Only state the person in charge, figures, proper names and deadlines when clear enough.
+  The speaker labels in the transcript are not always accurate.
+- Do not convert relative time into a specific date without grounds.
+- Do not turn jokes, dialogue from demo content or quotations into meeting decisions.
 
-6. KIỂM TRA TRƯỚC KHI TRẢ LỜI
-- Nếu title có thể dùng cho nhiều đoạn họp khác nhau mà không cần sửa,
-  hãy thay danh từ chung bằng đối tượng hoặc đầu việc đã rõ trong bản ghi.
-- Nếu summary chỉ nói “có thảo luận”, “cần cải thiện”, “đã phân công”,
-  hãy nêu rõ nội dung tương ứng khi có căn cứ.
-- Xóa các chi tiết được đoán từ từ nhiễu hoặc kiến thức bên ngoài.
-- Kiểm tra không bỏ mất ý phủ định, điều kiện, phạm vi hoặc trạng thái.
-- Không cố viết đủ số câu bằng thông tin chung chung.
+6. CHECK BEFORE ANSWERING
+- If the title could be used for many different meeting segments without changes,
+  replace the generic noun with the object or task that is clear in the transcript.
+- If the summary only says "có thảo luận", "cần cải thiện", "đã phân công",
+  state the corresponding content when there are grounds.
+- Remove details guessed from noisy words or outside knowledge.
+- Check that no negation, condition, scope or state was lost.
+- Do not pad the number of sentences with generic information.
 
-ĐẦU RA
-Chỉ trả về JSON phù hợp schema với hai trường "title" và "summary".
-Không thêm giải thích hoặc quá trình phân tích.
+OUTPUT
+Return only JSON matching the schema with the two fields "title" and "summary", both written in
+VIETNAMESE, the language of the transcript.
+Do not add explanations or your analysis process.
 """
             ),
             user_prompt=f"""
-            Nội dung: {text}
+            Content: {text}
             """,
             schema={
                 "type": "object",
                 "required": ["title", "summary"],
                 "properties": {
                     "title": title_schema,
-                    "summary": {"type": "string"},
+                    "summary": {"type": "string", "description": VIETNAMESE_VALUE},
                 },
             },
         )

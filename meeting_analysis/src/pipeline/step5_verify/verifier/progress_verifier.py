@@ -12,7 +12,7 @@ from ....utils.ports import LLMAdapter
 from ...config import AnalysisConfig
 from ...shared.actors.assignees import format_actor, read_assignee_mentions
 from ...shared.llm_output import read_stripped_text, read_turn_id
-from ...shared.prompts import CHAIR_HINT, JSON_ONE_LINE_RULE, VERIFY_RUBRICS, format_chair_line
+from ...shared.prompts import CHAIR_HINT, JSON_ONE_LINE_RULE, VERIFY_RUBRICS, VIETNAMESE_VALUE, format_chair_line
 from ...shared.schemas import (
     ConsensusRound,
     ProgressUpdate,
@@ -42,68 +42,74 @@ STATUS_LABELS = {
 }
 
 PROGRESS_VERIFIER_SYSTEM_PROMPT = """
-Bạn là KIỂM CHỨNG VIÊN cho một CẬP NHẬT TIẾN ĐỘ của một việc cũ (việc trong danh sách cần báo
-cáo), trích từ MỘT đoạn chủ đề của cuộc họp, bị bộ lọc tự động đánh dấu CHƯA CHẮC CHẮN.
+You are the VERIFIER for a PROGRESS UPDATE of an old task (a task in the list to report on),
+extracted from ONE topic segment of a meeting and flagged as UNCERTAIN by the automatic filter.
 
-Tiêu chí:
+Criteria:
 {rubric}
 {chair_hint}
 
-Bạn có các tool CHỈ ĐỌC để tra bằng chứng trong CẢ cuộc họp:
+You have READ-ONLY tools to look up evidence in the WHOLE meeting:
 {tools}
 
-Mỗi lượt trả về đúng MỘT JSON, các trường theo thứ tự:
-- thought: 1-2 câu: đã biết gì, còn thiếu gì, vì sao tra tiếp hoặc vì sao đã đủ căn cứ.
-- Muốn tra thêm: action là tên tool, argument là tham số; các trường kết luận để null. argument của
-  search_meeting là MỘT cụm 3-8 từ về nội dung việc (vd. giải trình ý kiến Bộ Xây dựng): không liệt
-  kê từ đồng nghĩa, tên trạng thái hay lặp lại từ.
-- Đủ căn cứ: action = "final", argument = null, rồi điền:
-  reasoning (1-2 câu, viết TRƯỚC kết luận): lượt nào nói gì về chính việc này, và vì vậy trạng thái
-  đúng của việc là gì,
-  deciding_turn_id (BẮT BUỘC khi keep/revise: turn_id của lượt nói NÊU TÌNH TRẠNG hoặc CHỈ ĐẠO về
-  chính việc này, hoặc lượt người chủ trì CHẤP NHẬN đề xuất của thành viên; có thể ở chủ đề khác),
-  verdict theo ĐÚNG reasoning: "keep" (trạng thái trong reasoning trùng trạng thái cập nhật đang xét)
-  | "revise" (việc được nêu tình trạng nhưng là trạng thái khác, điền revised_status; hoặc bên nhận
-  việc mới sai, điền revised_assignees) | "drop" (không lượt nào nêu tình trạng của chính việc này,
-  hoặc đề xuất không được chấp nhận) | "unresolved" (chỉ khi bằng chứng thật sự mâu thuẫn),
-  revised_status (chỉ khi đổi trạng thái, không thì null).
+Each step returns exactly ONE JSON, with the fields in this order:
+- thought: 1-2 sentences: what you know, what is missing, why you look further or why you have
+  enough grounds.
+- To look further: action is the tool name, argument is its parameter; the conclusion fields are null.
+  The argument of search_meeting is ONE Vietnamese phrase of 3-8 words about the task content (e.g.
+  giải trình ý kiến Bộ Xây dựng): do not list synonyms or status names, do not repeat words.
+- Enough grounds: action = "final", argument = null, then fill:
+  reasoning (1-2 sentences, written BEFORE the verdict): which turn says what about this very task,
+  and therefore what the task's correct status is,
+  deciding_turn_id (REQUIRED for keep/revise: turn_id of the turn that STATES THE STATUS of or GIVES A
+  DIRECTIVE on this very task, or the turn where the chair ACCEPTS a member's proposal; possibly in
+  another topic),
+  verdict EXACTLY per the reasoning: "keep" (the status in the reasoning equals the status of the update
+  under review) | "revise" (the task's status is stated but it is a different status, fill
+  revised_status; or the new assignee is wrong, fill revised_assignees) | "drop" (no turn states the
+  status of this very task, or the proposal was not accepted) | "unresolved" (only when the evidence is
+  truly contradictory),
+  revised_status (only when changing the status, otherwise null).
 
-Khi cập nhật có GIAO LẠI việc cho bên khác (dòng "bên nhận việc mới"), bên nhận việc có thể là NGƯỜI
-hoặc ĐƠN VỊ. Khi bên nhận việc chỉ là tên gọi, có thể trùng người khác, hoặc bị nghi ngờ: gọi
-lookup_speaker("<cách gọi> @<turn_id lượt giao>") rồi ĐỀ XUẤT:
-  revised_assignees: MỖI bên nhận việc một phần tử {{name, role, type}}; name là ĐÚNG tên một
-  ứng viên tool trả về (không tự viết tên khác); role "lead" (chủ trì) | "support" (phối hợp) |
-  "joint" (cùng thực hiện, không ai chủ trì); type "person" | "organization".
-  actor_reason: vì sao chọn ứng viên đó (ai nói gì ở lượt nào).
-Không có ứng viên nào rõ ràng thì để mỗi bên type = "unknown". Không cần sửa bên nhận việc, hoặc việc
-không được giao lại, thì revised_assignees = [] và actor_reason = null.
+When the update REASSIGNS the task to another party (the "bên nhận việc mới" part), the assignee may be
+a PERSON or a UNIT. When the assignee is only a form of address, may match someone else, or is doubtful:
+call lookup_speaker("<form of address> @<turn_id of the assigning turn>") and then SUGGEST:
+  revised_assignees: ONE element {{name, role, type}} PER assignee; name is EXACTLY the name of a
+  candidate returned by the tool (do not write another name); role "lead" (leads) | "support" (cooperates) |
+  "joint" (does it together, nobody leads); type "person" | "organization".
+  actor_reason: why that candidate (who said what in which turn).
+If no candidate is clear, set type = "unknown" for each party. If the assignee does not need changing,
+or the task is not reassigned, revised_assignees = [] and actor_reason = null.
 
-revised_status và revised_assignees chỉ là ĐỀ XUẤT: bạn không tự sửa cập nhật, agent trích xuất sẽ
-sửa theo.
+revised_status and revised_assignees are only SUGGESTIONS: you do not edit the update yourself; the
+extractor agent edits it accordingly.
 
-"Điểm cần kiểm" là câu hỏi bộ lọc tự động gửi sang (bộ lọc hay sai): trả lời nó bằng bản ghi, nó
-KHÔNG phải bằng chứng cho hay chống cập nhật. Lượt nêu trạng thái thật có thể khác lượt agent khai. "Đoạn bằng chứng" là
-phần trong các lượt agent chỉ ra có nội dung gần với việc nhất (lượt dài bị cắt quanh đó): đọc nó
-trước khi kết luận lượt đó có nói về việc hay không.
+The "Points to check" are questions sent by the automatic filter (which is often wrong): answer them
+from the transcript; they are NOT evidence for or against the update. The real status turn may differ
+from the turn the agent gave. The "Evidence excerpts" are the parts of the turns the agent pointed to
+that are closest to the task (long turns are cut around them): read them before concluding whether
+that turn is about the task.
 
-reasoning là FEEDBACK gửi lại agent trích xuất khi bạn không giữ: nêu cụ thể điểm sai và lượt
-nói làm căn cứ. Chỉ dựa vào bằng chứng có thật trong bản ghi. Tra ít nhất có thể.
+reasoning is the FEEDBACK sent back to the extractor agent when you do not keep: state precisely what
+is wrong and the grounding turn. Rely only on evidence actually in the transcript. Look up as little
+as possible.
 
-KHÔNG dùng dấu nháy kép (") trong thought, reasoning, actor_reason: dẫn lượt nói bằng turn_id. {json_rule}
+Write thought, reasoning and actor_reason in VIETNAMESE, the language of the transcript. Do NOT use
+double quotes (") in thought, reasoning, actor_reason: cite turns by turn_id. {json_rule}
 """.strip()
 
 PROGRESS_VERIFIER_SCHEMA: dict = {
     "type": "object",
     "properties": {
-        "thought": {"type": "string"},
+        "thought": {"type": "string", "description": VIETNAMESE_VALUE},
         "action": {"type": "string", "enum": [*TOOL_NAMES, "final"]},
         "argument": {"type": ["string", "null"]},
-        "reasoning": {"type": ["string", "null"]},
+        "reasoning": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
         "deciding_turn_id": {"type": ["string", "null"]},
         "verdict": {"type": ["string", "null"], "enum": ["keep", "revise", "drop", "unresolved", None]},
         "revised_status": {"type": ["string", "null"], "enum": [*CLAIM_STATUSES, None]},
         "revised_assignees": VERIFIER_SCHEMA["properties"]["revised_assignees"],
-        "actor_reason": {"type": ["string", "null"]},
+        "actor_reason": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
     },
     "required": [
         "thought", "action", "argument", "reasoning", "deciding_turn_id", "verdict", "revised_status",
@@ -112,29 +118,30 @@ PROGRESS_VERIFIER_SCHEMA: dict = {
 }
 
 PROGRESS_PROPOSER_SYSTEM_PROMPT = """
-Bạn là AGENT TRÍCH XUẤT đã ghi CẬP NHẬT TIẾN ĐỘ dưới đây cho một việc cũ. KIỂM CHỨNG VIÊN vừa
-phản hồi: kết luận và lý do (feedback). Đối chiếu feedback với bản ghi rồi chọn đúng MỘT lập trường:
-- "accept": đồng ý với kiểm chứng viên. Họ đề xuất trạng thái hay bên nhận việc khác thì CHÍNH BẠN
-  ghi đề xuất đó vào revised_status/revised_assignees (kiểm chứng viên không sửa hộ); họ cho rằng
-  không lượt nào nêu tình trạng của việc thì cập nhật bị bỏ.
-- "amend": sửa cập nhật cho đúng bản ghi: revised_status (trạng thái khác) và/hoặc revised_assignees
-  (bên nhận việc mới khi việc được giao lại: mỗi bên một phần tử {{name, role, type}} với role
-  "lead" | "support" | "joint", type "person" | "organization"; name đúng nguyên văn bản ghi), kèm
-  confirm_turn_id là lượt nói nêu trạng thái/giao lại đó. Không sửa bên nhận việc thì
-  revised_assignees = [].
-- "defend": giữ nguyên cập nhật, chỉ ra confirm_turn_id mà kiểm chứng viên bỏ sót.
+You are the EXTRACTOR AGENT that wrote the PROGRESS UPDATE below for an old task. The VERIFIER has just
+responded: a verdict and its reason (feedback). Check the feedback against the transcript, then choose
+exactly ONE stance:
+- "accept": agree with the verifier. If they suggest a different status or assignee, YOU write that
+  suggestion into revised_status/revised_assignees (the verifier does not edit for you); if they find
+  no turn stating the task's status, the update is dropped.
+- "amend": fix the update to match the transcript: revised_status (a different status) and/or
+  revised_assignees (the new assignee when the task is reassigned: one element {{name, role, type}} per
+  party with role "lead" | "support" | "joint", type "person" | "organization"; name exactly as in the
+  transcript), together with confirm_turn_id, the turn stating that status/reassignment. If the assignee
+  does not change, revised_assignees = [].
+- "defend": keep the update as is and point to the confirm_turn_id the verifier missed.
 
-Điền confirm_turn_id TRƯỚC khi chọn lập trường: lượt nói nêu tình trạng/chỉ đạo về chính việc
-này (hoặc lượt người chủ trì chấp nhận đề xuất), null nếu không có. Đã chỉ ra được lượt đó thì lập
-trường là "amend" hoặc "defend".
+Fill confirm_turn_id BEFORE choosing the stance: the turn stating the status of/giving a directive on
+this very task (or the turn where the chair accepts a proposal), null if there is none. If you can point
+to that turn, the stance is "amend" or "defend".
 
-Tiêu chí:
+Criteria:
 {rubric}
 {chair_hint}
 
-TUYỆT ĐỐI KHÔNG bịa nội dung không có trong bản ghi. Không tìm được lượt nêu trạng thái thì chọn
-"accept". Trường không dùng để null. argument: TỐI ĐA 2 câu ngắn, dẫn chứng bằng turn_id, KHÔNG
-dùng dấu nháy kép ("). {json_rule}
+NEVER invent content that is not in the transcript. If you cannot find a turn stating the status,
+choose "accept". Unused fields are null. argument: AT MOST 2 short sentences in VIETNAMESE, citing turns
+by turn_id, WITHOUT double quotes ("). {json_rule}
 """.strip()
 
 # ``argument`` (văn bản tự do) đứng CUỐI, như ``verifier.PROPOSER_SCHEMA``.
@@ -145,12 +152,12 @@ PROGRESS_PROPOSER_SCHEMA: dict = {
         "stance": {"type": "string", "enum": ["accept", "amend", "defend"]},
         "revised_status": {"type": ["string", "null"], "enum": [*CLAIM_STATUSES, None]},
         "revised_assignees": PROPOSER_SCHEMA["properties"]["revised_assignees"],
-        "argument": {"type": "string"},
+        "argument": {"type": "string", "description": VIETNAMESE_VALUE},
     },
     "required": ["confirm_turn_id", "stance", "revised_status", "revised_assignees", "argument"],
 }
 
-_STANCE_LABELS = {"accept": "đồng ý", "amend": "đã sửa cập nhật", "defend": "giữ nguyên, phản biện"}
+_STANCE_LABELS = {"accept": "agreed", "amend": "amended the update", "defend": "kept it, rebutted"}
 
 
 def describe_progress(update: ProgressUpdate, title: str) -> str:
@@ -224,20 +231,20 @@ class ProgressVerifier:
         kiểm (ghi rõ không phải bằng chứng), bản ghi của chủ đề và các vòng trao đổi trước (nếu có).
         """
 
-        reasons = "; ".join(task["reasons"]) or "(không có lý do cụ thể)"
-        request = f"lượt đề xuất {claim.request_turn_id}, " if claim.request_turn_id else ""
+        reasons = "; ".join(task["reasons"]) or "(no specific reason)"
+        request = f"proposing turn {claim.request_turn_id}, " if claim.request_turn_id else ""
         prompt = (
             f"{format_chair_line(task['registry'].chair)}\n"
-            f"Việc cũ: {claim.task_id} - {self._title(task)}\n"
-            f"Cập nhật đang xét: {describe_progress(claim, self._title(task))}\n"
-            f"Agent trích xuất tự khai: {request}lượt nêu trạng thái {claim.status_turn_id or '(không nêu)'}, "
-            f"bằng chứng {', '.join(claim.evidence_turn_ids)}\n"
-            f"Đoạn bằng chứng:\n{self._evidence_snippets(task, claim)}\n"
-            f"Điểm cần kiểm (câu hỏi của bộ lọc tự động, KHÔNG phải bằng chứng): {reasons}\n\n"
-            f"Bản ghi của đoạn:\n{format_turns_as_transcript(task['turns'])}"
+            f"Old task: {claim.task_id} - {self._title(task)}\n"
+            f"Update under review: {describe_progress(claim, self._title(task))}\n"
+            f"Extractor agent's own claim: {request}status turn {claim.status_turn_id or '(not given)'}, "
+            f"evidence {', '.join(claim.evidence_turn_ids)}\n"
+            f"Evidence excerpts:\n{self._evidence_snippets(task, claim)}\n"
+            f"Points to check (questions from the automatic filter, NOT evidence): {reasons}\n\n"
+            f"Segment transcript:\n{format_turns_as_transcript(task['turns'])}"
         )
         if rounds:
-            prompt += f"\n\nCác vòng trao đổi trước:\n{format_rounds(rounds, 'cập nhật', _STANCE_LABELS)}"
+            prompt += f"\n\nPrevious rounds:\n{format_rounds(rounds, 'update', _STANCE_LABELS)}"
         return prompt
 
     def describe(self, task: VerifyTask, claim: ProgressUpdate) -> str:
@@ -344,12 +351,12 @@ class ProgressVerifier:
         """
 
         parts = [self._base_prompt(task, claim, rounds),
-                 f"Kiểm chứng viên kết luận: {review.verdict}\nFeedback: {review.feedback}"]
+                 f"Verifier verdict: {review.verdict}\nFeedback: {review.feedback}"]
         if review.suggestion:
-            reason = f"\nLý do: {review.suggestion_reason}" if review.suggestion_reason else ""
-            parts.append(f"Kiểm chứng viên đề xuất: {review.suggestion}{reason}")
+            reason = f"\nReason: {review.suggestion_reason}" if review.suggestion_reason else ""
+            parts.append(f"Verifier suggests: {review.suggestion}{reason}")
         if review.steps:
-            parts.append(f"Bằng chứng kiểm chứng viên đã tra:\n{format_steps(review.steps)}")
+            parts.append(f"Evidence the verifier looked up:\n{format_steps(review.steps)}")
         user_prompt = "\n\n".join(parts)
         with llm_call("progress_verifier_feedback", segment_id=task["segment_id"], prompt_chars=len(user_prompt)):
             response = dict(self.proposer_llm.generate_json(

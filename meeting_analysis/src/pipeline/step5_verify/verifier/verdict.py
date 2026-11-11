@@ -19,9 +19,9 @@ from ...shared.schemas import (
 )
 
 KIND_LABELS = {
-    "action": "việc giao (action item)",
-    "decision": "quyết định (decision)",
-    "progress": "cập nhật tiến độ (progress update)",
+    "action": "assigned task (action item)",
+    "decision": "decision",
+    "progress": "progress update",
 }
 
 

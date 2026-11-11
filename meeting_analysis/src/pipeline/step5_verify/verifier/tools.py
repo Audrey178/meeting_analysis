@@ -29,13 +29,13 @@ _BM25_B = 0.75
 _BIGRAM_WEIGHT = 2.0
 
 TOOL_DESCRIPTIONS = """
-- get_turn(argument = turn_id): nguyên văn MỘT lượt nói bất kỳ trong cả cuộc họp.
-- search_meeting(argument = vài từ khoá): các lượt nói khớp nhất trong CẢ cuộc họp (kể
-  cả chủ đề khác), để tìm lượt giao/nhận/chốt việc nằm ngoài đoạn hiện tại.
-- lookup_speaker(argument = cách gọi actor, tuỳ chọn kèm "@turn_id" của lượt chốt, vd
-  "Sơn @T12", "anh Phong", "Sở Tài chính"): các ứng viên NGƯỜI hoặc ĐƠN VỊ (người nói,
-  danh sách tham dự) kèm điểm và lý do, điểm giảm dần. Ngữ cảnh quanh lượt chốt được
-  xét trước, chức năng/đơn vị trong danh sách chỉ xét khi ngữ cảnh chưa phân định được.
+- get_turn(argument = turn_id): the verbatim text of ANY ONE turn in the whole meeting.
+- search_meeting(argument = a few Vietnamese keywords): the best-matching turns in the WHOLE meeting
+  (including other topics), to find assigning/taking-on/settling turns outside the current segment.
+- lookup_speaker(argument = how the actor is called, optionally with "@turn_id" of the confirming
+  turn, e.g. "Sơn @T12", "anh Phong", "Sở Tài chính"): candidate PEOPLE or UNITS (speakers,
+  attendee list) with score and reason, by decreasing score. The context around the confirming turn
+  is considered first; functions/units in the list are only considered when the context cannot tell.
 """.strip()
 
 TOOL_NAMES = ("get_turn", "search_meeting", "lookup_speaker")
@@ -172,9 +172,9 @@ class MeetingTools:
 
         argument = (argument or "").strip()
         if action not in TOOL_NAMES:
-            return f"LỖI: không có tool '{action}'. Chỉ dùng: {', '.join(TOOL_NAMES)} hoặc final."
+            return f"ERROR: no tool '{action}'. Only use: {', '.join(TOOL_NAMES)} or final."
         if not argument:
-            return f"LỖI: tool {action} cần argument không rỗng."
+            return f"ERROR: tool {action} needs a non-empty argument."
         if action == "get_turn":
             return self.get_turn(argument)
         if action == "search_meeting":
@@ -194,7 +194,7 @@ class MeetingTools:
         bare = self._resolve_turn_id(turn_id)
         turn = self._by_id.get(bare)
         if turn is None:
-            return f"LỖI: không có lượt nói '{bare}' trong cuộc họp."
+            return f"ERROR: no turn '{bare}' in the meeting."
         return format_turn_line(turn, max_chars=_MAX_GET_TURN_CHARS)
 
     def _resolve_turn_id(self, raw: str) -> str:
@@ -231,14 +231,14 @@ class MeetingTools:
 
         query_terms = set(_content_terms(query))
         if not query_terms:
-            return "LỖI: từ khoá chỉ gồm hư từ, hãy dùng từ khoá cụ thể hơn."
+            return "ERROR: the keywords are only function words; use more specific keywords."
         scored = []
         for index, terms in enumerate(self._terms):
             score = self._bm25(query_terms, terms, self._lengths[index])
             if score > 0:
                 scored.append((-score, index))
         if not scored:
-            return "Không có lượt nói nào khớp."
+            return "No matching turn."
         best = sorted(scored)[: self._top_k]
         focus = content_syllables(query)
         return "\n".join(
@@ -279,7 +279,7 @@ class MeetingTools:
             argument: Cách gọi, tuỳ chọn kèm "@mã lượt chốt", ví dụ "Sơn @T12" hoặc "Sở Tài chính".
 
         Returns:
-            Các dòng ``mã | tên | loại | điểm | lý do`` và một dòng kết luận RÕ RÀNG hoặc MƠ HỒ; hoặc thông
+            Các dòng ``mã | tên | loại | điểm | lý do`` và một dòng kết luận CLEAR hoặc AMBIGUOUS; hoặc thông
             báo lỗi / không có ứng viên (kèm danh sách người nói đã biết).
         """
 
@@ -287,9 +287,9 @@ class MeetingTools:
         alias = alias.strip()
         context_turn_id = self._resolve_turn_id(turn_part) or None
         if not alias:
-            return "LỖI: thiếu cách gọi actor trước '@'."
+            return "ERROR: missing the actor's form of address before '@'."
         if context_turn_id and context_turn_id not in self._by_id:
-            return f"LỖI: không có lượt nói '{context_turn_id}' trong cuộc họp."
+            return f"ERROR: no turn '{context_turn_id}' in the meeting."
         candidates = rank_actor_candidates(
             alias,
             self._registry,
@@ -300,13 +300,13 @@ class MeetingTools:
             declared_type="unknown",
         )
         if not candidates:
-            known = ", ".join(self._registry.names) or "(rỗng)"
-            return f"Không có người/đơn vị nào khớp '{alias}'. Người nói: {known}"
+            known = ", ".join(self._registry.names) or "(empty)"
+            return f"No person/unit matches '{alias}'. Speakers: {known}"
         lines = [_format_candidate(candidate) for candidate in candidates]
         if is_clear_choice(candidates):
-            lines.append(f"RÕ RÀNG: '{alias}' là {candidates[0].name} ({candidates[0].actor_type}).")
+            lines.append(f"CLEAR: '{alias}' is {candidates[0].name} ({candidates[0].actor_type}).")
         else:
-            lines.append(f"MƠ HỒ: chưa ứng viên nào đủ rõ cho '{alias}'; chọn theo bằng chứng hoặc để unknown.")
+            lines.append(f"AMBIGUOUS: no candidate is clear enough for '{alias}'; choose by the evidence or leave unknown.")
         return "\n".join(lines)
 
 
