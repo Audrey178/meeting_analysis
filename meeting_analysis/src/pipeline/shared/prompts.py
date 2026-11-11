@@ -97,9 +97,8 @@ work.</basis>
   individual.
 - A task objected to in a later turn stays unassigned until someone settles it again.
 - Whoever raises a proposal is its requester, not automatically its assignee.
-- When the summing-up tells the presenting/drafting unit to take in the comments and the consultant to
-  analyze in detail, the presenting/drafting unit is lead and the consultant support, unless the chair
-  clearly moves the main responsibility to the consultant.
+- A consultant told to analyze or re-assess is support: the presenting/drafting unit is lead unless the
+  chair clearly moves the main responsibility to the consultant.
 </notes>
 </rule>
 """.strip()
@@ -238,29 +237,31 @@ _ACTION_EXAMPLES = """
 <input>
 <chair>Lê Minh Quân</chair>
 <meeting_date>2026-12-01 (thứ Ba)</meeting_date>
-<meeting_context><assignee_directory><party id="N1">Lê Minh Quân (Phó Chủ tịch UBND)</party><party id="N2">Đỗ Văn Khải (Giám đốc Sở Tài chính)</party><party id="D1">Sở Y tế (unit)</party><party id="D2">Sở Thông tin và Truyền thông (unit)</party></assignee_directory></meeting_context>
+<meeting_context><assignee_directory><party id="N1">Lê Minh Quân (Phó Chủ tịch UBND)</party><party id="N2">Đỗ Văn Khải (Giám đốc Sở Tài chính)</party><party id="D1">Sở Y tế (unit)</party><party id="D2">Sở Thông tin và Truyền thông (unit)</party><party id="D3">Đơn vị tư vấn (unit)</party></assignee_directory></meeting_context>
 <segment><transcript>
 <turn id="TURN_000004" speaker="Hoàng Thu Hà"><s id="40">Sở Y tế xin trình Đề án bệnh viện thông minh.</s></turn>
 <turn id="TURN_000005" speaker="Đỗ Văn Khải"><s id="51">Đề nghị đề án bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện.</s><s id="52">Thứ hai, cần so sánh chi phí với mô hình thuê dịch vụ.</s></turn>
-<turn id="TURN_000006" speaker="Lê Minh Quân"><s id="60">Lưu ý các ý kiến góp ý, như anh Khải nói về chi phí thuê dịch vụ.</s><s id="61">Có hai nhóm việc cần bổ sung: thứ nhất, đề án tác động thế nào đến ngân sách các bệnh viện; thứ hai, phương án bảo mật dữ liệu bệnh nhân.</s><s id="62">Đề nghị Sở Y tế chủ trì, phối hợp Sở Thông tin và Truyền thông hoàn chỉnh báo cáo, gửi trước ngày 20/12.</s></turn>
+<turn id="TURN_000006" speaker="Lê Minh Quân"><s id="60">Lưu ý các ý kiến góp ý, như anh Khải nói về chi phí thuê dịch vụ.</s><s id="61">Có hai nhóm việc cần bổ sung, tư vấn các đồng chí phân tích kỹ: thứ nhất, đề án tác động thế nào đến ngân sách các bệnh viện; thứ hai, phương án bảo mật dữ liệu bệnh nhân.</s><s id="62">Đề nghị Sở Y tế chủ trì, phối hợp Sở Thông tin và Truyền thông hoàn chỉnh báo cáo, gửi trước ngày 20/12.</s></turn>
 </transcript></segment>
 </input>
-<output>{"member_requests":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"},{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"So sánh chi phí của đề án với mô hình thuê dịch vụ"}],"action_items":[{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá tác động của đề án đến ngân sách các bệnh viện"},{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án bảo mật dữ liệu bệnh nhân"},{"evidence_segment_ids":["62"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Sở Thông tin và Truyền thông","id":"D2","role":"support","type":"organization"}],"deadline":"trước ngày 20/12","deadline_date":"2026-12-20","deadline_kind":"before","text":"Hoàn chỉnh báo cáo đề án"}],"summary_turn_id":"TURN_000006"}</output>
+<output>{"member_requests":[{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án nhân lực công nghệ thông tin cho từng bệnh viện"},{"turn_id":"TURN_000005","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"So sánh chi phí của đề án với mô hình thuê dịch vụ"}],"action_items":[{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Đơn vị tư vấn","id":"D3","role":"support","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá tác động của đề án đến ngân sách các bệnh viện"},{"evidence_segment_ids":["61"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Đơn vị tư vấn","id":"D3","role":"support","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Bổ sung phương án bảo mật dữ liệu bệnh nhân"},{"evidence_segment_ids":["62"],"basis":"direct_request","request_turn_id":"TURN_000006","confirm_turn_id":"TURN_000006","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"},{"name":"Sở Thông tin và Truyền thông","id":"D2","role":"support","type":"organization"}],"deadline":"trước ngày 20/12","deadline_date":"2026-12-20","deadline_kind":"before","text":"Hoàn chỉnh báo cáo đề án"}],"summary_turn_id":"TURN_000006"}</output>
 <explanation>"Lưu ý các ý kiến góp ý" accepts BOTH member requests, also the one not cited by name. Each
-group of work in the summing-up is its own direct_request for the presenting unit, also when it states
-content to add rather than an action verb.</explanation>
+group of work in the summing-up is its own direct_request, also when it states content to add rather than
+an action verb. The presenting unit stays lead; "tư vấn các đồng chí" only adds the consultant as
+support.</explanation>
 </example>
 <example id="action-edge-question" type="edge_case">
 <input>
 <chair>Lê Minh Quân</chair>
 <segment><transcript>
 <turn id="TURN_000002" speaker="Lê Minh Quân"><s id="20">Đề án đã tính tới bệnh viện vệ tinh ở Củ Chi chưa?</s></turn>
-<turn id="TURN_000003" speaker="Hoàng Thu Hà"><s id="30">Dạ chưa ạ.</s><s id="31">Giai đoạn 2 đề án sẽ mở rộng ra các bệnh viện vệ tinh.</s></turn>
+<turn id="TURN_000003" speaker="Hoàng Thu Hà"><s id="30">Dạ có ạ, theo đề nghị của Ban trước đây, đề án đã cập nhật bệnh viện Củ Chi.</s><s id="31">Giai đoạn 2 đề án sẽ mở rộng ra các bệnh viện vệ tinh.</s></turn>
 </transcript></segment>
 </input>
-<output>{"member_requests":[],"action_items":[{"evidence_segment_ids":["20","30"],"basis":"discussion_question","request_turn_id":"TURN_000002","confirm_turn_id":"TURN_000002","assignees":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Tính tới bệnh viện vệ tinh ở Củ Chi trong đề án"},{"evidence_segment_ids":["31"],"basis":"document_content","request_turn_id":"TURN_000003","confirm_turn_id":"TURN_000003","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Mở rộng đề án ra các bệnh viện vệ tinh ở giai đoạn 2"}],"summary_turn_id":null}</output>
-<explanation>The question reveals a gap but nobody asks anyone to act: discussion_question. The
-presenter's "sẽ" is the document's plan: document_content.</explanation>
+<output>{"member_requests":[],"action_items":[{"evidence_segment_ids":["20"],"basis":"discussion_question","request_turn_id":"TURN_000002","confirm_turn_id":"TURN_000002","assignees":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Tính tới bệnh viện vệ tinh ở Củ Chi trong đề án"},{"evidence_segment_ids":["30"],"basis":"status_report","request_turn_id":"TURN_000003","confirm_turn_id":"TURN_000003","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Cập nhật bệnh viện Củ Chi vào đề án"},{"evidence_segment_ids":["31"],"basis":"document_content","request_turn_id":"TURN_000003","confirm_turn_id":"TURN_000003","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Mở rộng đề án ra các bệnh viện vệ tinh ở giai đoạn 2"}],"summary_turn_id":null}</output>
+<explanation>The question asks nobody to act: discussion_question. The answer reports an update
+already made on an earlier request: status_report, not a new task. The presenter's "sẽ" is the
+document's plan: document_content.</explanation>
 </example>
 <example id="action-edge-pending" type="edge_case">
 <input>
@@ -306,7 +307,7 @@ Return ONE JSON object of this shape (with progress_tasks, "updates" comes first
       "text": "Hoàn chỉnh báo cáo đề án: the task only, starting with a verb; assignee and deadline stay in their fields"
     }
   ],
-  "summary_turn_id": "TURN_000006: the chair's summing-up turn that takes in the comments and states the tasks ('tinh thần chung là', 'lưu ý các ý kiến góp ý'), not a deadline-only or goodbye turn; null when none"
+  "summary_turn_id": "TURN_000006: the chair's summing-up turn stating the tasks ('tinh thần chung là', 'lưu ý các ý kiến góp ý'), not a deadline-only or goodbye turn; null when none"
 }
 Evidence cites the sentences raising AND assigning/accepting the task; each cited turn contains one of them.
 """.strip()
@@ -320,19 +321,14 @@ or TAKEN ON in ONE topic segment: who does what, by when.
 <rules>
 {CHAIR_ASSIGNMENT_RULE}
 {CHAIR_HINT}
-<rule id="member_requests">
-member_requests lists EVERY concrete request (do, add, fix, review) a COMMENTING MEMBER raises: one item
-per request, also when several share a turn. The chair's words and the presenting unit's own content are
-not member requests. "accepted" follows basis member_request_accepted, and an accepted request is already
-an assigned task. A request nobody answers in this segment is "not_addressed": the chair may accept it in
-another topic.
-</rule>
-<rule id="action_items">
-action_items holds the other items: direct requests, volunteered and acknowledged tasks, and the
-not-assigned items. ONE item per request: the same request raised by several people or repeated by the
-chair ("như Bí thư chỉ đạo") is one item citing all those turns; different contents are separate items,
-also for the same document. Every request appears EXACTLY ONCE across both lists. Before returning, re-read
-every turn of the chair and the commenting members: each assigned or accepted request MUST have its item.
+<rule id="two_lists">
+member_requests holds EVERY concrete request (do, add, fix, review) a COMMENTING MEMBER raises, judged
+"accepted" as in basis member_request_accepted; unanswered in this segment is "not_addressed" (the chair
+may accept it elsewhere). action_items holds everything else, including the not-assigned items. Each
+request appears EXACTLY ONCE across both lists: the same request repeated by others or by the chair ("như
+Bí thư chỉ đạo") is one item citing all those turns; different contents are separate items, also within
+one sentence ("làm lại tờ trình và xem lại tên đề án" is two). Before returning, re-read every turn of the
+chair and the commenting members: each assigned or accepted request MUST have its item.
 </rule>
 <rule id="assignees">
 Each person or unit is ONE element; a unit name with "và" ("Sở Nông nghiệp và Môi trường") is one element.
@@ -346,9 +342,8 @@ presenting/drafting unit. When the evidence does not identify the party, leave a
 {PROGRESS_TRACKING_SLOT}
 </rules>
 <constraints>
-<constraint id="confirm_turn_checked">The system checks EXACTLY the confirm_turn_id you give: ALWAYS give the
-turn that requests, accepts or takes on the work. An item whose only turn asks, explains or discusses is a
-discussion_question.</constraint>
+<constraint id="confirm_turn_checked">The system checks ONLY the confirm_turn_id you give: it MUST request,
+accept or take on the work; a turn that only asks or discusses makes a discussion_question.</constraint>
 <constraint id="no_invention">NEVER invent a deadline, assignee or content; evidence comes ONLY from this
 segment.</constraint>
 {EVIDENCE_RULE}
@@ -385,15 +380,16 @@ member_points; the chair's own points are decisions without a doer.</explanation
 <chair>Lê Minh Quân</chair>
 <segment><transcript>
 <turn id="TURN_000002" speaker="Lê Minh Quân"><s id="20">Có nên làm thí điểm ở hai bệnh viện trước không?</s></turn>
-<turn id="TURN_000003" speaker="Hoàng Thu Hà"><s id="30">Đề án dự kiến triển khai đồng loạt 12 bệnh viện trong năm 2027.</s></turn>
+<turn id="TURN_000003" speaker="Hoàng Thu Hà"><s id="30">Theo đề nghị của Ban trước đây, đề án đã cập nhật phương án triển khai đồng loạt 12 bệnh viện trong năm 2027.</s></turn>
 <turn id="TURN_000004" speaker="Trần Bảo Ngọc"><s id="40">Tôi nghĩ nên thí điểm trước.</s></turn>
 <turn id="TURN_000005" speaker="Lê Minh Quân"><s id="50">Chốt làm thí điểm ở hai bệnh viện.</s></turn>
 <turn id="TURN_000006" speaker="Lê Minh Quân"><s id="60">Thôi, để Sở Y tế cân nhắc thêm, chưa chốt phương án thí điểm.</s></turn>
 </transcript></segment>
 </input>
 <output>{"member_points":[{"turn_id":"TURN_000004","requester":"Trần Bảo Ngọc","point_kind":"feedback","response":"accepted","response_turn_id":"TURN_000005","text":"Làm thí điểm ở hai bệnh viện trước."}],"decisions":[{"evidence_segment_ids":["50","60"],"basis":"closing_statement","request_turn_id":"TURN_000005","confirm_turn_id":"TURN_000006","text":"Chưa chốt phương án thí điểm; Sở Y tế cân nhắc thêm."}]}</output>
-<explanation>The chair's question is discussion and the presenter's plan is document content. The pilot,
-settled at TURN_000005, is withdrawn at TURN_000006: the last word decides.</explanation>
+<explanation>The chair's question is discussion; the presenter's report of an update made on an earlier
+request is a status report, not a conclusion. The pilot, settled at TURN_000005, is withdrawn at
+TURN_000006: the last word decides.</explanation>
 </example>
 """.strip()
 
@@ -404,8 +400,8 @@ Return ONE JSON object of this shape, filling member_points first:
     {
       "turn_id": "TURN_000005",
       "requester": "Đỗ Văn Khải",
-      "point_kind": "feedback (a comment on the content: clarify, add, fix, review) | presentation (presenting the document or its plans, also when answering) | closing_statement (summing-up, settling, assigning); judged by content; ONLY feedback can be accepted",
-      "response": "accepted (the chair takes it in, see rule conclusion) | rejected | not_addressed (no response in the segment)",
+      "point_kind": "feedback (comments on the content) | presentation (presents or answers for the document) | closing_statement (sums up or assigns); ONLY feedback can be accepted",
+      "response": "accepted | rejected | not_addressed (no response in the segment)",
       "response_turn_id": "TURN_000006 (null when not_addressed)",
       "text": "Đề án cần so sánh chi phí với mô hình thuê dịch vụ."
     }
@@ -413,7 +409,7 @@ Return ONE JSON object of this shape, filling member_points first:
   "decisions": [
     {
       "evidence_segment_ids": ["62"],
-      "basis": "closing_statement (the chair settles it) | mutual_agreement (no chair or a silent chair; the parties clearly agree) | unconfirmed (unclear whether it was settled, or whether it is a conclusion at all)",
+      "basis": "closing_statement (the chair settles it) | mutual_agreement (no or silent chair; the parties clearly agree) | unconfirmed (unclear whether settled)",
       "request_turn_id": "TURN_000006: the turn raising the content",
       "confirm_turn_id": "TURN_000006: the turn settling or taking it in (= request_turn_id when the settler raised it)",
       "text": "Đề án cần làm rõ phương án bảo mật dữ liệu bệnh nhân."
@@ -457,8 +453,8 @@ what the parties agree on. Every point appears EXACTLY ONCE across both lists.
 <constraints>
 <constraint id="turns_checked">The system checks EXACTLY the request_turn_id and confirm_turn_id you give:
 ALWAYS give the right accepting turn.</constraint>
-<constraint id="no_doer">Decision text states the settled CONTENT in ONE sentence ("Đề án cần làm rõ ...",
-"Báo cáo phải bổ sung ..."), without naming a doer.</constraint>
+<constraint id="one_point">Decision text states ONE settled point in ONE sentence ("Đề án cần làm rõ ...",
+"Báo cáo phải bổ sung ..."), without naming a doer; two separate requirements are two items.</constraint>
 {EVIDENCE_RULE}
 {TURN_ID_RULE}
 {THIRD_PERSON_RULE}
