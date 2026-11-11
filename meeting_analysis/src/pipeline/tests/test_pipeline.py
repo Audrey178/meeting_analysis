@@ -580,12 +580,12 @@ def test_extractors_run_with_v3_prompts():
     _start(_analyzer(llm))
 
     systems = {kind: system for kind, system, _ in llm.prompts}
-    assert systems["content"] == render_system_prompt(prompts.CONTENT_SYSTEM_PROMPT, CONTENT_SCHEMA)
-    assert systems["action"] == render_system_prompt(prompts.ACTION_SYSTEM_PROMPT, ACTION_SCHEMA)
-    assert systems["decision"] == render_system_prompt(prompts.DECISION_SYSTEM_PROMPT, DECISION_SCHEMA)
+    assert systems["content"] == render_system_prompt(prompts.CONTENT_SYSTEM_PROMPT)
+    assert systems["action"] == render_system_prompt(prompts.ACTION_SYSTEM_PROMPT)
+    assert systems["decision"] == render_system_prompt(prompts.DECISION_SYSTEM_PROMPT)
     for system in (systems["content"], systems["action"], systems["decision"]):
-        assert prompts.JSON_SCHEMA_SLOT not in system and prompts.PROGRESS_TRACKING_SLOT not in system
-        assert "<json_schema>{" in system
+        assert prompts.PROGRESS_TRACKING_SLOT not in system
+        assert "<output_format>\nReturn ONE JSON object" in system
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["action"]
     assert prompts.CHAIR_ASSIGNMENT_RULE in systems["verifier"]
     action_prompt = next(user for kind, _, user in llm.prompts if kind == "action")

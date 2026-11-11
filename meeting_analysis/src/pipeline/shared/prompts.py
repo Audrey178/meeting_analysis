@@ -5,10 +5,10 @@ Prompt viết bằng tiếng Anh; các cụm tiếng Việt trong ngoặc kép l
 giữ nguyên. Mọi giá trị chữ tự do mô hình trả về vẫn bằng tiếng Việt (``OUTPUT_LANGUAGE_RULE``).
 
 System prompt của agent trích xuất là XML gồm bốn phần: ``<persona>``, ``<core_directives>`` (``<rules>``,
-``<constraints>``), ``<output_format>`` (hướng dẫn từng trường và ``<json_schema/>``) và ``<examples>``
-(happy path và edge case). Hai thẻ giữ chỗ được thay lúc gọi (``step4_extract.extractors``):
-``<json_schema/>`` thành schema thật gửi kèm lời gọi, ``<progress_tracking/>`` thành
-``ACTION_AGENDA_RULE`` khi cuộc họp có danh sách việc. Ví dụ trong prompt là cuộc họp giả lập khác lĩnh
+``<constraints>``), ``<output_format>`` (khung JSON mẫu, mỗi giá trị mô tả cách điền trường đó; schema
+thật đi qua structured output của API) và ``<examples>`` (happy path và edge case). Thẻ giữ chỗ
+``<progress_tracking/>`` được thay lúc gọi (``step4_extract.extractors``) thành ``ACTION_AGENDA_RULE`` khi
+cuộc họp có danh sách việc. Ví dụ trong prompt là cuộc họp giả lập khác lĩnh
 vực, không lấy từ các cuộc họp dùng để đánh giá.
 """
 
@@ -20,7 +20,6 @@ if TYPE_CHECKING:
     from .meeting_inputs.attendees import MeetingChair
 
 # Thẻ giữ chỗ trong system prompt, thay lúc gọi (xem docstring module).
-JSON_SCHEMA_SLOT = "<json_schema/>"
 PROGRESS_TRACKING_SLOT = "<progress_tracking/>"
 
 OUTPUT_LANGUAGE_RULE = """
@@ -205,6 +204,18 @@ other parts of the report, so this excerpt has no discussion point.</explanation
 </example>
 """.strip()
 
+_CONTENT_OUTPUT_FORMAT = """
+Return ONE JSON object with exactly this shape; each value describes what to write there:
+{
+  "discussion_points": [
+    {
+      "evidence_segment_ids": ["30", "40", "41", "50"],
+      "text": "1-3 concise sentences summarizing ONE issue and the main positions. When the parties disagree: each position, its reason and who holds it; when they agree: the shared view. ALWAYS summarize; a turn-by-turn retelling is wrong. evidence_segment_ids cites ONLY sentences about this issue, with at least one sentence of EVERY participant of the issue (the participants are read from them)."
+    }
+  ]
+}
+""".strip()
+
 CONTENT_SYSTEM_PROMPT = f"""
 <persona>
 You are a meeting secretary for Vietnamese public-administration meetings. You summarize the DISCUSSION of
@@ -241,13 +252,7 @@ and perfunctory confirmations ("vâng", "ok") are left out.
 </constraints>
 </core_directives>
 <output_format>
-<field name="discussion_points[].evidence_segment_ids">The sentences expressing the point, including at
-least one sentence of EVERY participant of that issue; the participants are read from these sentences.
-ALWAYS cite only sentences about the issue.</field>
-<field name="discussion_points[].text">1-3 concise sentences summarizing the issue and the main positions.
-When the parties disagree, state each position, its reason and who holds it; when they agree, state the
-shared view. ALWAYS summarize; a turn-by-turn retelling is wrong.</field>
-{JSON_SCHEMA_SLOT}
+{_CONTENT_OUTPUT_FORMAT}
 </output_format>
 <examples>
 {_CONTENT_EXAMPLES}
@@ -300,6 +305,48 @@ assigned task, and the segment has no summing-up turn.</explanation>
 topic). A request the chair turns down is "rejected". Keeping the timeline is a settlement of a parameter,
 which belongs to Conclusions, so action_items stays empty.</explanation>
 </example>
+""".strip()
+
+_ACTION_OUTPUT_FORMAT = """
+Return ONE JSON object with exactly this shape, filled in this order (when progress_tasks are given, the
+object starts with "updates", see progress_tracking); each value describes what to write there:
+{
+  "member_requests": [
+    {
+      "turn_id": "TURN_000005: the turn raising the request",
+      "requester": "the person raising it",
+      "response": "accepted | rejected | not_addressed. accepted: the chair (no chair: a person OTHER than the requester, in a later turn) takes it in by repeating or citing it ('như anh X nói') or by a general accepting summing-up ('lưu ý các ý kiến góp ý') that leaves it standing, and nobody rejects it afterwards. rejected: it is dismissed. not_addressed: nobody responds in the segment.",
+      "response_turn_id": "TURN_000006: the accepting or dismissing turn; null when not_addressed",
+      "assignees": [{"name": "Sở Y tế", "id": "D1", "role": "lead", "type": "organization"}],
+      "deadline": null,
+      "deadline_date": null,
+      "deadline_kind": "unknown",
+      "text": "the task to do if the request is accepted; assignees, deadline* and text are written like the same fields of action_items, and the assignee is usually the presenting/drafting unit"
+    }
+  ],
+  "action_items": [
+    {
+      "evidence_segment_ids": ["50", "61"],
+      "basis": "one value from rule assigned_task, e.g. direct_request",
+      "request_turn_id": "TURN_000005: the turn that RAISES the task content (where the chair or a member says what must be done, the volunteering turn, or the turn raising a not-assigned item)",
+      "confirm_turn_id": "TURN_000006: the turn that ESTABLISHES the task. direct_request / member_request_accepted: summary_turn_id when there is one (also when request_turn_id is an earlier turn of the same person), otherwise the assigning or accepting turn. assignee_acknowledged: the taking-on turn. Other bases: equal to request_turn_id. It MUST contain one of the evidence_segment_ids.",
+      "assignees": [
+        {
+          "name": "Sở Y tế: copied EXACTLY from the assignee directory when listed there, otherwise as the transcript calls it, without forms of address ('anh', 'đồng chí')",
+          "id": "D1: the party's code in the assignee directory, copied exactly; null when the party is not listed or the transcript leaves it ambiguous ('anh Sơn' with two people named Sơn)",
+          "role": "lead (leading, or the only assignee) | support (only cooperating, 'phối hợp với ...') | joint (several parties together, none leading)",
+          "type": "person | organization (a unit, organization or named working group)"
+        }
+      ],
+      "deadline": "trước ngày 20/12: the WHOLE phrase as the transcript says it, keeping 'trước', 'chậm nhất', 'cuối', 'trong', 'khoảng'; null when none is stated",
+      "deadline_date": "2026-12-20: per rule deadline_normalization; null when deadline is null",
+      "deadline_kind": "before: exact | before | end_of_period | relative | unknown, per rule deadline_normalization; unknown when deadline is null",
+      "text": "Hoàn chỉnh báo cáo đề án: ONLY the task content, starting with a verb and keeping the concrete content of the request. The assignee and the deadline live in their own fields: 'Giao Hiếu rà soát hồ sơ (hạn: 30/11)' is WRONG, 'Rà soát hồ sơ' is RIGHT."
+    }
+  ],
+  "summary_turn_id": "TURN_000006: the SUMMING-UP turn that wraps up the CONTENT after the discussion, takes in the comments and states the tasks ('tinh thần chung là', 'lưu ý các ý kiến góp ý', 'có hai nhóm việc cần bổ sung'). With a chair, ALWAYS a turn of the chair. Among several closing turns, the one summing up the content (a turn that only states a deadline or says goodbye is not it). null when the segment has only presentation, Q&A and comments."
+}
+The evidence_segment_ids of an action item cite the sentences raising the request AND the sentences assigning or accepting it.
 """.strip()
 
 ACTION_SYSTEM_PROMPT = f"""
@@ -356,50 +403,7 @@ state.</constraint>
 </constraints>
 </core_directives>
 <output_format>
-<field_order>Fill the fields in schema order: (updates when present), member_requests, action_items,
-summary_turn_id.</field_order>
-<field name="member_requests[].turn_id">The turn raising the request.</field>
-<field name="member_requests[].requester">The person raising it.</field>
-<field name="member_requests[].response">"accepted" when the chair (no chair: a person OTHER than the
-requester, in a later turn) takes it in, by repeating or citing it ("như anh X nói") or by a general
-accepting summing-up ("lưu ý các ý kiến góp ý") that leaves it standing, and nobody rejects it afterwards;
-"rejected" when it is dismissed; "not_addressed" when nobody responds in the segment.</field>
-<field name="member_requests[].response_turn_id">The accepting or dismissing turn; null when
-"not_addressed".</field>
-<field name="member_requests[].assignees, deadline, deadline_date, deadline_kind, text">The task to do if
-the request is accepted, written like the same fields of action_items; the assignee is usually the
-presenting/drafting unit.</field>
-<field name="action_items[].evidence_segment_ids">The sentences raising the request AND the sentences
-assigning or accepting it.</field>
-<field name="action_items[].basis">One value from rule "assigned_task".</field>
-<field name="action_items[].request_turn_id">The turn that RAISES the task content: where the chair or a
-member says what must be done, the volunteering turn, or the turn raising a not-assigned item.</field>
-<field name="action_items[].confirm_turn_id">The turn that ESTABLISHES the task. "direct_request",
-"member_request_accepted": summary_turn_id when there is one (also when request_turn_id is an earlier turn
-of the same person), otherwise the assigning or accepting turn. "assignee_acknowledged": the taking-on turn.
-Other bases: equal to request_turn_id. It MUST be a turn containing one of the evidence_segment_ids.</field>
-<field name="action_items[].assignees">The parties doing the task (rule "assignees"). name: copied EXACTLY
-from the assignee directory when the party is listed there, otherwise as the transcript calls it, without
-forms of address ("anh", "đồng chí"). id: the party's code in the assignee directory (e.g. "N3", "D1"),
-copied exactly; null when the party is not listed or the transcript leaves it ambiguous (e.g. "anh Sơn"
-with two people named Sơn). role: "lead" when leading or the only assignee; "support" when only cooperating
-("phối hợp với ..."); "joint" when several parties do it together with none leading. type: "person" or
-"organization" (a unit, organization or named working group).</field>
-<field name="action_items[].deadline">The deadline exactly as the transcript says it, copying the WHOLE
-phrase with "trước", "chậm nhất", "cuối", "trong", "khoảng" ("trước ngày 15 tháng 11"); null when none is
-stated.</field>
-<field name="action_items[].deadline_date, deadline_kind">Per rule "deadline_normalization". When deadline is
-null: deadline_date null, deadline_kind "unknown".</field>
-<field name="action_items[].text">ONLY the task content, starting with a verb ("Rà soát hồ sơ", "Map lại nhãn
-sang 12 lĩnh vực và train lại mô hình phân loại"), keeping the concrete content of the request. The assignee
-and the deadline live in their own fields: "Giao Hiếu rà soát hồ sơ (hạn: 30/11)" is WRONG, "Rà soát hồ sơ"
-is RIGHT.</field>
-<field name="summary_turn_id">The SUMMING-UP turn of the segment: the turn that wraps up the CONTENT after
-the discussion, takes in the comments and states the tasks or groups of tasks ("tinh thần chung là", "lưu ý
-các ý kiến góp ý", "có hai nhóm việc cần bổ sung"). With a chair, ALWAYS a turn of the chair. Among several
-closing turns, pick the one summing up the content (a turn that only states a deadline or says goodbye is
-not it). null when the segment has only presentation, Q&A and comments.</field>
-{JSON_SCHEMA_SLOT}
+{_ACTION_OUTPUT_FORMAT}
 </output_format>
 <examples>
 {_ACTION_EXAMPLES}
@@ -438,6 +442,32 @@ written as settled content without a doer.</explanation>
 a conclusion. The member's pilot proposal is taken in at TURN_000005, so it is listed in member_points. The pilot was settled at TURN_000005 and then withdrawn at TURN_000006: the last word
 decides, so the final conclusion is that the pilot is not settled.</explanation>
 </example>
+""".strip()
+
+_DECISION_OUTPUT_FORMAT = """
+Return ONE JSON object with exactly this shape, filling member_points first, then decisions; each value
+describes what to write there:
+{
+  "member_points": [
+    {
+      "turn_id": "TURN_000005: the turn raising the point",
+      "requester": "the person raising it",
+      "point_kind": "feedback | presentation | closing_statement, by the CONTENT of the turn, not by the speaker. feedback: a comment on the content under discussion (what must be clarified, added, fixed, reviewed). presentation: presenting or introducing the content, plans, upcoming work of the document, also when answering a question. closing_statement: summing-up, settling, direct assignment. ONLY feedback can be taken in.",
+      "response": "accepted | rejected | not_addressed. accepted: the chair (no chair: a person OTHER than the one who raised it, in a later turn) takes it in by repeating or citing it ('như anh X nói') or by a general accepting summing-up ('lưu ý các ý kiến góp ý') that leaves it standing, and nobody rejects it afterwards. rejected: it is dismissed. not_addressed: nobody responds in the segment.",
+      "response_turn_id": "TURN_000006: the accepting or dismissing turn; null when not_addressed",
+      "text": "Đề án cần so sánh chi phí với mô hình thuê dịch vụ: the settled content if the point is taken in, written like a decisions item"
+    }
+  ],
+  "decisions": [
+    {
+      "evidence_segment_ids": ["50", "62"],
+      "basis": "closing_statement | mutual_agreement | unconfirmed. closing_statement: the chair clearly settles it in the summing-up. mutual_agreement: no chair (or the chair is silent) and the parties clearly agree. unconfirmed: it looks like a conclusion but the transcript leaves unclear whether it was settled, or whether it is a conclusion rather than document content or an opinion (it will be checked again).",
+      "request_turn_id": "TURN_000005: the turn that RAISES the content (a member's proposing turn, or the settling person's own turn when they raise it themselves)",
+      "confirm_turn_id": "TURN_000006: the turn that SETTLES or TAKES IN the content (the chair's summing-up turn, or the last agreeing turn of a person OTHER than the one who raised it); equal to request_turn_id when the settling person raised it. Both turns MUST contain one of the evidence_segment_ids.",
+      "text": "Đề án cần làm rõ phương án bảo mật dữ liệu bệnh nhân: ONE concise sentence stating the CONTENT of the conclusion"
+    }
+  ]
+}
 """.strip()
 
 DECISION_SYSTEM_PROMPT = f"""
@@ -494,34 +524,7 @@ sung ..."), without naming a doer.</constraint>
 </constraints>
 </core_directives>
 <output_format>
-<field_order>Fill member_points first, then decisions.</field_order>
-<field name="member_points[].turn_id">The turn raising the point.</field>
-<field name="member_points[].requester">The person raising it.</field>
-<field name="member_points[].point_kind">By the CONTENT of the turn, not by the speaker: "feedback" (a
-comment on the content under discussion: what must be clarified, added, fixed, reviewed); "presentation"
-(presenting or introducing the content, plans, upcoming work of the document, also when answering a
-question); "closing_statement" (summing-up, settling, direct assignment). ONLY "feedback" can be
-taken in.</field>
-<field name="member_points[].response">"accepted" when the chair (no chair: a person OTHER than the one who
-raised it, in a later turn) takes it in, by repeating or citing it ("như anh X nói") or by a general
-accepting summing-up ("lưu ý các ý kiến góp ý") that leaves it standing, and nobody rejects it afterwards;
-"rejected" when it is dismissed; "not_addressed" when nobody responds in the segment.</field>
-<field name="member_points[].response_turn_id">The accepting or dismissing turn; null when
-"not_addressed".</field>
-<field name="member_points[].text">The settled content if the point is taken in, written like a decisions
-item ("Đề án cần ...").</field>
-<field name="decisions[].basis">"closing_statement": the chair clearly settles it in the summing-up;
-"mutual_agreement": no chair (or the chair is silent) and the parties clearly agree; "unconfirmed": it looks
-like a conclusion but the transcript leaves unclear whether it was settled, or whether it is a conclusion
-rather than document content or an opinion (it will be checked again).</field>
-<field name="decisions[].request_turn_id">The turn that RAISES the content: a member's proposing turn, or
-the settling person's own turn when they raise it themselves.</field>
-<field name="decisions[].confirm_turn_id">The turn that SETTLES or TAKES IN the content: the chair's
-summing-up turn, or the last agreeing turn of a person OTHER than the one who raised it. Equal to
-request_turn_id when the settling person raised it. Both turns MUST contain one of the
-evidence_segment_ids.</field>
-<field name="decisions[].text">ONE concise sentence stating the CONTENT of the conclusion.</field>
-{JSON_SCHEMA_SLOT}
+{_DECISION_OUTPUT_FORMAT}
 </output_format>
 <examples>
 {_DECISION_EXAMPLES}
@@ -603,6 +606,30 @@ finishes it; "đang làm thủ tục" is the report's content.</explanation>
 </example>
 """.strip()
 
+_PROGRESS_OUTPUT_FORMAT = """
+"updates" comes FIRST in the JSON object and has one entry per task id, each with exactly this shape and
+filled in this order; each value describes what to write there:
+{
+  "updates": {
+    "T1": {
+      "summary": "Write it FIRST: ONE sentence (at most 40 words), in the third person, stating what this segment says about that very task (what was reported as done, asked to redo, postponed, reassigned); empty string when the segment does not discuss the task",
+      "status": "done | in_progress | cancelled | mentioned | not_discussed: the status of that very task in this segment, per rule progress_status, and ALWAYS consistent with the summary you just wrote ('đã giải trình, tiếp thu' in the summary means done). A member's proposal to postpone or redo that the chair does not accept: not_discussed. Only reassigned to another party, with no status stated: mentioned.",
+      "status_turn_id": "TURN_000001: the turn stating that status (the chair's directive turn about the task if any, otherwise the reporting turn); it MUST contain one of the update's evidence_segment_ids",
+      "request_turn_id": "when the status, new deadline or reassignment was PROPOSED by a member and accepted by the chair: the member's proposing turn (status_turn_id is then the chair's accepting turn), also cited in evidence_segment_ids; otherwise null",
+      "evidence_segment_ids": ["10"],
+      "deadline": "the NEW deadline stated for the task in the segment, per rule deadline_normalization; null when none",
+      "deadline_date": "per rule deadline_normalization; null when no new deadline",
+      "deadline_kind": "exact | before | end_of_period | relative | unknown; unknown when no new deadline",
+      "deadline_extended": "true when the unfinished (in_progress) task gets more time, a push-back or a dropped deadline WITHOUT a new date ('cho thêm thời gian', 'không kết luận về thời gian', 'khi nào đủ điều kiện thì báo cáo'); with a new date, put it in deadline and set false; otherwise false. It counts ONLY for the task those words are about. ALWAYS scan to the end of the segment (the chair often talks about deadlines in the closing words) and cite the turn stating the new deadline or extension in evidence_segment_ids.",
+      "assignees": "the parties assigned to do this task INSTEAD of the old lead/supporting parties, written like action_items.assignees, citing the reassigning turn in evidence_segment_ids; [] when not reassigned",
+      "blockers": ["at most 2 stated blockers, each a short phrase; [] when none"],
+      "directive": "the chair's directive on the task, ONE sentence; null when none"
+    }
+  }
+}
+ALWAYS write summary, blockers and directive without double quotes.
+""".strip()
+
 ACTION_AGENDA_RULE = f"""
 <progress_tracking>
 <rule id="progress_tasks">
@@ -634,35 +661,9 @@ or about the whole proposal without the task's own content, status is "not_discu
 are null, [] or false.
 </rule>
 {PROGRESS_STATUS_RULE}
-<fields>
-<field name="updates.*.summary">Write it FIRST: ONE sentence (at most 40 words), in the third person, stating
-what this segment says about that very task (what was reported as done, asked to redo, postponed,
-reassigned). Empty string when the segment does not discuss the task.</field>
-<field name="updates.*.status">The status of that very task in this segment, per rule "progress_status", and
-ALWAYS consistent with the summary you just wrote ("đã giải trình, tiếp thu" in the summary means "done"). A
-member's proposal to postpone or redo that the chair does not accept: "not_discussed". Only reassigned to
-another party, with no status stated: "mentioned".</field>
-<field name="updates.*.status_turn_id">The turn stating that status: the chair's directive turn about the
-task if any, otherwise the reporting turn. It MUST contain one of the update's evidence_segment_ids.</field>
-<field name="updates.*.request_turn_id">When the status, new deadline or reassignment was PROPOSED by a member
-and accepted by the chair: the member's proposing turn (status_turn_id is then the chair's accepting turn),
-also cited in evidence_segment_ids. Otherwise null.</field>
-<field name="updates.*.deadline, deadline_date, deadline_kind">The NEW deadline stated for the task in the
-segment, per rule "deadline_normalization"; no new deadline: null, null, "unknown".</field>
-<field name="updates.*.deadline_extended">true when the unfinished ("in_progress") task gets more time, a
-push-back or a dropped deadline WITHOUT a new date ("cho thêm thời gian", "không kết luận về thời gian",
-"khi nào đủ điều kiện thì báo cáo"); with a new date, put it in deadline and set false; otherwise false. It
-counts ONLY for the task those words are about. ALWAYS scan to the end of the segment: the chair often talks
-about deadlines in the closing words. The turn stating the new deadline or extension MUST be cited in
-evidence_segment_ids.</field>
-<field name="updates.*.assignees">The parties assigned to do this task INSTEAD of the old lead/supporting
-parties (name, id, role, type as for action_items); not reassigned: []. The reassigning turn MUST be cited in
-evidence_segment_ids.</field>
-<field name="updates.*.blockers">At most 2 stated blockers, each a short phrase; none: [].</field>
-<field name="updates.*.directive">The chair's directive on the task, ONE sentence; none: null.</field>
-<constraint id="no_double_quotes">summary, blockers and directive ALWAYS quote nothing: write them without
-double quotes.</constraint>
-</fields>
+<output_format>
+{_PROGRESS_OUTPUT_FORMAT}
+</output_format>
 <progress_examples>
 {_PROGRESS_EXAMPLES}
 </progress_examples>
@@ -779,7 +780,6 @@ __all__ = [
     "DECISION_SYSTEM_PROMPT",
     "EVIDENCE_RULE",
     "JSON_ONE_LINE_RULE",
-    "JSON_SCHEMA_SLOT",
     "OUTPUT_LANGUAGE_RULE",
     "PROGRESS_TRACKING_SLOT",
     "THIRD_PERSON_RULE",

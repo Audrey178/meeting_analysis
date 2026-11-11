@@ -558,7 +558,7 @@ def test_action_agent_gets_updates_and_rule_only_with_agenda():
     without, with_agenda = llm.calls
     # Không có danh sách việc: prompt và schema của Action agent như trước khi có tính năng này.
     assert without["schema"] == ACTION_SCHEMA
-    assert without["system"] == render_system_prompt(ACTION_SYSTEM_PROMPT, ACTION_SCHEMA)
+    assert without["system"] == render_system_prompt(ACTION_SYSTEM_PROMPT)
     assert "updates" not in without["schema"]["properties"]
     # Có danh sách: chỉ thêm updates, ĐỨNG ĐẦU schema; việc giao không mang mã việc cũ.
     assert list(with_agenda["schema"]["properties"]) == ["updates", "member_requests", "action_items", "summary_turn_id"]
@@ -566,9 +566,7 @@ def test_action_agent_gets_updates_and_rule_only_with_agenda():
     assert with_agenda["schema"]["properties"]["action_items"] == ACTION_SCHEMA["properties"]["action_items"]
     update = with_agenda["schema"]["properties"]["updates"]["properties"]["T1"]
     assert "assignees" in update["properties"] and "assignees" in update["required"]
-    assert with_agenda["system"] == render_system_prompt(
-        ACTION_SYSTEM_PROMPT, with_agenda["schema"], progress=ACTION_AGENDA_RULE
-    )
+    assert with_agenda["system"] == render_system_prompt(ACTION_SYSTEM_PROMPT, progress=ACTION_AGENDA_RULE)
     assert ACTION_AGENDA_RULE not in without["system"]
     assert "updates" not in ACTION_SCHEMA["properties"]  # schema gốc không bị sửa
 
