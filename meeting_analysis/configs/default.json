@@ -1,0 +1,11 @@
+{
+  "turn_builder": {
+    "max_gap_ms": 5000,
+    "merge_when_timestamp_missing": false,
+    "merge_unknown_speakers": false
+  },
+  "topic_labeler": {
+    "mode": "llm",
+    "max_title_chars": 1024
+  }
+}

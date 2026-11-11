@@ -1,0 +1,74 @@
+{
+  "meeting_id": "MTG-DEMO-001",
+  "meeting_date": "2026-09-15",
+  "chair": "id_678768",
+  "attendees": {
+    "people": [
+      {
+        "id": "P1",
+        "full_name": "Nguyễn Cường",
+        "position": "Giám đốc Ban Quản lý dự án",
+        "org_id": "O1"
+      }
+    ],
+    "organizations": [
+      {
+        "id": "O1",
+        "name": "Ban Quản lý dự án Cảng Cái Mép",
+        "parent_id:"X1" (null nếu đơn vị này là đơn vị cấp 0)
+        "aliases": [
+          "Ban quản lý"
+        ],
+        "functions": [
+          "xây dựng tờ trình đề án"
+        ]
+      },
+     {
+        "id": "X1",
+        "name": "sở văn hoá",
+        "parent_id:"M1" (null nếu đơn vị này là đơn vị cấp 0)
+        "aliases": [
+          "Ban quản lý"
+        ],
+        "functions": [
+          "xây dựng tờ trình đề án"
+        ]
+      },
+      {
+        "id": "M1",
+        "name": "Đảng uỷ,
+        "parent_id:"null" (null nếu đơn vị này là đơn vị cấp 0)
+        "aliases": [
+          "Ban quản lý"
+        ],
+        "functions": [
+          "xây dựng tờ trình đề án"
+        ]
+      }
+    ]
+  },
+  "tasks": {
+    "tasks": [
+      {
+        "id": "T1",
+        "title": "Hoàn thiện hồ sơ Tờ trình 1374 trình Ban Thường vụ",
+        "owner": {
+               "O1"‘},
+        "support": [
+          "O2"
+        ],
+        "reporter": "P1",
+        "due": "2026-09-30",
+        "last_status": "in_progress",
+        "source": "Thông báo kết luận số 12/TB-UBND"
+      }
+    ]
+  },
+  "source": {
+    "transcript_version_id": "rev-002",
+    "transcript_uri": "s3://meetings/MTG-DEMO-001/transcript.json",
+    "document_uris": [
+      "s3://meetings/MTG-DEMO-001/to-trinh-1374.pdf"
+    ]
+  }
+}

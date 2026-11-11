@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.0",
+  "meeting_id": "MTG-DEMO-001",
+  "artifact_revision": 1,
+  "source": {
+    "transcript_version_id": "rev-002",
+    "transcript_uri": "s3://meetings/MTG-DEMO-001/transcript.json",
+    "document_uris": ["s3://meetings/MTG-DEMO-001/to-trinh-1374.pdf"]
+  },
+  "generation": {
+    "status": "complete",
+    "generated_at": "2026-10-19T07:04:21+00:00",
+    "coverage": {
+      "is_complete": true,
+      "processed_segment_count": 6,
+      "total_segment_count": 6
+    },
+    "warnings": [],
+    "confidence": null
+  },
+  "extensions": {
+    "analysis_schema_version": null,
+    "input_fingerprint": "eebc9d496fb7b65c5df15de182e0b279",
+    "document_key": "content@740838828ca786bf",
+    "prompt_version": null,
+    "model": "google/gemma-4-26B-A4B-it",
+    "transcript_review_state": null,
+    "citation_namespace": "transcript_item_id",
+    "task_identity_strategy": null,
+    "artifact_version_id": 2,
+    "audit": {
+      "verification_records": [],
+      "failed_topics": []
+    }
+  },
+  "document_type": "meeting_content",
+  "data": {
+    "topics": [
+      {
+        "topic_id": "TOPIC_SEG_000000",
+        "order": 1,
+        "extracted": {
+          "content": {
+            "title": "",
+            "summary": ""
+          },
+          "span": {
+            "segment_ids": ["i001", "i006"],
+            "turn_ids": ["TURN_000001", "TURN_000005"]
+          },
+          "discussion_points": [
+            {
+              "point_id": "TOPIC_SEG_000000:1",
+              "text": "",
+              "speakers": ["Nguyễn Cường"],
+              "speaker_ids": ["P1"],
+              "segment_ids": ["i001", "i002"],
+              "turn_ids": ["TURN_000001"],
+              "source_segment_refs": [
+                {
+                  "segment_id": "i001",
+                  "turn_id": "TURN_000001",
+                  "text": "",
+                  "speaker_id": "P1"
+                },
+                {
+                  "segment_id": "i002",
+                  "turn_id": "TURN_000001",
+                  "text": "",
+                  "speaker_id": "P1"
+                }
+              ]
+            }
+          ]
+        },
+        "workflow": {
+          "review_status": "pending",
+          "confirmed_fields": [],
+          "overrides": {},
+          "updated_at": null,
+          "updated_by": null,
+          "revision": 1
+        },
+        "extensions": {
+          "segmentation_method": null,
+          "boundary_score": null
+        }
+      }
+    ],
+    "turns": [
+      {
+        "turn_id": "TURN_000001",
+        "speaker": "Nguyễn Cường",
+        "speaker_id": "P1",
+        "segment_ids": ["i001", "i002"],
+        "text": ""
+      }
+    ]
+  }
+}

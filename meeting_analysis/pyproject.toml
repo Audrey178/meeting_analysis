@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meeting-analysis"
+version = "0.2.0"
+description = "Evidence-grounded meeting analysis pipeline contracts and MVP scaffold"
+requires-python = ">=3.11"
+dependencies = [
+    # src/pipeline/step2_segment/dialstart.py: boundary selection math.
+    "numpy>=1.26",
+    # src/pipeline/graph: Send()-based fan-out (topics and agents in parallel)
+    # + fan-in orchestration.
+    # Pinned to a version confirmed installed/tested, not a guess.
+    "langgraph>=1.2.11",
+]
+
+[project.optional-dependencies]
+# be/main.py: HTTP backend for the pipeline. Kept out of core `dependencies`
+# -- the CLI scripts and stage library don't need a web framework, same
+# reasoning as keeping `openai` import-lazy in be/services/analyzer_factory.py.
+api = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    # be/services/analysis_cache.py: cache kết quả v3 trên Redis (V3_CACHE=redis, mặc định).
+    "redis>=5.0",
+]
+
+# be_v2: BFF/UI backend, PostgreSQL persistence and API contract tests.
+be-v2 = [
+    "fastapi>=0.115,<0.116",
+    "uvicorn[standard]>=0.30,<0.31",
+    "redis>=5.0,<6",
+    "python-dotenv>=1.0,<2",
+    "pydantic-settings>=2.5,<3",
+    "sqlalchemy>=2.0,<2.1",
+    "alembic>=1.13,<2",
+    "psycopg[binary]>=3.2,<4",
+    "python-multipart>=0.0.9,<1",
+    "httpx>=0.27,<0.28",
+    "openai>=1.40,<3",
+    "anyio>=4.4,<4.12",
+    "pytest>=8.0,<9",
+    "fakeredis[lua]>=2.20,<3",
+]
+
+# src/pipeline/step2_segment/dialstart.py: local topic segmentation for the production pipeline
+# and provenance-safe replay-fixture generation. CPU-only environments should
+# install the PyTorch wheel from https://download.pytorch.org/whl/cpu.
+dialstart = [
+    "torch>=2.2,<3",
+    "transformers>=4.40,<5",
+]
+
+# src/utils/local_embeddings.py: open-source embeddings for be_v2/knowledge.
+# Optional for the same reason as `api`/`openai`: torch is heavy.
+local-embeddings = [
+    "sentence-transformers>=3.0",
+    "torch>=2.2,<3",
+]
+
+# paper/figures: reproducible vector and raster plots for the evaluation section.
+paper = [
+    "matplotlib>=3.8",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: requires the local PostgreSQL service",
+]
