@@ -211,6 +211,7 @@ You are a meeting secretary for Vietnamese public-administration meetings. You s
 ONE topic segment: which issues people discuss or debate and who takes part. You use ONLY the content
 provided.
 </persona>
+
 <core_directives>
 <rules>
 <rule id="group_by_issue">
@@ -231,6 +232,7 @@ and perfunctory confirmations ("vâng", "ok") are left out.
 </rule>
 {CHAIR_HINT}
 </rules>
+
 <constraints>
 <constraint id="max_points">At most 6 points per segment, in the order the issues were raised.</constraint>
 {EVIDENCE_RULE}
@@ -577,7 +579,7 @@ _PROGRESS_EXAMPLES = """
 <turn id="TURN_000008" speaker="Lê Minh Quân"><s id="80">Đề án còn phải hoàn thiện thêm theo ý kiến các đồng chí hôm nay.</s><s id="81">Kế hoạch triển khai thì làm lại, khi nào đủ điều kiện thì trình, không ấn định thời gian.</s></turn>
 </transcript>
 </input>
-<output>{"updates":{"T1":{"status":"done","status_turn_id":"TURN_000001","request_turn_id":null,"evidence_segment_ids":["10"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"summary":"Sở Y tế đã tiếp thu, giải trình đầy đủ ý kiến của Bộ Tài chính.","blockers":[],"directive":null},"T2":{"status":"in_progress","status_turn_id":"TURN_000008","request_turn_id":null,"evidence_segment_ids":["81"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":true,"assignees":[],"summary":"Kế hoạch triển khai phải làm lại, trình khi đủ điều kiện, không ấn định thời gian.","blockers":[],"directive":"Làm lại kế hoạch triển khai, trình khi đủ điều kiện."}}, "member_requests":[], "action_items":[], "summary_turn_id":"TURN_000008"}</output>
+<output>{"updates":{"T1":{"summary":"Sở Y tế đã tiếp thu, giải trình đầy đủ ý kiến của Bộ Tài chính.","status":"done","status_turn_id":"TURN_000001","request_turn_id":null,"evidence_segment_ids":["10"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null},"T2":{"summary":"Kế hoạch triển khai phải làm lại, trình khi đủ điều kiện, không ấn định thời gian.","status":"in_progress","status_turn_id":"TURN_000008","request_turn_id":null,"evidence_segment_ids":["81"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":true,"assignees":[],"blockers":[],"directive":"Làm lại kế hoạch triển khai, trình khi đủ điều kiện."}}, "member_requests":[], "action_items":[], "summary_turn_id":"TURN_000008"}</output>
 <explanation>T1 is "done": its product is the taking-in of the Ministry's opinions, and the proposal still
 being completed (s80) is not about that product. T2's own product is asked to be redone, so "in_progress";
 the dropped deadline without a new date is deadline_extended = true.</explanation>
@@ -593,7 +595,7 @@ the dropped deadline without a new date is deadline_extended = true.</explanatio
 <turn id="TURN_000007" speaker="Lê Minh Quân"><s id="70">Phạm vi đề án các đồng chí xem lại.</s></turn>
 </transcript>
 </input>
-<output>{"updates":{"T1":{"status":"not_discussed","status_turn_id":null,"request_turn_id":null,"evidence_segment_ids":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"summary":"","blockers":[],"directive":null},"T3":{"status":"done","status_turn_id":"TURN_000006","request_turn_id":null,"evidence_segment_ids":["60"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"summary":"Sở Xây dựng đã báo cáo tình hình 3 dự án bệnh viện vệ tinh tại cuộc họp.","blockers":[],"directive":null}}, "member_requests":[{"turn_id":"TURN_000004","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000007","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá lại phạm vi đề án"}], "action_items":[], "summary_turn_id":"TURN_000007"}</output>
+<output>{"updates":{"T1":{"summary":"","status":"not_discussed","status_turn_id":null,"request_turn_id":null,"evidence_segment_ids":[],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null},"T3":{"summary":"Sở Xây dựng đã báo cáo tình hình 3 dự án bệnh viện vệ tinh tại cuộc họp.","status":"done","status_turn_id":"TURN_000006","request_turn_id":null,"evidence_segment_ids":["60"],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","deadline_extended":false,"assignees":[],"blockers":[],"directive":null}}, "member_requests":[{"turn_id":"TURN_000004","requester":"Đỗ Văn Khải","response":"accepted","response_turn_id":"TURN_000007","assignees":[{"name":"Sở Y tế","id":"D1","role":"lead","type":"organization"}],"deadline":null,"deadline_date":null,"deadline_kind":"unknown","text":"Đánh giá lại phạm vi đề án"}], "action_items":[], "summary_turn_id":"TURN_000007"}</output>
 <explanation>s40 only cites the Ministry's opinions to request a NEW task (re-assess the scope), so it is
 not T1's status. The postponement proposal (s41) was never accepted by the chair, so T1 stays
 "not_discussed". T3 is a reporting task: presenting the situation in answer to the chair's question
@@ -633,7 +635,11 @@ are null, [] or false.
 </rule>
 {PROGRESS_STATUS_RULE}
 <fields>
-<field name="updates.*.status">The status of that very task in this segment, per rule "progress_status". A
+<field name="updates.*.summary">Write it FIRST: ONE sentence (at most 40 words), in the third person, stating
+what this segment says about that very task (what was reported as done, asked to redo, postponed,
+reassigned). Empty string when the segment does not discuss the task.</field>
+<field name="updates.*.status">The status of that very task in this segment, per rule "progress_status", and
+ALWAYS consistent with the summary you just wrote ("đã giải trình, tiếp thu" in the summary means "done"). A
 member's proposal to postpone or redo that the chair does not accept: "not_discussed". Only reassigned to
 another party, with no status stated: "mentioned".</field>
 <field name="updates.*.status_turn_id">The turn stating that status: the chair's directive turn about the
@@ -652,8 +658,6 @@ evidence_segment_ids.</field>
 <field name="updates.*.assignees">The parties assigned to do this task INSTEAD of the old lead/supporting
 parties (name, id, role, type as for action_items); not reassigned: []. The reassigning turn MUST be cited in
 evidence_segment_ids.</field>
-<field name="updates.*.summary">ONE sentence (at most 40 words) stating the status or directive, in the
-third person.</field>
 <field name="updates.*.blockers">At most 2 stated blockers, each a short phrase; none: [].</field>
 <field name="updates.*.directive">The chair's directive on the task, ONE sentence; none: null.</field>
 <constraint id="no_double_quotes">summary, blockers and directive ALWAYS quote nothing: write them without

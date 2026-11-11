@@ -42,8 +42,9 @@ def build_update_schema(task_ids: Sequence[str]) -> dict:
     """Dựng schema JSON cho trường tiến độ ``updates``: một khoá bắt buộc cho mỗi việc trong danh sách.
 
     Mô hình phải điền cho từng việc (được phép ghi "not_discussed") thay vì một mảng tuỳ chọn, vì với
-    mảng tuỳ chọn mô hình hay bỏ sót việc. Trường ngắn (trạng thái, mã lượt) đứng trước, văn bản tự do
-    đứng cuối.
+    mảng tuỳ chọn mô hình hay bỏ sót việc. ``summary`` đứng đầu để mô hình viết điều đoạn họp nói về
+    việc trước rồi mới chọn trạng thái (Cái Mép 2026-11-11: trạng thái đứng trước thì T3 ra
+    "in_progress" dù tóm tắt ghi "đã giải trình, tiếp thu"); các trường còn lại giữ thứ tự cũ.
 
     Args:
         task_ids: Mã các việc trong danh sách; không rỗng.
@@ -55,6 +56,7 @@ def build_update_schema(task_ids: Sequence[str]) -> dict:
     item = {
         "type": "object",
         "properties": {
+            "summary": {"type": "string", "description": VIETNAMESE_VALUE},
             "status": {"type": "string", "enum": [*UPDATE_STATUSES, _NOT_DISCUSSED]},
             "status_turn_id": {"type": ["string", "null"]},
             "request_turn_id": {"type": ["string", "null"]},
@@ -64,7 +66,6 @@ def build_update_schema(task_ids: Sequence[str]) -> dict:
             "deadline_kind": {"type": "string", "enum": _DEADLINE_KINDS},
             "deadline_extended": {"type": "boolean"},
             "assignees": ASSIGNEES_SCHEMA,
-            "summary": {"type": "string", "description": VIETNAMESE_VALUE},
             "blockers": {"type": "array", "items": {"type": "string", "description": VIETNAMESE_VALUE}},
             "directive": {"type": ["string", "null"], "description": VIETNAMESE_VALUE},
         },
