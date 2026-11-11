@@ -1,15 +1,5 @@
 """Nội dung các prompt: những quy tắc dùng chung cho mọi agent (cách ghi mã lượt nói, cách trích bằng
 chứng...), hướng dẫn riêng cho từng agent trích xuất, và tiêu chí chấm của agent kiểm chứng.
-
-Prompt viết bằng tiếng Anh; các cụm tiếng Việt trong ngoặc kép là ví dụ lời nói thật trong bản ghi nên
-giữ nguyên. Mọi giá trị chữ tự do mô hình trả về vẫn bằng tiếng Việt (``OUTPUT_LANGUAGE_RULE``).
-
-System prompt của agent trích xuất là XML gồm bốn phần: ``<persona>``, ``<core_directives>`` (``<rules>``,
-``<constraints>``), ``<output_format>`` (khung JSON mẫu, mỗi giá trị mô tả cách điền trường đó; schema
-thật đi qua structured output của API) và ``<examples>`` (happy path và edge case). Thẻ giữ chỗ
-``<progress_tracking/>`` được thay lúc gọi (``step4_extract.extractors``) thành ``ACTION_AGENDA_RULE`` khi
-cuộc họp có danh sách việc. Ví dụ trong prompt là cuộc họp giả lập khác lĩnh
-vực, không lấy từ các cuộc họp dùng để đánh giá.
 """
 
 from __future__ import annotations
@@ -123,16 +113,9 @@ Anchor every deadline on the meeting date.
 </rule>
 """.strip()
 
-# gemma (structured output của vLLM) hay xuống dòng sau một giá trị rồi sinh khoảng trắng tới
-# hết max_tokens thay vì viết dấu phẩy/ngoặc đóng; schema dài nhiều trường null (Verifier) gần
-# như luôn dính. Đo trên 4 candidate Verifier của synth_001: không có câu này 3/12 JSON hợp lệ,
-# có câu này 12/12. Server không nhận tuỳ chọn tắt khoảng trắng (whitespace_pattern,
-# disable_any_whitespace) nên phải dặn trong prompt.
 JSON_ONE_LINE_RULE = "Return the JSON on ONE single line: no line breaks, no indentation between fields."
 
-# Không bao giờ đoán người chủ trì: đoán nhầm thì mọi suy luận theo người đó (ai tiếp nhận, ai chốt, ai
-# yêu cầu làm lại) sai theo. Bản cũ dặn "không có thì suy ra từ bản ghi"; ablation Cái Mép 2026-10-21 nhánh
-# không chủ trì sinh bên nhận "Đơn vị tư vấn" không có thật và lấy đề xuất của chính thành viên làm lời chốt.
+
 CHAIR_HINT = """
 <rule id="chair">
 - The chair is ONLY the person named as chair in the input; their turns have exactly that speaker name.
